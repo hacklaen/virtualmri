@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.KSpaceManipulatorCanvas (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">KSpaceManipulatorCanvas</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="Import">import</FONT> rad.dicom.dcm.*;
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A><FONT ID="FormalComment">/**
+<A NAME="32"></A> * Die Klasse repraesentiert die Zeichenflaeche des k-Raum-Manipulators. In ihr
+<A NAME="33"></A> * werden alle 4 darzustellenden Bilder verwaltet. Das Originalbild,
+<A NAME="34"></A> * der original k-Raum und der manipulierte k-Raum werden der Klasse einfach uebergeben.
+<A NAME="35"></A> * Die Ruecktransformation wird innerhalb dieser Klasse aus dem uebergebenen Real-
+<A NAME="36"></A> * und Imaginaerteil neu berechnet.
+<A NAME="37"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="38"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="39"></A> * Konstruktor KSpaceManipulatorCanvas(ViewerFrame) auf KSpaceManipulatorCanvas(JFrame)
+<A NAME="40"></A> * geaendert.&lt;br&gt;
+<A NAME="41"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="42"></A> * In recalcTargetImage die x- und y-Koordinate getauscht. Dies war ein Bug, der
+<A NAME="43"></A> * durch die ebenfalls falsche Koordinatenrichtung un ImagePlus.calcFFT() bislang
+<A NAME="44"></A> * kompensiert wurde.&lt;br&gt;
+<A NAME="45"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="46"></A> * Debug-Meldungen in paint geloescht.&lt;br&gt;
+<A NAME="47"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="48"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="49"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="50"></A> * @author   Christian Schalla
+<A NAME="51"></A> * @author   Andreas Truemper
+<A NAME="52"></A> * @version  1.2, 2002.10.16
+<A NAME="53"></A> */</FONT>
+<A NAME="54"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> KSpaceManipulatorCanvas <FONT ID="Extends">extends</FONT> JPanel {
+<A NAME="55"></A>
+<A NAME="56"></A>
+<A NAME="57"></A>  <FONT ID="FormalComment">/**
+<A NAME="58"></A>   * Das ImagePlus-Objekt des Originalbildes.
+<A NAME="59"></A>   */</FONT>
+<A NAME="60"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>   sourceImg = <FONT ID="Null">null</FONT>;
+<A NAME="61"></A>
+<A NAME="62"></A>
+<A NAME="63"></A>  <FONT ID="FormalComment">/**
+<A NAME="64"></A>   * Das zuruecktranformierte Bild.
+<A NAME="65"></A>   */</FONT>
+<A NAME="66"></A>  <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>           destImg;
+<A NAME="67"></A>
+<A NAME="68"></A>
+<A NAME="69"></A>  <FONT ID="FormalComment">/**
+<A NAME="70"></A>   * Der unveraenderte k-Raum des Originalbildes.
+<A NAME="71"></A>   */</FONT>
+<A NAME="72"></A>  <FONT ID="Private">private</FONT> Image       sourceKSpace = <FONT ID="Null">null</FONT>;
+<A NAME="73"></A>
+<A NAME="74"></A>
+<A NAME="75"></A>  <FONT ID="FormalComment">/**
+<A NAME="76"></A>   * Der manipulierte Realteil des k-Raums.
+<A NAME="77"></A>   */</FONT>
+<A NAME="78"></A>  <FONT ID="Private">private</FONT> <FONT ID="Float">float</FONT>[][]   targetKSpaceReal;
+<A NAME="79"></A>
+<A NAME="80"></A>
+<A NAME="81"></A>  <FONT ID="FormalComment">/**
+<A NAME="82"></A>   * Der manipulierte Imaginaerteil des k-Raums.
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Private">private</FONT> <FONT ID="Float">float</FONT>[][]   targetKSpaceImag;
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Das Magnitudenbild des manipulierten k-Raums.
+<A NAME="89"></A>   */</FONT>
+<A NAME="90"></A>  <FONT ID="Private">private</FONT> Image       targetKSpace = <FONT ID="Null">null</FONT>;
+<A NAME="91"></A>
+<A NAME="92"></A>
+<A NAME="93"></A>  <FONT ID="FormalComment">/**
+<A NAME="94"></A>   * Das aus dem manipulierten k-Raum zuruecktransformierte Bild.
+<A NAME="95"></A>   */</FONT>
+<A NAME="96"></A>  <FONT ID="Private">private</FONT> Image       targetImg = <FONT ID="Null">null</FONT>;
+<A NAME="97"></A>
+<A NAME="98"></A>
+<A NAME="99"></A>  <FONT ID="FormalComment">/**
+<A NAME="100"></A>   * Rueckreferenz zum Hauptfenster
+<A NAME="101"></A>   */</FONT>
+<A NAME="102"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/ImagePanel.java.html">ImagePanel</A>  backReference;
+<A NAME="103"></A>
+<A NAME="104"></A>
+<A NAME="105"></A>  <FONT ID="FormalComment">/**
+<A NAME="106"></A>   * Der Konstruktor setzt den Hintergrund der Zeichenflaeche auf schwarz.
+<A NAME="107"></A>   */</FONT>
+<A NAME="108"></A>  <FONT ID="Public">public</FONT> KSpaceManipulatorCanvas(<A HREF="../../virtual/tools/ImagePanel.java.html">ImagePanel</A> ip) {
+<A NAME="109"></A>
+<A NAME="110"></A>    <FONT ID="SingleLineComment">// Geaendert: tha 2000.8.17
+<A NAME="111"></A></FONT>    <FONT ID="SingleLineComment">// public KSpaceManipulatorCanvas(ViewerFrame myViewer) {
+<A NAME="112"></A></FONT>    <FONT ID="This">this</FONT>.setBackground(Color.black);
+<A NAME="113"></A>    backReference = ip;
+<A NAME="114"></A>  }   <FONT ID="SingleLineComment">// Konstruktor
+<A NAME="115"></A></FONT>
+<A NAME="116"></A>
+<A NAME="117"></A>  <FONT ID="FormalComment">/**
+<A NAME="118"></A>   * Die Methode speichert das Originalbild in einer Instanzvariablen.
+<A NAME="119"></A>   * @param i Das ImagePlus-Objekt des im DICOM-Viewer selektierten Bildes.
+<A NAME="120"></A>   */</FONT>
+<A NAME="121"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSourceImg(<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> i) {
+<A NAME="122"></A>    sourceImg = i;
+<A NAME="123"></A>
+<A NAME="124"></A>    <FONT ID="SingleLineComment">// int[] intArray = FFTTools.getShiftedFFTImageSource(sourceImg);
+<A NAME="125"></A></FONT>    <FONT ID="SingleLineComment">// sourceKSpace = createImage(new MemoryImageSource(256,256,intArray,0,256));
+<A NAME="126"></A></FONT>  }   <FONT ID="SingleLineComment">// Methode setSourceImage
+<A NAME="127"></A></FONT> 
+<A NAME="128"></A>
+<A NAME="129"></A>  <FONT ID="FormalComment">/**
+<A NAME="130"></A>   * Die Methode speichert das Magnitudenbild der Fourier-Transformation des
+<A NAME="131"></A>   * Originalbildes in einer Instanzvariablen.
+<A NAME="132"></A>   * @param i Der unveraenderte k-Raum des Originalbildes.
+<A NAME="133"></A>   */</FONT>
+<A NAME="134"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSourceKSpace(Image i) {
+<A NAME="135"></A>    sourceKSpace = i;
+<A NAME="136"></A>  }   <FONT ID="SingleLineComment">// Methode setSourceKSpace
+<A NAME="137"></A></FONT> 
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Die Methode speichert den Real- und Imaginaerteil des manipulierten k-Raums
+<A NAME="141"></A>   * in Instanzvariablen. Ausserdem wird das Magnitudenbild des manipulierten
+<A NAME="142"></A>   * k-Raums gesetzt und daraus ein darstellbares Java-Image berechnet.
+<A NAME="143"></A>   * @param re Der Realteil des manipulierten k-Raums.
+<A NAME="144"></A>   * @param re Der Imaginaerteil des manipulierten k-Raums.
+<A NAME="145"></A>   * @param re Das Magnitudenbild des manipulierten k-Raums.
+<A NAME="146"></A>   */</FONT>
+<A NAME="147"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTargetKSpace(<FONT ID="Float">float</FONT>[][] re, <FONT ID="Float">float</FONT>[][] im, <FONT ID="Int">int</FONT>[] mag) {
+<A NAME="148"></A>    targetKSpaceReal = re;
+<A NAME="149"></A>    targetKSpaceImag = im;
+<A NAME="150"></A>    targetKSpace = createImage(<FONT ID="New">new</FONT> MemoryImageSource(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, mag, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>));
+<A NAME="151"></A>  }   <FONT ID="SingleLineComment">// Methode setTargetKSpace
+<A NAME="152"></A></FONT> 
+<A NAME="153"></A>
+<A NAME="154"></A>  <FONT ID="FormalComment">/**
+<A NAME="155"></A>   * Die Methode berechnet aus dem Real- und Imaginaerteils des manipulierten
+<A NAME="156"></A>   * k-Raums die Ruecktransformation.
+<A NAME="157"></A>   */</FONT>
+<A NAME="158"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> recalcTargetImage() {
+<A NAME="159"></A>
+<A NAME="160"></A>    <FONT ID="SingleLineComment">// invers fouriertransformiertes Float-Bild berechnen. 12-Bit!!!
+<A NAME="161"></A></FONT>    <FONT ID="Float">float</FONT>[][] reFFT = FFTTools.getReshiftedIFFT(targetKSpaceReal, targetKSpaceImag);
+<A NAME="162"></A>
+<A NAME="163"></A>    <FONT ID="SingleLineComment">// nach Short konvertieren
+<A NAME="164"></A></FONT>    <FONT ID="Short">short</FONT>[]   intIFFT = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[<FONT ID="IntegerLiteral">256</FONT> * <FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="165"></A>
+<A NAME="166"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="167"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="168"></A>
+<A NAME="169"></A>        <FONT ID="SingleLineComment">// Geaendert: tha 2000.8.13
+<A NAME="170"></A></FONT>        <FONT ID="SingleLineComment">// intIFFT[(x * 256) + y] = (short) reFFT[x][y];
+<A NAME="171"></A></FONT>        <FONT ID="SingleLineComment">// In DcmImage laeft die x-Koordinate als erste
+<A NAME="172"></A></FONT>        intIFFT[(y * <FONT ID="IntegerLiteral">256</FONT>) + x] = (<FONT ID="Short">short</FONT>) reFFT[x][y];
+<A NAME="173"></A>      } 
+<A NAME="174"></A>    } 
+<A NAME="175"></A>
+<A NAME="176"></A>    <FONT ID="SingleLineComment">// Auslesen des DcmDataObjects aus dem Ursprungsbild
+<A NAME="177"></A></FONT>    DcmDataObject myddo = sourceImg.getDDO();
+<A NAME="178"></A>
+<A NAME="179"></A>    <FONT ID="SingleLineComment">// DcmImage aus der Bildmatrix und dem DicomDataObject des
+<A NAME="180"></A></FONT>    <FONT ID="SingleLineComment">// Ursprungsbildes erzeugen
+<A NAME="181"></A></FONT>    <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>      dcmimg = <FONT ID="Null">null</FONT>;
+<A NAME="182"></A>
+<A NAME="183"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="184"></A>      dcmimg = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>(myddo);
+<A NAME="185"></A>      dcmimg.pixel16 = intIFFT;
+<A NAME="186"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="187"></A>      err.printStackTrace();
+<A NAME="188"></A>    } 
+<A NAME="189"></A>
+<A NAME="190"></A>    <FONT ID="SingleLineComment">// ImagePlus-Objekt erzeugen.
+<A NAME="191"></A></FONT>    destImg = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>(dcmimg);
+<A NAME="192"></A>
+<A NAME="193"></A>    <FONT ID="SingleLineComment">// DDo im ImagePlus abspeichern
+<A NAME="194"></A></FONT>    destImg.setDDO(myddo);
+<A NAME="195"></A>
+<A NAME="196"></A>    <FONT ID="SingleLineComment">// Erzeugungsdatum und Uhrzeit im Bild speichern
+<A NAME="197"></A></FONT>    destImg.setCurrentDate();
+<A NAME="198"></A>    destImg.optimalWindowing();
+<A NAME="199"></A>    destImg.updateAWTImage();
+<A NAME="200"></A>
+<A NAME="201"></A>    <FONT ID="SingleLineComment">// 8-Bit Bild zur Konvertierung in ein Java-Image erstellen
+<A NAME="202"></A></FONT>    targetImg = destImg.getAWTImage();
+<A NAME="203"></A>  } 
+<A NAME="204"></A>
+<A NAME="205"></A>
+<A NAME="206"></A>  <FONT ID="FormalComment">/**
+<A NAME="207"></A>   * Die Methode setzt das ruecktransformierte Bild. Dies wird beim Fenstern des
+<A NAME="208"></A>   * ruecktransformierten Bildes benoetigt.
+<A NAME="209"></A>   * @param img Das Bild, das als ruecktransformiertes Bild angezeigt werden soll.
+<A NAME="210"></A>   */</FONT>
+<A NAME="211"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTragetImage(Image img) {
+<A NAME="212"></A>    targetImg = img;
+<A NAME="213"></A>  } 
+<A NAME="214"></A>
+<A NAME="215"></A>
+<A NAME="216"></A>  <FONT ID="FormalComment">/**
+<A NAME="217"></A>   * Die Methode aktualisiert die Zeichenflaeche des k-Raum-Manipulators.
+<A NAME="218"></A>   * Zunaecht wird die gesamte zeichenflaeche geloescht, dann werden die vier
+<A NAME="219"></A>   * Bilder eingezeichnet, dann die Bildbeschriftungen und schliesslich noch
+<A NAME="220"></A>   * eine Umrandung um die Bilder.
+<A NAME="221"></A>   * @param g Der Graphikkontext.
+<A NAME="222"></A>   */</FONT>
+<A NAME="223"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> paint(Graphics g) {
+<A NAME="224"></A>
+<A NAME="225"></A>    <FONT ID="SingleLineComment">// tha 2000.8.13
+<A NAME="226"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println("Paint");
+<A NAME="227"></A></FONT>    g.setColor(Color.black);
+<A NAME="228"></A>    g.fillRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="229"></A>
+<A NAME="230"></A>
+<A NAME="231"></A>    <FONT ID="SingleLineComment">// Einzeichnen der 4 Bilder und der Bildbeschriftungen
+<A NAME="232"></A></FONT>    g.setColor(Color.green);
+<A NAME="233"></A>    <FONT ID="If">if</FONT> (sourceImg != <FONT ID="Null">null</FONT>) {
+<A NAME="234"></A>      g.drawImage(sourceImg.getAWTImage(), <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="235"></A>      g.drawString(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspacemanipulatorcanvas.original.title"</FONT>), <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">15</FONT>);
+<A NAME="236"></A>    } 
+<A NAME="237"></A>    <FONT ID="If">if</FONT> (sourceKSpace != <FONT ID="Null">null</FONT>) {
+<A NAME="238"></A>      g.drawImage(sourceKSpace, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="239"></A>      g.drawString(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspacemanipulatorcanvas.kspace.original.title"</FONT>), <FONT ID="IntegerLiteral">261</FONT>, <FONT ID="IntegerLiteral">15</FONT>);
+<A NAME="240"></A>    } 
+<A NAME="241"></A>
+<A NAME="242"></A>    <FONT ID="If">if</FONT> (targetKSpace != <FONT ID="Null">null</FONT>) {
+<A NAME="243"></A>      g.drawImage(targetKSpace, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="244"></A>      g.drawString(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspacemanipulatorcanvas.kspace.manipulated.title"</FONT>), <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">271</FONT>);
+<A NAME="245"></A>
+<A NAME="246"></A>      <FONT ID="SingleLineComment">// tha 2000.8.13
+<A NAME="247"></A></FONT>      <FONT ID="SingleLineComment">// System.out.println("Man. K-Raum geziechnet");
+<A NAME="248"></A></FONT>    } 
+<A NAME="249"></A>
+<A NAME="250"></A>    <FONT ID="If">if</FONT> (targetImg != <FONT ID="Null">null</FONT>) {
+<A NAME="251"></A>      g.drawImage(targetImg, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="252"></A>      g.drawString(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspacemanipulatorcanvas.kspace.reversed.title"</FONT>), <FONT ID="IntegerLiteral">261</FONT>, <FONT ID="IntegerLiteral">271</FONT>);
+<A NAME="253"></A>    } 
+<A NAME="254"></A>
+<A NAME="255"></A>
+<A NAME="256"></A>    <FONT ID="SingleLineComment">// Einzeichnen der Bildumrandung
+<A NAME="257"></A></FONT>    g.setColor(Color.white);
+<A NAME="258"></A>    g.drawRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="259"></A>    g.drawLine(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="260"></A>    g.drawLine(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="261"></A>  }   <FONT ID="SingleLineComment">// Methode paint
+<A NAME="262"></A></FONT> 
+<A NAME="263"></A>
+<A NAME="264"></A>  <FONT ID="FormalComment">/**
+<A NAME="265"></A>   * Die Methode liefert das zuruecktransformierte Bild zurueck.
+<A NAME="266"></A>   * @return Das zuruecktransformierte Bild.
+<A NAME="267"></A>   */</FONT>
+<A NAME="268"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> getDestinationImage() {
+<A NAME="269"></A>    <FONT ID="Return">return</FONT> destImg;
+<A NAME="270"></A>  } 
+<A NAME="271"></A>
+<A NAME="272"></A>}
+<A NAME="273"></A>
+<A NAME="274"></A>
+<A NAME="275"></A>
+<A NAME="276"></A>
+<A NAME="277"></A>
+<A NAME="278"></A>
+<A NAME="279"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="280"></A>
+<A NAME="281"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">KSpaceManipulatorCanvas</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

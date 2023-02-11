@@ -1,0 +1,1051 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.dv.AnimationFrame (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">AnimationFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.dv.index.html" target="packageFrame">virtual.dv</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Diese Klasse stellt das Fenster zur animierten Darstellung des geladenen
+<A NAME="32"></A> * Datensatzes dar. Es ermoeglicht, die Einzelbilder manuell oder automatisch
+<A NAME="33"></A> * nacheinander darzustellen. Dabei ist es auch moeglich, andere Schichtfuehrungen
+<A NAME="34"></A> * zu waehlen, als die durch den Originaldatensatz vorgegebene. Ausserdem koennen die
+<A NAME="35"></A> * Animationsgeschwindigkeit und die Bilder, die in die Animation mit einbezogen
+<A NAME="36"></A> * werden sollen, eingestellt werden.
+<A NAME="37"></A> * Die Klasse ist in einem Thread implementiert, damit sie die Anwendung nicht
+<A NAME="38"></A> * blockiert.
+<A NAME="39"></A> * 
+<A NAME="40"></A> * @author   Christian Schalla
+<A NAME="41"></A> * @author   Andreas Truemper
+<A NAME="42"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="43"></A> */</FONT>
+<A NAME="44"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AnimationFrame <FONT ID="Extends">extends</FONT> JFrame <FONT ID="Implements">implements</FONT> Runnable {
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Der Thread, in dem die Animation ablaeuft.
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Private">private</FONT> Thread            myThread;
+<A NAME="51"></A>
+<A NAME="52"></A>
+<A NAME="53"></A>  <FONT ID="FormalComment">/**
+<A NAME="54"></A>   * Eine Rueckreferenz zum Hauptfenster, von dem aus die Animation aufgerufen
+<A NAME="55"></A>   * wurde.
+<A NAME="56"></A>   */</FONT>
+<A NAME="57"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A>       mainFrame;
+<A NAME="58"></A>
+<A NAME="59"></A>
+<A NAME="60"></A>  <FONT ID="FormalComment">/**
+<A NAME="61"></A>   * Das aktuelle Schichtbild, daﬂ dargestellt werden soll.
+<A NAME="62"></A>   */</FONT>
+<A NAME="63"></A>  <FONT ID="Private">private</FONT> Image             myImage = <FONT ID="Null">null</FONT>;
+<A NAME="64"></A>
+<A NAME="65"></A>
+<A NAME="66"></A>  <FONT ID="FormalComment">/**
+<A NAME="67"></A>   * Der Stapel mit allen Schichtbildern der Originalschichtfuehrung.
+<A NAME="68"></A>   */</FONT>
+<A NAME="69"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>        is = <FONT ID="Null">null</FONT>;
+<A NAME="70"></A>
+<A NAME="71"></A>
+<A NAME="72"></A>  <FONT ID="FormalComment">/**
+<A NAME="73"></A>   * Ein Flag, dass anzeigt, ob auch die Bedienelemente des Fensters neu
+<A NAME="74"></A>   * gezeichnet werden muessen. Das ist z.B. dann der Fall, wenn das Fenster
+<A NAME="75"></A>   * bewegt wurde. Ansonsten wird nur das Bild neu gezeichnet.
+<A NAME="76"></A>   */</FONT>
+<A NAME="77"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>           paintAll = <FONT ID="True">true</FONT>;
+<A NAME="78"></A>
+<A NAME="79"></A>
+<A NAME="80"></A>  <FONT ID="FormalComment">/**
+<A NAME="81"></A>   * Modus-Flag fuer das einmalige Abspielen des Bildstapels.
+<A NAME="82"></A>   */</FONT>
+<A NAME="83"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>  ONE_TIME = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="84"></A>
+<A NAME="85"></A>
+<A NAME="86"></A>  <FONT ID="FormalComment">/**
+<A NAME="87"></A>   * Modus-Flag fuer wiederholtes Abspielen des Bildstapels. Dabei wird immer
+<A NAME="88"></A>   * bei Bild 1 begonnen.
+<A NAME="89"></A>   */</FONT>
+<A NAME="90"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>  LOOP = <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="91"></A>
+<A NAME="92"></A>
+<A NAME="93"></A>  <FONT ID="FormalComment">/**
+<A NAME="94"></A>   * Modus-Flag fuer wiederholtes Abspielen des Bildstapels. Wenn des Ende des
+<A NAME="95"></A>   * Stapels erreicht ist, wird rueckwaerts abgespielt.
+<A NAME="96"></A>   */</FONT>
+<A NAME="97"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>  LOOPBACK = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="98"></A>
+<A NAME="99"></A>
+<A NAME="100"></A>  <FONT ID="FormalComment">/**
+<A NAME="101"></A>   * Modus-Flag fuer die manuelle Steuerung der Animation.
+<A NAME="102"></A>   */</FONT>
+<A NAME="103"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>  MANUAL = <FONT ID="IntegerLiteral">4</FONT>;
+<A NAME="104"></A>
+<A NAME="105"></A>
+<A NAME="106"></A>  <FONT ID="FormalComment">/**
+<A NAME="107"></A>   * Zeitdauer, die ein Bild eingeblendet bleibt, bis das naechste folgt.
+<A NAME="108"></A>   */</FONT>
+<A NAME="109"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>               sleep = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="110"></A>
+<A NAME="111"></A>
+<A NAME="112"></A>  <FONT ID="FormalComment">/**
+<A NAME="113"></A>   * Das Bild, mit dem die Animation begonnen wird .
+<A NAME="114"></A>   */</FONT>
+<A NAME="115"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>               startImage = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="116"></A>
+<A NAME="117"></A>
+<A NAME="118"></A>  <FONT ID="FormalComment">/**
+<A NAME="119"></A>   * Das Bild, bei dem die Animation endet.
+<A NAME="120"></A>   */</FONT>
+<A NAME="121"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>               stopImage = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="122"></A>
+<A NAME="123"></A>
+<A NAME="124"></A>  <FONT ID="FormalComment">/**
+<A NAME="125"></A>   * Der aktuell eingestellte Animationsmodus.
+<A NAME="126"></A>   */</FONT>
+<A NAME="127"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>               mode = LOOP;
+<A NAME="128"></A>
+<A NAME="129"></A>
+<A NAME="130"></A>  <FONT ID="FormalComment">/**
+<A NAME="131"></A>   * Icon fuer den 'Play'-Knopf.
+<A NAME="132"></A>   */</FONT>
+<A NAME="133"></A>  <FONT ID="Private">private</FONT> ImageIcon         iPlay;
+<A NAME="134"></A>
+<A NAME="135"></A>
+<A NAME="136"></A>  <FONT ID="FormalComment">/**
+<A NAME="137"></A>   * Icon fuer den 'Pause'-Knopf.
+<A NAME="138"></A>   */</FONT>
+<A NAME="139"></A>  <FONT ID="Private">private</FONT> ImageIcon         iPause;
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>  <FONT ID="FormalComment">/**
+<A NAME="143"></A>   * Icon fuer den 'Stop'-Knopf.
+<A NAME="144"></A>   */</FONT>
+<A NAME="145"></A>  <FONT ID="Private">private</FONT> ImageIcon         iStop;
+<A NAME="146"></A>
+<A NAME="147"></A>
+<A NAME="148"></A>  <FONT ID="FormalComment">/**
+<A NAME="149"></A>   * Icon fuer den Modusknopf 'Animation einfach abspielen'.
+<A NAME="150"></A>   */</FONT>
+<A NAME="151"></A>  <FONT ID="Private">private</FONT> ImageIcon         iOneWay;
+<A NAME="152"></A>
+<A NAME="153"></A>
+<A NAME="154"></A>  <FONT ID="FormalComment">/**
+<A NAME="155"></A>   * Icon fuer den Modusknopf 'Animation wiederholt abspielen'.
+<A NAME="156"></A>   */</FONT>
+<A NAME="157"></A>  <FONT ID="Private">private</FONT> ImageIcon         iLoop;
+<A NAME="158"></A>
+<A NAME="159"></A>
+<A NAME="160"></A>  <FONT ID="FormalComment">/**
+<A NAME="161"></A>   * Icon fuer den Modusknopf 'Animation wiederholt abspielen (vor-zurueck)'.
+<A NAME="162"></A>   */</FONT>
+<A NAME="163"></A>  <FONT ID="Private">private</FONT> ImageIcon         iLoopBack;
+<A NAME="164"></A>
+<A NAME="165"></A>
+<A NAME="166"></A>  <FONT ID="FormalComment">/**
+<A NAME="167"></A>   * Icon fuer den Projektionsknopf 'Originalschichten'.
+<A NAME="168"></A>   */</FONT>
+<A NAME="169"></A>  <FONT ID="Private">private</FONT> ImageIcon         iOrigProj;
+<A NAME="170"></A>
+<A NAME="171"></A>
+<A NAME="172"></A>  <FONT ID="FormalComment">/**
+<A NAME="173"></A>   * Icon fuer den Projektionsknopf '90∞-Projektion 1'.
+<A NAME="174"></A>   */</FONT>
+<A NAME="175"></A>  <FONT ID="Private">private</FONT> ImageIcon         iProj1;
+<A NAME="176"></A>
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Icon fuer den Projektionsknopf '90∞-Projektion 2'.
+<A NAME="180"></A>   */</FONT>
+<A NAME="181"></A>  <FONT ID="Private">private</FONT> ImageIcon         iProj2;
+<A NAME="182"></A>
+<A NAME="183"></A>  <FONT ID="SingleLineComment">// Erzeugen der Bedienelemente
+<A NAME="184"></A></FONT>
+<A NAME="185"></A>
+<A NAME="186"></A>  <FONT ID="FormalComment">/**
+<A NAME="187"></A>   * Schieberegler zur Einstellung der Animationsgeschwindigkeit.
+<A NAME="188"></A>   */</FONT>
+<A NAME="189"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>       pFps;
+<A NAME="190"></A>
+<A NAME="191"></A>
+<A NAME="192"></A>  <FONT ID="FormalComment">/**
+<A NAME="193"></A>   * Rahmen fuer den Schieberegler zur manuellen Steuerung der Animation.
+<A NAME="194"></A>   */</FONT>
+<A NAME="195"></A>  <FONT ID="Private">private</FONT> JPanel            pSliderPanel = <FONT ID="New">new</FONT> JPanel();
+<A NAME="196"></A>
+<A NAME="197"></A>
+<A NAME="198"></A>  <FONT ID="FormalComment">/**
+<A NAME="199"></A>   * Beschriftung fuer den Schieberegler zur manuellen Animationssteuerung.
+<A NAME="200"></A>   */</FONT>
+<A NAME="201"></A>  <FONT ID="Private">private</FONT> JLabel            lSliderLabel = <FONT ID="New">new</FONT> JLabel();
+<A NAME="202"></A>
+<A NAME="203"></A>
+<A NAME="204"></A>  <FONT ID="FormalComment">/**
+<A NAME="205"></A>   * Schieberegler zur manuellen Steuerung der Animation.
+<A NAME="206"></A>   */</FONT>
+<A NAME="207"></A>  <FONT ID="Private">private</FONT> JSlider           slImage = <FONT ID="New">new</FONT> JSlider();
+<A NAME="208"></A>
+<A NAME="209"></A>
+<A NAME="210"></A>  <FONT ID="FormalComment">/**
+<A NAME="211"></A>   * Beschriftung fuer den Animationsmodus.
+<A NAME="212"></A>   */</FONT>
+<A NAME="213"></A>  <FONT ID="Private">private</FONT> JLabel            lAnimModus = <FONT ID="New">new</FONT> JLabel();
+<A NAME="214"></A>
+<A NAME="215"></A>
+<A NAME="216"></A>  <FONT ID="FormalComment">/**
+<A NAME="217"></A>   * Knopf fuer den Animationsmodus 'Animation einfach abspielen'.
+<A NAME="218"></A>   */</FONT>
+<A NAME="219"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbAnimMode1 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="220"></A>
+<A NAME="221"></A>
+<A NAME="222"></A>  <FONT ID="FormalComment">/**
+<A NAME="223"></A>   * Knopf fuer den Animationsmodus 'Animation wiederholt abspielen'.
+<A NAME="224"></A>   */</FONT>
+<A NAME="225"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbAnimMode2 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="226"></A>
+<A NAME="227"></A>
+<A NAME="228"></A>  <FONT ID="FormalComment">/**
+<A NAME="229"></A>   * Knopf fuer den Animationsmodus 'Animation wiederholt abspielen (vor-zurueck)'.
+<A NAME="230"></A>   */</FONT>
+<A NAME="231"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbAnimMode3 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="232"></A>
+<A NAME="233"></A>
+<A NAME="234"></A>  <FONT ID="FormalComment">/**
+<A NAME="235"></A>   * Knopf fuer den Animationsmodus 'manuelle Animationssteuerung'.
+<A NAME="236"></A>   */</FONT>
+<A NAME="237"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbAnimMode4 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="238"></A>
+<A NAME="239"></A>
+<A NAME="240"></A>  <FONT ID="FormalComment">/**
+<A NAME="241"></A>   * Textfelder zur Einstellung, welche Bilder in die Animation einbezogen werden sollen.
+<A NAME="242"></A>   */</FONT>
+<A NAME="243"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/LabTFLabTFPanel.java.html">LabTFLabTFPanel</A>   pImages;
+<A NAME="244"></A>
+<A NAME="245"></A>
+<A NAME="246"></A>  <FONT ID="FormalComment">/**
+<A NAME="247"></A>   * Beschriftung fuer den Projektionsmodus.
+<A NAME="248"></A>   */</FONT>
+<A NAME="249"></A>  <FONT ID="Private">private</FONT> JLabel            lProjection = <FONT ID="New">new</FONT> JLabel();
+<A NAME="250"></A>
+<A NAME="251"></A>
+<A NAME="252"></A>  <FONT ID="FormalComment">/**
+<A NAME="253"></A>   * Knopf fuer den Projektionsmodus 'Originalschichten'.
+<A NAME="254"></A>   */</FONT>
+<A NAME="255"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbProj1 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="256"></A>
+<A NAME="257"></A>
+<A NAME="258"></A>  <FONT ID="FormalComment">/**
+<A NAME="259"></A>   * Knopf fuer den Projektionsmodus '90∞-Projektion 1'.
+<A NAME="260"></A>   */</FONT>
+<A NAME="261"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbProj2 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="262"></A>
+<A NAME="263"></A>
+<A NAME="264"></A>  <FONT ID="FormalComment">/**
+<A NAME="265"></A>   * Knopf fuer den Projektionsmodus '90∞-Projektion 2'.
+<A NAME="266"></A>   */</FONT>
+<A NAME="267"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbProj3 = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="268"></A>
+<A NAME="269"></A>
+<A NAME="270"></A>  <FONT ID="FormalComment">/**
+<A NAME="271"></A>   * Knopf zum Starten der Animation.
+<A NAME="272"></A>   */</FONT>
+<A NAME="273"></A>  <FONT ID="Private">private</FONT> JButton           pbAnimStart = <FONT ID="New">new</FONT> JButton();
+<A NAME="274"></A>
+<A NAME="275"></A>
+<A NAME="276"></A>  <FONT ID="FormalComment">/**
+<A NAME="277"></A>   * Knopf zum Stoppen der Animation.
+<A NAME="278"></A>   */</FONT>
+<A NAME="279"></A>  <FONT ID="Private">private</FONT> JButton           pbAnimStop = <FONT ID="New">new</FONT> JButton();
+<A NAME="280"></A>
+<A NAME="281"></A>
+<A NAME="282"></A>  <FONT ID="FormalComment">/**
+<A NAME="283"></A>   * Knopf zum Anhalten der Animation.
+<A NAME="284"></A>   */</FONT>
+<A NAME="285"></A>  <FONT ID="Private">private</FONT> JToggleButton     tbAnimPause = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="286"></A>
+<A NAME="287"></A>
+<A NAME="288"></A>  <FONT ID="FormalComment">/**
+<A NAME="289"></A>   * Standardkonstruktor. Er speichert eine Ruechreferenz auf das Hauptfenster
+<A NAME="290"></A>   * des DICOM-Viewers. Auﬂerdem wird die jbInit-Methode aufgerufen, die die
+<A NAME="291"></A>   * Bedienelemente darstellt.
+<A NAME="292"></A>   * @param fra Eine Rueckreferenz auf das aufrufende Fenster.
+<A NAME="293"></A>   */</FONT>
+<A NAME="294"></A>  <FONT ID="Public">public</FONT> AnimationFrame(Frame fra) {
+<A NAME="295"></A>    mainFrame = (<A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A>) fra;
+<A NAME="296"></A>    is = mainFrame.pCanvas.getImageStack();
+<A NAME="297"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="298"></A>      jbInit();
+<A NAME="299"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="300"></A>      e.printStackTrace();
+<A NAME="301"></A>    } 
+<A NAME="302"></A>    is = <FONT ID="Null">null</FONT>;
+<A NAME="303"></A>  }   <FONT ID="SingleLineComment">// Konstruktor AnimationFrame(Frame fra)
+<A NAME="304"></A></FONT>
+<A NAME="305"></A>
+<A NAME="306"></A>  <FONT ID="FormalComment">/**
+<A NAME="307"></A>   * Die Method erzeugt einen neuen Thread, setzt dessen Prioritaet auf maximal
+<A NAME="308"></A>   * und startet die Animation.
+<A NAME="309"></A>   */</FONT>
+<A NAME="310"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() {
+<A NAME="311"></A>    <FONT ID="If">if</FONT> (myThread == <FONT ID="Null">null</FONT>) {
+<A NAME="312"></A>      myThread = <FONT ID="New">new</FONT> Thread(<FONT ID="This">this</FONT>);
+<A NAME="313"></A>      myThread.setPriority(Thread.MAX_PRIORITY - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="314"></A>      myThread.start();
+<A NAME="315"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="316"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode start
+<A NAME="317"></A></FONT> 
+<A NAME="318"></A>
+<A NAME="319"></A>  <FONT ID="FormalComment">/**
+<A NAME="320"></A>   * Die Methode entscheidet aufgrund der aktuellen Einstellungen der
+<A NAME="321"></A>   * Bedienelemente, welches Bild als naechstes dargestellt werden muss. Die
+<A NAME="322"></A>   * Methode besorgt dieses Bild, ruft die repaint-Methode auf und wartet eine
+<A NAME="323"></A>   * gewisse Zeit, bis schliesslich das naechte Bild berechnet und dargestellt
+<A NAME="324"></A>   * wird.
+<A NAME="325"></A>   */</FONT>
+<A NAME="326"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run() {
+<A NAME="327"></A>    <FONT ID="Int">int</FONT>     num = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="328"></A>    <FONT ID="Boolean">boolean</FONT> forward = <FONT ID="True">true</FONT>;
+<A NAME="329"></A>
+<A NAME="330"></A>    <FONT ID="If">if</FONT> ((mode == ONE_TIME) || (mode == LOOP)) {
+<A NAME="331"></A>      num = startImage;
+<A NAME="332"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="333"></A>      num = stopImage;
+<A NAME="334"></A>    } 
+<A NAME="335"></A>
+<A NAME="336"></A>    <FONT ID="For">for</FONT> (; ; )  <FONT ID="SingleLineComment">// Endlosschleife (wird durch Stop-Button abgebrochen)
+<A NAME="337"></A></FONT>     {
+<A NAME="338"></A>
+<A NAME="339"></A>      <FONT ID="SingleLineComment">// Wenn 90∞-Projektion ausgewaehlt, dann wird diese nun berechnet
+<A NAME="340"></A></FONT>      <FONT ID="If">if</FONT> (tbProj2.isSelected()) {
+<A NAME="341"></A>
+<A NAME="342"></A>        <FONT ID="SingleLineComment">// Berechnen des naechsten Projektionsbildes
+<A NAME="343"></A></FONT>        <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = mainFrame.calcProjection1(num, pImages.getValue1(), pImages.getValue2(), <FONT ID="True">true</FONT>);
+<A NAME="344"></A>
+<A NAME="345"></A>        <FONT ID="SingleLineComment">// Zur besseren darstellung wird das Bild optimal gefenstert
+<A NAME="346"></A></FONT>        ip.optimalWindowing();
+<A NAME="347"></A>
+<A NAME="348"></A>        <FONT ID="SingleLineComment">// Besorgen des AWT-Bildes
+<A NAME="349"></A></FONT>        myImage = ip.getAWTImage();
+<A NAME="350"></A>      } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (tbProj3.isSelected()) {
+<A NAME="351"></A>
+<A NAME="352"></A>        <FONT ID="SingleLineComment">// Berechnen des naechsten Projektionsbildes
+<A NAME="353"></A></FONT>        <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = mainFrame.calcProjection2(num, pImages.getValue1(), pImages.getValue2(), <FONT ID="True">true</FONT>);
+<A NAME="354"></A>
+<A NAME="355"></A>        <FONT ID="SingleLineComment">// Zur besseren darstellung wird das Bild optimal gefenstert
+<A NAME="356"></A></FONT>        ip.optimalWindowing();
+<A NAME="357"></A>
+<A NAME="358"></A>        <FONT ID="SingleLineComment">// Besorgen des AWT-Bildes
+<A NAME="359"></A></FONT>        myImage = ip.getAWTImage();
+<A NAME="360"></A>      } <FONT ID="Else">else</FONT> {  <FONT ID="SingleLineComment">// ... wenn die Originalschichtfuehrung gewaehlt ist ...
+<A NAME="361"></A></FONT>
+<A NAME="362"></A>        <FONT ID="SingleLineComment">// Besorgen des naechsten AWT-Bildes
+<A NAME="363"></A></FONT>        <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = is.getPictureAtPos(num);
+<A NAME="364"></A>
+<A NAME="365"></A>        myImage = ip.getAWTImage();
+<A NAME="366"></A>      }         <FONT ID="SingleLineComment">// if
+<A NAME="367"></A></FONT> 
+<A NAME="368"></A>      <FONT ID="SingleLineComment">// Neuzeichnen des Zeichenflaecheninhalts (neues Bild)
+<A NAME="369"></A></FONT>      repaint();
+<A NAME="370"></A>
+<A NAME="371"></A>      <FONT ID="If">if</FONT> (forward) {
+<A NAME="372"></A>        num++;
+<A NAME="373"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="374"></A>        num--;
+<A NAME="375"></A>      } 
+<A NAME="376"></A>
+<A NAME="377"></A>      <FONT ID="SingleLineComment">// Nun wird aufgrund des Animationsmodus entschieden, ob bzw. welches
+<A NAME="378"></A></FONT>      <FONT ID="SingleLineComment">// Bild als naechste dargestellt wird.
+<A NAME="379"></A></FONT>      <FONT ID="If">if</FONT> ((num &gt; stopImage) || (num &lt; startImage)) {
+<A NAME="380"></A>        <FONT ID="If">if</FONT> (mode == ONE_TIME) {
+<A NAME="381"></A>          pbAnimStop_actionPerformed();
+<A NAME="382"></A>          <FONT ID="Break">break</FONT>;
+<A NAME="383"></A>        } 
+<A NAME="384"></A>        <FONT ID="If">if</FONT> (mode == LOOP) {
+<A NAME="385"></A>          num = startImage;
+<A NAME="386"></A>          forward = <FONT ID="True">true</FONT>;
+<A NAME="387"></A>        } 
+<A NAME="388"></A>        <FONT ID="If">if</FONT> (mode == LOOPBACK) {
+<A NAME="389"></A>          <FONT ID="If">if</FONT> (forward) {
+<A NAME="390"></A>            forward = <FONT ID="False">false</FONT>;
+<A NAME="391"></A>            num = stopImage;
+<A NAME="392"></A>          } <FONT ID="Else">else</FONT> {
+<A NAME="393"></A>            forward = <FONT ID="True">true</FONT>;
+<A NAME="394"></A>            num = startImage;
+<A NAME="395"></A>          }     <FONT ID="SingleLineComment">// if-else
+<A NAME="396"></A></FONT>         }      <FONT ID="SingleLineComment">// if
+<A NAME="397"></A></FONT>       }        <FONT ID="SingleLineComment">// if
+<A NAME="398"></A></FONT> 
+<A NAME="399"></A>      <FONT ID="SingleLineComment">// Warten (so dass die voreingestellte Bildrate erreicht wird)
+<A NAME="400"></A></FONT>      <FONT ID="Try">try</FONT> {
+<A NAME="401"></A>        Thread.sleep((<FONT ID="Long">long</FONT>) (<FONT ID="IntegerLiteral">1000</FONT> / ((<FONT ID="Double">double</FONT>) pFps.getValue() + <FONT ID="FloatPointLiteral">0.5</FONT>)));
+<A NAME="402"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="403"></A>    }           <FONT ID="SingleLineComment">// for (Endloasschleife)
+<A NAME="404"></A></FONT> 
+<A NAME="405"></A>  }             <FONT ID="SingleLineComment">// Methode run
+<A NAME="406"></A></FONT> 
+<A NAME="407"></A>
+<A NAME="408"></A>  <FONT ID="FormalComment">/**
+<A NAME="409"></A>   * Die Methode beendet den aktuellen Thread.
+<A NAME="410"></A>   */</FONT>
+<A NAME="411"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<A NAME="412"></A>    is = <FONT ID="Null">null</FONT>;
+<A NAME="413"></A>    <FONT ID="If">if</FONT> (!((mode == <FONT ID="This">this</FONT>.ONE_TIME) &amp;&amp; (tbProj1.isSelected()))) {
+<A NAME="414"></A>      myThread.stop();
+<A NAME="415"></A>    } 
+<A NAME="416"></A>    myThread = <FONT ID="Null">null</FONT>;
+<A NAME="417"></A>  } 
+<A NAME="418"></A>
+<A NAME="419"></A>
+<A NAME="420"></A>  <FONT ID="FormalComment">/**
+<A NAME="421"></A>   * Die Methode richtet die Bedienelemente ein und stellt diese dar.
+<A NAME="422"></A>   */</FONT>
+<A NAME="423"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="424"></A>
+<A NAME="425"></A>    <FONT ID="SingleLineComment">// Laden der Icons
+<A NAME="426"></A></FONT>    iPlay = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"play.gif"</FONT>));
+<A NAME="427"></A>    iPause = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"pause.gif"</FONT>));
+<A NAME="428"></A>    iStop = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"stop.gif"</FONT>));
+<A NAME="429"></A>    iOneWay = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"oneway.gif"</FONT>));
+<A NAME="430"></A>    iLoop = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"loop.gif"</FONT>));
+<A NAME="431"></A>    iLoopBack = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"loopback.gif"</FONT>));
+<A NAME="432"></A>    iOrigProj = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"origproj.gif"</FONT>));
+<A NAME="433"></A>    iProj1 = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"projektion1.gif"</FONT>));
+<A NAME="434"></A>    iProj2 = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/dv/AnimationFrame.java.html">AnimationFrame</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"projektion2.gif"</FONT>));
+<A NAME="435"></A>
+<A NAME="436"></A>    <FONT ID="SingleLineComment">// einige Fenstereinstellungen vornehmen
+<A NAME="437"></A></FONT>    <FONT ID="This">this</FONT>.getContentPane().setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="438"></A>    <FONT ID="This">this</FONT>.setLocation(<FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">100</FONT>);
+<A NAME="439"></A>    <FONT ID="This">this</FONT>.setTitle(<FONT ID="StringLiteral">"Animation"</FONT>);
+<A NAME="440"></A>    <FONT ID="This">this</FONT>.setSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">323</FONT>, <FONT ID="IntegerLiteral">465</FONT>));
+<A NAME="441"></A>    <FONT ID="This">this</FONT>.setResizable(<FONT ID="False">false</FONT>);
+<A NAME="442"></A>
+<A NAME="443"></A>    <FONT ID="SingleLineComment">// slider fuer die manuelle Animationssteuerung einrichten
+<A NAME="444"></A></FONT>    pSliderPanel.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="445"></A>    pSliderPanel.setBounds(<FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="446"></A>    pSliderPanel.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="447"></A>    <FONT ID="This">this</FONT>.getContentPane().add(pSliderPanel);
+<A NAME="448"></A>    lSliderLabel.setText(<FONT ID="StringLiteral">"Bild:"</FONT>);
+<A NAME="449"></A>    lSliderLabel.setBounds(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="450"></A>    pSliderPanel.add(lSliderLabel);
+<A NAME="451"></A>    slImage.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">20</FONT>, <FONT ID="IntegerLiteral">50</FONT>, <FONT ID="IntegerLiteral">233</FONT>);
+<A NAME="452"></A>    slImage.setOrientation(JSlider.VERTICAL);
+<A NAME="453"></A>    slImage.setMinimum(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="454"></A>    slImage.setMaximum(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="455"></A>    slImage.setValue(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="456"></A>    slImage.setPaintLabels(<FONT ID="True">true</FONT>);
+<A NAME="457"></A>    slImage.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="458"></A>    pSliderPanel.add(slImage);
+<A NAME="459"></A>    slImage.addChangeListener(<FONT ID="New">new</FONT> ChangeListener() {
+<A NAME="460"></A>
+<A NAME="461"></A>
+<A NAME="462"></A>      <FONT ID="FormalComment">/**
+<A NAME="463"></A>       * Method declaration
+<A NAME="464"></A>       * 
+<A NAME="465"></A>       * 
+<A NAME="466"></A>       * @param e
+<A NAME="467"></A>       * 
+<A NAME="468"></A>       * @see
+<A NAME="469"></A>       */</FONT>
+<A NAME="470"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stateChanged(ChangeEvent e) {
+<A NAME="471"></A>        slImage_stateChanged();
+<A NAME="472"></A>      } 
+<A NAME="473"></A>
+<A NAME="474"></A>    });
+<A NAME="475"></A>
+<A NAME="476"></A>    <FONT ID="SingleLineComment">// Slider fuer die Animationsgeschwindigkeit einrichten */
+<A NAME="477"></A></FONT>    pFps = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(<FONT ID="StringLiteral">"Geschwindigkeit:"</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">30</FONT>, <FONT ID="StringLiteral">"fps"</FONT>);
+<A NAME="478"></A>    pFps.setTextRange(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">100</FONT>);
+<A NAME="479"></A>    pFps.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">347</FONT>, <FONT ID="IntegerLiteral">313</FONT>, <FONT ID="IntegerLiteral">60</FONT>));
+<A NAME="480"></A>    pFps.setToolTip(<FONT ID="StringLiteral">"Einstellung fuer die Anzahl der Bilder pro Sekunde"</FONT>);
+<A NAME="481"></A>    pFps.setTextRange(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">30</FONT>);
+<A NAME="482"></A>    pFps.setTickSpacing(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="483"></A>    <FONT ID="This">this</FONT>.getContentPane().add(pFps);
+<A NAME="484"></A>    pFps.fillPanel();
+<A NAME="485"></A>    pFps.setValue(<FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="486"></A>
+<A NAME="487"></A>    <FONT ID="SingleLineComment">// Einrichten des Labels fuer den Modus
+<A NAME="488"></A></FONT>    lAnimModus.setText(<FONT ID="StringLiteral">"Modus:"</FONT>);
+<A NAME="489"></A>    lAnimModus.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">70</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="490"></A>    <FONT ID="This">this</FONT>.getContentPane().add(lAnimModus);
+<A NAME="491"></A>
+<A NAME="492"></A>    <FONT ID="SingleLineComment">// Einrichten der ToggleButtons fuer den Modus
+<A NAME="493"></A></FONT>    tbAnimMode1.setIcon(iOneWay);
+<A NAME="494"></A>    tbAnimMode1.setBounds(<FONT ID="IntegerLiteral">82</FONT>, <FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">57</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="495"></A>    tbAnimMode1.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="496"></A>
+<A NAME="497"></A>
+<A NAME="498"></A>      <FONT ID="FormalComment">/**
+<A NAME="499"></A>       * Method declaration
+<A NAME="500"></A>       * 
+<A NAME="501"></A>       * 
+<A NAME="502"></A>       * @param e
+<A NAME="503"></A>       * 
+<A NAME="504"></A>       * @see
+<A NAME="505"></A>       */</FONT>
+<A NAME="506"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="507"></A>        mode = ONE_TIME;
+<A NAME="508"></A>        slImage.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="509"></A>      } 
+<A NAME="510"></A>
+<A NAME="511"></A>    });
+<A NAME="512"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbAnimMode1);
+<A NAME="513"></A>
+<A NAME="514"></A>    tbAnimMode2.setIcon(iLoop);
+<A NAME="515"></A>    tbAnimMode2.setBounds(<FONT ID="IntegerLiteral">142</FONT>, <FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">57</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="516"></A>    tbAnimMode2.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="517"></A>    tbAnimMode2.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="518"></A>
+<A NAME="519"></A>
+<A NAME="520"></A>      <FONT ID="FormalComment">/**
+<A NAME="521"></A>       * Method declaration
+<A NAME="522"></A>       * 
+<A NAME="523"></A>       * 
+<A NAME="524"></A>       * @param e
+<A NAME="525"></A>       * 
+<A NAME="526"></A>       * @see
+<A NAME="527"></A>       */</FONT>
+<A NAME="528"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="529"></A>        mode = LOOP;
+<A NAME="530"></A>        slImage.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="531"></A>      } 
+<A NAME="532"></A>
+<A NAME="533"></A>    });
+<A NAME="534"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbAnimMode2);
+<A NAME="535"></A>
+<A NAME="536"></A>    tbAnimMode3.setIcon(iLoopBack);
+<A NAME="537"></A>    tbAnimMode3.setBounds(<FONT ID="IntegerLiteral">202</FONT>, <FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="538"></A>    tbAnimMode3.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="539"></A>
+<A NAME="540"></A>
+<A NAME="541"></A>      <FONT ID="FormalComment">/**
+<A NAME="542"></A>       * Method declaration
+<A NAME="543"></A>       * 
+<A NAME="544"></A>       * 
+<A NAME="545"></A>       * @param e
+<A NAME="546"></A>       * 
+<A NAME="547"></A>       * @see
+<A NAME="548"></A>       */</FONT>
+<A NAME="549"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="550"></A>        mode = LOOPBACK;
+<A NAME="551"></A>        slImage.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="552"></A>      } 
+<A NAME="553"></A>
+<A NAME="554"></A>    });
+<A NAME="555"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbAnimMode3);
+<A NAME="556"></A>
+<A NAME="557"></A>    tbAnimMode4.setText(<FONT ID="StringLiteral">"M"</FONT>);
+<A NAME="558"></A>    tbAnimMode4.setBounds(<FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="559"></A>    tbAnimMode4.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="560"></A>
+<A NAME="561"></A>
+<A NAME="562"></A>      <FONT ID="FormalComment">/**
+<A NAME="563"></A>       * Method declaration
+<A NAME="564"></A>       * 
+<A NAME="565"></A>       * 
+<A NAME="566"></A>       * @param e
+<A NAME="567"></A>       * 
+<A NAME="568"></A>       * @see
+<A NAME="569"></A>       */</FONT>
+<A NAME="570"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="571"></A>        mode = MANUAL;
+<A NAME="572"></A>        slImage.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="573"></A>      } 
+<A NAME="574"></A>
+<A NAME="575"></A>    });
+<A NAME="576"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbAnimMode4);
+<A NAME="577"></A>
+<A NAME="578"></A>    <FONT ID="SingleLineComment">// Gruppieren der ToggleButtons
+<A NAME="579"></A></FONT>    ButtonGroup bgAnimMode = <FONT ID="New">new</FONT> ButtonGroup();
+<A NAME="580"></A>
+<A NAME="581"></A>    bgAnimMode.add(tbAnimMode1);
+<A NAME="582"></A>    bgAnimMode.add(tbAnimMode2);
+<A NAME="583"></A>    bgAnimMode.add(tbAnimMode3);
+<A NAME="584"></A>    bgAnimMode.add(tbAnimMode4);
+<A NAME="585"></A>
+<A NAME="586"></A>    <FONT ID="SingleLineComment">// Einrichten einiger Window-Listener
+<A NAME="587"></A></FONT>    <FONT ID="This">this</FONT>.addWindowListener(<FONT ID="New">new</FONT> WindowAdapter() {
+<A NAME="588"></A>
+<A NAME="589"></A>
+<A NAME="590"></A>      <FONT ID="FormalComment">/**
+<A NAME="591"></A>       * Method declaration
+<A NAME="592"></A>       * 
+<A NAME="593"></A>       * 
+<A NAME="594"></A>       * @param e
+<A NAME="595"></A>       * 
+<A NAME="596"></A>       * @see
+<A NAME="597"></A>       */</FONT>
+<A NAME="598"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> windowActivated(WindowEvent e) {
+<A NAME="599"></A>        this_windowActivated(e);
+<A NAME="600"></A>      } 
+<A NAME="601"></A>
+<A NAME="602"></A>    });
+<A NAME="603"></A>    <FONT ID="This">this</FONT>.addComponentListener(<FONT ID="New">new</FONT> ComponentAdapter() {
+<A NAME="604"></A>
+<A NAME="605"></A>
+<A NAME="606"></A>      <FONT ID="FormalComment">/**
+<A NAME="607"></A>       * Method declaration
+<A NAME="608"></A>       * 
+<A NAME="609"></A>       * 
+<A NAME="610"></A>       * @param e
+<A NAME="611"></A>       * 
+<A NAME="612"></A>       * @see
+<A NAME="613"></A>       */</FONT>
+<A NAME="614"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> componentMoved(ComponentEvent e) {
+<A NAME="615"></A>        this_componentMoved(e);
+<A NAME="616"></A>      } 
+<A NAME="617"></A>
+<A NAME="618"></A>    });
+<A NAME="619"></A>
+<A NAME="620"></A>    <FONT ID="SingleLineComment">// Einrichten der Bedienelemente zur Angabe der Bilder, die in die Animation
+<A NAME="621"></A></FONT>    <FONT ID="SingleLineComment">// einbezogen werden sollen
+<A NAME="622"></A></FONT>    pImages = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/LabTFLabTFPanel.java.html">LabTFLabTFPanel</A>(<FONT ID="StringLiteral">"Bilder:"</FONT>, <FONT ID="StringLiteral">"1"</FONT>, <FONT ID="StringLiteral">"bis"</FONT>, <FONT ID="StringLiteral">"1"</FONT>);
+<A NAME="623"></A>    pImages.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">322</FONT>, <FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="624"></A>    pImages.setRange1(<FONT ID="IntegerLiteral">1</FONT>, is.getStackSize());
+<A NAME="625"></A>    pImages.setRange2(<FONT ID="IntegerLiteral">1</FONT>, is.getStackSize());
+<A NAME="626"></A>    <FONT ID="This">this</FONT>.getContentPane().add(pImages);
+<A NAME="627"></A>    pImages.fillPanel();
+<A NAME="628"></A>
+<A NAME="629"></A>    <FONT ID="SingleLineComment">// Einrichten der Bedienelemente fuee den Projektionsmodus
+<A NAME="630"></A></FONT>    lProjection.setText(<FONT ID="StringLiteral">"Projektion:"</FONT>);
+<A NAME="631"></A>    lProjection.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">293</FONT>, <FONT ID="IntegerLiteral">70</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="632"></A>    <FONT ID="This">this</FONT>.getContentPane().add(lProjection);
+<A NAME="633"></A>
+<A NAME="634"></A>    tbProj1.setIcon(iOrigProj);
+<A NAME="635"></A>    tbProj1.setBounds(<FONT ID="IntegerLiteral">82</FONT>, <FONT ID="IntegerLiteral">291</FONT>, <FONT ID="IntegerLiteral">57</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="636"></A>    tbProj1.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="637"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbProj1);
+<A NAME="638"></A>    tbProj1.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="639"></A>
+<A NAME="640"></A>
+<A NAME="641"></A>      <FONT ID="FormalComment">/**
+<A NAME="642"></A>       * Method declaration
+<A NAME="643"></A>       * 
+<A NAME="644"></A>       * 
+<A NAME="645"></A>       * @param e
+<A NAME="646"></A>       * 
+<A NAME="647"></A>       * @see
+<A NAME="648"></A>       */</FONT>
+<A NAME="649"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="650"></A>        tbProj1_actionPerformed();
+<A NAME="651"></A>      } 
+<A NAME="652"></A>
+<A NAME="653"></A>    });
+<A NAME="654"></A>
+<A NAME="655"></A>    tbProj2.setIcon(iProj1);
+<A NAME="656"></A>    tbProj2.setBounds(<FONT ID="IntegerLiteral">142</FONT>, <FONT ID="IntegerLiteral">291</FONT>, <FONT ID="IntegerLiteral">57</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="657"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbProj2);
+<A NAME="658"></A>    tbProj2.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="659"></A>
+<A NAME="660"></A>
+<A NAME="661"></A>      <FONT ID="FormalComment">/**
+<A NAME="662"></A>       * Method declaration
+<A NAME="663"></A>       * 
+<A NAME="664"></A>       * 
+<A NAME="665"></A>       * @param e
+<A NAME="666"></A>       * 
+<A NAME="667"></A>       * @see
+<A NAME="668"></A>       */</FONT>
+<A NAME="669"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="670"></A>        tbProj2_actionPerformed();
+<A NAME="671"></A>      } 
+<A NAME="672"></A>
+<A NAME="673"></A>    });
+<A NAME="674"></A>
+<A NAME="675"></A>    tbProj3.setIcon(iProj2);
+<A NAME="676"></A>    tbProj3.setBounds(<FONT ID="IntegerLiteral">202</FONT>, <FONT ID="IntegerLiteral">291</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="677"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbProj3);
+<A NAME="678"></A>    tbProj3.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="679"></A>
+<A NAME="680"></A>
+<A NAME="681"></A>      <FONT ID="FormalComment">/**
+<A NAME="682"></A>       * Method declaration
+<A NAME="683"></A>       * 
+<A NAME="684"></A>       * 
+<A NAME="685"></A>       * @param e
+<A NAME="686"></A>       * 
+<A NAME="687"></A>       * @see
+<A NAME="688"></A>       */</FONT>
+<A NAME="689"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="690"></A>        tbProj3_actionPerformed();
+<A NAME="691"></A>      } 
+<A NAME="692"></A>
+<A NAME="693"></A>    });
+<A NAME="694"></A>
+<A NAME="695"></A>    <FONT ID="SingleLineComment">// Gruppieren der Knoepfe fuer den projektionsmodus
+<A NAME="696"></A></FONT>    ButtonGroup bgProjections = <FONT ID="New">new</FONT> ButtonGroup();
+<A NAME="697"></A>
+<A NAME="698"></A>    bgProjections.add(tbProj1);
+<A NAME="699"></A>    bgProjections.add(tbProj2);
+<A NAME="700"></A>    bgProjections.add(tbProj3);
+<A NAME="701"></A>
+<A NAME="702"></A>    <FONT ID="SingleLineComment">// Einrichten der Start- / Pause- / Stop-Buttons
+<A NAME="703"></A></FONT>    pbAnimStart.setIcon(iPlay);
+<A NAME="704"></A>    pbAnimStart.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">411</FONT>, <FONT ID="IntegerLiteral">90</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="705"></A>    pbAnimStart.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="706"></A>
+<A NAME="707"></A>
+<A NAME="708"></A>      <FONT ID="FormalComment">/**
+<A NAME="709"></A>       * Method declaration
+<A NAME="710"></A>       * 
+<A NAME="711"></A>       * 
+<A NAME="712"></A>       * @param e
+<A NAME="713"></A>       * 
+<A NAME="714"></A>       * @see
+<A NAME="715"></A>       */</FONT>
+<A NAME="716"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="717"></A>        pbAnimStart_actionPerformed();
+<A NAME="718"></A>      } 
+<A NAME="719"></A>
+<A NAME="720"></A>    });
+<A NAME="721"></A>    <FONT ID="This">this</FONT>.getContentPane().add(pbAnimStart);
+<A NAME="722"></A>
+<A NAME="723"></A>    tbAnimPause.setIcon(iPause);
+<A NAME="724"></A>    tbAnimPause.setBounds(<FONT ID="IntegerLiteral">113</FONT>, <FONT ID="IntegerLiteral">411</FONT>, <FONT ID="IntegerLiteral">90</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="725"></A>    tbAnimPause.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="726"></A>
+<A NAME="727"></A>
+<A NAME="728"></A>      <FONT ID="FormalComment">/**
+<A NAME="729"></A>       * Method declaration
+<A NAME="730"></A>       * 
+<A NAME="731"></A>       * 
+<A NAME="732"></A>       * @param e
+<A NAME="733"></A>       * 
+<A NAME="734"></A>       * @see
+<A NAME="735"></A>       */</FONT>
+<A NAME="736"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="737"></A>        tbAnimPause_actionPerformed();
+<A NAME="738"></A>      } 
+<A NAME="739"></A>
+<A NAME="740"></A>    });
+<A NAME="741"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbAnimPause);
+<A NAME="742"></A>
+<A NAME="743"></A>    pbAnimStop.setIcon(iStop);
+<A NAME="744"></A>    pbAnimStop.setBounds(<FONT ID="IntegerLiteral">222</FONT>, <FONT ID="IntegerLiteral">411</FONT>, <FONT ID="IntegerLiteral">90</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="745"></A>    pbAnimStop.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="746"></A>
+<A NAME="747"></A>
+<A NAME="748"></A>      <FONT ID="FormalComment">/**
+<A NAME="749"></A>       * Method declaration
+<A NAME="750"></A>       * 
+<A NAME="751"></A>       * 
+<A NAME="752"></A>       * @param e
+<A NAME="753"></A>       * 
+<A NAME="754"></A>       * @see
+<A NAME="755"></A>       */</FONT>
+<A NAME="756"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="757"></A>        pbAnimStop_actionPerformed();
+<A NAME="758"></A>      } 
+<A NAME="759"></A>
+<A NAME="760"></A>    });
+<A NAME="761"></A>    <FONT ID="This">this</FONT>.getContentPane().add(pbAnimStop);
+<A NAME="762"></A>
+<A NAME="763"></A>    <FONT ID="SingleLineComment">// Einrichten des Slider zur manuellen Animationssteuerung
+<A NAME="764"></A></FONT>    <FONT ID="If">if</FONT> (is != <FONT ID="Null">null</FONT>) {
+<A NAME="765"></A>      <FONT ID="Int">int</FONT> size = is.getStackSize();
+<A NAME="766"></A>
+<A NAME="767"></A>      pImages.setValue2(<FONT ID="StringLiteral">""</FONT> + size);
+<A NAME="768"></A>      slImage.setMaximum(size);
+<A NAME="769"></A>      <FONT ID="Int">int</FONT> val = (slImage.getMaximum() - slImage.getMinimum()) / <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="770"></A>
+<A NAME="771"></A>      slImage.setMajorTickSpacing(val);
+<A NAME="772"></A>      <FONT ID="If">if</FONT> (size == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="773"></A>        pImages.setValue1(<FONT ID="StringLiteral">""</FONT> + size);
+<A NAME="774"></A>        slImage.setMaximum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="775"></A>        slImage.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="776"></A>      }   <FONT ID="SingleLineComment">// if
+<A NAME="777"></A></FONT>     }    <FONT ID="SingleLineComment">// if
+<A NAME="778"></A></FONT>   }      <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="779"></A></FONT> 
+<A NAME="780"></A>
+<A NAME="781"></A>  <FONT ID="FormalComment">/**
+<A NAME="782"></A>   * Die Methode wird aufgerufen, wenn der Start-Knopf gedrueckt wurde. Sie liest
+<A NAME="783"></A>   * die aktuellen Einstellungen der Bedienelemente aus, speichert sie in
+<A NAME="784"></A>   * Instanzvariablen und sperrt anschliessend einige Bedienelemente. Dann wird
+<A NAME="785"></A>   * die start-Methode aufgerufen und somit die Animation gestartet.
+<A NAME="786"></A>   */</FONT>
+<A NAME="787"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbAnimStart_actionPerformed() {
+<A NAME="788"></A>
+<A NAME="789"></A>    <FONT ID="SingleLineComment">// Sperren der Start-Knopfes
+<A NAME="790"></A></FONT>    pbAnimStop.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="791"></A>
+<A NAME="792"></A>    <FONT ID="SingleLineComment">// Aktivieren des Stop-Knopfes
+<A NAME="793"></A></FONT>    pbAnimStart.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="794"></A>
+<A NAME="795"></A>    <FONT ID="SingleLineComment">// Aktivieren der Projektionsknoepfe
+<A NAME="796"></A></FONT>    tbProj1.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="797"></A>    tbProj2.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="798"></A>    tbProj3.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="799"></A>
+<A NAME="800"></A>    <FONT ID="SingleLineComment">// Sperren der Eingabefelder fuer die Bildnummer, die in die Animation
+<A NAME="801"></A></FONT>    <FONT ID="SingleLineComment">// einbezogen werden sollen
+<A NAME="802"></A></FONT>    pImages.getTextFieldReference1().setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="803"></A>    pImages.getTextFieldReference2().setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="804"></A>
+<A NAME="805"></A>    <FONT ID="SingleLineComment">// Besorgen des Bildstapels
+<A NAME="806"></A></FONT>    is = mainFrame.pCanvas.getImageStack();
+<A NAME="807"></A>
+<A NAME="808"></A>    <FONT ID="SingleLineComment">// Auslesen der Animationsgeschwindigkeit
+<A NAME="809"></A></FONT>    sleep = <FONT ID="IntegerLiteral">1000</FONT> / pFps.getValue();
+<A NAME="810"></A>
+<A NAME="811"></A>    <FONT ID="SingleLineComment">// Auslesen des Animationsmodus
+<A NAME="812"></A></FONT>    <FONT ID="If">if</FONT> (tbAnimMode1.isSelected()) {
+<A NAME="813"></A>      mode = ONE_TIME;
+<A NAME="814"></A>    } 
+<A NAME="815"></A>    <FONT ID="If">if</FONT> (tbAnimMode2.isSelected()) {
+<A NAME="816"></A>      mode = LOOP;
+<A NAME="817"></A>    } 
+<A NAME="818"></A>    <FONT ID="If">if</FONT> (tbAnimMode3.isSelected()) {
+<A NAME="819"></A>      mode = LOOPBACK;
+<A NAME="820"></A>    } 
+<A NAME="821"></A>    <FONT ID="If">if</FONT> (tbAnimMode4.isSelected()) {
+<A NAME="822"></A>      mode = MANUAL;
+<A NAME="823"></A>
+<A NAME="824"></A>      <FONT ID="SingleLineComment">// Auslesen der Bilder, die in die Animation einbezogen werden sollen
+<A NAME="825"></A></FONT>    } 
+<A NAME="826"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="827"></A>      <FONT ID="If">if</FONT> (tbProj2.isSelected() || tbProj3.isSelected()) {
+<A NAME="828"></A>        startImage = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="829"></A>        stopImage = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="830"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="831"></A>        startImage = pImages.getValue1();
+<A NAME="832"></A>        stopImage = pImages.getValue2();
+<A NAME="833"></A>      } 
+<A NAME="834"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="835"></A>
+<A NAME="836"></A>    <FONT ID="SingleLineComment">// Starten der Animation
+<A NAME="837"></A></FONT>    <FONT ID="This">this</FONT>.start();
+<A NAME="838"></A>  }   <FONT ID="SingleLineComment">// Methode pbAnimStart_actionPerformed()
+<A NAME="839"></A></FONT> 
+<A NAME="840"></A>
+<A NAME="841"></A>  <FONT ID="FormalComment">/**
+<A NAME="842"></A>   * Die Methode wird aufgerufen, wenn der Pause-Knopf gedrueckt wurde. Die Methode
+<A NAME="843"></A>   * entscheidet, ob die Pausefunktion nun aktiviert oder deaktiviert ist und
+<A NAME="844"></A>   * versetzt dem entsprechend den Thread in den Schlaf oder erweckt ihn wieder
+<A NAME="845"></A>   * zum Leben.
+<A NAME="846"></A>   */</FONT>
+<A NAME="847"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> tbAnimPause_actionPerformed() {
+<A NAME="848"></A>    <FONT ID="If">if</FONT> (tbAnimPause.isSelected()) {
+<A NAME="849"></A>      myThread.suspend();
+<A NAME="850"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="851"></A>      myThread.resume();
+<A NAME="852"></A>    } 
+<A NAME="853"></A>  }   <FONT ID="SingleLineComment">// Methode tbAnimPause_actionPerformed()
+<A NAME="854"></A></FONT> 
+<A NAME="855"></A>
+<A NAME="856"></A>  <FONT ID="FormalComment">/**
+<A NAME="857"></A>   * Die Methode wird aufgerufen, wenn der Stop-Knopf gedrueckt wurde. Die
+<A NAME="858"></A>   * Animation wird gestoppt und die Bedienelemente werden wieder in den
+<A NAME="859"></A>   * Bereitschaftszustand versetzt.
+<A NAME="860"></A>   */</FONT>
+<A NAME="861"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbAnimStop_actionPerformed() {
+<A NAME="862"></A>
+<A NAME="863"></A>    <FONT ID="SingleLineComment">// Zuruecksetzen der Bedienelemente in den Bereitschaftzustand
+<A NAME="864"></A></FONT>    pbAnimStart.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="865"></A>    pbAnimStop.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="866"></A>    tbAnimPause.setSelected(<FONT ID="False">false</FONT>);
+<A NAME="867"></A>    pImages.getTextFieldReference1().setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="868"></A>    pImages.getTextFieldReference2().setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="869"></A>
+<A NAME="870"></A>    tbProj1.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="871"></A>    tbProj2.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="872"></A>    tbProj3.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="873"></A>
+<A NAME="874"></A>    <FONT ID="SingleLineComment">// Stoppen der Animation
+<A NAME="875"></A></FONT>    <FONT ID="This">this</FONT>.stop();
+<A NAME="876"></A>  }   <FONT ID="SingleLineComment">// Methode pbAnimStop_actionPerformed()
+<A NAME="877"></A></FONT> 
+<A NAME="878"></A>
+<A NAME="879"></A>  <FONT ID="FormalComment">/**
+<A NAME="880"></A>   * Die Methode zeichnet das aktuell darzustellende Bild in die Zeichenflaeche
+<A NAME="881"></A>   * ein und aktualisiert ggf. auch die Bedienelemente.
+<A NAME="882"></A>   * @param g Der Graphikkontext.
+<A NAME="883"></A>   */</FONT>
+<A NAME="884"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> paint(Graphics g) {
+<A NAME="885"></A>
+<A NAME="886"></A>    <FONT ID="SingleLineComment">// Wenn auch die Bedienelemente neu gezeichnet werden muessen (z.B. nach
+<A NAME="887"></A></FONT>    <FONT ID="SingleLineComment">// Fensterverschiebung, wird die paint-Methode der Superklasse
+<A NAME="888"></A></FONT>    <FONT ID="SingleLineComment">// aufgerufen
+<A NAME="889"></A></FONT>    <FONT ID="If">if</FONT> (paintAll) {
+<A NAME="890"></A>      <FONT ID="Super">super</FONT>.paint(g);
+<A NAME="891"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="892"></A></FONT> 
+<A NAME="893"></A>    paintAll = <FONT ID="False">false</FONT>;
+<A NAME="894"></A>
+<A NAME="895"></A>    <FONT ID="If">if</FONT> (myImage != <FONT ID="Null">null</FONT>) {
+<A NAME="896"></A>
+<A NAME="897"></A>      <FONT ID="SingleLineComment">// Einzeichnen des aktuellen Bildes
+<A NAME="898"></A></FONT>      g.drawImage(myImage, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">23</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="899"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="900"></A>
+<A NAME="901"></A>      <FONT ID="SingleLineComment">// Einzeichnen eines durchgestrichenen Quadrats
+<A NAME="902"></A></FONT>      g.drawRect(<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">23</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="903"></A>      g.drawLine(<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">23</FONT>, <FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">279</FONT>);
+<A NAME="904"></A>      g.drawLine(<FONT ID="IntegerLiteral">260</FONT>, <FONT ID="IntegerLiteral">23</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">279</FONT>);
+<A NAME="905"></A>    }   <FONT ID="SingleLineComment">// if-else
+<A NAME="906"></A></FONT> 
+<A NAME="907"></A>  }     <FONT ID="SingleLineComment">// Methode paint(Graphics g)
+<A NAME="908"></A></FONT> 
+<A NAME="909"></A>
+<A NAME="910"></A>  <FONT ID="FormalComment">/**
+<A NAME="911"></A>   * Die Methode wird aufgerufen, wenn des Animationsfenster bewegt wurde. Sie
+<A NAME="912"></A>   * setzt dann ein Flag, so dass auch die Bedienelemente neu gezeichnet werden.
+<A NAME="913"></A>   * @param e Das Ereignis, das bei Fensterbewegung ausgeloest wird.
+<A NAME="914"></A>   */</FONT>
+<A NAME="915"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> this_componentMoved(ComponentEvent e) {
+<A NAME="916"></A>    paintAll = <FONT ID="True">true</FONT>;
+<A NAME="917"></A>    repaint();
+<A NAME="918"></A>  }   <FONT ID="SingleLineComment">// this_componentMoved(ComponentEvent e)
+<A NAME="919"></A></FONT> 
+<A NAME="920"></A>
+<A NAME="921"></A>  <FONT ID="FormalComment">/**
+<A NAME="922"></A>   * Die Methode wird aufgerufen, wenn das Animationsfenster aktiviert wurde. Sie
+<A NAME="923"></A>   * setzt dann ein Flag, so dass auch die Bedienelemente neu gezeichnet werden.
+<A NAME="924"></A>   * @param e Das Ereignis, das bei Aktivierung des Fensters ausgeloest wird.
+<A NAME="925"></A>   */</FONT>
+<A NAME="926"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> this_windowActivated(WindowEvent e) {
+<A NAME="927"></A>    paintAll = <FONT ID="True">true</FONT>;
+<A NAME="928"></A>    repaint();
+<A NAME="929"></A>  }   <FONT ID="SingleLineComment">// Methode this_windowActivated(WindowEvent e
+<A NAME="930"></A></FONT> 
+<A NAME="931"></A>
+<A NAME="932"></A>  <FONT ID="FormalComment">/**
+<A NAME="933"></A>   * Die Methode wird aufgerufen, wenn sich der Status des Schiebereglers zur
+<A NAME="934"></A>   * manuellen Animationssteuerung aendert. In Abhaengigkeit von der Einstellung
+<A NAME="935"></A>   * des Projektionsmodus wird dann das benoetigte Bild ausgelesen oder neu
+<A NAME="936"></A>   * berechnet.
+<A NAME="937"></A>   */</FONT>
+<A NAME="938"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> slImage_stateChanged() {
+<A NAME="939"></A>
+<A NAME="940"></A>    <FONT ID="SingleLineComment">// Aktuelle Einstellung des Sliders auslesen
+<A NAME="941"></A></FONT>    <FONT ID="Int">int</FONT> actimg = slImage.getValue();
+<A NAME="942"></A>
+<A NAME="943"></A>    <FONT ID="SingleLineComment">// Wenn Origianlschichtfuehrung ausgewaehlt, dann besorge das naechste Bild
+<A NAME="944"></A></FONT>    <FONT ID="SingleLineComment">// aus dem Stack
+<A NAME="945"></A></FONT>    <FONT ID="If">if</FONT> (tbProj1.isSelected()) {
+<A NAME="946"></A>      myImage = mainFrame.pCanvas.getImageStack().getPictureAtPos(actimg).getAWTImage();
+<A NAME="947"></A>    } 
+<A NAME="948"></A>
+<A NAME="949"></A>    <FONT ID="SingleLineComment">// Wenn 90∞-Projektion eingestellt, dann berechne das gewuenschte Bild der
+<A NAME="950"></A></FONT>    <FONT ID="SingleLineComment">// Projektion und fenstere es
+<A NAME="951"></A></FONT>    <FONT ID="If">if</FONT> (tbProj2.isSelected()) {
+<A NAME="952"></A>      <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = mainFrame.calcProjection1(actimg - <FONT ID="IntegerLiteral">1</FONT>, pImages.getValue1(), pImages.getValue2(), <FONT ID="True">true</FONT>);
+<A NAME="953"></A>
+<A NAME="954"></A>      ip.optimalWindowing();
+<A NAME="955"></A>      myImage = ip.getAWTImage();
+<A NAME="956"></A>    } 
+<A NAME="957"></A>
+<A NAME="958"></A>    <FONT ID="SingleLineComment">// Wenn 90∞-Projektion eingestellt, dann berechne das gewuenschte Bild der
+<A NAME="959"></A></FONT>    <FONT ID="SingleLineComment">// Projektion und fenstere es
+<A NAME="960"></A></FONT>    <FONT ID="If">if</FONT> (tbProj3.isSelected()) {
+<A NAME="961"></A>      <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = mainFrame.calcProjection2(actimg - <FONT ID="IntegerLiteral">1</FONT>, pImages.getValue1(), pImages.getValue2(), <FONT ID="True">true</FONT>);
+<A NAME="962"></A>
+<A NAME="963"></A>      ip.optimalWindowing();
+<A NAME="964"></A>      myImage = ip.getAWTImage();
+<A NAME="965"></A>    } 
+<A NAME="966"></A>
+<A NAME="967"></A>    <FONT ID="SingleLineComment">// Neueichnen des Canvasinhalts
+<A NAME="968"></A></FONT>    repaint();
+<A NAME="969"></A>  }   <FONT ID="SingleLineComment">// Methode slImage_stateChanged(ChangeEvent e)
+<A NAME="970"></A></FONT> 
+<A NAME="971"></A>
+<A NAME="972"></A>  <FONT ID="FormalComment">/**
+<A NAME="973"></A>   * Die Methode wird aufgerufen, wenn der Projektionsmodus fuer die
+<A NAME="974"></A>   * Originalschichtfuehrung ausgewaehlt wurde. Die Methode setzt nur die
+<A NAME="975"></A>   * Beschriftung des Schiebereglers fuer die manuelle Animationssteuerung neu.
+<A NAME="976"></A>   */</FONT>
+<A NAME="977"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> tbProj1_actionPerformed() {
+<A NAME="978"></A>    slImage.setMinimum(pImages.getValue1());
+<A NAME="979"></A>    slImage.setMaximum(pImages.getValue2());
+<A NAME="980"></A>    <FONT ID="Int">int</FONT> val = (slImage.getMaximum() - slImage.getMinimum()) / <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="981"></A>
+<A NAME="982"></A>    slImage.setMajorTickSpacing(val);
+<A NAME="983"></A>  }   <FONT ID="SingleLineComment">// Methode tbProj1_actionPerformed()
+<A NAME="984"></A></FONT> 
+<A NAME="985"></A>
+<A NAME="986"></A>  <FONT ID="FormalComment">/**
+<A NAME="987"></A>   * Die Methode wird aufgerufen, wenn der Projektionsmodus fuer die erste
+<A NAME="988"></A>   * 90∞-Projektion ausgewaehlt wurde. Die Methode setzt nur die
+<A NAME="989"></A>   * Beschriftung des Schiebereglers fuer die manuelle Animationssteuerung neu.
+<A NAME="990"></A>   */</FONT>
+<A NAME="991"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> tbProj2_actionPerformed() {
+<A NAME="992"></A>    slImage.setMinimum(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="993"></A>    slImage.setMaximum(<FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="994"></A>    <FONT ID="Int">int</FONT> val = (slImage.getMaximum() - slImage.getMinimum()) / <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="995"></A>
+<A NAME="996"></A>    slImage.setMajorTickSpacing(val);
+<A NAME="997"></A>  }   <FONT ID="SingleLineComment">// Methode tbProj2_actionPerformed()
+<A NAME="998"></A></FONT> 
+<A NAME="999"></A>
+<A NAME="1000"></A>  <FONT ID="FormalComment">/**
+<A NAME="1001"></A>   * Die Methode wird aufgerufen, wenn der Projektionsmodus fuer die zweite
+<A NAME="1002"></A>   * 90∞-Projektion ausgewaehlt wurde. Die Methode setzt nur die
+<A NAME="1003"></A>   * Beschriftung des Schiebereglers fuer die manuelle Animationssteuerung neu.
+<A NAME="1004"></A>   */</FONT>
+<A NAME="1005"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> tbProj3_actionPerformed() {
+<A NAME="1006"></A>    slImage.setMinimum(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1007"></A>    slImage.setMaximum(<FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="1008"></A>    <FONT ID="Int">int</FONT> val = (slImage.getMaximum() - slImage.getMinimum()) / <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="1009"></A>
+<A NAME="1010"></A>    slImage.setMajorTickSpacing(val);
+<A NAME="1011"></A>  }   <FONT ID="SingleLineComment">// Methode tbProj3_actionPerformed()
+<A NAME="1012"></A></FONT> 
+<A NAME="1013"></A>}
+<A NAME="1014"></A>
+<A NAME="1015"></A>
+<A NAME="1016"></A>
+<A NAME="1017"></A>
+<A NAME="1018"></A>
+<A NAME="1019"></A>
+<A NAME="1020"></A>
+<A NAME="1021"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="1022"></A>
+<A NAME="1023"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">AnimationFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

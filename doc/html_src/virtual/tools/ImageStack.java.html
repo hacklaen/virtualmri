@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.ImageStack (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImageStack</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.Image;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * Die Klasse verwaltet einen Stapel von ImagePlus-Objekten. Dies sind Bild-Objekte,
+<A NAME="28"></A> * die ein 12-Bit Bild, ein gefenstertes 8-Bit Bild und einige Zusatzinformationen
+<A NAME="29"></A> * enthalten.
+<A NAME="30"></A> * Die Klasse ImageStack bietet Moeglichkeiten, ImagePlus-Objekte zum Stapel
+<A NAME="31"></A> * hinzuzufuegen und zu loeschen sowie ImagePlus-Objekte aus dem Stapel
+<A NAME="32"></A> * zurueckzuliefern.
+<A NAME="33"></A> * 
+<A NAME="34"></A> * @author   Christian Schalla
+<A NAME="35"></A> * @author   Andreas Truemper
+<A NAME="36"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ImageStack {
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Der Vektor enthaelt alle ImagePlus-Objekte.
+<A NAME="43"></A>   */</FONT>
+<A NAME="44"></A>  <FONT ID="Private">private</FONT> Vector  images;
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Standardkonstruktor. Er initialisiert einen Vektor der Groesse 256 mit
+<A NAME="49"></A>   * leeren Objekten.
+<A NAME="50"></A>   */</FONT>
+<A NAME="51"></A>  <FONT ID="Public">public</FONT> ImageStack() {
+<A NAME="52"></A>    images = <FONT ID="New">new</FONT> Vector(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="53"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; <FONT ID="IntegerLiteral">256</FONT>; i++) {
+<A NAME="54"></A>      images.addElement(<FONT ID="Null">null</FONT>);
+<A NAME="55"></A>    } 
+<A NAME="56"></A>  }
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>  <FONT ID="FormalComment">/**
+<A NAME="60"></A>   * Die Methode bestimmt die Anzahl der ImagePlus-Objekt im Stapel und liefert
+<A NAME="61"></A>   * diese Anzahl zurueck.
+<A NAME="62"></A>   * @return Die Anzahl der ImagePlus-Objekte im Stapel.
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getStackSize() {
+<A NAME="65"></A>    <FONT ID="Int">int</FONT> max = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="66"></A>
+<A NAME="67"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i &lt; images.size(); i++) {
+<A NAME="68"></A>      <FONT ID="If">if</FONT> (images.elementAt(i) != <FONT ID="Null">null</FONT>) {
+<A NAME="69"></A>        max++;
+<A NAME="70"></A>      } 
+<A NAME="71"></A>    } 
+<A NAME="72"></A>    <FONT ID="Return">return</FONT> max;
+<A NAME="73"></A>  } 
+<A NAME="74"></A>
+<A NAME="75"></A>
+<A NAME="76"></A>  <FONT ID="FormalComment">/**
+<A NAME="77"></A>   * Die Methode bestimmt die erste freie Position im Vektor der ImagePlus-Objekte.
+<A NAME="78"></A>   * @return Die erste freie Stelle im Stapel.
+<A NAME="79"></A>   */</FONT>
+<A NAME="80"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getNextFreePosition() {
+<A NAME="81"></A>    <FONT ID="Int">int</FONT> pos = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="82"></A>
+<A NAME="83"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i &lt; images.size(); i++) {
+<A NAME="84"></A>      <FONT ID="If">if</FONT> (images.elementAt(i) == <FONT ID="Null">null</FONT>) {
+<A NAME="85"></A>        pos = i;
+<A NAME="86"></A>        <FONT ID="Break">break</FONT>;
+<A NAME="87"></A>      } 
+<A NAME="88"></A>    } 
+<A NAME="89"></A>    <FONT ID="Return">return</FONT> pos;
+<A NAME="90"></A>  } 
+<A NAME="91"></A>
+<A NAME="92"></A>
+<A NAME="93"></A>  <FONT ID="FormalComment">/**
+<A NAME="94"></A>   * Die Methode erzeugt ein neues ImagePlus-Objekt an der angegebenen Position
+<A NAME="95"></A>   * im Stapel. Dazu wird das uebergebene DcmImage-Objekt verwendet.
+<A NAME="96"></A>   * @param iposition Die Position, an der das  ImagePlus-Objekt im Stapel angelegt
+<A NAME="97"></A>   * werden soll.
+<A NAME="98"></A>   * @param di Das DcmImage-Objekt, aus dem ein ImagePlus-Objekt erzeugt werden soll.
+<A NAME="99"></A>   * @return Das neu erzeugte ImagePlus-Objekt.
+<A NAME="100"></A>   */</FONT>
+<A NAME="101"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> createPictureAtPos(<FONT ID="Int">int</FONT> iposition, <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A> di) {
+<A NAME="102"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>(di);
+<A NAME="103"></A>
+<A NAME="104"></A>    images.setElementAt(ip, iposition);
+<A NAME="105"></A>    <FONT ID="Return">return</FONT> ip;
+<A NAME="106"></A>  } 
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Die Methode fuegt ein uebergebenes ImagePlus-Objekt an der angegebenen Stelle
+<A NAME="111"></A>   * in den Stapel ein.
+<A NAME="112"></A>   * @param iposition Die Position, an der das  ImagePlus-Objekt im Stapel eingefuegt
+<A NAME="113"></A>   * werden soll.
+<A NAME="114"></A>   * @param myip Das ImagePlus-Objekt, das in den Stapel eingefuegt werden soll.
+<A NAME="115"></A>   */</FONT>
+<A NAME="116"></A>
+<A NAME="117"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setPictureAtPos(<FONT ID="Int">int</FONT> iposition, <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> myip) {
+<A NAME="118"></A>    images.setElementAt(myip, iposition);
+<A NAME="119"></A>  } 
+<A NAME="120"></A>
+<A NAME="121"></A>
+<A NAME="122"></A>  <FONT ID="FormalComment">/**
+<A NAME="123"></A>   * Die Methode liefert ein ImagePlus-Objekt aus dem Stapel zurueck. Die Position
+<A NAME="124"></A>   * des zurueckzuliefernden Bildes muss angegeben werden. Ist das Bild nicht
+<A NAME="125"></A>   * vorhanden, wird null zurueckgeliefert.
+<A NAME="126"></A>   * @param iposition Die Position des gewuenschten Bildes im Stapel.
+<A NAME="127"></A>   * @return Das angeforderte ImagePlus-Objekt.
+<A NAME="128"></A>   */</FONT>
+<A NAME="129"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> getPictureAtPos(<FONT ID="Int">int</FONT> iposition) {
+<A NAME="130"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="131"></A>
+<A NAME="132"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="133"></A>      ip = ((<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>) images.elementAt(iposition));
+<A NAME="134"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="135"></A>    <FONT ID="Return">return</FONT> ip;
+<A NAME="136"></A>  }   <FONT ID="SingleLineComment">// Methode getPictureAtPos
+<A NAME="137"></A></FONT> 
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Die Methode loescht den gesamten Bildstapel. Danach stehen keine
+<A NAME="141"></A>   * ImagePlus-Objekte mehr zur Verfuegung.
+<A NAME="142"></A>   */</FONT>
+<A NAME="143"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> clearImageStack() {
+<A NAME="144"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; <FONT ID="IntegerLiteral">256</FONT>; i++) {
+<A NAME="145"></A>      images.setElementAt(<FONT ID="Null">null</FONT>, i);
+<A NAME="146"></A>    } 
+<A NAME="147"></A>  }   <FONT ID="SingleLineComment">// Methode clearImageStack
+<A NAME="148"></A></FONT> 
+<A NAME="149"></A>
+<A NAME="150"></A>  <FONT ID="FormalComment">/**
+<A NAME="151"></A>   * Die Methode loescht das Bild an der angegebenen Position des Bildstapels.
+<A NAME="152"></A>   * @param i Die Position des Bildes, das geloescht werden soll.
+<A NAME="153"></A>   */</FONT>
+<A NAME="154"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> deletePictureAtPos(<FONT ID="Int">int</FONT> i) {
+<A NAME="155"></A>    images.setElementAt(<FONT ID="Null">null</FONT>, i);
+<A NAME="156"></A>  }   <FONT ID="SingleLineComment">// Methode deletePictureAtPos
+<A NAME="157"></A></FONT> 
+<A NAME="158"></A>
+<A NAME="159"></A>}
+<A NAME="160"></A>
+<A NAME="161"></A>
+<A NAME="162"></A>
+<A NAME="163"></A>
+<A NAME="164"></A>
+<A NAME="165"></A>
+<A NAME="166"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="167"></A>
+<A NAME="168"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImageStack</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.dv.ViewerReferenceSeries (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ViewerReferenceSeries</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999 Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.dv.index.html" target="packageFrame">virtual.dv</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> rad.dicom.dcm.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> rad.dicom.ima.*;
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * Die Klasse implementiert eine Routine zum Laden einer Serie von
+<A NAME="29"></A> * DICOM-Bildern. Damit waehrend des Ladens der DICOM-Viewer nicht blockiert wird,
+<A NAME="30"></A> * ist die Klasse als Thread implementiert. Waehrend des Ladens der Bilder wird
+<A NAME="31"></A> * die Fortschrittsanzeige im DICOM-Viewer aktualisiert.
+<A NAME="32"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="33"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="34"></A> * @author   Thomas Hacklaender
+<A NAME="35"></A> * @version  2000.07.10
+<A NAME="36"></A> */</FONT>
+<A NAME="37"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ViewerReferenceSeries {
+<A NAME="38"></A>
+<A NAME="39"></A>
+<A NAME="40"></A>  <FONT ID="FormalComment">/**
+<A NAME="41"></A>   * Bildpixel. Hier werden im Konstruktor die fuer alle Bilder der Serie
+<A NAME="42"></A>   * gleichen Elemente gespeichert
+<A NAME="43"></A>   */</FONT>
+<A NAME="44"></A>  <FONT ID="Private">private</FONT> <FONT ID="Short">short</FONT>[] pixel16Background;
+<A NAME="45"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     nRows;
+<A NAME="46"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     nColumns;
+<A NAME="47"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     bits;
+<A NAME="48"></A>
+<A NAME="49"></A>
+<A NAME="50"></A>  <FONT ID="FormalComment">/**
+<A NAME="51"></A>   * Standardkonstruktor. Erzeugt den Hintergrund, dh. den fixen Anteil des
+<A NAME="52"></A>   * Referenzbildes.
+<A NAME="53"></A>   * @param r     Bildgroesse in y-Richtung
+<A NAME="54"></A>   * @param c     Bildgroesse in x-Richtung
+<A NAME="55"></A>   * @param bits  Anzahl der signifikanten Bits/Pixel
+<A NAME="56"></A>   */</FONT>
+<A NAME="57"></A>  <FONT ID="Public">public</FONT> ViewerReferenceSeries(<FONT ID="Int">int</FONT> nRow, <FONT ID="Int">int</FONT> nCol, <FONT ID="Int">int</FONT> b) {
+<A NAME="58"></A>
+<A NAME="59"></A>    nRows = nRow;
+<A NAME="60"></A>    nColumns = nCol;
+<A NAME="61"></A>    bits = b;
+<A NAME="62"></A>    pixel16Background = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[nRows * nColumns];
+<A NAME="63"></A>
+<A NAME="64"></A>    <FONT ID="SingleLineComment">// Rahmen
+<A NAME="65"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">1500</FONT>, pixel16Background);
+<A NAME="66"></A>    fillRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">254</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">1500</FONT>, pixel16Background);
+<A NAME="67"></A>    fillRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">1500</FONT>, pixel16Background);
+<A NAME="68"></A>    fillRect(<FONT ID="IntegerLiteral">254</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">1500</FONT>, pixel16Background);
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="SingleLineComment">// Graukeile
+<A NAME="71"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> r = <FONT ID="IntegerLiteral">0</FONT>; r &lt; nRows; r++) {
+<A NAME="72"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> c = <FONT ID="IntegerLiteral">230</FONT>; c &lt; <FONT ID="IntegerLiteral">240</FONT>; c++) {
+<A NAME="73"></A>        pixel16Background[r * nColumns + c] = (<FONT ID="Short">short</FONT>) (<FONT ID="IntegerLiteral">255</FONT> - r);
+<A NAME="74"></A>      } 
+<A NAME="75"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> c = <FONT ID="IntegerLiteral">242</FONT>; c &lt; <FONT ID="IntegerLiteral">252</FONT>; c++) {
+<A NAME="76"></A>        pixel16Background[r * nColumns + c] = (<FONT ID="Short">short</FONT>) (<FONT ID="IntegerLiteral">4095</FONT> - r * <FONT ID="IntegerLiteral">16</FONT>);
+<A NAME="77"></A>      } 
+<A NAME="78"></A>    } 
+<A NAME="79"></A>
+<A NAME="80"></A>    <FONT ID="SingleLineComment">// Schnittphantom
+<A NAME="81"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">104</FONT>, <FONT ID="IntegerLiteral">104</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16Background);
+<A NAME="82"></A>
+<A NAME="83"></A>    <FONT ID="SingleLineComment">// MIP Phantom
+<A NAME="84"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">104</FONT>, <FONT ID="IntegerLiteral">104</FONT>, <FONT ID="IntegerLiteral">1250</FONT>, pixel16Background);
+<A NAME="85"></A>
+<A NAME="86"></A>    <FONT ID="SingleLineComment">// Aufloesungsphantom
+<A NAME="87"></A></FONT>    createStripes(<FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16Background);
+<A NAME="88"></A>    createStripes(<FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">216</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16Background);
+<A NAME="89"></A>    createStripes(<FONT ID="IntegerLiteral">192</FONT>, <FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16Background);
+<A NAME="90"></A>    createStripes(<FONT ID="IntegerLiteral">192</FONT>, <FONT ID="IntegerLiteral">216</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16Background);
+<A NAME="91"></A>
+<A NAME="92"></A>    <FONT ID="SingleLineComment">// Quadrate zur Optimierung der Fensterung
+<A NAME="93"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">64</FONT>, <FONT ID="IntegerLiteral">132</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">1952</FONT>, pixel16Background);
+<A NAME="94"></A>    fillRect(<FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">132</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">2016</FONT>, pixel16Background);
+<A NAME="95"></A>    fillRect(<FONT ID="IntegerLiteral">64</FONT>, <FONT ID="IntegerLiteral">188</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">2080</FONT>, pixel16Background);
+<A NAME="96"></A>    fillRect(<FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">188</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">48</FONT>, <FONT ID="IntegerLiteral">2144</FONT>, pixel16Background);
+<A NAME="97"></A>
+<A NAME="98"></A>    <FONT ID="SingleLineComment">// ...dafuer die Innenquadrate
+<A NAME="99"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">76</FONT>, <FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">1968</FONT>, pixel16Background);
+<A NAME="100"></A>    fillRect(<FONT ID="IntegerLiteral">132</FONT>, <FONT ID="IntegerLiteral">200</FONT>, <FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">2096</FONT>, pixel16Background);
+<A NAME="101"></A>  }
+<A NAME="102"></A>
+<A NAME="103"></A>
+<A NAME="104"></A>  <FONT ID="FormalComment">/**
+<A NAME="105"></A>   * Die Methode liefert das Referenzbild zur Position zPosition.
+<A NAME="106"></A>   * @param zPosition Bildposition [mm] in z-Richtung
+<A NAME="107"></A>   * @author Thomas Hacklaender
+<A NAME="108"></A>   * @version 2000.07.10
+<A NAME="109"></A>   */</FONT>
+<A NAME="110"></A>  <FONT ID="Public">public</FONT> <FONT ID="Short">short</FONT>[] getImage(<FONT ID="Int">int</FONT> zPosition) {
+<A NAME="111"></A>
+<A NAME="112"></A>    <FONT ID="SingleLineComment">// Ein neues Pixelarray aus dem Hintergrundbild erzeugen
+<A NAME="113"></A></FONT>    <FONT ID="Short">short</FONT>[] pixel16 = (<FONT ID="Short">short</FONT>[]) pixel16Background.clone();
+<A NAME="114"></A>
+<A NAME="115"></A>    <FONT ID="SingleLineComment">// Positionsabhaengige Elemente ergaenzen
+<A NAME="116"></A></FONT>
+<A NAME="117"></A>    <FONT ID="SingleLineComment">// Schnittphantom
+<A NAME="118"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">10</FONT> + (zPosition / <FONT ID="IntegerLiteral">4</FONT>) * <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">6</FONT>, <FONT ID="IntegerLiteral">104</FONT>, <FONT ID="IntegerLiteral">0</FONT>, pixel16);
+<A NAME="119"></A>    fillRect(<FONT ID="IntegerLiteral">60</FONT>, <FONT ID="IntegerLiteral">104</FONT> - (zPosition / <FONT ID="IntegerLiteral">4</FONT>) * <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">52</FONT>, <FONT ID="IntegerLiteral">6</FONT>, <FONT ID="IntegerLiteral">0</FONT>, pixel16);
+<A NAME="120"></A>
+<A NAME="121"></A>    <FONT ID="SingleLineComment">// MIP Phantom
+<A NAME="122"></A></FONT>    fillRect(<FONT ID="IntegerLiteral">148</FONT> + (zPosition / <FONT ID="IntegerLiteral">4</FONT>) * <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">36</FONT> + (zPosition / <FONT ID="IntegerLiteral">4</FONT>) * <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16);
+<A NAME="123"></A>    fillRect(<FONT ID="IntegerLiteral">196</FONT> - (zPosition / <FONT ID="IntegerLiteral">4</FONT>) * <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">36</FONT> + (zPosition / <FONT ID="IntegerLiteral">4</FONT>) * <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">4095</FONT>, pixel16);
+<A NAME="124"></A>
+<A NAME="125"></A>    <FONT ID="Return">return</FONT> pixel16;
+<A NAME="126"></A>  } 
+<A NAME="127"></A>
+<A NAME="128"></A>
+<A NAME="129"></A>  <FONT ID="FormalComment">/**
+<A NAME="130"></A>   * Die Methode liefert das DcmDataObject zum Referenzbild an Position zPosition.
+<A NAME="131"></A>   * @param zPosition Bildposition [mm] in z-Richtung
+<A NAME="132"></A>   * @param imaNumber Bildnummer
+<A NAME="133"></A>   * @author Thomas Hacklaender
+<A NAME="134"></A>   * @version 2000.07.10
+<A NAME="135"></A>   */</FONT>
+<A NAME="136"></A>  <FONT ID="Public">public</FONT> DcmDataObject getDDO(<FONT ID="Int">int</FONT> zPosition, <FONT ID="Int">int</FONT> imaNumber) {
+<A NAME="137"></A>    SecondaryCaptureIOD scIOD = <FONT ID="New">new</FONT> SecondaryCaptureIOD();
+<A NAME="138"></A>
+<A NAME="139"></A>    scIOD.imageNumber = String.valueOf(imaNumber);
+<A NAME="140"></A>    scIOD.set16UBitGrayImage(getImage(zPosition), nRows, nColumns, bits);
+<A NAME="141"></A>    scIOD.setVOILUTModule((<FONT ID="Int">int</FONT>) Math.pow(<FONT ID="IntegerLiteral">2</FONT>, bits - <FONT ID="IntegerLiteral">1</FONT>), (<FONT ID="Int">int</FONT>) Math.pow(<FONT ID="IntegerLiteral">2</FONT>, bits));
+<A NAME="142"></A>    DcmDataObject ddo = scIOD.getDDO(DcmDataObject.LITTLE_ENDIAN, DcmDataObject.IMPLICITE_VR, DcmDataObject.PLAIN_STORAGE);
+<A NAME="143"></A>
+<A NAME="144"></A>    <FONT ID="SingleLineComment">// Image Plane Module PS 3.3-C.7.6.2:
+<A NAME="145"></A></FONT>    String        zPositionStr = Double.toString(((<FONT ID="Double">double</FONT>) zPosition));
+<A NAME="146"></A>
+<A NAME="147"></A>    ddo.setString(DcmDDE.DD_PixelSpacing, <FONT ID="StringLiteral">"2.0\\2.0"</FONT>);
+<A NAME="148"></A>    ddo.setString(DcmDDE.DD_ImageOrientationPatient, <FONT ID="StringLiteral">"1\\0\\0\\0\\1\\0"</FONT>);
+<A NAME="149"></A>    ddo.setString(DcmDDE.DD_ImagePositionPatient, Double.toString(<FONT ID="FloatPointLiteral">2.0</FONT> * nColumns) + <FONT ID="StringLiteral">"\\"</FONT> + Double.toString(<FONT ID="FloatPointLiteral">2.0</FONT> * nRows) + <FONT ID="StringLiteral">"\\"</FONT> + zPositionStr);
+<A NAME="150"></A>    ddo.setString(DcmDDE.DD_SliceThickness, <FONT ID="StringLiteral">"4.0"</FONT>);
+<A NAME="151"></A>    ddo.setString(DcmDDE.DD_SliceLocation, zPositionStr);
+<A NAME="152"></A>    <FONT ID="Return">return</FONT> ddo;
+<A NAME="153"></A>  } 
+<A NAME="154"></A>
+<A NAME="155"></A>
+<A NAME="156"></A>  <FONT ID="FormalComment">/**
+<A NAME="157"></A>   * Die Methode erzeugt ein Streifenmuster von 32*32 Pixel Groesse.
+<A NAME="158"></A>   * @param x     x-Koordinate der linken oberen Ecke
+<A NAME="159"></A>   * @param y     y-Koordinate der linken oberen Ecke
+<A NAME="160"></A>   * @param val   Pixelwert
+<A NAME="161"></A>   * @param pix   Pixelarray
+<A NAME="162"></A>   * @param nColumns  Bildgroesse in x-Richtung
+<A NAME="163"></A>   * @author Thomas Hacklaender
+<A NAME="164"></A>   * @version 2000.7.9
+<A NAME="165"></A>   */</FONT>
+<A NAME="166"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createStripes(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val, <FONT ID="Short">short</FONT>[] pix) {
+<A NAME="167"></A>    <FONT ID="Short">short</FONT> sv;
+<A NAME="168"></A>
+<A NAME="169"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = x; ix &lt; x + <FONT ID="IntegerLiteral">16</FONT>; ix++) {
+<A NAME="170"></A>      <FONT ID="If">if</FONT> ((ix % <FONT ID="IntegerLiteral">2</FONT>) &gt;= <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="171"></A>        sv = (<FONT ID="Short">short</FONT>) val;
+<A NAME="172"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="173"></A>        sv = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="174"></A>      } 
+<A NAME="175"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = y; iy &lt; y + <FONT ID="IntegerLiteral">16</FONT>; iy++) {
+<A NAME="176"></A>        pix[iy * nColumns + ix] = sv;
+<A NAME="177"></A>      } 
+<A NAME="178"></A>    } 
+<A NAME="179"></A>
+<A NAME="180"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = y; iy &lt; y + <FONT ID="IntegerLiteral">16</FONT>; iy++) {
+<A NAME="181"></A>      <FONT ID="If">if</FONT> ((iy % <FONT ID="IntegerLiteral">2</FONT>) &gt;= <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="182"></A>        sv = (<FONT ID="Short">short</FONT>) val;
+<A NAME="183"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="184"></A>        sv = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="185"></A>      } 
+<A NAME="186"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = x + <FONT ID="IntegerLiteral">16</FONT>; ix &lt; x + <FONT ID="IntegerLiteral">32</FONT>; ix++) {
+<A NAME="187"></A>        pix[iy * nColumns + ix] = sv;
+<A NAME="188"></A>      } 
+<A NAME="189"></A>    } 
+<A NAME="190"></A>
+<A NAME="191"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = y + <FONT ID="IntegerLiteral">16</FONT>; iy &lt; y + <FONT ID="IntegerLiteral">32</FONT>; iy += <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="192"></A>      <FONT ID="If">if</FONT> ((iy % <FONT ID="IntegerLiteral">4</FONT>) &gt;= <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="193"></A>        sv = (<FONT ID="Short">short</FONT>) val;
+<A NAME="194"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="195"></A>        sv = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="196"></A>      } 
+<A NAME="197"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = x; ix &lt; x + <FONT ID="IntegerLiteral">16</FONT>; ix++) {
+<A NAME="198"></A>        pix[iy * nColumns + ix] = sv;
+<A NAME="199"></A>        pix[(iy + <FONT ID="IntegerLiteral">1</FONT>) * nColumns + ix] = sv;
+<A NAME="200"></A>      } 
+<A NAME="201"></A>    } 
+<A NAME="202"></A>
+<A NAME="203"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = x + <FONT ID="IntegerLiteral">16</FONT>; ix &lt; x + <FONT ID="IntegerLiteral">32</FONT>; ix += <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="204"></A>      <FONT ID="If">if</FONT> ((ix % <FONT ID="IntegerLiteral">4</FONT>) &gt;= <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="205"></A>        sv = (<FONT ID="Short">short</FONT>) val;
+<A NAME="206"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="207"></A>        sv = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="208"></A>      } 
+<A NAME="209"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = y + <FONT ID="IntegerLiteral">16</FONT>; iy &lt; y + <FONT ID="IntegerLiteral">32</FONT>; iy++) {
+<A NAME="210"></A>        pix[iy * nColumns + ix] = sv;
+<A NAME="211"></A>        pix[iy * nColumns + ix + <FONT ID="IntegerLiteral">1</FONT>] = sv;
+<A NAME="212"></A>      } 
+<A NAME="213"></A>    } 
+<A NAME="214"></A>  } 
+<A NAME="215"></A>
+<A NAME="216"></A>
+<A NAME="217"></A>  <FONT ID="FormalComment">/**
+<A NAME="218"></A>   * Zeichnet ein gefuelltes Rechteck mit einem definierten Wert.
+<A NAME="219"></A>   * @param x     x-Koordinate der linken oberen Ecke
+<A NAME="220"></A>   * @param y     y-Koordinate der linken oberen Ecke
+<A NAME="221"></A>   * @param w     Breite
+<A NAME="222"></A>   * @param h     Höhe
+<A NAME="223"></A>   * @param val   Pixelwert
+<A NAME="224"></A>   * @param pix   Pixelarray
+<A NAME="225"></A>   * @author Thomas Hacklaender
+<A NAME="226"></A>   * @version 2000.7.9
+<A NAME="227"></A>   */</FONT>
+<A NAME="228"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> fillRect(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> w, <FONT ID="Int">int</FONT> h, <FONT ID="Int">int</FONT> val, <FONT ID="Short">short</FONT>[] pix) {
+<A NAME="229"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) val;
+<A NAME="230"></A>
+<A NAME="231"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = x; ix &lt; x + w; ix++) {
+<A NAME="232"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = y; iy &lt; y + h; iy++) {
+<A NAME="233"></A>        pix[iy * nColumns + ix] = sv;
+<A NAME="234"></A>      } 
+<A NAME="235"></A>    } 
+<A NAME="236"></A>  } 
+<A NAME="237"></A>
+<A NAME="238"></A>}
+<A NAME="239"></A>
+<A NAME="240"></A>
+<A NAME="241"></A>
+<A NAME="242"></A>
+<A NAME="243"></A>
+<A NAME="244"></A>
+<A NAME="245"></A>
+<A NAME="246"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="247"></A>
+<A NAME="248"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ViewerReferenceSeries</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

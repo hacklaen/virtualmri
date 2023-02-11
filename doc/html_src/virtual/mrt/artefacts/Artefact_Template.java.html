@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.artefacts.Artefact_Template (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Artefact_Template</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences.*</A>;
+<A NAME="24"></A>
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * Die Klasse dient als Vorlage zur Erzeugung neuer Berechnungsklassen fuer
+<A NAME="28"></A> * Artefakt-Simulatoren.
+<A NAME="29"></A> * 
+<A NAME="30"></A> * @author   Christian Schalla
+<A NAME="31"></A> * @author   Andreas Truemper
+<A NAME="32"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="33"></A> */</FONT>
+<A NAME="34"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Artefact_Template <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A> {
+<A NAME="35"></A>
+<A NAME="36"></A>  <FONT ID="SingleLineComment">// Hier werden die Klassenvariablen zu den Bedienelementen der UI-Klasse
+<A NAME="37"></A></FONT>  <FONT ID="SingleLineComment">// definiert, z.B.
+<A NAME="38"></A></FONT>  <FONT ID="SingleLineComment">// private int xSpeed;
+<A NAME="39"></A></FONT>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Standardkonstruktor.
+<A NAME="43"></A>   */</FONT>
+<A NAME="44"></A>  <FONT ID="Public">public</FONT> Artefact_Template() {}   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="45"></A></FONT>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Diese Methode wird immer von der aufrufenden Pulssequenz aufgerufen. Der
+<A NAME="49"></A>   * Parameter enthalt den Namen der Methode, die die Berechnungsfunktion fuer
+<A NAME="50"></A>   * die aufrufende Pulsequenz enthaelt.
+<A NAME="51"></A>   * @param method Der Name der Berechnungsmethode, die aufgerufen werden soll.
+<A NAME="52"></A>   * @return Das manipulierte Intensitaetsbild.
+<A NAME="53"></A>   */</FONT>
+<A NAME="54"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] calculate(String method) {
+<A NAME="55"></A>    String  seqName = sequence.getClass().getName();
+<A NAME="56"></A>
+<A NAME="57"></A>    seqName = seqName.substring(seqName.lastIndexOf(<FONT ID="CharacerLiteral">'.'</FONT>) + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="58"></A>
+<A NAME="59"></A>    <FONT ID="SingleLineComment">// Hier wird eine Instanz der aufrufenden Pulssequenz erzeugt,
+<A NAME="60"></A></FONT>    <FONT ID="SingleLineComment">// ggf. muss die Liste erweitert werden
+<A NAME="61"></A></FONT>    <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"SaturationRecovery"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="62"></A>      <A HREF="../../../virtual/mrt/sequences/SaturationRecovery.java.html">SaturationRecovery</A>  srSequence = (<A HREF="../../../virtual/mrt/sequences/SaturationRecovery.java.html">SaturationRecovery</A>) sequence;
+<A NAME="63"></A>
+<A NAME="64"></A>      <FONT ID="SingleLineComment">// an dieser Stelle koennen wichtige Sequenzparameter ausgelesen werden,
+<A NAME="65"></A></FONT>      <FONT ID="SingleLineComment">// z.B.
+<A NAME="66"></A></FONT>      <FONT ID="SingleLineComment">// trTime = srSequence.getTRTime();
+<A NAME="67"></A></FONT>      <FONT ID="SingleLineComment">// Später steht die Sequenz nicht mehr zur Verfuegung
+<A NAME="68"></A></FONT>    } 
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="SingleLineComment">// Initialisieren des zurueckzuliefernden Intensitaetsbildes
+<A NAME="71"></A></FONT>    <FONT ID="Int">int</FONT>[][] result = <FONT ID="Null">null</FONT>;
+<A NAME="72"></A>
+<A NAME="73"></A>    <FONT ID="SingleLineComment">// Ueberpruefen, welche Methode aufgerufen werden soll,
+<A NAME="74"></A></FONT>    <FONT ID="SingleLineComment">// ggf. erweitern
+<A NAME="75"></A></FONT>    <FONT ID="If">if</FONT> (method.compareTo(<FONT ID="StringLiteral">"Artefact_Std"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="76"></A>      result = artefact_Std();
+<A NAME="77"></A>    } 
+<A NAME="78"></A>
+<A NAME="79"></A>    <FONT ID="SingleLineComment">// Zurueckliefern des manipulierten Intensitaetsbildes
+<A NAME="80"></A></FONT>    <FONT ID="Return">return</FONT> result;
+<A NAME="81"></A>  }   <FONT ID="SingleLineComment">// Methode calculate
+<A NAME="82"></A></FONT> 
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="FormalComment">/**
+<A NAME="86"></A>   * Method declaration
+<A NAME="87"></A>   * 
+<A NAME="88"></A>   * 
+<A NAME="89"></A>   * @return
+<A NAME="90"></A>   * 
+<A NAME="91"></A>   * @see
+<A NAME="92"></A>   */</FONT>
+<A NAME="93"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] artefact_Std() {
+<A NAME="94"></A>
+<A NAME="95"></A>    <FONT ID="SingleLineComment">// Initialisieren des manipulierten Ergebnisbildes
+<A NAME="96"></A></FONT>    <FONT ID="Int">int</FONT>[][] res = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="97"></A>
+<A NAME="98"></A>    <FONT ID="SingleLineComment">// An dieser Stelle folgt die Implementierung der Artefakt-Simulation.
+<A NAME="99"></A></FONT>    <FONT ID="SingleLineComment">// Man hat ueber "intensityimg" zugriff auf das Intensitaetsbild, das nach
+<A NAME="100"></A></FONT>    <FONT ID="SingleLineComment">// der Berechnung der Pulssequenz entstanden ist.
+<A NAME="101"></A></FONT>
+<A NAME="102"></A>    <FONT ID="SingleLineComment">// Zurueckliefern des manipulierten Ergebnisbildes
+<A NAME="103"></A></FONT>    <FONT ID="Return">return</FONT> res;
+<A NAME="104"></A>  }   <FONT ID="SingleLineComment">// Methode motion_Std
+<A NAME="105"></A></FONT> 
+<A NAME="106"></A>
+<A NAME="107"></A>}
+<A NAME="108"></A>
+<A NAME="109"></A>
+<A NAME="110"></A>
+<A NAME="111"></A>
+<A NAME="112"></A>
+<A NAME="113"></A>
+<A NAME="114"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="115"></A>
+<A NAME="116"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Artefact_Template</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

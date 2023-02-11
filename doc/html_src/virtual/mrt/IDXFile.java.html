@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.IDXFile (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">IDXFile</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * Diese Klasse implementiert einen Datei-Filter fuer Dateien mit der Endung .idx,
+<A NAME="29"></A> * der fuer einen Dateiauswahldialog verwendet werden kann. Der Filter unterdrueckt
+<A NAME="30"></A> * dann alle Dateien, die nicht die Dateiendung haben, die durch diesen Filter
+<A NAME="31"></A> * vorgegeben ist.&lt;br&gt;
+<A NAME="32"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="33"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="34"></A> * @author   Christian Schalla
+<A NAME="35"></A> * @author   Andreas Truemper
+<A NAME="36"></A> * @version  1.2, 2002.10.13
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> IDXFile <FONT ID="Extends">extends</FONT> javax.swing.filechooser.FileFilter {
+<A NAME="39"></A>
+<A NAME="40"></A>  <FONT ID="SingleLineComment">// th 2005.11.11, added
+<A NAME="41"></A></FONT>  ResourceBundle  frameRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_frame"</FONT>);
+<A NAME="42"></A>
+<A NAME="43"></A>
+<A NAME="44"></A>  <FONT ID="FormalComment">/**
+<A NAME="45"></A>   * Die Methode prueft fuer eine angegebene Datei, ob diese die Endung idx
+<A NAME="46"></A>   * hat. Ist das der Fall, wird True zurueckgeliefrt, sonst False.
+<A NAME="47"></A>   * @param myFile Die Datei, deren Endung ueberprueft werden soll.
+<A NAME="48"></A>   * @return True, wenn die Datei die Endung .idx hat, sonst False.
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> accept(File myFile) {
+<A NAME="51"></A>    <FONT ID="If">if</FONT> (myFile.isDirectory()) {
+<A NAME="52"></A>      <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="53"></A>    } 
+<A NAME="54"></A>    <FONT ID="Boolean">boolean</FONT> ok = <FONT ID="False">false</FONT>;
+<A NAME="55"></A>    String  suf = getSuffix(myFile);
+<A NAME="56"></A>
+<A NAME="57"></A>    <FONT ID="If">if</FONT> (suf != <FONT ID="Null">null</FONT>) {
+<A NAME="58"></A>      <FONT ID="If">if</FONT> (suf.compareTo(<FONT ID="StringLiteral">"idx"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="59"></A>        ok = <FONT ID="True">true</FONT>;
+<A NAME="60"></A>      } 
+<A NAME="61"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="62"></A>      ok = <FONT ID="True">true</FONT>;
+<A NAME="63"></A>    } 
+<A NAME="64"></A>    <FONT ID="Return">return</FONT> ok;
+<A NAME="65"></A>  }   <FONT ID="SingleLineComment">// Methode accept
+<A NAME="66"></A></FONT> 
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="FormalComment">/**
+<A NAME="69"></A>   * Die Methode liefert eine Beschreibung dieses Filters. Die Beschreibung
+<A NAME="70"></A>   * wird im Dateiauswahldialog angezeigt. Anhand dieser Beschreibung kann der
+<A NAME="71"></A>   * Benutzet den Filter identifizieren und auswaehlen.
+<A NAME="72"></A>   * @return Eine Beschreibung des Dateifilters.
+<A NAME="73"></A>   */</FONT>
+<A NAME="74"></A>  <FONT ID="Public">public</FONT> String getDescription() {
+<A NAME="75"></A>    <FONT ID="Return">return</FONT> frameRsrc.getString(<FONT ID="StringLiteral">"idxfile.description"</FONT>);
+<A NAME="76"></A>  }   <FONT ID="SingleLineComment">// Methode getDescription
+<A NAME="77"></A></FONT> 
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Die Methode liefert den Suffix eines Dateinamens, also die Zeichen, die
+<A NAME="81"></A>   * hinter dem letzten Punkt folgen.
+<A NAME="82"></A>   * @param f Die Datei, deren Suffix bestimmt werden soll.
+<A NAME="83"></A>   * @return Suffix der Datei.
+<A NAME="84"></A>   */</FONT>
+<A NAME="85"></A>  <FONT ID="Private">private</FONT> String getSuffix(File f) {
+<A NAME="86"></A>    String  s = f.getPath();
+<A NAME="87"></A>    String  suffix = <FONT ID="Null">null</FONT>;
+<A NAME="88"></A>    <FONT ID="Int">int</FONT>     i = s.lastIndexOf(<FONT ID="CharacerLiteral">'.'</FONT>);
+<A NAME="89"></A>
+<A NAME="90"></A>    <FONT ID="If">if</FONT> (i &gt; <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; i &lt; s.length() - <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="91"></A>      suffix = s.substring(i + <FONT ID="IntegerLiteral">1</FONT>).toLowerCase();
+<A NAME="92"></A>    } 
+<A NAME="93"></A>    <FONT ID="Return">return</FONT> suffix;
+<A NAME="94"></A>  }   <FONT ID="SingleLineComment">// Methode getSuffix
+<A NAME="95"></A></FONT> 
+<A NAME="96"></A>}
+<A NAME="97"></A>
+<A NAME="98"></A>
+<A NAME="99"></A>
+<A NAME="100"></A>
+<A NAME="101"></A>
+<A NAME="102"></A>
+<A NAME="103"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="104"></A>
+<A NAME="105"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">IDXFile</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

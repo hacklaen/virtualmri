@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.sequences.GESpoiledUI (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">GESpoiledUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Diese Klasse erzeugt die Bedienelemente fuer eine gespoilte Gradientenechosequenz
+<A NAME="32"></A> * und stellt diese dar.
+<A NAME="33"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="34"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="35"></A> * Plausible Werte fuer Slider eingetragen. &lt;br&gt;
+<A NAME="36"></A> * Thomas Hacklaender 2002.10.14:
+<A NAME="37"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="38"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="39"></A> * @author   Christian Schalla
+<A NAME="40"></A> * @author   Andreas Truemper
+<A NAME="41"></A> * @version  1.2, 2002.10.14
+<A NAME="42"></A> */</FONT>
+<A NAME="43"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> GESpoiledUI <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/sequences/PulsesequenceUI.java.html">PulsesequenceUI</A> {
+<A NAME="44"></A>
+<A NAME="45"></A>
+<A NAME="46"></A>  <FONT ID="FormalComment">/**
+<A NAME="47"></A>   * Schieberegler fuer die TR-Zeit.
+<A NAME="48"></A>   */</FONT>
+<A NAME="49"></A>  <FONT ID="Private">private</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A> ptrPanel;
+<A NAME="50"></A>
+<A NAME="51"></A>
+<A NAME="52"></A>  <FONT ID="FormalComment">/**
+<A NAME="53"></A>   * Schieberegler fuer die TE-Zeit.
+<A NAME="54"></A>   */</FONT>
+<A NAME="55"></A>  <FONT ID="Private">private</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A> ptePanel;
+<A NAME="56"></A>
+<A NAME="57"></A>
+<A NAME="58"></A>  <FONT ID="FormalComment">/**
+<A NAME="59"></A>   * Schieberegler fuer den Flipwinkel.
+<A NAME="60"></A>   */</FONT>
+<A NAME="61"></A>  <FONT ID="Private">private</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A> pAngelPanel;
+<A NAME="62"></A>
+<A NAME="63"></A>
+<A NAME="64"></A>  <FONT ID="FormalComment">/**
+<A NAME="65"></A>   * Referenz auf die Berechnungsklasse der GESpoiled-Sequenz
+<A NAME="66"></A>   */</FONT>
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="SingleLineComment">// private GESpoiled sequence;
+<A NAME="69"></A></FONT>
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="FormalComment">/**
+<A NAME="72"></A>   * Voreingestellte TR-Zeit von 100 ms.
+<A NAME="73"></A>   */</FONT>
+<A NAME="74"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         trTime = <FONT ID="IntegerLiteral">100</FONT>;
+<A NAME="75"></A>
+<A NAME="76"></A>
+<A NAME="77"></A>  <FONT ID="FormalComment">/**
+<A NAME="78"></A>   * Voreingestellte TE-Zeit von 10 ms.
+<A NAME="79"></A>   */</FONT>
+<A NAME="80"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         teTime = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="81"></A>
+<A NAME="82"></A>
+<A NAME="83"></A>  <FONT ID="FormalComment">/**
+<A NAME="84"></A>   * Voreingestellter Flipwinkel von 40 Grad
+<A NAME="85"></A>   */</FONT>
+<A NAME="86"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         angel = <FONT ID="IntegerLiteral">40</FONT>;
+<A NAME="87"></A>
+<A NAME="88"></A>
+<A NAME="89"></A>  <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="90"></A></FONT>
+<A NAME="91"></A>
+<A NAME="92"></A>  <FONT ID="FormalComment">/**
+<A NAME="93"></A>   * Constructor declaration
+<A NAME="94"></A>   * 
+<A NAME="95"></A>   * 
+<A NAME="96"></A>   */</FONT>
+<A NAME="97"></A>  <FONT ID="Public">public</FONT> GESpoiledUI() {}   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="98"></A></FONT>
+<A NAME="99"></A>
+<A NAME="100"></A>  <FONT ID="FormalComment">/**
+<A NAME="101"></A>   * Diese Methode fuegt die Sequenzspezifischen Steuerelemente in das Panel
+<A NAME="102"></A>   * ein. Zunaechst wird fillPanel der Oberklasse aufzurufen, um Start- und
+<A NAME="103"></A>   * Abbrechenknopf einzufuegen, die in jeder Sequenz enthalten sind.
+<A NAME="104"></A>   */</FONT>
+<A NAME="105"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="106"></A>
+<A NAME="107"></A>    <FONT ID="MultiLineComment">/* Schieberegler fuer die TR-Zeit einrichten */</FONT>
+<A NAME="108"></A>    ptrPanel = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.tr.title"</FONT>), <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">6005</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.tr.unit"</FONT>));
+<A NAME="109"></A>    ptrPanel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="110"></A>    ptrPanel.setToolTip(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.tr.tooltip"</FONT>));
+<A NAME="111"></A>    ptrPanel.setTextRange(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">6005</FONT>);
+<A NAME="112"></A>    ptrPanel.setTickSpacing(<FONT ID="IntegerLiteral">2000</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="113"></A>    ptrPanel.fillPanel();
+<A NAME="114"></A>    ptrPanel.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="115"></A>
+<A NAME="116"></A>
+<A NAME="117"></A>      <FONT ID="FormalComment">/**
+<A NAME="118"></A>       * Method declaration
+<A NAME="119"></A>       * 
+<A NAME="120"></A>       * 
+<A NAME="121"></A>       * @param e
+<A NAME="122"></A>       * 
+<A NAME="123"></A>       * @see
+<A NAME="124"></A>       */</FONT>
+<A NAME="125"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="126"></A>        updateTotalTime();
+<A NAME="127"></A>      } 
+<A NAME="128"></A>
+<A NAME="129"></A>    });
+<A NAME="130"></A>    myPanel.add(ptrPanel);
+<A NAME="131"></A>
+<A NAME="132"></A>    <FONT ID="MultiLineComment">/* Schieberegler fuer die TE-Zeit einrichten */</FONT>
+<A NAME="133"></A>    ptePanel = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.te.title"</FONT>), <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">1002</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.te.unit"</FONT>));
+<A NAME="134"></A>    ptePanel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">78</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="135"></A>    ptePanel.setToolTip(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.te.tooltip"</FONT>));
+<A NAME="136"></A>    ptePanel.setTextRange(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">1002</FONT>);
+<A NAME="137"></A>    ptePanel.setTickSpacing(<FONT ID="IntegerLiteral">200</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="138"></A>    ptePanel.fillPanel();
+<A NAME="139"></A>    myPanel.add(ptePanel);
+<A NAME="140"></A>
+<A NAME="141"></A>    <FONT ID="MultiLineComment">/* Schieberegler fuer den Flipwinkel einrichten */</FONT>
+<A NAME="142"></A>    pAngelPanel = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.flip.title"</FONT>), <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">181</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.flip.unit"</FONT>));
+<A NAME="143"></A>    pAngelPanel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">151</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="144"></A>    pAngelPanel.setToolTip(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.flip.tooltip"</FONT>));
+<A NAME="145"></A>    pAngelPanel.setTextRange(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">181</FONT>);
+<A NAME="146"></A>    pAngelPanel.setTickSpacing(<FONT ID="IntegerLiteral">30</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="147"></A>    pAngelPanel.fillPanel();
+<A NAME="148"></A>    myPanel.add(pAngelPanel);
+<A NAME="149"></A>
+<A NAME="150"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="151"></A></FONT>    getValues();
+<A NAME="152"></A>    updateTotalTime();
+<A NAME="153"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="154"></A></FONT> 
+<A NAME="155"></A>
+<A NAME="156"></A>  <FONT ID="FormalComment">/**
+<A NAME="157"></A>   * Die Methode liest die aktuellen Sequenzparameterwerte aus den
+<A NAME="158"></A>   * Bedienelementen aus und speichert sie in den entsprechenden Klassenvariablen.
+<A NAME="159"></A>   */</FONT>
+<A NAME="160"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValues() {
+<A NAME="161"></A>    trTime = ptrPanel.getValue();
+<A NAME="162"></A>    teTime = ptePanel.getValue();
+<A NAME="163"></A>    angel = pAngelPanel.getValue();
+<A NAME="164"></A>  }   <FONT ID="SingleLineComment">// Methode setValues
+<A NAME="165"></A></FONT> 
+<A NAME="166"></A>
+<A NAME="167"></A>  <FONT ID="FormalComment">/**
+<A NAME="168"></A>   * Die Methode setzt die  Bedienelemente der Sequenzparameter auf die in
+<A NAME="169"></A>   * den entsprecheden Klassenvariablen gespeicherten Werte.
+<A NAME="170"></A>   */</FONT>
+<A NAME="171"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getValues() {
+<A NAME="172"></A>    ptrPanel.setValue(trTime);
+<A NAME="173"></A>    ptePanel.setValue(teTime);
+<A NAME="174"></A>    pAngelPanel.setValue(angel);
+<A NAME="175"></A>  }   <FONT ID="SingleLineComment">// Methode getValues
+<A NAME="176"></A></FONT> 
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Die Methode berechnet aus den aktuell eingestellten Sequenzparameterwerten
+<A NAME="180"></A>   * die theoretische Gesamtdauer der Berechnung des Bildes. Diese Zeit wird im
+<A NAME="181"></A>   * Kontrollbereich des Hauptfensters angezeigt.
+<A NAME="182"></A>   */</FONT>
+<A NAME="183"></A>  <FONT ID="Void">void</FONT> updateTotalTime() {
+<A NAME="184"></A>    <FONT ID="Long">long</FONT>  totaltime;
+<A NAME="185"></A>
+<A NAME="186"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="187"></A>      totaltime = <FONT ID="IntegerLiteral">256</FONT> * ptrPanel.getValue() * pRect.getValue() / <FONT ID="IntegerLiteral">8</FONT>;
+<A NAME="188"></A>
+<A NAME="189"></A>      totaltime *= pNEX.getValue();
+<A NAME="190"></A>
+<A NAME="191"></A>      <FONT ID="If">if</FONT> (tbPhOS.isSelected()) {
+<A NAME="192"></A>        <FONT ID="If">if</FONT> (pNEX.getValue() == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="193"></A>
+<A NAME="194"></A>          <FONT ID="SingleLineComment">// Phasen-OS mit einer Messung:
+<A NAME="195"></A></FONT>          <FONT ID="SingleLineComment">// -&gt; Messzeit verdoppelt sich,
+<A NAME="196"></A></FONT>          <FONT ID="SingleLineComment">// S/N Verhaeltnis verbessert sich um 1,41
+<A NAME="197"></A></FONT>          totaltime *= <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="198"></A>        } 
+<A NAME="199"></A>      } 
+<A NAME="200"></A>
+<A NAME="201"></A>      displayTotalTime(totaltime);
+<A NAME="202"></A>
+<A NAME="203"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="204"></A>  } 
+<A NAME="205"></A>
+<A NAME="206"></A>
+<A NAME="207"></A>  <FONT ID="FormalComment">/**
+<A NAME="208"></A>   * Die Methode wird aufgerufen, wenn der Startknopf gedrueckt wurde.
+<A NAME="209"></A>   * Es wird eine neue Instanz der Berechnungsklasse erzeugt. Dieser werden die
+<A NAME="210"></A>   * aktuellen Sequenzparameter mitgeteilt. Dann wird die Berechnung des
+<A NAME="211"></A>   * Intensitaetsbildes angestossen.
+<A NAME="212"></A>   * @param e Das Ereignis, das beim Betaetigen des startknopfes ausgeloest wird.
+<A NAME="213"></A>   */</FONT>
+<A NAME="214"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> pbStart_actionPerformed(ActionEvent e) {
+<A NAME="215"></A>    <FONT ID="If">if</FONT> (ptePanel.getValue() &lt; ptrPanel.getValue()) {
+<A NAME="216"></A>      <FONT ID="Super">super</FONT>.pbStart_actionPerformed(e);
+<A NAME="217"></A>
+<A NAME="218"></A>      <FONT ID="SingleLineComment">// Erzeugen eines neuen Berechnugsobjektes
+<A NAME="219"></A></FONT>      sequence = <FONT ID="New">new</FONT> <A HREF="../../../virtual/mrt/sequences/GESpoiled.java.html">GESpoiled</A>();
+<A NAME="220"></A>      sequence.setUI(<FONT ID="This">this</FONT>);
+<A NAME="221"></A>
+<A NAME="222"></A>      <A HREF="../../../virtual/mrt/sequences/GESpoiled.java.html">GESpoiled</A> flsequence = (<A HREF="../../../virtual/mrt/sequences/GESpoiled.java.html">GESpoiled</A>) sequence;
+<A NAME="223"></A>
+<A NAME="224"></A>      <FONT ID="SingleLineComment">// Uebergeben der Seuqenzparameter an das Berechnungsobjekt
+<A NAME="225"></A></FONT>      flsequence.setTETime(ptePanel.getValue());
+<A NAME="226"></A>      flsequence.setTRTime(ptrPanel.getValue());
+<A NAME="227"></A>      flsequence.setAngel(pAngelPanel.getValue());
+<A NAME="228"></A>
+<A NAME="229"></A>      <FONT ID="SingleLineComment">// Berechnung des Intensitaetsbildes anstossen
+<A NAME="230"></A></FONT>      mainFrame.createIntensityImage(sequence);
+<A NAME="231"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="232"></A>      ErrorMessage.showMessage(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"gespoiled.exception.tetr"</FONT>));
+<A NAME="233"></A>    } 
+<A NAME="234"></A>  }   <FONT ID="SingleLineComment">// Methode pbStart_actionPerformed(ActionEvent e)
+<A NAME="235"></A></FONT> 
+<A NAME="236"></A>
+<A NAME="237"></A>  <FONT ID="FormalComment">/**
+<A NAME="238"></A>   * Die Methode wird aufgerufen, wenn der Stopknopf gedrueckt wurde. In diesem
+<A NAME="239"></A>   * Fall wird der Thread zur Berechnung des Bildes gestoppt und der Status des
+<A NAME="240"></A>   * Start- und Stopknopfes zurueckgesetzt.
+<A NAME="241"></A>   * @param e Das Ereignis, das beim Betaetigen des Stoppknopfes ausgeloest wird.
+<A NAME="242"></A>   */</FONT>
+<A NAME="243"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> pbStop_actionPerformed(ActionEvent e) {
+<A NAME="244"></A>    <FONT ID="Super">super</FONT>.pbStop_actionPerformed(e);
+<A NAME="245"></A>
+<A NAME="246"></A>    <FONT ID="SingleLineComment">// Stoppen des Berechnungsthreads
+<A NAME="247"></A></FONT>    sequence.stop();
+<A NAME="248"></A>  }   <FONT ID="SingleLineComment">// Methode pbStop_actionPerformed(ActionEvent e)
+<A NAME="249"></A></FONT> 
+<A NAME="250"></A>}
+<A NAME="251"></A>
+<A NAME="252"></A>
+<A NAME="253"></A>
+<A NAME="254"></A>
+<A NAME="255"></A>
+<A NAME="256"></A>
+<A NAME="257"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="258"></A>
+<A NAME="259"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">GESpoiledUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

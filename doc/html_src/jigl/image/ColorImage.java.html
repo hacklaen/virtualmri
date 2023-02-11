@@ -1,0 +1,1484 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.ColorImage (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ColorImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="19"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="23"></A>
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="FormalComment">/**
+<A NAME="26"></A> * A color image is a set of three gray image planes.
+<A NAME="27"></A> */</FONT>
+<A NAME="28"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ColorImage <FONT ID="Implements">implements</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> {
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A>  <FONT ID="FormalComment">/**
+<A NAME="32"></A>   * Set of 3 GrayImages
+<A NAME="33"></A>   */</FONT>
+<A NAME="34"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>[]   plane = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="35"></A>
+<A NAME="36"></A>
+<A NAME="37"></A>  <FONT ID="FormalComment">/**
+<A NAME="38"></A>   * Cartesian width
+<A NAME="39"></A>   */</FONT>
+<A NAME="40"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>           X;
+<A NAME="41"></A>
+<A NAME="42"></A>
+<A NAME="43"></A>  <FONT ID="FormalComment">/**
+<A NAME="44"></A>   * Cartesian height
+<A NAME="45"></A>   */</FONT>
+<A NAME="46"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>           Y;
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * RGB Color Model
+<A NAME="51"></A>   */</FONT>
+<A NAME="52"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> RGB = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>  <FONT ID="FormalComment">/**
+<A NAME="56"></A>   * CMY Color Model
+<A NAME="57"></A>   */</FONT>
+<A NAME="58"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> CMY = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>  <FONT ID="FormalComment">/**
+<A NAME="62"></A>   * YIQ Color Model
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> YIQ = <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * HSV Color Model
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> HSV = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * HLS Color Model
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> HLS = <FONT ID="IntegerLiteral">4</FONT>;
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Current Color Model; Default is RGB
+<A NAME="81"></A>   */</FONT>
+<A NAME="82"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>           colorModel = RGB;
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="86"></A>   * constructors
+<A NAME="87"></A>   */</FONT>
+<A NAME="88"></A>
+<A NAME="89"></A>
+<A NAME="90"></A>  <FONT ID="FormalComment">/**
+<A NAME="91"></A>   * Creates an empty two dimensional ColorImage with a height and width of zero
+<A NAME="92"></A>   */</FONT>
+<A NAME="93"></A>  <FONT ID="Public">public</FONT> ColorImage() {
+<A NAME="94"></A>    X = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="95"></A>    Y = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="96"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="Null">null</FONT>;
+<A NAME="97"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="Null">null</FONT>;
+<A NAME="98"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="Null">null</FONT>;
+<A NAME="99"></A>  }
+<A NAME="100"></A>
+<A NAME="101"></A>
+<A NAME="102"></A>  <FONT ID="FormalComment">/**
+<A NAME="103"></A>   * Creates a two dimensional ColorImage with a height and width of x and y repectively
+<A NAME="104"></A>   */</FONT>
+<A NAME="105"></A>  <FONT ID="Public">public</FONT> ColorImage(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="106"></A>    X = x;
+<A NAME="107"></A>    Y = y;
+<A NAME="108"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="109"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="110"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="111"></A>  }
+<A NAME="112"></A>
+<A NAME="113"></A>
+<A NAME="114"></A>  <FONT ID="FormalComment">/**
+<A NAME="115"></A>   * Creates a two dimensional GrayImage (shallow copy) from GrayImage img
+<A NAME="116"></A>   */</FONT>
+<A NAME="117"></A>  <FONT ID="Public">public</FONT> ColorImage(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> img) {
+<A NAME="118"></A>    X = img.X();
+<A NAME="119"></A>    Y = img.Y();
+<A NAME="120"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = img.plane(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="121"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = img.plane(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="122"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = img.plane(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="123"></A>  }
+<A NAME="124"></A>
+<A NAME="125"></A>
+<A NAME="126"></A>  <FONT ID="FormalComment">/**
+<A NAME="127"></A>   * Creates a two dimensional GrayImage from the standard java.awt.Image
+<A NAME="128"></A>   */</FONT>
+<A NAME="129"></A>  <FONT ID="Public">public</FONT> ColorImage(java.awt.Image img) {
+<A NAME="130"></A>    <FONT ID="Int">int</FONT> w = img.getWidth(DummyObserver.dummy);
+<A NAME="131"></A>    <FONT ID="Int">int</FONT> h = img.getHeight(DummyObserver.dummy);
+<A NAME="132"></A>
+<A NAME="133"></A>    X = w;
+<A NAME="134"></A>    Y = h;
+<A NAME="135"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="136"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="137"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="138"></A>    InitFromImage(img, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, w, h);
+<A NAME="139"></A>  }
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>  <FONT ID="FormalComment">/**
+<A NAME="143"></A>   * Makes a deep copy of this image
+<A NAME="144"></A>   * @param none
+<A NAME="145"></A>   * @return a deep copy of ColorImage
+<A NAME="146"></A>   */</FONT>
+<A NAME="147"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy() {
+<A NAME="148"></A>    <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A>  c = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A>(X, Y);
+<A NAME="149"></A>
+<A NAME="150"></A>    c.setColorModel(colorModel);
+<A NAME="151"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="152"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="153"></A>        c.plane[<FONT ID="IntegerLiteral">0</FONT>].set(x, y, plane[<FONT ID="IntegerLiteral">0</FONT>].get(x, y));
+<A NAME="154"></A>        c.plane[<FONT ID="IntegerLiteral">1</FONT>].set(x, y, plane[<FONT ID="IntegerLiteral">1</FONT>].get(x, y));
+<A NAME="155"></A>        c.plane[<FONT ID="IntegerLiteral">2</FONT>].set(x, y, plane[<FONT ID="IntegerLiteral">2</FONT>].get(x, y));
+<A NAME="156"></A>      } 
+<A NAME="157"></A>    } 
+<A NAME="158"></A>    <FONT ID="Return">return</FONT> c;
+<A NAME="159"></A>  } 
+<A NAME="160"></A>
+<A NAME="161"></A>
+<A NAME="162"></A>  <FONT ID="FormalComment">/**
+<A NAME="163"></A>   * Returns the width (maximum X value)
+<A NAME="164"></A>   * @param none
+<A NAME="165"></A>   */</FONT>
+<A NAME="166"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> X() {
+<A NAME="167"></A>    <FONT ID="Return">return</FONT> X;
+<A NAME="168"></A>  } 
+<A NAME="169"></A>
+<A NAME="170"></A>
+<A NAME="171"></A>  <FONT ID="FormalComment">/**
+<A NAME="172"></A>   * Returns the height (maximum Y value)
+<A NAME="173"></A>   * @param none
+<A NAME="174"></A>   */</FONT>
+<A NAME="175"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> Y() {
+<A NAME="176"></A>    <FONT ID="Return">return</FONT> Y;
+<A NAME="177"></A>  } 
+<A NAME="178"></A>
+<A NAME="179"></A>
+<A NAME="180"></A>  <FONT ID="FormalComment">/**
+<A NAME="181"></A>   * Returns the color model.
+<A NAME="182"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;&lt;RGB = 0 &lt;/DT&gt;
+<A NAME="183"></A>   * &lt;DT&gt;CMY = 1 &lt;/DT&gt;
+<A NAME="184"></A>   * &lt;DT&gt;YIQ = 2 &lt;/DT&gt;
+<A NAME="185"></A>   * &lt;DT&gt;HSV = 3 &lt;/DT&gt;
+<A NAME="186"></A>   * &lt;DT&gt;HLS = 4 &lt;/DT&gt;
+<A NAME="187"></A>   * &lt;DT&gt;default = RGB&lt;/DT&gt;
+<A NAME="188"></A>   * &lt;DT&gt;&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="189"></A>   * @param none
+<A NAME="190"></A>   */</FONT>
+<A NAME="191"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> getColorModel() {
+<A NAME="192"></A>    <FONT ID="Return">return</FONT> colorModel;
+<A NAME="193"></A>  } 
+<A NAME="194"></A>
+<A NAME="195"></A>
+<A NAME="196"></A>  <FONT ID="FormalComment">/**
+<A NAME="197"></A>   * Returns the color model.
+<A NAME="198"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;&lt;RGB = 0 &lt;/DT&gt;
+<A NAME="199"></A>   * &lt;DT&gt;CMY = 1 &lt;/DT&gt;
+<A NAME="200"></A>   * &lt;DT&gt;YIQ = 2 &lt;/DT&gt;
+<A NAME="201"></A>   * &lt;DT&gt;HSV = 3 &lt;/DT&gt;
+<A NAME="202"></A>   * &lt;DT&gt;HLS = 4 &lt;/DT&gt;
+<A NAME="203"></A>   * &lt;DT&gt;default = RGB&lt;/DT&gt;
+<A NAME="204"></A>   * &lt;DT&gt;&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="205"></A>   * @param none
+<A NAME="206"></A>   */</FONT>
+<A NAME="207"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setColorModel(<FONT ID="Int">int</FONT> cm) {
+<A NAME="208"></A>    colorModel = cm;
+<A NAME="209"></A>  } 
+<A NAME="210"></A>
+<A NAME="211"></A>
+<A NAME="212"></A>  <FONT ID="FormalComment">/**
+<A NAME="213"></A>   * Returns the plane of this image&lt;P&gt;
+<A NAME="214"></A>   * If this were an RGB image, plane(0) would return the
+<A NAME="215"></A>   * red plane. &lt;P&gt;
+<A NAME="216"></A>   * @param p the plane of this image
+<A NAME="217"></A>   * @return a shallow copy
+<A NAME="218"></A>   */</FONT>
+<A NAME="219"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> plane(<FONT ID="Int">int</FONT> p) {
+<A NAME="220"></A>    <FONT ID="Return">return</FONT> plane[p];
+<A NAME="221"></A>  } 
+<A NAME="222"></A>
+<A NAME="223"></A>
+<A NAME="224"></A>  <FONT ID="FormalComment">/**
+<A NAME="225"></A>   * Set the plane to a ColorImage pl&lt;P&gt;
+<A NAME="226"></A>   * @param p the plane of this image
+<A NAME="227"></A>   * @param pl ColorImage to set the plane to
+<A NAME="228"></A>   * @return a shallow copy
+<A NAME="229"></A>   */</FONT>
+<A NAME="230"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setPlane(<FONT ID="Int">int</FONT> p, <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> pl) {
+<A NAME="231"></A>    plane[p] = pl;
+<A NAME="232"></A>  } 
+<A NAME="233"></A>
+<A NAME="234"></A>
+<A NAME="235"></A>  <FONT ID="FormalComment">/**
+<A NAME="236"></A>   * initializes plane data from a Java image.  Used by the
+<A NAME="237"></A>   * java image constructor.
+<A NAME="238"></A>   */</FONT>
+<A NAME="239"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> InitFromImage(java.awt.Image img, <FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> w, <FONT ID="Int">int</FONT> h) {
+<A NAME="240"></A>    <FONT ID="Int">int</FONT>           pixels[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[w * h];
+<A NAME="241"></A>    PixelGrabber  pg = <FONT ID="New">new</FONT> PixelGrabber(img, x, y, w, h, pixels, <FONT ID="IntegerLiteral">0</FONT>, w);
+<A NAME="242"></A>
+<A NAME="243"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="244"></A>      pg.grabPixels();
+<A NAME="245"></A>    } <FONT ID="Catch">catch</FONT> (InterruptedException e) {
+<A NAME="246"></A>      System.err.println(<FONT ID="StringLiteral">"interrupted waiting for pixels!"</FONT>);
+<A NAME="247"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="248"></A>    } 
+<A NAME="249"></A>    <FONT ID="If">if</FONT> ((pg.status() &amp; ImageObserver.ABORT) != <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="250"></A>      System.err.println(<FONT ID="StringLiteral">"image fetch aborted or errored"</FONT>);
+<A NAME="251"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="252"></A>    } 
+<A NAME="253"></A>
+<A NAME="254"></A>    <FONT ID="SingleLineComment">// convert from grabbed pixels
+<A NAME="255"></A></FONT>    <FONT ID="Int">int</FONT> red = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="256"></A>    <FONT ID="Int">int</FONT> green = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="257"></A>    <FONT ID="Int">int</FONT> blue = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="258"></A>    <FONT ID="Int">int</FONT> index = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="259"></A>
+<A NAME="260"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = <FONT ID="IntegerLiteral">0</FONT>; iy &lt; Y; iy++) {
+<A NAME="261"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = <FONT ID="IntegerLiteral">0</FONT>; ix &lt; X; ix++) {
+<A NAME="262"></A>        red = <FONT ID="IntegerLiteral">0x0FF</FONT> &amp; pixels[index] &gt;&gt; <FONT ID="IntegerLiteral">16</FONT>;
+<A NAME="263"></A>        green = <FONT ID="IntegerLiteral">0x0FF</FONT> &amp; pixels[index] &gt;&gt; <FONT ID="IntegerLiteral">8</FONT>;
+<A NAME="264"></A>        blue = <FONT ID="IntegerLiteral">0x0FF</FONT> &amp; pixels[index];
+<A NAME="265"></A>        plane[<FONT ID="IntegerLiteral">0</FONT>].set(ix, iy, (<FONT ID="Short">short</FONT>) red);
+<A NAME="266"></A>        plane[<FONT ID="IntegerLiteral">1</FONT>].set(ix, iy, (<FONT ID="Short">short</FONT>) green);
+<A NAME="267"></A>        plane[<FONT ID="IntegerLiteral">2</FONT>].set(ix, iy, (<FONT ID="Short">short</FONT>) blue);
+<A NAME="268"></A>        index++;
+<A NAME="269"></A>      } 
+<A NAME="270"></A>    } 
+<A NAME="271"></A>  } 
+<A NAME="272"></A>
+<A NAME="273"></A>
+<A NAME="274"></A>  <FONT ID="FormalComment">/**
+<A NAME="275"></A>   * Returns the pixel value at the given x, y value as a triplet
+<A NAME="276"></A>   * @param x  the X coordinant
+<A NAME="277"></A>   * @param y  the Y coordinant
+<A NAME="278"></A>   * @return three element array of integers
+<A NAME="279"></A>   */</FONT>
+<A NAME="280"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>[] get(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="281"></A>    <FONT ID="Int">int</FONT>[] color = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="282"></A>
+<A NAME="283"></A>    color[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].get(x, y);
+<A NAME="284"></A>    color[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].get(x, y);
+<A NAME="285"></A>    color[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].get(x, y);
+<A NAME="286"></A>    <FONT ID="Return">return</FONT> color;
+<A NAME="287"></A>  } 
+<A NAME="288"></A>
+<A NAME="289"></A>
+<A NAME="290"></A>  <FONT ID="FormalComment">/**
+<A NAME="291"></A>   * Sets the pixel value at x, y to a value as a triplet
+<A NAME="292"></A>   * @param x  the X coordinant
+<A NAME="293"></A>   * @param y  the Y coordinant
+<A NAME="294"></A>   * @param v  array of three integers holding the values for the set
+<A NAME="295"></A>   */</FONT>
+<A NAME="296"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] v) {
+<A NAME="297"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].set(x, y, v[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="298"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].set(x, y, v[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="299"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].set(x, y, v[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="300"></A>  } 
+<A NAME="301"></A>
+<A NAME="302"></A>
+<A NAME="303"></A>  <FONT ID="FormalComment">/**
+<A NAME="304"></A>   * Adds a triplet to a single pixel
+<A NAME="305"></A>   * @param x X-coordinant
+<A NAME="306"></A>   * @param y Y-coordinant
+<A NAME="307"></A>   * @param value triplet to add to the pixel
+<A NAME="308"></A>   */</FONT>
+<A NAME="309"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value) {
+<A NAME="310"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].add(x, y, value[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="311"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].add(x, y, value[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="312"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].add(x, y, value[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="313"></A>  } 
+<A NAME="314"></A>
+<A NAME="315"></A>
+<A NAME="316"></A>  <FONT ID="FormalComment">/**
+<A NAME="317"></A>   * Adds a triplet to a single pixel
+<A NAME="318"></A>   * @param x X-coordinant
+<A NAME="319"></A>   * @param y Y-coordinant
+<A NAME="320"></A>   * @param val0 value to add to the pixel in the first plane
+<A NAME="321"></A>   * @param val1 value to add to the pixel in the second plane
+<A NAME="322"></A>   * @param val2 value to add to the pixel in the third plane
+<A NAME="323"></A>   */</FONT>
+<A NAME="324"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="325"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].add(x, y, val0);
+<A NAME="326"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].add(x, y, val1);
+<A NAME="327"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].add(x, y, val2);
+<A NAME="328"></A>  } 
+<A NAME="329"></A>
+<A NAME="330"></A>
+<A NAME="331"></A>  <FONT ID="FormalComment">/**
+<A NAME="332"></A>   * Subtracts a triplet from a single pixel
+<A NAME="333"></A>   * @param x X-coordinant
+<A NAME="334"></A>   * @param y Y-coordinant
+<A NAME="335"></A>   * @param value triplet to subtract from the pixel
+<A NAME="336"></A>   */</FONT>
+<A NAME="337"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value) {
+<A NAME="338"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(x, y, value[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="339"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(x, y, value[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="340"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(x, y, value[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="341"></A>  } 
+<A NAME="342"></A>
+<A NAME="343"></A>
+<A NAME="344"></A>  <FONT ID="FormalComment">/**
+<A NAME="345"></A>   * Subtracts a triplet from a single pixel
+<A NAME="346"></A>   * @param x X-coordinant
+<A NAME="347"></A>   * @param y Y-coordinant
+<A NAME="348"></A>   * @param val0 value to subtract from the pixel in the first plane
+<A NAME="349"></A>   * @param val1 value to subtract from the pixel in the second plane
+<A NAME="350"></A>   * @param val2 value to subtract from the pixel in the third plane
+<A NAME="351"></A>   */</FONT>
+<A NAME="352"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="353"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(x, y, val0);
+<A NAME="354"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(x, y, val1);
+<A NAME="355"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(x, y, val2);
+<A NAME="356"></A>  } 
+<A NAME="357"></A>
+<A NAME="358"></A>
+<A NAME="359"></A>  <FONT ID="FormalComment">/**
+<A NAME="360"></A>   * Multiplies a triplet with a single pixel
+<A NAME="361"></A>   * @param x X-coordinant
+<A NAME="362"></A>   * @param y Y-coordinant
+<A NAME="363"></A>   * @param value triplet to multiply the pixel by
+<A NAME="364"></A>   */</FONT>
+<A NAME="365"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value) {
+<A NAME="366"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(x, y, value[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="367"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(x, y, value[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="368"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(x, y, value[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="369"></A>  } 
+<A NAME="370"></A>
+<A NAME="371"></A>
+<A NAME="372"></A>  <FONT ID="FormalComment">/**
+<A NAME="373"></A>   * Multiplies a triplet with a single pixel
+<A NAME="374"></A>   * @param x X-coordinant
+<A NAME="375"></A>   * @param y Y-coordinant
+<A NAME="376"></A>   * @param val0 value to multiply the pixel by in the first plane
+<A NAME="377"></A>   * @param val1 value to multiply the pixel by in the second plane
+<A NAME="378"></A>   * @param val2 value to multiply the pixel by in the third plane
+<A NAME="379"></A>   */</FONT>
+<A NAME="380"></A>
+<A NAME="381"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="382"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(x, y, val0);
+<A NAME="383"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(x, y, val1);
+<A NAME="384"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(x, y, val2);
+<A NAME="385"></A>  } 
+<A NAME="386"></A>
+<A NAME="387"></A>
+<A NAME="388"></A>  <FONT ID="FormalComment">/**
+<A NAME="389"></A>   * Divides a single pixel by a triplet
+<A NAME="390"></A>   * @param x X-coordinant
+<A NAME="391"></A>   * @param y Y-coordinant
+<A NAME="392"></A>   * @param value triplet to add to the pixel
+<A NAME="393"></A>   */</FONT>
+<A NAME="394"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value) {
+<A NAME="395"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].divide(x, y, value[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="396"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].divide(x, y, value[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="397"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].divide(x, y, value[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="398"></A>  } 
+<A NAME="399"></A>
+<A NAME="400"></A>
+<A NAME="401"></A>  <FONT ID="FormalComment">/**
+<A NAME="402"></A>   * Divides a single pixel by a triplet
+<A NAME="403"></A>   * @param x X-coordinant
+<A NAME="404"></A>   * @param val0 value to divide by the pixel in the first plane
+<A NAME="405"></A>   * @param val1 value to divide by the pixel in the second plane
+<A NAME="406"></A>   * @param val2 value to divide by the pixel in the third plane
+<A NAME="407"></A>   */</FONT>
+<A NAME="408"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="409"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].divide(x, y, val0);
+<A NAME="410"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].divide(x, y, val1);
+<A NAME="411"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].divide(x, y, val2);
+<A NAME="412"></A>  } 
+<A NAME="413"></A>
+<A NAME="414"></A>
+<A NAME="415"></A>  <FONT ID="FormalComment">/**
+<A NAME="416"></A>   * Finds the minimum value of all the planes of this image
+<A NAME="417"></A>   * @param none
+<A NAME="418"></A>   * @return an integer containing the minimum value
+<A NAME="419"></A>   */</FONT>
+<A NAME="420"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> min() {
+<A NAME="421"></A>    <FONT ID="Int">int</FONT> m1, m2, m3;
+<A NAME="422"></A>    <FONT ID="Int">int</FONT> min = Integer.MAX_VALUE;
+<A NAME="423"></A>
+<A NAME="424"></A>    m1 = plane[<FONT ID="IntegerLiteral">0</FONT>].min();
+<A NAME="425"></A>    m2 = plane[<FONT ID="IntegerLiteral">1</FONT>].min();
+<A NAME="426"></A>    m3 = plane[<FONT ID="IntegerLiteral">2</FONT>].min();
+<A NAME="427"></A>    <FONT ID="If">if</FONT> (m1 &lt; min) {
+<A NAME="428"></A>      min = m1;
+<A NAME="429"></A>    } 
+<A NAME="430"></A>    <FONT ID="If">if</FONT> (m2 &lt; min) {
+<A NAME="431"></A>      min = m2;
+<A NAME="432"></A>    } 
+<A NAME="433"></A>    <FONT ID="If">if</FONT> (m3 &lt; min) {
+<A NAME="434"></A>      min = m3;
+<A NAME="435"></A>    } 
+<A NAME="436"></A>    <FONT ID="Return">return</FONT> min;
+<A NAME="437"></A>  } 
+<A NAME="438"></A>
+<A NAME="439"></A>
+<A NAME="440"></A>  <FONT ID="FormalComment">/**
+<A NAME="441"></A>   * Finds the minimum value of a single plane of this image
+<A NAME="442"></A>   * @param p the plane
+<A NAME="443"></A>   * @return an integer containing the minimum value
+<A NAME="444"></A>   */</FONT>
+<A NAME="445"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> min(<FONT ID="Int">int</FONT> p) {
+<A NAME="446"></A>    <FONT ID="Return">return</FONT> plane[p].min();
+<A NAME="447"></A>  } 
+<A NAME="448"></A>
+<A NAME="449"></A>
+<A NAME="450"></A>  <FONT ID="FormalComment">/**
+<A NAME="451"></A>   * Finds the maximum value of all the planes of this image
+<A NAME="452"></A>   * @param none
+<A NAME="453"></A>   * @return an integer containing the maximum value
+<A NAME="454"></A>   */</FONT>
+<A NAME="455"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> max() {
+<A NAME="456"></A>    <FONT ID="Int">int</FONT> m1, m2, m3;
+<A NAME="457"></A>    <FONT ID="Int">int</FONT> max = Integer.MIN_VALUE;
+<A NAME="458"></A>
+<A NAME="459"></A>    m1 = plane[<FONT ID="IntegerLiteral">0</FONT>].max();
+<A NAME="460"></A>    m2 = plane[<FONT ID="IntegerLiteral">1</FONT>].max();
+<A NAME="461"></A>    m3 = plane[<FONT ID="IntegerLiteral">2</FONT>].max();
+<A NAME="462"></A>    <FONT ID="If">if</FONT> (m1 &gt; max) {
+<A NAME="463"></A>      max = m1;
+<A NAME="464"></A>    } 
+<A NAME="465"></A>    <FONT ID="If">if</FONT> (m2 &gt; max) {
+<A NAME="466"></A>      max = m2;
+<A NAME="467"></A>    } 
+<A NAME="468"></A>    <FONT ID="If">if</FONT> (m3 &gt; max) {
+<A NAME="469"></A>      max = m3;
+<A NAME="470"></A>    } 
+<A NAME="471"></A>    <FONT ID="Return">return</FONT> max;
+<A NAME="472"></A>  } 
+<A NAME="473"></A>
+<A NAME="474"></A>
+<A NAME="475"></A>  <FONT ID="FormalComment">/**
+<A NAME="476"></A>   * Finds the maximum value of a single plane of this image
+<A NAME="477"></A>   * @param p the plane
+<A NAME="478"></A>   * @return an integer containing the maximum value
+<A NAME="479"></A>   */</FONT>
+<A NAME="480"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> max(<FONT ID="Int">int</FONT> p) {
+<A NAME="481"></A>    <FONT ID="Return">return</FONT> plane[p].max();
+<A NAME="482"></A>  } 
+<A NAME="483"></A>
+<A NAME="484"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="485"></A>   * Image-wide scalar operations
+<A NAME="486"></A>   */</FONT>
+<A NAME="487"></A>
+<A NAME="488"></A>
+<A NAME="489"></A>  <FONT ID="FormalComment">/**
+<A NAME="490"></A>   * Adds triplet to all the pixels in this image
+<A NAME="491"></A>   * @param val0 value to add to the pixel in the first plane
+<A NAME="492"></A>   * @param val1 value to add to the pixel in the second plane
+<A NAME="493"></A>   * @param val2 value to add to the pixel in the third plane
+<A NAME="494"></A>   * @return this
+<A NAME="495"></A>   */</FONT>
+<A NAME="496"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="497"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].add(val0);
+<A NAME="498"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].add(val1);
+<A NAME="499"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].add(val2);
+<A NAME="500"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="501"></A>  } 
+<A NAME="502"></A>
+<A NAME="503"></A>
+<A NAME="504"></A>  <FONT ID="FormalComment">/**
+<A NAME="505"></A>   * Adds triplet to all the pixels in this image
+<A NAME="506"></A>   * @param v triplet to be added to the pixels
+<A NAME="507"></A>   * @return this
+<A NAME="508"></A>   */</FONT>
+<A NAME="509"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<FONT ID="Int">int</FONT>[] v) {
+<A NAME="510"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].add(v[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="511"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].add(v[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="512"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].add(v[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="513"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="514"></A>  } 
+<A NAME="515"></A>
+<A NAME="516"></A>
+<A NAME="517"></A>  <FONT ID="FormalComment">/**
+<A NAME="518"></A>   * Adds a value to all the pixels in a plane of this image
+<A NAME="519"></A>   * @param p the plane
+<A NAME="520"></A>   * @param v value to be added to the pixels
+<A NAME="521"></A>   * @return this
+<A NAME="522"></A>   */</FONT>
+<A NAME="523"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v) {
+<A NAME="524"></A>    plane[p] = plane[p].add(v);
+<A NAME="525"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="526"></A>  } 
+<A NAME="527"></A>
+<A NAME="528"></A>
+<A NAME="529"></A>  <FONT ID="FormalComment">/**
+<A NAME="530"></A>   * Subtracts a triplet from all the pixels of this image
+<A NAME="531"></A>   * @param val0 value to subtract from the pixel in the first plane
+<A NAME="532"></A>   * @param val1 value to subtract from the pixel in the second plane
+<A NAME="533"></A>   * @param val2 value to subtract from the pixel in the third plane
+<A NAME="534"></A>   * @return this
+<A NAME="535"></A>   */</FONT>
+<A NAME="536"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="537"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(val0);
+<A NAME="538"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(val1);
+<A NAME="539"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(val2);
+<A NAME="540"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="541"></A>  } 
+<A NAME="542"></A>
+<A NAME="543"></A>
+<A NAME="544"></A>  <FONT ID="FormalComment">/**
+<A NAME="545"></A>   * Subtracts a triplet from all the pixels of this image
+<A NAME="546"></A>   * @param v triplet to be subtracted from the pixels
+<A NAME="547"></A>   * @return this
+<A NAME="548"></A>   */</FONT>
+<A NAME="549"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<FONT ID="Int">int</FONT>[] v) {
+<A NAME="550"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(v[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="551"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(v[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="552"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(v[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="553"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="554"></A>  } 
+<A NAME="555"></A>
+<A NAME="556"></A>
+<A NAME="557"></A>  <FONT ID="FormalComment">/**
+<A NAME="558"></A>   * subtracts the value from all pixels in plane p
+<A NAME="559"></A>   */</FONT>
+<A NAME="560"></A>
+<A NAME="561"></A>
+<A NAME="562"></A>  <FONT ID="FormalComment">/**
+<A NAME="563"></A>   * Subtracts a value from all the pixels in a plane of this image
+<A NAME="564"></A>   * @param p the plane
+<A NAME="565"></A>   * @param v value to be added to the pixels
+<A NAME="566"></A>   * @return this
+<A NAME="567"></A>   */</FONT>
+<A NAME="568"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v) {
+<A NAME="569"></A>    plane[p] = plane[p].subtract(v);
+<A NAME="570"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="571"></A>  } 
+<A NAME="572"></A>
+<A NAME="573"></A>
+<A NAME="574"></A>
+<A NAME="575"></A>  <FONT ID="FormalComment">/**
+<A NAME="576"></A>   * Multiplies a triplet by all the pixels of this image
+<A NAME="577"></A>   * @param v triplet to be multiplied by
+<A NAME="578"></A>   * @return this
+<A NAME="579"></A>   */</FONT>
+<A NAME="580"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<FONT ID="Int">int</FONT>[] v) {
+<A NAME="581"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(v[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="582"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(v[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="583"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(v[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="584"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="585"></A>  } 
+<A NAME="586"></A>
+<A NAME="587"></A>
+<A NAME="588"></A>  <FONT ID="FormalComment">/**
+<A NAME="589"></A>   * Multiplies a triplet by all the pixels of this image
+<A NAME="590"></A>   * @param val0 value to multiply the pixel by in the first plane
+<A NAME="591"></A>   * @param val1 value to multiply the pixel by in the second plane
+<A NAME="592"></A>   * @param val2 value to multiply the pixel by in the third plane
+<A NAME="593"></A>   * @return this
+<A NAME="594"></A>   */</FONT>
+<A NAME="595"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="596"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(val0);
+<A NAME="597"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(val1);
+<A NAME="598"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(val2);
+<A NAME="599"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="600"></A>  } 
+<A NAME="601"></A>
+<A NAME="602"></A>
+<A NAME="603"></A>  <FONT ID="FormalComment">/**
+<A NAME="604"></A>   * Multiplies all the pixels in a plane of this image by a value
+<A NAME="605"></A>   * @param p the plane
+<A NAME="606"></A>   * @param v value to be added to the pixels
+<A NAME="607"></A>   * @return this
+<A NAME="608"></A>   */</FONT>
+<A NAME="609"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v) {
+<A NAME="610"></A>    plane[p] = plane[p].multiply(v);
+<A NAME="611"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="612"></A>  } 
+<A NAME="613"></A>
+<A NAME="614"></A>
+<A NAME="615"></A>  <FONT ID="FormalComment">/**
+<A NAME="616"></A>   * Divides all the pixels of this image by a triplet
+<A NAME="617"></A>   * @param v triplet to be divided by
+<A NAME="618"></A>   * @return this
+<A NAME="619"></A>   */</FONT>
+<A NAME="620"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<FONT ID="Int">int</FONT>[] v) {
+<A NAME="621"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].divide(v[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="622"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].divide(v[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="623"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].divide(v[<FONT ID="IntegerLiteral">2</FONT>]);
+<A NAME="624"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="625"></A>  } 
+<A NAME="626"></A>
+<A NAME="627"></A>
+<A NAME="628"></A>  <FONT ID="FormalComment">/**
+<A NAME="629"></A>   * Divides all the pixels of this image by a triplet
+<A NAME="630"></A>   * @param val0 value to divide by the pixel in the first plane
+<A NAME="631"></A>   * @param val1 value to divide by the pixel in the second plane
+<A NAME="632"></A>   * @param val2 value to divide by the pixel in the third plane
+<A NAME="633"></A>   * @return this
+<A NAME="634"></A>   */</FONT>
+<A NAME="635"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2) {
+<A NAME="636"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].divide(val0);
+<A NAME="637"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].divide(val1);
+<A NAME="638"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].divide(val2);
+<A NAME="639"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="640"></A>  } 
+<A NAME="641"></A>
+<A NAME="642"></A>
+<A NAME="643"></A>  <FONT ID="FormalComment">/**
+<A NAME="644"></A>   * Divides all the pixels in a plane of this image by a value
+<A NAME="645"></A>   * @param p the plane
+<A NAME="646"></A>   * @param v value to be added to the pixels
+<A NAME="647"></A>   * @return this
+<A NAME="648"></A>   */</FONT>
+<A NAME="649"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v) {
+<A NAME="650"></A>    plane[p] = plane[p].divide(v);
+<A NAME="651"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="652"></A>  } 
+<A NAME="653"></A>
+<A NAME="654"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="655"></A>   * Image-by-image arithmetic operations
+<A NAME="656"></A>   */</FONT>
+<A NAME="657"></A>
+<A NAME="658"></A>
+<A NAME="659"></A>  <FONT ID="FormalComment">/**
+<A NAME="660"></A>   * Adds all the values together
+<A NAME="661"></A>   */</FONT>
+<A NAME="662"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>[] addSum() {
+<A NAME="663"></A>    <FONT ID="Int">int</FONT>[] sum = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="664"></A>
+<A NAME="665"></A>    sum[<FONT ID="IntegerLiteral">0</FONT>] = plane(<FONT ID="IntegerLiteral">0</FONT>).addSum();
+<A NAME="666"></A>    sum[<FONT ID="IntegerLiteral">1</FONT>] = plane(<FONT ID="IntegerLiteral">1</FONT>).addSum();
+<A NAME="667"></A>    sum[<FONT ID="IntegerLiteral">2</FONT>] = plane(<FONT ID="IntegerLiteral">2</FONT>).addSum();
+<A NAME="668"></A>    <FONT ID="Return">return</FONT> sum;
+<A NAME="669"></A>  } 
+<A NAME="670"></A>
+<A NAME="671"></A>
+<A NAME="672"></A>  <FONT ID="FormalComment">/**
+<A NAME="673"></A>   * Adds absolute value of all the values together
+<A NAME="674"></A>   */</FONT>
+<A NAME="675"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>[] absSum() {
+<A NAME="676"></A>    <FONT ID="Int">int</FONT>[] sum = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="677"></A>
+<A NAME="678"></A>    sum[<FONT ID="IntegerLiteral">0</FONT>] = plane(<FONT ID="IntegerLiteral">0</FONT>).absSum();
+<A NAME="679"></A>    sum[<FONT ID="IntegerLiteral">1</FONT>] = plane(<FONT ID="IntegerLiteral">1</FONT>).absSum();
+<A NAME="680"></A>    sum[<FONT ID="IntegerLiteral">2</FONT>] = plane(<FONT ID="IntegerLiteral">2</FONT>).absSum();
+<A NAME="681"></A>    <FONT ID="Return">return</FONT> sum;
+<A NAME="682"></A>  } 
+<A NAME="683"></A>
+<A NAME="684"></A>
+<A NAME="685"></A>  <FONT ID="FormalComment">/**
+<A NAME="686"></A>   * Adds the square of all the values together
+<A NAME="687"></A>   */</FONT>
+<A NAME="688"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Long">long</FONT>[] sqrSum() {
+<A NAME="689"></A>    <FONT ID="Long">long</FONT>[]  sum = <FONT ID="New">new</FONT> <FONT ID="Long">long</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="690"></A>
+<A NAME="691"></A>    sum[<FONT ID="IntegerLiteral">0</FONT>] = plane(<FONT ID="IntegerLiteral">0</FONT>).sqrSum();
+<A NAME="692"></A>    sum[<FONT ID="IntegerLiteral">1</FONT>] = plane(<FONT ID="IntegerLiteral">1</FONT>).sqrSum();
+<A NAME="693"></A>    sum[<FONT ID="IntegerLiteral">2</FONT>] = plane(<FONT ID="IntegerLiteral">2</FONT>).sqrSum();
+<A NAME="694"></A>    <FONT ID="Return">return</FONT> sum;
+<A NAME="695"></A>  } 
+<A NAME="696"></A>
+<A NAME="697"></A>
+<A NAME="698"></A>  <FONT ID="FormalComment">/**
+<A NAME="699"></A>   * Adds another ColorImage to this image
+<A NAME="700"></A>   * @param im the ColorImage to add
+<A NAME="701"></A>   * @return this
+<A NAME="702"></A>   */</FONT>
+<A NAME="703"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im) {
+<A NAME="704"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].add(im.plane(<FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="705"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].add(im.plane(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="706"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].add(im.plane(<FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="707"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="708"></A>  } 
+<A NAME="709"></A>
+<A NAME="710"></A>
+<A NAME="711"></A>  <FONT ID="FormalComment">/**
+<A NAME="712"></A>   * Subtracts a ColorImage from this image
+<A NAME="713"></A>   * @param im the ColorImage to subtract
+<A NAME="714"></A>   * @return this
+<A NAME="715"></A>   */</FONT>
+<A NAME="716"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im) {
+<A NAME="717"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(im.plane(<FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="718"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(im.plane(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="719"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(im.plane(<FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="720"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="721"></A>  } 
+<A NAME="722"></A>
+<A NAME="723"></A>
+<A NAME="724"></A>  <FONT ID="FormalComment">/**
+<A NAME="725"></A>   * Subtracts a ColorImage from this image and returns the absolute value
+<A NAME="726"></A>   * @param im the RealColorImage to diff
+<A NAME="727"></A>   * @return this
+<A NAME="728"></A>   */</FONT>
+<A NAME="729"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> diff(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im) {
+<A NAME="730"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].diff(im.plane(<FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="731"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].diff(im.plane(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="732"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].diff(im.plane(<FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="733"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="734"></A>  } 
+<A NAME="735"></A>
+<A NAME="736"></A>
+<A NAME="737"></A>  <FONT ID="FormalComment">/**
+<A NAME="738"></A>   * Multiplies a ColorImage by this image
+<A NAME="739"></A>   * @param im the ColorImage to multiply
+<A NAME="740"></A>   * @return this
+<A NAME="741"></A>   */</FONT>
+<A NAME="742"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im) {
+<A NAME="743"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(im.plane(<FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="744"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(im.plane(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="745"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(im.plane(<FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="746"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="747"></A>  } 
+<A NAME="748"></A>
+<A NAME="749"></A>
+<A NAME="750"></A>  <FONT ID="FormalComment">/**
+<A NAME="751"></A>   * Divides this image by a ColorImage
+<A NAME="752"></A>   * @param im the ColorImage to divide
+<A NAME="753"></A>   * @return this
+<A NAME="754"></A>   */</FONT>
+<A NAME="755"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im) {
+<A NAME="756"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].divide(im.plane(<FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="757"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].divide(im.plane(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="758"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].divide(im.plane(<FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="759"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="760"></A>  } 
+<A NAME="761"></A>
+<A NAME="762"></A>
+<A NAME="763"></A>  <FONT ID="FormalComment">/**
+<A NAME="764"></A>   * Prints the image in integer format.
+<A NAME="765"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;-Example of output on an image with width 100 and height 120:&lt;/DT&gt;
+<A NAME="766"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="767"></A>   * &lt;DT&gt;10 87 32 65 32 65 40 59 43 12 43 ...&lt;/DT&gt;
+<A NAME="768"></A>   * &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="769"></A>   * &lt;DT&gt;10 20 32 12 32 56 40 45 42 39 43 ...&lt;/DT&gt;
+<A NAME="770"></A>   * &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="771"></A>   * &lt;DT&gt;10 20 32 12 54 56 73 59 42 23 43 ...&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="772"></A>   */</FONT>
+<A NAME="773"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> String toString() {
+<A NAME="774"></A>    String  str = <FONT ID="StringLiteral">""</FONT>;   <FONT ID="SingleLineComment">// = ndims + " planes\n";
+<A NAME="775"></A></FONT>
+<A NAME="776"></A>    str += plane[<FONT ID="IntegerLiteral">0</FONT>].toString();
+<A NAME="777"></A>    str += plane[<FONT ID="IntegerLiteral">1</FONT>].toString();
+<A NAME="778"></A>    str += plane[<FONT ID="IntegerLiteral">2</FONT>].toString();
+<A NAME="779"></A>    <FONT ID="Return">return</FONT> str;
+<A NAME="780"></A>  } 
+<A NAME="781"></A>
+<A NAME="782"></A>
+<A NAME="783"></A>  <FONT ID="FormalComment">/**
+<A NAME="784"></A>   * Turns this image into a Java Image (java.awt.Image). The ColorImage is assumed
+<A NAME="785"></A>   * to be RGB. &lt;P&gt;
+<A NAME="786"></A>   * @param none
+<A NAME="787"></A>   * @see java.awt.ImageProducer
+<A NAME="788"></A>   */</FONT>
+<A NAME="789"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> ImageProducer getJavaImage() {
+<A NAME="790"></A>
+<A NAME="791"></A>    <FONT ID="SingleLineComment">// get range of this image
+<A NAME="792"></A></FONT>    <FONT ID="Double">double</FONT>  min = (<FONT ID="Double">double</FONT>) min();
+<A NAME="793"></A>    <FONT ID="Double">double</FONT>  max = (<FONT ID="Double">double</FONT>) max();
+<A NAME="794"></A>
+<A NAME="795"></A>    <FONT ID="SingleLineComment">// keep byte images in original range
+<A NAME="796"></A></FONT>    <FONT ID="If">if</FONT> (min &gt;= <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; max &lt;= <FONT ID="IntegerLiteral">255</FONT>) {
+<A NAME="797"></A>      min = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="798"></A>      max = <FONT ID="FloatPointLiteral">255.0</FONT>;
+<A NAME="799"></A>    } 
+<A NAME="800"></A>    <FONT ID="Double">double</FONT>  range = max - min;
+<A NAME="801"></A>
+<A NAME="802"></A>    <FONT ID="SingleLineComment">// convert jigl image to java image
+<A NAME="803"></A></FONT>    <FONT ID="Int">int</FONT>     pix[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[X * Y];
+<A NAME="804"></A>    <FONT ID="Int">int</FONT>     index = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="805"></A>    <FONT ID="Int">int</FONT>     red = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="806"></A>    <FONT ID="Int">int</FONT>     green = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="807"></A>    <FONT ID="Int">int</FONT>     blue = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="808"></A>    <FONT ID="Int">int</FONT>[]   color = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="809"></A>
+<A NAME="810"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="811"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="812"></A>
+<A NAME="813"></A>        <FONT ID="SingleLineComment">// map image values
+<A NAME="814"></A></FONT>        color = get(x, y);
+<A NAME="815"></A>        red = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Double">double</FONT>) color[<FONT ID="IntegerLiteral">0</FONT>] - min));
+<A NAME="816"></A>        green = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Double">double</FONT>) color[<FONT ID="IntegerLiteral">1</FONT>] - min));
+<A NAME="817"></A>        blue = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Double">double</FONT>) color[<FONT ID="IntegerLiteral">2</FONT>] - min));
+<A NAME="818"></A>
+<A NAME="819"></A>        <FONT ID="SingleLineComment">// take lower 8 bits
+<A NAME="820"></A></FONT>        red = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; red;
+<A NAME="821"></A>        green = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; green;
+<A NAME="822"></A>        blue = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; blue;
+<A NAME="823"></A>
+<A NAME="824"></A>        <FONT ID="SingleLineComment">// put this pixel in the java image
+<A NAME="825"></A></FONT>        pix[index] = (<FONT ID="IntegerLiteral">0xFF</FONT> &lt;&lt; <FONT ID="IntegerLiteral">24</FONT>) | (red &lt;&lt; <FONT ID="IntegerLiteral">16</FONT>) | (green &lt;&lt; <FONT ID="IntegerLiteral">8</FONT>) | blue;
+<A NAME="826"></A>        index++;
+<A NAME="827"></A>      } 
+<A NAME="828"></A>    } 
+<A NAME="829"></A>
+<A NAME="830"></A>    <FONT ID="SingleLineComment">// return java image
+<A NAME="831"></A></FONT>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> MemoryImageSource(X, Y, pix, <FONT ID="IntegerLiteral">0</FONT>, X);
+<A NAME="832"></A>  } 
+<A NAME="833"></A>
+<A NAME="834"></A>
+<A NAME="835"></A>  <FONT ID="FormalComment">/**
+<A NAME="836"></A>   * Scales the range of this image to byte (0..255)
+<A NAME="837"></A>   * @param none
+<A NAME="838"></A>   */</FONT>
+<A NAME="839"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> byteSize() {
+<A NAME="840"></A>
+<A NAME="841"></A>    <FONT ID="SingleLineComment">// get range of this image
+<A NAME="842"></A></FONT>    <FONT ID="Double">double</FONT>  min = (<FONT ID="Double">double</FONT>) min();
+<A NAME="843"></A>    <FONT ID="Double">double</FONT>  max = (<FONT ID="Double">double</FONT>) max();
+<A NAME="844"></A>
+<A NAME="845"></A>
+<A NAME="846"></A>    <FONT ID="Double">double</FONT>  range = max - min;
+<A NAME="847"></A>
+<A NAME="848"></A>    <FONT ID="SingleLineComment">// convert to byte depth
+<A NAME="849"></A></FONT>    <FONT ID="Int">int</FONT>     red = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="850"></A>    <FONT ID="Int">int</FONT>     green = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="851"></A>    <FONT ID="Int">int</FONT>     blue = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="852"></A>    <FONT ID="Int">int</FONT>     color[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="853"></A>
+<A NAME="854"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="855"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="856"></A>        color = get(x, y);
+<A NAME="857"></A>        red = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Double">double</FONT>) color[<FONT ID="IntegerLiteral">0</FONT>] - min));
+<A NAME="858"></A>        green = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Double">double</FONT>) color[<FONT ID="IntegerLiteral">1</FONT>] - min));
+<A NAME="859"></A>        blue = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Double">double</FONT>) color[<FONT ID="IntegerLiteral">2</FONT>] - min));
+<A NAME="860"></A>
+<A NAME="861"></A>        <FONT ID="SingleLineComment">// take lower 8 bits
+<A NAME="862"></A></FONT>        red = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; red;
+<A NAME="863"></A>        green = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; green;
+<A NAME="864"></A>        blue = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; blue;
+<A NAME="865"></A>        color[<FONT ID="IntegerLiteral">0</FONT>] = red;
+<A NAME="866"></A>        color[<FONT ID="IntegerLiteral">1</FONT>] = green;
+<A NAME="867"></A>        color[<FONT ID="IntegerLiteral">2</FONT>] = blue;
+<A NAME="868"></A>        set(x, y, color);
+<A NAME="869"></A>      } 
+<A NAME="870"></A>    } 
+<A NAME="871"></A>
+<A NAME="872"></A>  } 
+<A NAME="873"></A>
+<A NAME="874"></A>
+<A NAME="875"></A>  <FONT ID="FormalComment">/**
+<A NAME="876"></A>   * Clips the range of this image to an arbitrary min/max
+<A NAME="877"></A>   * @param min minimum value
+<A NAME="878"></A>   * @param max maximum value
+<A NAME="879"></A>   */</FONT>
+<A NAME="880"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> clip(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="881"></A>
+<A NAME="882"></A>    <FONT ID="SingleLineComment">// clip each plane
+<A NAME="883"></A></FONT>    plane[<FONT ID="IntegerLiteral">0</FONT>].clip(min, max);
+<A NAME="884"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].clip(min, max);
+<A NAME="885"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].clip(min, max);
+<A NAME="886"></A>
+<A NAME="887"></A>  } 
+<A NAME="888"></A>
+<A NAME="889"></A>
+<A NAME="890"></A>  <FONT ID="FormalComment">/**
+<A NAME="891"></A>   * Clears the image to zero
+<A NAME="892"></A>   */</FONT>
+<A NAME="893"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> clear() {
+<A NAME="894"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].clear();
+<A NAME="895"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].clear();
+<A NAME="896"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].clear();
+<A NAME="897"></A>
+<A NAME="898"></A>  } 
+<A NAME="899"></A>
+<A NAME="900"></A>
+<A NAME="901"></A>  <FONT ID="FormalComment">/**
+<A NAME="902"></A>   * Clears the image to a value
+<A NAME="903"></A>   * @param v value to clear to
+<A NAME="904"></A>   */</FONT>
+<A NAME="905"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> clear(<FONT ID="Int">int</FONT> v) {
+<A NAME="906"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].clear(v);
+<A NAME="907"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].clear(v);
+<A NAME="908"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].clear(v);
+<A NAME="909"></A>
+<A NAME="910"></A>  } 
+<A NAME="911"></A>
+<A NAME="912"></A>  <FONT ID="SingleLineComment">// *****************************************************************************************************
+<A NAME="913"></A></FONT>  <FONT ID="SingleLineComment">// **********************************  ROI *************************************************************
+<A NAME="914"></A></FONT>  <FONT ID="SingleLineComment">// *****************************************************************************************************
+<A NAME="915"></A></FONT>
+<A NAME="916"></A>
+<A NAME="917"></A>  <FONT ID="FormalComment">/**
+<A NAME="918"></A>   * Makes a deep copy of a Region of Interest
+<A NAME="919"></A>   * @param r Region of Interest
+<A NAME="920"></A>   * @return a deep copy of ColorImage
+<A NAME="921"></A>   */</FONT>
+<A NAME="922"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="923"></A>    <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A>  c = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A>(X, Y);
+<A NAME="924"></A>
+<A NAME="925"></A>    c.setColorModel(colorModel);
+<A NAME="926"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="927"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="928"></A>        c.plane[<FONT ID="IntegerLiteral">0</FONT>].set(x, y, plane[<FONT ID="IntegerLiteral">0</FONT>].get(x, y));
+<A NAME="929"></A>        c.plane[<FONT ID="IntegerLiteral">1</FONT>].set(x, y, plane[<FONT ID="IntegerLiteral">1</FONT>].get(x, y));
+<A NAME="930"></A>        c.plane[<FONT ID="IntegerLiteral">2</FONT>].set(x, y, plane[<FONT ID="IntegerLiteral">2</FONT>].get(x, y));
+<A NAME="931"></A>      } 
+<A NAME="932"></A>    } 
+<A NAME="933"></A>    <FONT ID="Return">return</FONT> c;
+<A NAME="934"></A>  } 
+<A NAME="935"></A>
+<A NAME="936"></A>
+<A NAME="937"></A>  <FONT ID="FormalComment">/**
+<A NAME="938"></A>   * Returns the pixel value at the given x, y value as a triplet in a Region of Interest
+<A NAME="939"></A>   * @param x  the X coordinant
+<A NAME="940"></A>   * @param y  the Y coordinant
+<A NAME="941"></A>   * @param r Region of Interest
+<A NAME="942"></A>   * @return three element array of integers
+<A NAME="943"></A>   */</FONT>
+<A NAME="944"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>[] get(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="945"></A>    <FONT ID="Int">int</FONT>[] color = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="946"></A>
+<A NAME="947"></A>    color[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].get(x + r.ux(), y + r.uy());
+<A NAME="948"></A>    color[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].get(x + r.ux(), y + r.uy());
+<A NAME="949"></A>    color[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].get(x + r.ux(), y + r.uy());
+<A NAME="950"></A>    <FONT ID="Return">return</FONT> color;
+<A NAME="951"></A>  } 
+<A NAME="952"></A>
+<A NAME="953"></A>
+<A NAME="954"></A>  <FONT ID="FormalComment">/**
+<A NAME="955"></A>   * Sets the pixel value at the given x, y value as a triplet in a Region of Interest
+<A NAME="956"></A>   * @param x  the X coordinant
+<A NAME="957"></A>   * @param y  the Y coordinant
+<A NAME="958"></A>   * @param v  array of three integers holding the values for the set
+<A NAME="959"></A>   * @param r Region of Interest
+<A NAME="960"></A>   */</FONT>
+<A NAME="961"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="962"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].set(x, y, v[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="963"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].set(x, y, v[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="964"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].set(x, y, v[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="965"></A>  } 
+<A NAME="966"></A>
+<A NAME="967"></A>
+<A NAME="968"></A>  <FONT ID="FormalComment">/**
+<A NAME="969"></A>   * Adds a triplet to a single pixel in a Region of Interest
+<A NAME="970"></A>   * @param x X-coordinant
+<A NAME="971"></A>   * @param y Y-coordinant
+<A NAME="972"></A>   * @param val0 value to add to the pixel in the first plane
+<A NAME="973"></A>   * @param val1 value to add to the pixel in the second plane
+<A NAME="974"></A>   * @param val2 value to add to the pixel in the third plane
+<A NAME="975"></A>   * @param r Region of Interest
+<A NAME="976"></A>   */</FONT>
+<A NAME="977"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="978"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].set(x, y, val0, r);
+<A NAME="979"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].set(x, y, val1, r);
+<A NAME="980"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].set(x, y, val2, r);
+<A NAME="981"></A>  } 
+<A NAME="982"></A>
+<A NAME="983"></A>
+<A NAME="984"></A>  <FONT ID="FormalComment">/**
+<A NAME="985"></A>   * Adds a triplet to a single pixel in a Region of Interest
+<A NAME="986"></A>   * @param x X-coordinant
+<A NAME="987"></A>   * @param y Y-coordinant
+<A NAME="988"></A>   * @param value triplet to subtract from the pixel
+<A NAME="989"></A>   * @param r Region of Interest
+<A NAME="990"></A>   */</FONT>
+<A NAME="991"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="992"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].add(x, y, value[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="993"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].add(x, y, value[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="994"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].add(x, y, value[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="995"></A>  } 
+<A NAME="996"></A>
+<A NAME="997"></A>
+<A NAME="998"></A>  <FONT ID="FormalComment">/**
+<A NAME="999"></A>   * Subtracts a triplet from a single pixel in a Region of Interest
+<A NAME="1000"></A>   * @param x X-coordinant
+<A NAME="1001"></A>   * @param y Y-coordinant
+<A NAME="1002"></A>   * @param val0 value to subtract from the pixel in the first plane
+<A NAME="1003"></A>   * @param val1 value to subtract from the pixel in the second plane
+<A NAME="1004"></A>   * @param val2 value to subtract from the pixel in the third plane
+<A NAME="1005"></A>   * @param r Region of Interest
+<A NAME="1006"></A>   */</FONT>
+<A NAME="1007"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1008"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(x, y, val0, r);
+<A NAME="1009"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(x, y, val1, r);
+<A NAME="1010"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(x, y, val2, r);
+<A NAME="1011"></A>
+<A NAME="1012"></A>  } 
+<A NAME="1013"></A>
+<A NAME="1014"></A>
+<A NAME="1015"></A>  <FONT ID="FormalComment">/**
+<A NAME="1016"></A>   * Subtracts a triplet from a single pixel in a Region of Interest
+<A NAME="1017"></A>   * @param x X-coordinant
+<A NAME="1018"></A>   * @param y Y-coordinant
+<A NAME="1019"></A>   * @param value triplet to subtract from to the pixel
+<A NAME="1020"></A>   * @param r Region of Interest
+<A NAME="1021"></A>   */</FONT>
+<A NAME="1022"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1023"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(x, y, value[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1024"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(x, y, value[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1025"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(x, y, value[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1026"></A>  } 
+<A NAME="1027"></A>
+<A NAME="1028"></A>
+<A NAME="1029"></A>  <FONT ID="FormalComment">/**
+<A NAME="1030"></A>   * Multiplies a triplet with a single pixel in a Region of Interest
+<A NAME="1031"></A>   * @param x X-coordinant
+<A NAME="1032"></A>   * @param y Y-coordinant
+<A NAME="1033"></A>   * @param val0 value to multiply the pixel by in the first plane
+<A NAME="1034"></A>   * @param val1 value to multiply the pixel by in the second plane
+<A NAME="1035"></A>   * @param val2 value to multiply the pixel by in the third plane
+<A NAME="1036"></A>   * @param r Region of Interest
+<A NAME="1037"></A>   */</FONT>
+<A NAME="1038"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1039"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(x, y, val0, r);
+<A NAME="1040"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(x, y, val1, r);
+<A NAME="1041"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(x, y, val2, r);
+<A NAME="1042"></A>  } 
+<A NAME="1043"></A>
+<A NAME="1044"></A>
+<A NAME="1045"></A>  <FONT ID="FormalComment">/**
+<A NAME="1046"></A>   * Multiplies a triplet with a single pixel in a Region of Interest
+<A NAME="1047"></A>   * @param x X-coordinant
+<A NAME="1048"></A>   * @param y Y-coordinant
+<A NAME="1049"></A>   * @param value triplet to multiply by the pixel
+<A NAME="1050"></A>   * @param r Region of Interest
+<A NAME="1051"></A>   */</FONT>
+<A NAME="1052"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1053"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(x, y, value[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1054"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(x, y, value[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1055"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(x, y, value[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1056"></A>  } 
+<A NAME="1057"></A>
+<A NAME="1058"></A>
+<A NAME="1059"></A>  <FONT ID="FormalComment">/**
+<A NAME="1060"></A>   * Divides a single pixel by a triplet in a Region of Interest
+<A NAME="1061"></A>   * @param x X-coordinant
+<A NAME="1062"></A>   * @param y Y-coordinant
+<A NAME="1063"></A>   * @param value triplet to add to the pixel
+<A NAME="1064"></A>   * @param r Region of Interest
+<A NAME="1065"></A>   */</FONT>
+<A NAME="1066"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT>[] value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1067"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].divide(x, y, value[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1068"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].divide(x, y, value[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1069"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].divide(x, y, value[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1070"></A>  } 
+<A NAME="1071"></A>
+<A NAME="1072"></A>
+<A NAME="1073"></A>  <FONT ID="FormalComment">/**
+<A NAME="1074"></A>   * Divides a single pixel by a triplet in a Region of Interest
+<A NAME="1075"></A>   * @param x X-coordinant
+<A NAME="1076"></A>   * @param val0 value to divide by the pixel in the first plane
+<A NAME="1077"></A>   * @param val1 value to divide by the pixel in the second plane
+<A NAME="1078"></A>   * @param val2 value to divide by the pixel in the third plane
+<A NAME="1079"></A>   * @param r Region of Interest
+<A NAME="1080"></A>   */</FONT>
+<A NAME="1081"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1082"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>].divide(x, y, val0, r);
+<A NAME="1083"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].divide(x, y, val1, r);
+<A NAME="1084"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].divide(x, y, val2, r);
+<A NAME="1085"></A>  } 
+<A NAME="1086"></A>
+<A NAME="1087"></A>
+<A NAME="1088"></A>  <FONT ID="FormalComment">/**
+<A NAME="1089"></A>   * Finds the minimum value of all the planes in a Region of Interest
+<A NAME="1090"></A>   * @param r Region of Interest
+<A NAME="1091"></A>   * @return an integer containing the minimum value
+<A NAME="1092"></A>   */</FONT>
+<A NAME="1093"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> min(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1094"></A>    <FONT ID="Int">int</FONT> m1, m2, m3;
+<A NAME="1095"></A>    <FONT ID="Int">int</FONT> min = Integer.MAX_VALUE;
+<A NAME="1096"></A>
+<A NAME="1097"></A>    m1 = plane[<FONT ID="IntegerLiteral">0</FONT>].min(r);
+<A NAME="1098"></A>    m2 = plane[<FONT ID="IntegerLiteral">1</FONT>].min(r);
+<A NAME="1099"></A>    m3 = plane[<FONT ID="IntegerLiteral">2</FONT>].min(r);
+<A NAME="1100"></A>    <FONT ID="If">if</FONT> (m1 &lt; min) {
+<A NAME="1101"></A>      min = m1;
+<A NAME="1102"></A>    } 
+<A NAME="1103"></A>    <FONT ID="If">if</FONT> (m2 &lt; min) {
+<A NAME="1104"></A>      min = m2;
+<A NAME="1105"></A>    } 
+<A NAME="1106"></A>    <FONT ID="If">if</FONT> (m3 &lt; min) {
+<A NAME="1107"></A>      min = m3;
+<A NAME="1108"></A>    } 
+<A NAME="1109"></A>    <FONT ID="Return">return</FONT> min;
+<A NAME="1110"></A>  } 
+<A NAME="1111"></A>
+<A NAME="1112"></A>
+<A NAME="1113"></A>  <FONT ID="FormalComment">/**
+<A NAME="1114"></A>   * Finds the minimum value of a single plane in a Region of Interest
+<A NAME="1115"></A>   * @param p the plane
+<A NAME="1116"></A>   * @param r Region of Interest
+<A NAME="1117"></A>   * @return an integer containing the minimum value
+<A NAME="1118"></A>   */</FONT>
+<A NAME="1119"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> min(<FONT ID="Int">int</FONT> p, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1120"></A>    <FONT ID="Return">return</FONT> plane[p].min(r);
+<A NAME="1121"></A>  } 
+<A NAME="1122"></A>
+<A NAME="1123"></A>
+<A NAME="1124"></A>  <FONT ID="FormalComment">/**
+<A NAME="1125"></A>   * Finds the maximum value of all the planes in a Region of Interest
+<A NAME="1126"></A>   * @param r Region of Interest
+<A NAME="1127"></A>   * @return an integer containing the maximum value
+<A NAME="1128"></A>   */</FONT>
+<A NAME="1129"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> max(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1130"></A>    <FONT ID="Int">int</FONT> m1, m2, m3;
+<A NAME="1131"></A>    <FONT ID="Int">int</FONT> max = Integer.MIN_VALUE;
+<A NAME="1132"></A>
+<A NAME="1133"></A>    m1 = plane[<FONT ID="IntegerLiteral">0</FONT>].max(r);
+<A NAME="1134"></A>    m2 = plane[<FONT ID="IntegerLiteral">1</FONT>].max(r);
+<A NAME="1135"></A>    m3 = plane[<FONT ID="IntegerLiteral">2</FONT>].max(r);
+<A NAME="1136"></A>    <FONT ID="If">if</FONT> (m1 &gt; max) {
+<A NAME="1137"></A>      max = m1;
+<A NAME="1138"></A>    } 
+<A NAME="1139"></A>    <FONT ID="If">if</FONT> (m2 &gt; max) {
+<A NAME="1140"></A>      max = m2;
+<A NAME="1141"></A>    } 
+<A NAME="1142"></A>    <FONT ID="If">if</FONT> (m3 &gt; max) {
+<A NAME="1143"></A>      max = m3;
+<A NAME="1144"></A>    } 
+<A NAME="1145"></A>    <FONT ID="Return">return</FONT> max;
+<A NAME="1146"></A>  } 
+<A NAME="1147"></A>
+<A NAME="1148"></A>
+<A NAME="1149"></A>  <FONT ID="FormalComment">/**
+<A NAME="1150"></A>   * Finds the maximum value of a single plane in a Region of Interest
+<A NAME="1151"></A>   * @param p the plane
+<A NAME="1152"></A>   * @param r Region of Interest
+<A NAME="1153"></A>   * @return an integer containing the maximum value
+<A NAME="1154"></A>   */</FONT>
+<A NAME="1155"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> max(<FONT ID="Int">int</FONT> p, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1156"></A>    <FONT ID="Return">return</FONT> plane[p].max(r);
+<A NAME="1157"></A>  } 
+<A NAME="1158"></A>
+<A NAME="1159"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="1160"></A>   * Image-wide scalar operations
+<A NAME="1161"></A>   */</FONT>
+<A NAME="1162"></A>
+<A NAME="1163"></A>
+<A NAME="1164"></A>  <FONT ID="FormalComment">/**
+<A NAME="1165"></A>   * Adds triplet to all the pixels in a Region of Interest
+<A NAME="1166"></A>   * @param v triplet to be added to the pixels
+<A NAME="1167"></A>   * @param r Region of Interest
+<A NAME="1168"></A>   * @return this
+<A NAME="1169"></A>   */</FONT>
+<A NAME="1170"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<FONT ID="Int">int</FONT>[] v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1171"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].add(v[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1172"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].add(v[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1173"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].add(v[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1174"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1175"></A>  } 
+<A NAME="1176"></A>
+<A NAME="1177"></A>
+<A NAME="1178"></A>  <FONT ID="FormalComment">/**
+<A NAME="1179"></A>   * Adds triplet to all the pixels in this image in a Region of Interest
+<A NAME="1180"></A>   * @param val0 value to add to the pixel in the first plane
+<A NAME="1181"></A>   * @param val1 value to add to the pixel in the second plane
+<A NAME="1182"></A>   * @param val2 value to add to the pixel in the third plane
+<A NAME="1183"></A>   * @param r Region of Interest
+<A NAME="1184"></A>   * @return this
+<A NAME="1185"></A>   */</FONT>
+<A NAME="1186"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1187"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].add(val0, r);
+<A NAME="1188"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].add(val1, r);
+<A NAME="1189"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].add(val2, r);
+<A NAME="1190"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1191"></A>  } 
+<A NAME="1192"></A>
+<A NAME="1193"></A>
+<A NAME="1194"></A>  <FONT ID="FormalComment">/**
+<A NAME="1195"></A>   * Adds a value to all the pixels in a plane in a Region of Interest
+<A NAME="1196"></A>   * @param p the plane
+<A NAME="1197"></A>   * @param v value to be added to the pixels
+<A NAME="1198"></A>   * @param r Region of Interest
+<A NAME="1199"></A>   * @return this
+<A NAME="1200"></A>   */</FONT>
+<A NAME="1201"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1202"></A>    plane[p] = plane[p].add(v, r);
+<A NAME="1203"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1204"></A>  } 
+<A NAME="1205"></A>
+<A NAME="1206"></A>
+<A NAME="1207"></A>  <FONT ID="FormalComment">/**
+<A NAME="1208"></A>   * Subtracts a triplet from all the pixels in a Region of Interest
+<A NAME="1209"></A>   * @param v triplet to be subtracted from the pixels
+<A NAME="1210"></A>   * @param r Region of Interest
+<A NAME="1211"></A>   * @return this
+<A NAME="1212"></A>   */</FONT>
+<A NAME="1213"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<FONT ID="Int">int</FONT>[] v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1214"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(v[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1215"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(v[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1216"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(v[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1217"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1218"></A>  } 
+<A NAME="1219"></A>
+<A NAME="1220"></A>
+<A NAME="1221"></A>  <FONT ID="FormalComment">/**
+<A NAME="1222"></A>   * Subtracts a triplet from all the pixels in a Region of Interest
+<A NAME="1223"></A>   * @param val0 value to subtract from the pixel in the first plane
+<A NAME="1224"></A>   * @param val1 value to subtract from the pixel in the second plane
+<A NAME="1225"></A>   * @param val2 value to subtract from the pixel in the third plane
+<A NAME="1226"></A>   * @param r Region of Interest
+<A NAME="1227"></A>   * @return this
+<A NAME="1228"></A>   */</FONT>
+<A NAME="1229"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1230"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(val0, r);
+<A NAME="1231"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(val1, r);
+<A NAME="1232"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(val2, r);
+<A NAME="1233"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1234"></A>  } 
+<A NAME="1235"></A>
+<A NAME="1236"></A>
+<A NAME="1237"></A>  <FONT ID="FormalComment">/**
+<A NAME="1238"></A>   * subtracts the value from all pixels in plane p
+<A NAME="1239"></A>   */</FONT>
+<A NAME="1240"></A>
+<A NAME="1241"></A>
+<A NAME="1242"></A>  <FONT ID="FormalComment">/**
+<A NAME="1243"></A>   * Subtracts a value from all the pixels in a Region of Interest
+<A NAME="1244"></A>   * @param p the plane
+<A NAME="1245"></A>   * @param v value to be added to the pixels
+<A NAME="1246"></A>   * @param r Region of Interest
+<A NAME="1247"></A>   * @return this
+<A NAME="1248"></A>   */</FONT>
+<A NAME="1249"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1250"></A>    plane[p] = plane[p].subtract(v, r);
+<A NAME="1251"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1252"></A>  } 
+<A NAME="1253"></A>
+<A NAME="1254"></A>
+<A NAME="1255"></A>  <FONT ID="FormalComment">/**
+<A NAME="1256"></A>   * Multiplies a triplet by all the pixels in a Region of Interest
+<A NAME="1257"></A>   * @param v triplet to be multiplied by
+<A NAME="1258"></A>   * @param r Region of Interest
+<A NAME="1259"></A>   * @return this
+<A NAME="1260"></A>   */</FONT>
+<A NAME="1261"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<FONT ID="Int">int</FONT>[] v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1262"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(v[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1263"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(v[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1264"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(v[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1265"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1266"></A>  } 
+<A NAME="1267"></A>
+<A NAME="1268"></A>
+<A NAME="1269"></A>  <FONT ID="FormalComment">/**
+<A NAME="1270"></A>   * Multiplies a triplet by all the pixels of this image in a Region of Interest
+<A NAME="1271"></A>   * @param val0 value to multiply the pixel by in the first plane
+<A NAME="1272"></A>   * @param val1 value to multiply the pixel by in the second plane
+<A NAME="1273"></A>   * @param val2 value to multiply the pixel by in the third plane
+<A NAME="1274"></A>   * @param r Region of Interest
+<A NAME="1275"></A>   * @return this
+<A NAME="1276"></A>   */</FONT>
+<A NAME="1277"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1278"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(val0, r);
+<A NAME="1279"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(val1, r);
+<A NAME="1280"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(val2, r);
+<A NAME="1281"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1282"></A>  } 
+<A NAME="1283"></A>
+<A NAME="1284"></A>
+<A NAME="1285"></A>  <FONT ID="FormalComment">/**
+<A NAME="1286"></A>   * multiplies all pixels in plane p by the value
+<A NAME="1287"></A>   */</FONT>
+<A NAME="1288"></A>
+<A NAME="1289"></A>
+<A NAME="1290"></A>  <FONT ID="FormalComment">/**
+<A NAME="1291"></A>   * Multiplies all the pixels in a plane in a Region of Interest by a value
+<A NAME="1292"></A>   * @param p the plane
+<A NAME="1293"></A>   * @param v value to be added to the pixels
+<A NAME="1294"></A>   * @param r Region of Interest
+<A NAME="1295"></A>   * @return this
+<A NAME="1296"></A>   */</FONT>
+<A NAME="1297"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1298"></A>    plane[p] = plane[p].multiply(v, r);
+<A NAME="1299"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1300"></A>  } 
+<A NAME="1301"></A>
+<A NAME="1302"></A>
+<A NAME="1303"></A>  <FONT ID="FormalComment">/**
+<A NAME="1304"></A>   * Divides all the pixels in a Region of Interest by a triplet
+<A NAME="1305"></A>   * @param v triplet to be divided by
+<A NAME="1306"></A>   * @param r Region of Interest
+<A NAME="1307"></A>   * @return this
+<A NAME="1308"></A>   */</FONT>
+<A NAME="1309"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<FONT ID="Int">int</FONT>[] v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1310"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].divide(v[<FONT ID="IntegerLiteral">0</FONT>], r);
+<A NAME="1311"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].divide(v[<FONT ID="IntegerLiteral">1</FONT>], r);
+<A NAME="1312"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].divide(v[<FONT ID="IntegerLiteral">2</FONT>], r);
+<A NAME="1313"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1314"></A>  } 
+<A NAME="1315"></A>
+<A NAME="1316"></A>
+<A NAME="1317"></A>  <FONT ID="FormalComment">/**
+<A NAME="1318"></A>   * Divides all the pixels in a Region of Interest by a triplet
+<A NAME="1319"></A>   * @param val0 value to divide by the pixel in the first plane
+<A NAME="1320"></A>   * @param val1 value to divide by the pixel in the second plane
+<A NAME="1321"></A>   * @param val2 value to divide by the pixel in the third plane
+<A NAME="1322"></A>   * @param r Region of Interest
+<A NAME="1323"></A>   * @return this
+<A NAME="1324"></A>   */</FONT>
+<A NAME="1325"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<FONT ID="Int">int</FONT> val0, <FONT ID="Int">int</FONT> val1, <FONT ID="Int">int</FONT> val2, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1326"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].divide(val0, r);
+<A NAME="1327"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].divide(val1, r);
+<A NAME="1328"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].divide(val2, r);
+<A NAME="1329"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1330"></A>  } 
+<A NAME="1331"></A>
+<A NAME="1332"></A>
+<A NAME="1333"></A>  <FONT ID="FormalComment">/**
+<A NAME="1334"></A>   * divides all pixels in plane p by the value
+<A NAME="1335"></A>   */</FONT>
+<A NAME="1336"></A>
+<A NAME="1337"></A>
+<A NAME="1338"></A>  <FONT ID="FormalComment">/**
+<A NAME="1339"></A>   * Divides all the pixels in a plane in a Region of Interest by a value
+<A NAME="1340"></A>   * @param p the plane
+<A NAME="1341"></A>   * @param v value to be added to the pixels
+<A NAME="1342"></A>   * @param r Region of Interest
+<A NAME="1343"></A>   * @return this
+<A NAME="1344"></A>   */</FONT>
+<A NAME="1345"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<FONT ID="Int">int</FONT> p, <FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1346"></A>    plane[p] = plane[p].divide(v, r);
+<A NAME="1347"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1348"></A>  } 
+<A NAME="1349"></A>
+<A NAME="1350"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="1351"></A>   * Image-by-image arithmetic operations
+<A NAME="1352"></A>   */</FONT>
+<A NAME="1353"></A>
+<A NAME="1354"></A>
+<A NAME="1355"></A>  <FONT ID="FormalComment">/**
+<A NAME="1356"></A>   * Adds a Region of Interest in another ColorImage to a Region of Interest of this image
+<A NAME="1357"></A>   * @param im the ColorImage to add
+<A NAME="1358"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1359"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1360"></A>   * @return this
+<A NAME="1361"></A>   */</FONT>
+<A NAME="1362"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> add(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1363"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].add(im.plane(<FONT ID="IntegerLiteral">0</FONT>), sourceImage, destImage);
+<A NAME="1364"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].add(im.plane(<FONT ID="IntegerLiteral">1</FONT>), sourceImage, destImage);
+<A NAME="1365"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].add(im.plane(<FONT ID="IntegerLiteral">2</FONT>), sourceImage, destImage);
+<A NAME="1366"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1367"></A>  } 
+<A NAME="1368"></A>
+<A NAME="1369"></A>
+<A NAME="1370"></A>  <FONT ID="FormalComment">/**
+<A NAME="1371"></A>   * Subtracts a Region of Interest from another ColorImage from a Region of Interest of this image
+<A NAME="1372"></A>   * @param im the ColorImage to subtract
+<A NAME="1373"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1374"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1375"></A>   * @return this
+<A NAME="1376"></A>   */</FONT>
+<A NAME="1377"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> subtract(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1378"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].subtract(im.plane(<FONT ID="IntegerLiteral">0</FONT>), sourceImage, destImage);
+<A NAME="1379"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].subtract(im.plane(<FONT ID="IntegerLiteral">1</FONT>), sourceImage, destImage);
+<A NAME="1380"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].subtract(im.plane(<FONT ID="IntegerLiteral">2</FONT>), sourceImage, destImage);
+<A NAME="1381"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1382"></A>  } 
+<A NAME="1383"></A>
+<A NAME="1384"></A>
+<A NAME="1385"></A>  <FONT ID="FormalComment">/**
+<A NAME="1386"></A>   * Multiplies a Region of Interest from another ColorImage by a Region of Interest of this image
+<A NAME="1387"></A>   * @param im the ColorImage to multiply
+<A NAME="1388"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1389"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1390"></A>   * @return this
+<A NAME="1391"></A>   */</FONT>
+<A NAME="1392"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> multiply(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1393"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].multiply(im.plane(<FONT ID="IntegerLiteral">0</FONT>), sourceImage, destImage);
+<A NAME="1394"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].multiply(im.plane(<FONT ID="IntegerLiteral">1</FONT>), sourceImage, destImage);
+<A NAME="1395"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].multiply(im.plane(<FONT ID="IntegerLiteral">2</FONT>), sourceImage, destImage);
+<A NAME="1396"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1397"></A>  } 
+<A NAME="1398"></A>
+<A NAME="1399"></A>
+<A NAME="1400"></A>  <FONT ID="FormalComment">/**
+<A NAME="1401"></A>   * Divides a Region of Interest in this image by a Region of Interest from another ColorImage
+<A NAME="1402"></A>   * @param im the ColorImage to divide
+<A NAME="1403"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1404"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1405"></A>   * @return this
+<A NAME="1406"></A>   */</FONT>
+<A NAME="1407"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> divide(<A HREF="../../jigl/image/ColorImage.java.html">ColorImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1408"></A>    plane[<FONT ID="IntegerLiteral">0</FONT>] = plane[<FONT ID="IntegerLiteral">0</FONT>].divide(im.plane(<FONT ID="IntegerLiteral">0</FONT>), sourceImage, destImage);
+<A NAME="1409"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>] = plane[<FONT ID="IntegerLiteral">1</FONT>].divide(im.plane(<FONT ID="IntegerLiteral">1</FONT>), sourceImage, destImage);
+<A NAME="1410"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>] = plane[<FONT ID="IntegerLiteral">2</FONT>].divide(im.plane(<FONT ID="IntegerLiteral">2</FONT>), sourceImage, destImage);
+<A NAME="1411"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1412"></A>  } 
+<A NAME="1413"></A>
+<A NAME="1414"></A>
+<A NAME="1415"></A>  <FONT ID="FormalComment">/**
+<A NAME="1416"></A>   * Prints a Region of Interest in integer format.
+<A NAME="1417"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;-Example of output on an image with width 100 and height 120:&lt;/DT&gt;
+<A NAME="1418"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="1419"></A>   * &lt;DT&gt;10 87 32 65 32 65 40 59 43 12 43 ...&lt;/DT&gt;
+<A NAME="1420"></A>   * &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="1421"></A>   * &lt;DT&gt;10 20 32 12 32 56 40 45 42 39 43 ...&lt;/DT&gt;
+<A NAME="1422"></A>   * &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="1423"></A>   * &lt;DT&gt;10 20 32 12 54 56 73 59 42 23 43 ...&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="1424"></A>   * @param r Region of Interest
+<A NAME="1425"></A>   */</FONT>
+<A NAME="1426"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> String toString(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1427"></A>    String  str = <FONT ID="StringLiteral">""</FONT>;   <FONT ID="SingleLineComment">// = ndims + " planes\n";
+<A NAME="1428"></A></FONT>
+<A NAME="1429"></A>    str += plane[<FONT ID="IntegerLiteral">0</FONT>].toString(r);
+<A NAME="1430"></A>    str += plane[<FONT ID="IntegerLiteral">1</FONT>].toString(r);
+<A NAME="1431"></A>    str += plane[<FONT ID="IntegerLiteral">2</FONT>].toString(r);
+<A NAME="1432"></A>    <FONT ID="Return">return</FONT> str;
+<A NAME="1433"></A>  } 
+<A NAME="1434"></A>
+<A NAME="1435"></A>
+<A NAME="1436"></A>  <FONT ID="FormalComment">/**
+<A NAME="1437"></A>   * Clips the range of this image to an arbitrary min/max in a Region of Interest
+<A NAME="1438"></A>   * @param min minimum value
+<A NAME="1439"></A>   * @param max maximum value
+<A NAME="1440"></A>   * @param r Region of Interest+
+<A NAME="1441"></A>   */</FONT>
+<A NAME="1442"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> clip(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1443"></A>
+<A NAME="1444"></A>    <FONT ID="SingleLineComment">// clip each plane
+<A NAME="1445"></A></FONT>    plane[<FONT ID="IntegerLiteral">0</FONT>].clip(min, max, r);
+<A NAME="1446"></A>    plane[<FONT ID="IntegerLiteral">1</FONT>].clip(min, max, r);
+<A NAME="1447"></A>    plane[<FONT ID="IntegerLiteral">2</FONT>].clip(min, max, r);
+<A NAME="1448"></A>
+<A NAME="1449"></A>  } 
+<A NAME="1450"></A>
+<A NAME="1451"></A>}
+<A NAME="1452"></A>
+<A NAME="1453"></A>
+<A NAME="1454"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="1455"></A>
+<A NAME="1456"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ColorImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

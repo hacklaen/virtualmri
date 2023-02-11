@@ -1,0 +1,469 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.SliderPanel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SliderPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="FormalComment">/**
+<A NAME="29"></A> * Diese Klasse stellt einen Rahmen mit Beschriftung, Textfeld und Schieberegler
+<A NAME="30"></A> * zur Verfuegung.
+<A NAME="31"></A> * Die Werte von Schieberegler und Textfeld werden synchronisiert. Im Textfeld sind nur
+<A NAME="32"></A> * ganzzahlige Eingaben in einem bestimmten Wertebereich zulaessig.&lt;br&gt;
+<A NAME="33"></A> * Thomas Hacklaender 2002.10.30:
+<A NAME="34"></A> * Inset left fuer das erste Label.&lt;br&gt;
+<A NAME="35"></A> * @author   Christian Schalla
+<A NAME="36"></A> * @author   Andreas Truemper
+<A NAME="37"></A> * @version  1.1, 2002.10.30
+<A NAME="38"></A> */</FONT>
+<A NAME="39"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SliderPanel <FONT ID="Extends">extends</FONT> JPanel {
+<A NAME="40"></A>
+<A NAME="41"></A>
+<A NAME="42"></A>  <FONT ID="FormalComment">/**
+<A NAME="43"></A>   * Beschriftung des Schiebereglers.
+<A NAME="44"></A>   */</FONT>
+<A NAME="45"></A>  JLabel          lSliderLabel = <FONT ID="New">new</FONT> JLabel();
+<A NAME="46"></A>
+<A NAME="47"></A>
+<A NAME="48"></A>  <FONT ID="FormalComment">/**
+<A NAME="49"></A>   * Das Textfeld.
+<A NAME="50"></A>   */</FONT>
+<A NAME="51"></A>  JTextField      tfSliderTextField = <FONT ID="New">new</FONT> JTextField();
+<A NAME="52"></A>
+<A NAME="53"></A>
+<A NAME="54"></A>  <FONT ID="FormalComment">/**
+<A NAME="55"></A>   * Der Schieberegler.
+<A NAME="56"></A>   */</FONT>
+<A NAME="57"></A>  JSlider         slSlider;
+<A NAME="58"></A>
+<A NAME="59"></A>
+<A NAME="60"></A>  <FONT ID="FormalComment">/**
+<A NAME="61"></A>   * Die Beschriftung fuer ein optionales Einheitenzeichen.
+<A NAME="62"></A>   */</FONT>
+<A NAME="63"></A>  JLabel          lUnitLabel = <FONT ID="New">new</FONT> JLabel();
+<A NAME="64"></A>
+<A NAME="65"></A>
+<A NAME="66"></A>  <FONT ID="FormalComment">/**
+<A NAME="67"></A>   * Inhalt des Beschriftungsfeldes.
+<A NAME="68"></A>   */</FONT>
+<A NAME="69"></A>  <FONT ID="Private">private</FONT> String  label;
+<A NAME="70"></A>
+<A NAME="71"></A>
+<A NAME="72"></A>  <FONT ID="FormalComment">/**
+<A NAME="73"></A>   * Inhalt der Beschriftung fuer die Einheit.
+<A NAME="74"></A>   */</FONT>
+<A NAME="75"></A>  <FONT ID="Private">private</FONT> String  unit = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="76"></A>
+<A NAME="77"></A>
+<A NAME="78"></A>  <FONT ID="FormalComment">/**
+<A NAME="79"></A>   * Minimalwert fuer den Schieberegler.
+<A NAME="80"></A>   */</FONT>
+<A NAME="81"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     iminimum;
+<A NAME="82"></A>
+<A NAME="83"></A>
+<A NAME="84"></A>  <FONT ID="FormalComment">/**
+<A NAME="85"></A>   * Maximalwert fuer den Schieberegler.
+<A NAME="86"></A>   */</FONT>
+<A NAME="87"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     imaximum;
+<A NAME="88"></A>
+<A NAME="89"></A>
+<A NAME="90"></A>  <FONT ID="FormalComment">/**
+<A NAME="91"></A>   * Minimalwert fuer das Textfeld.
+<A NAME="92"></A>   */</FONT>
+<A NAME="93"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     itminimum;
+<A NAME="94"></A>
+<A NAME="95"></A>
+<A NAME="96"></A>  <FONT ID="FormalComment">/**
+<A NAME="97"></A>   * Maximalwert fuer das Textfeld.
+<A NAME="98"></A>   */</FONT>
+<A NAME="99"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     itmaximum;
+<A NAME="100"></A>
+<A NAME="101"></A>
+<A NAME="102"></A>  <FONT ID="FormalComment">/**
+<A NAME="103"></A>   * Tooltip-Text.
+<A NAME="104"></A>   */</FONT>
+<A NAME="105"></A>  <FONT ID="Private">private</FONT> String  strtoolTip = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="106"></A>
+<A NAME="107"></A>
+<A NAME="108"></A>  <FONT ID="FormalComment">/**
+<A NAME="109"></A>   * Grosser Abstand der Ticks.
+<A NAME="110"></A>   */</FONT>
+<A NAME="111"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     imajorspacing = <FONT ID="IntegerLiteral">1000</FONT>;
+<A NAME="112"></A>
+<A NAME="113"></A>
+<A NAME="114"></A>  <FONT ID="FormalComment">/**
+<A NAME="115"></A>   * Kleiner Abstand der Ticks.
+<A NAME="116"></A>   */</FONT>
+<A NAME="117"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     iminorspacing = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="118"></A>
+<A NAME="119"></A>
+<A NAME="120"></A>  <FONT ID="FormalComment">/**
+<A NAME="121"></A>   * Wenn dieser Merker wahr ist, ignoriert der Schieberegler das Event "item-State-Changed"
+<A NAME="122"></A>   * Der Schieberegler und das Textfeld werden synchronisiert, allerdings soll es auch
+<A NAME="123"></A>   * moeglich sein, im Textfeld groessere Werte einzugeben als fuer den Slider
+<A NAME="124"></A>   * erlaubt ist. Die lostFocus-Methode des Textfeldes prueft die Grenzen und
+<A NAME="125"></A>   * passt den Schieberegler an den Wert des Textfeldes an. Die setValue-Methode des
+<A NAME="126"></A>   * Schiebereglers loest aber wiederum ein state-Changed-Ereignis aus, somit wuerde das
+<A NAME="127"></A>   * Textfeld wieder auf das Maximum des Schiebereglers gesetzt. Daher wird zunaechst
+<A NAME="128"></A>   * diese Flag aus "true" gesetzt, dadurch wird dieses Ereignis unterdrueckt.
+<A NAME="129"></A>   */</FONT>
+<A NAME="130"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> ignoreStateChange = <FONT ID="False">false</FONT>;
+<A NAME="131"></A>
+<A NAME="132"></A>
+<A NAME="133"></A>  <FONT ID="FormalComment">/**
+<A NAME="134"></A>   * Layout zur Anordnung der einzelnen Oberflaechenelemente.
+<A NAME="135"></A>   */</FONT>
+<A NAME="136"></A>  GridBagLayout   gridBagLayout1 = <FONT ID="New">new</FONT> GridBagLayout();
+<A NAME="137"></A>
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Der Konstruktor erzeugt die einzelnen Bedienelemente und stellt diese
+<A NAME="141"></A>   * entsprechend dem gewaehlten Layout dar.
+<A NAME="142"></A>   */</FONT>
+<A NAME="143"></A>  <FONT ID="Public">public</FONT> SliderPanel() {
+<A NAME="144"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="145"></A>      jbInit();
+<A NAME="146"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="147"></A>      ex.printStackTrace();
+<A NAME="148"></A>    } 
+<A NAME="149"></A>  }   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="150"></A></FONT>
+<A NAME="151"></A>
+<A NAME="152"></A>  <FONT ID="FormalComment">/**
+<A NAME="153"></A>   * Der Konstruktor setzt die Beschriftung sowie den Minimal- und Maximalwert
+<A NAME="154"></A>   * des Schiebereglers und des Textfeldes. Die Grenzwerte sind bei Aufruf dieses
+<A NAME="155"></A>   * Konstruktors fuer den Schieberegler und das Textfeld identisch.
+<A NAME="156"></A>   * @param lab Beschriftung des Schiebereglers.
+<A NAME="157"></A>   * @param min Minimalwert fuer den Schieberegler und das Textfeld.
+<A NAME="158"></A>   * @param max Maximalwert fuer den Schieberegler und das Textfeld.
+<A NAME="159"></A>   */</FONT>
+<A NAME="160"></A>  <FONT ID="Public">public</FONT> SliderPanel(String lab, <FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="161"></A>    label = lab;
+<A NAME="162"></A>    iminimum = min;
+<A NAME="163"></A>    imaximum = max;
+<A NAME="164"></A>    itminimum = min;
+<A NAME="165"></A>    itmaximum = max;
+<A NAME="166"></A>  }   <FONT ID="SingleLineComment">// Kosntruktor SliderPanel(String lab, int min, int max)
+<A NAME="167"></A></FONT>
+<A NAME="168"></A>
+<A NAME="169"></A>  <FONT ID="FormalComment">/**
+<A NAME="170"></A>   * Der Konstruktor setzt die Beschriftung sowei den Minimal- und Maximalwert
+<A NAME="171"></A>   * des Schiebereglers und des Textfeldes. Die Grenzwerte sind bei Aufruf dieses
+<A NAME="172"></A>   * Konstruktors fuer den Schieberegler und das Textfeld identisch. Ausserdem
+<A NAME="173"></A>   * wird die Beschriftung fuer das Einheitenzeichen gesetzt.
+<A NAME="174"></A>   * @param lab Beschriftung des Schiebereglers.
+<A NAME="175"></A>   * @param min Minimalwert fuer den Schieberegler und das Textfeld.
+<A NAME="176"></A>   * @param max Maximalwert fuer den Schieberegler und das Textfeld.
+<A NAME="177"></A>   * @param u Beschriftung fuer das Einheitenzeichen.
+<A NAME="178"></A>   */</FONT>
+<A NAME="179"></A>  <FONT ID="Public">public</FONT> SliderPanel(String lab, <FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max, String u) {
+<A NAME="180"></A>    label = lab;
+<A NAME="181"></A>    iminimum = min;
+<A NAME="182"></A>    imaximum = max;
+<A NAME="183"></A>    itminimum = min;
+<A NAME="184"></A>    itmaximum = max;
+<A NAME="185"></A>    unit = u;
+<A NAME="186"></A>  }   <FONT ID="SingleLineComment">// Konstruktor  SliderPanel(String lab, int min, int max, String u)
+<A NAME="187"></A></FONT>
+<A NAME="188"></A>
+<A NAME="189"></A>  <FONT ID="FormalComment">/**
+<A NAME="190"></A>   * Die Methode stellt die Bedienelemente dieser Klasse dar.
+<A NAME="191"></A>   */</FONT>
+<A NAME="192"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fillPanel() {
+<A NAME="193"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="194"></A>      jbInit();
+<A NAME="195"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="196"></A>      ex.printStackTrace();
+<A NAME="197"></A>    } 
+<A NAME="198"></A>  }   <FONT ID="SingleLineComment">// Methode fillPanel
+<A NAME="199"></A></FONT> 
+<A NAME="200"></A>
+<A NAME="201"></A>  <FONT ID="FormalComment">/**
+<A NAME="202"></A>   * Die Methode legt den ToolTip-Text fest.
+<A NAME="203"></A>   * @param tip Der ToolTip-Text.
+<A NAME="204"></A>   */</FONT>
+<A NAME="205"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setToolTip(String tip) {
+<A NAME="206"></A>    strtoolTip = tip;
+<A NAME="207"></A>  }   <FONT ID="SingleLineComment">// Methode setToolTipText
+<A NAME="208"></A></FONT> 
+<A NAME="209"></A>
+<A NAME="210"></A>  <FONT ID="FormalComment">/**
+<A NAME="211"></A>   * Die Methode legt das erlaubte Intervall fuer Werte im Textfeld
+<A NAME="212"></A>   * fest. Dieses kann von dem Intervall fuer den Schieberegler getrennt
+<A NAME="213"></A>   * gesetzt werden.
+<A NAME="214"></A>   * @param min Kleinster erlaubter Wert fuer das Textfeld.
+<A NAME="215"></A>   * @param max Groesster erlaubter Wert fuer das Textfeld.
+<A NAME="216"></A>   */</FONT>
+<A NAME="217"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTextRange(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="218"></A>    itminimum = min;
+<A NAME="219"></A>    itmaximum = max;
+<A NAME="220"></A>  }   <FONT ID="SingleLineComment">// Methode setTextRange
+<A NAME="221"></A></FONT> 
+<A NAME="222"></A>
+<A NAME="223"></A>  <FONT ID="FormalComment">/**
+<A NAME="224"></A>   * Die Methode legt das kleine und grosse TickSpacing fuer den Schieberegler
+<A NAME="225"></A>   * fest.
+<A NAME="226"></A>   * @param minor Das kleine Tickspacing.
+<A NAME="227"></A>   * @param major Das grosse Tickspacing.
+<A NAME="228"></A>   */</FONT>
+<A NAME="229"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTickSpacing(<FONT ID="Int">int</FONT> major, <FONT ID="Int">int</FONT> minor) {
+<A NAME="230"></A>    imajorspacing = major;
+<A NAME="231"></A>    iminorspacing = minor;
+<A NAME="232"></A>  }   <FONT ID="SingleLineComment">// Methode setTickSpacing(int major, int minor)
+<A NAME="233"></A></FONT> 
+<A NAME="234"></A>
+<A NAME="235"></A>  <FONT ID="FormalComment">/**
+<A NAME="236"></A>   * Die Methode erzeugt die einzelnen Bedienelemente dieser Klasse und stellt
+<A NAME="237"></A>   * diese dar.
+<A NAME="238"></A>   */</FONT>
+<A NAME="239"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="240"></A>    GridBagConstraints  c = <FONT ID="New">new</FONT> GridBagConstraints();
+<A NAME="241"></A>
+<A NAME="242"></A>    <FONT ID="This">this</FONT>.setLayout(gridBagLayout1);
+<A NAME="243"></A>
+<A NAME="244"></A>    c.fill = GridBagConstraints.BOTH;
+<A NAME="245"></A>
+<A NAME="246"></A>    <FONT ID="SingleLineComment">// Erste Beschriftung Einfuegen
+<A NAME="247"></A></FONT>    c.weightx = <FONT ID="FloatPointLiteral">1.0</FONT>;
+<A NAME="248"></A>    c.weighty = <FONT ID="FloatPointLiteral">0.5</FONT>;
+<A NAME="249"></A>
+<A NAME="250"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="251"></A></FONT>    c.insets = <FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="252"></A>    gridBagLayout1.setConstraints(lSliderLabel, c);
+<A NAME="253"></A>    add(lSliderLabel);
+<A NAME="254"></A>    lSliderLabel.setText(label);
+<A NAME="255"></A>    lSliderLabel.setForeground(Color.black);
+<A NAME="256"></A>
+<A NAME="257"></A>    <FONT ID="SingleLineComment">// Textfeld einfuegen
+<A NAME="258"></A></FONT>    gridBagLayout1.setConstraints(tfSliderTextField, c);
+<A NAME="259"></A>    add(tfSliderTextField);
+<A NAME="260"></A>    tfSliderTextField.setDocument(<FONT ID="New">new</FONT> <A HREF="../../virtual/tools/IntegerDocument.java.html">IntegerDocument</A>());
+<A NAME="261"></A>    tfSliderTextField.setText(<FONT ID="StringLiteral">""</FONT> + iminimum);
+<A NAME="262"></A>
+<A NAME="263"></A>    <FONT ID="SingleLineComment">// Zweite Beschriftung einfuegen
+<A NAME="264"></A></FONT>    c.gridwidth = GridBagConstraints.REMAINDER;
+<A NAME="265"></A>    gridBagLayout1.setConstraints(lUnitLabel, c);
+<A NAME="266"></A>    add(lUnitLabel);
+<A NAME="267"></A>    lUnitLabel.setText(<FONT ID="StringLiteral">" "</FONT> + unit);
+<A NAME="268"></A>    lUnitLabel.setForeground(Color.black);
+<A NAME="269"></A>
+<A NAME="270"></A>    <FONT ID="SingleLineComment">// Slider einfuegen
+<A NAME="271"></A></FONT>    slSlider = <FONT ID="New">new</FONT> JSlider(JSlider.HORIZONTAL, iminimum, imaximum, iminimum);
+<A NAME="272"></A>    c.weightx = <FONT ID="FloatPointLiteral">3.0</FONT>;
+<A NAME="273"></A>    c.weighty = <FONT ID="FloatPointLiteral">0.5</FONT>;
+<A NAME="274"></A>
+<A NAME="275"></A>    gridBagLayout1.setConstraints(slSlider, c);
+<A NAME="276"></A>    add(slSlider);
+<A NAME="277"></A>    slSlider.setToolTipText(strtoolTip);
+<A NAME="278"></A>    slSlider.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Dialog"</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="279"></A>    slSlider.setPaintLabels(<FONT ID="True">true</FONT>);
+<A NAME="280"></A>    slSlider.setMajorTickSpacing(imajorspacing);
+<A NAME="281"></A>    slSlider.setValue(iminimum);
+<A NAME="282"></A>    tfSliderTextField.setText(<FONT ID="StringLiteral">""</FONT> + slSlider.getValue());
+<A NAME="283"></A>
+<A NAME="284"></A>    <FONT ID="If">if</FONT> (iminorspacing &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="285"></A>      slSlider.setMinorTickSpacing(iminorspacing);
+<A NAME="286"></A>    } 
+<A NAME="287"></A>
+<A NAME="288"></A>    <FONT ID="This">this</FONT>.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="289"></A>
+<A NAME="290"></A>    <FONT ID="SingleLineComment">// Action-Listener, um die Werte von Textfeld und Slider zu synchronisieren
+<A NAME="291"></A></FONT>    slSlider.addChangeListener(<FONT ID="New">new</FONT> javax.swing.event.ChangeListener() {
+<A NAME="292"></A>
+<A NAME="293"></A>
+<A NAME="294"></A>      <FONT ID="FormalComment">/**
+<A NAME="295"></A>       * Method declaration
+<A NAME="296"></A>       * 
+<A NAME="297"></A>       * 
+<A NAME="298"></A>       * @param e
+<A NAME="299"></A>       * 
+<A NAME="300"></A>       * @see
+<A NAME="301"></A>       */</FONT>
+<A NAME="302"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stateChanged(ChangeEvent e) {
+<A NAME="303"></A>        slSlider_stateChanged();
+<A NAME="304"></A>      } 
+<A NAME="305"></A>
+<A NAME="306"></A>    });
+<A NAME="307"></A>
+<A NAME="308"></A>    tfSliderTextField.addFocusListener(<FONT ID="New">new</FONT> java.awt.event.FocusAdapter() {
+<A NAME="309"></A>
+<A NAME="310"></A>
+<A NAME="311"></A>      <FONT ID="FormalComment">/**
+<A NAME="312"></A>       * Method declaration
+<A NAME="313"></A>       * 
+<A NAME="314"></A>       * 
+<A NAME="315"></A>       * @param e
+<A NAME="316"></A>       * 
+<A NAME="317"></A>       * @see
+<A NAME="318"></A>       */</FONT>
+<A NAME="319"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> focusLost(FocusEvent e) {
+<A NAME="320"></A>        tfSliderTextField_focusLost();
+<A NAME="321"></A>      } 
+<A NAME="322"></A>
+<A NAME="323"></A>    });
+<A NAME="324"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="325"></A></FONT> 
+<A NAME="326"></A>
+<A NAME="327"></A>  <FONT ID="FormalComment">/**
+<A NAME="328"></A>   * Die Methode wird aufgerufen, wenn sich Zustand des Schieberegler aendert.
+<A NAME="329"></A>   * Dann wird das Textfeld mit dem Schieberegler synchronisiert.
+<A NAME="330"></A>   */</FONT>
+<A NAME="331"></A>  <FONT ID="Void">void</FONT> slSlider_stateChanged() {
+<A NAME="332"></A>    <FONT ID="Int">int</FONT> tr;
+<A NAME="333"></A>
+<A NAME="334"></A>    tr = slSlider.getValue();
+<A NAME="335"></A>
+<A NAME="336"></A>    <FONT ID="If">if</FONT> (!ignoreStateChange) {
+<A NAME="337"></A>      tfSliderTextField.setText(<FONT ID="StringLiteral">""</FONT> + tr);
+<A NAME="338"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="339"></A>      ignoreStateChange = <FONT ID="False">false</FONT>;
+<A NAME="340"></A>    }   <FONT ID="SingleLineComment">// if-else
+<A NAME="341"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode  slSlider_stateChanged()
+<A NAME="342"></A></FONT> 
+<A NAME="343"></A>
+<A NAME="344"></A>  <FONT ID="FormalComment">/**
+<A NAME="345"></A>   * Die Methode ueberprueft die Gueltigkeit des Wertes im Textfeld, wenn dieses
+<A NAME="346"></A>   * den Fokus verliert.
+<A NAME="347"></A>   */</FONT>
+<A NAME="348"></A>  <FONT ID="Void">void</FONT> tfSliderTextField_focusLost() {
+<A NAME="349"></A>    ignoreStateChange = <FONT ID="True">true</FONT>;
+<A NAME="350"></A>    <FONT ID="Int">int</FONT> tr;
+<A NAME="351"></A>
+<A NAME="352"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="353"></A>      tr = Integer.parseInt(tfSliderTextField.getText());
+<A NAME="354"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="355"></A>      tr = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="356"></A>      Toolkit.getDefaultToolkit().beep();
+<A NAME="357"></A>      tfSliderTextField.setText(<FONT ID="StringLiteral">"0"</FONT>);
+<A NAME="358"></A>    } 
+<A NAME="359"></A>    <FONT ID="If">if</FONT> (tr &gt; itmaximum) {
+<A NAME="360"></A>      tr = itmaximum;
+<A NAME="361"></A>      Toolkit.getDefaultToolkit().beep();
+<A NAME="362"></A>      tfSliderTextField.setText(<FONT ID="StringLiteral">""</FONT> + tr);
+<A NAME="363"></A>    } 
+<A NAME="364"></A>    <FONT ID="If">if</FONT> (tr &lt; itminimum) {
+<A NAME="365"></A>      tr = itminimum;
+<A NAME="366"></A>      Toolkit.getDefaultToolkit().beep();
+<A NAME="367"></A>      tfSliderTextField.setText(<FONT ID="StringLiteral">""</FONT> + tr);
+<A NAME="368"></A>    } 
+<A NAME="369"></A>    slSlider.setValue(tr);
+<A NAME="370"></A>  }   <FONT ID="SingleLineComment">// Methode tfSliderTextField_focusLost()
+<A NAME="371"></A></FONT> 
+<A NAME="372"></A>
+<A NAME="373"></A>  <FONT ID="FormalComment">/**
+<A NAME="374"></A>   * Die Methode liefert den aktuellen Wert des Textfeldes.
+<A NAME="375"></A>   * @return Der aktuelle Wert des Textfeldes.
+<A NAME="376"></A>   */</FONT>
+<A NAME="377"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getValue() {
+<A NAME="378"></A>
+<A NAME="379"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="380"></A>     * Kein Test auf Integer und Wertebereich mehr noetig, dies wird im bereits
+<A NAME="381"></A>     * Event-Handler erledigt.
+<A NAME="382"></A>     */</FONT>
+<A NAME="383"></A>    <FONT ID="Return">return</FONT> Integer.parseInt(tfSliderTextField.getText());
+<A NAME="384"></A>  }   <FONT ID="SingleLineComment">// Methode getValue
+<A NAME="385"></A></FONT> 
+<A NAME="386"></A>
+<A NAME="387"></A>  <FONT ID="FormalComment">/**
+<A NAME="388"></A>   * Die Methode setzt den Wert des Schiebereglers. Dies ist noetig, um den
+<A NAME="389"></A>   * Schieberegler mit dem Textfeld zu synchronisieren, wenn in das
+<A NAME="390"></A>   * Textfeld ein Wert eingegeben wurde.
+<A NAME="391"></A>   * @param ivalue Der Wert, auf den der Schieberegler gesetzt werden soll.
+<A NAME="392"></A>   */</FONT>
+<A NAME="393"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValue(<FONT ID="Int">int</FONT> ivalue) {
+<A NAME="394"></A>    slSlider.setValue(ivalue);
+<A NAME="395"></A>  }   <FONT ID="SingleLineComment">// Methode setValue
+<A NAME="396"></A></FONT> 
+<A NAME="397"></A>
+<A NAME="398"></A>  <FONT ID="FormalComment">/**
+<A NAME="399"></A>   * Die Methode liefert eine Referenz auf das Textfeld zurueck. Dadurch koennen
+<A NAME="400"></A>   * von aussen EventListener hinzugefuegt werden.
+<A NAME="401"></A>   * @return Eine Referenz auf das Textfeld.
+<A NAME="402"></A>   */</FONT>
+<A NAME="403"></A>  <FONT ID="Public">public</FONT> JTextField getTextFieldReference() {
+<A NAME="404"></A>    <FONT ID="Return">return</FONT> tfSliderTextField;
+<A NAME="405"></A>  }   <FONT ID="SingleLineComment">// Methode  getTextFieldReference()
+<A NAME="406"></A></FONT> 
+<A NAME="407"></A>
+<A NAME="408"></A>  <FONT ID="FormalComment">/**
+<A NAME="409"></A>   * Wert, auf den der Slider minimal eingestellt werden kann.
+<A NAME="410"></A>   * Die Werte Minimum und Maximum im Konstruktor bestimmen die dargestellten
+<A NAME="411"></A>   * Beschriftungen UND die minimalen und maximalen Werte. Wenn die minimal
+<A NAME="412"></A>   * und maximal einstellbaren Werte abweichen, werden sie über diese Methode
+<A NAME="413"></A>   * explizit gesetzt.
+<A NAME="414"></A>   * @param min Minimal einstellbarer Wert für den Schieberegler.
+<A NAME="415"></A>   */</FONT>
+<A NAME="416"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSliderMinimum(<FONT ID="Int">int</FONT> min) {
+<A NAME="417"></A>    slSlider.getModel().setMinimum(min);
+<A NAME="418"></A>  }   <FONT ID="SingleLineComment">// Methode  setSliderMinimum()
+<A NAME="419"></A></FONT> 
+<A NAME="420"></A>
+<A NAME="421"></A>  <FONT ID="FormalComment">/**
+<A NAME="422"></A>   * Wert, auf den der Slider maximal eingestellt werden kann.
+<A NAME="423"></A>   * Die Werte Minimum und Maximum im Konstruktor bestimmen die dargestellten
+<A NAME="424"></A>   * Beschriftungen UND die minimalen und maximalen Werte. Wenn die minimal
+<A NAME="425"></A>   * und maximal einstellbaren Werte abweichen, werden sie über diese Methode
+<A NAME="426"></A>   * explizit gesetzt.
+<A NAME="427"></A>   * @param max Maximal einstellbarer Wert für den Schieberegler.
+<A NAME="428"></A>   */</FONT>
+<A NAME="429"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSliderMaximum(<FONT ID="Int">int</FONT> max) {
+<A NAME="430"></A>    slSlider.getModel().setMaximum(max);
+<A NAME="431"></A>  }   <FONT ID="SingleLineComment">// Methode  setSliderMaximum()
+<A NAME="432"></A></FONT> 
+<A NAME="433"></A>
+<A NAME="434"></A>}
+<A NAME="435"></A>
+<A NAME="436"></A>
+<A NAME="437"></A>
+<A NAME="438"></A>
+<A NAME="439"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="440"></A>
+<A NAME="441"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SliderPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.sequences.TurboSpinEchoUI (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TurboSpinEchoUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Diese Klasse erzeugt die Bedienelemente fuer eine Turbo-Spin-Echo-Sequenz und stellt
+<A NAME="32"></A> * diese dar.
+<A NAME="33"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="34"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="35"></A> * Plausible Werte fuer Slider eingetragen. &lt;br&gt;
+<A NAME="36"></A> * Thomas Hacklaender 2002.10.14:
+<A NAME="37"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="38"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="39"></A> * @author   Christian Schalla
+<A NAME="40"></A> * @author   Andreas Truemper
+<A NAME="41"></A> * @version  1.2, 2002.10.14
+<A NAME="42"></A> */</FONT>
+<A NAME="43"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TurboSpinEchoUI <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/sequences/PulsesequenceUI.java.html">PulsesequenceUI</A> {
+<A NAME="44"></A>
+<A NAME="45"></A>
+<A NAME="46"></A>  <FONT ID="FormalComment">/**
+<A NAME="47"></A>   * Schieberegler fuer den zeitlichen Abstand der Echos.
+<A NAME="48"></A>   */</FONT>
+<A NAME="49"></A>  <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>           pESPPanel;
+<A NAME="50"></A>
+<A NAME="51"></A>
+<A NAME="52"></A>  <FONT ID="FormalComment">/**
+<A NAME="53"></A>   * Schieberegler fuer die TR-Zeit.
+<A NAME="54"></A>   */</FONT>
+<A NAME="55"></A>  <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>           ptrPanel;
+<A NAME="56"></A>
+<A NAME="57"></A>
+<A NAME="58"></A>  <FONT ID="FormalComment">/**
+<A NAME="59"></A>   * Schiberegler fuer die effektive TE-zeit.
+<A NAME="60"></A>   */</FONT>
+<A NAME="61"></A>  <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>           pteffPanel;
+<A NAME="62"></A>
+<A NAME="63"></A>
+<A NAME="64"></A>  <FONT ID="FormalComment">/**
+<A NAME="65"></A>   * Eingabebefeld fuer die Anzahl der echos pro Repititionszyklus.
+<A NAME="66"></A>   */</FONT>
+<A NAME="67"></A>  <A HREF="../../../virtual/tools/LabelTFLabelETLPanel.java.html">LabelTFLabelETLPanel</A>  pETL = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/LabelTFLabelETLPanel.java.html">LabelTFLabelETLPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.etl.title"</FONT>), <FONT ID="StringLiteral">"1"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="68"></A>
+<A NAME="69"></A>
+<A NAME="70"></A>  <FONT ID="FormalComment">/**
+<A NAME="71"></A>   * Voreingestellter zeitlicher Abstand zwischen den Echos (echo spacing) von 10 ms.
+<A NAME="72"></A>   */</FONT>
+<A NAME="73"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>           ESPTime = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="74"></A>
+<A NAME="75"></A>
+<A NAME="76"></A>  <FONT ID="FormalComment">/**
+<A NAME="77"></A>   * Voreingestellte TR-Zeit von 1000 ms.
+<A NAME="78"></A>   */</FONT>
+<A NAME="79"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>           trTime = <FONT ID="IntegerLiteral">1000</FONT>;
+<A NAME="80"></A>
+<A NAME="81"></A>
+<A NAME="82"></A>  <FONT ID="FormalComment">/**
+<A NAME="83"></A>   * Voreingestellte effektive TE-Zeit von 40 ms.
+<A NAME="84"></A>   */</FONT>
+<A NAME="85"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>           teffTime = <FONT ID="IntegerLiteral">40</FONT>;
+<A NAME="86"></A>
+<A NAME="87"></A>
+<A NAME="88"></A>  <FONT ID="FormalComment">/**
+<A NAME="89"></A>   * Voreingestellte Anzah von Echos pro Repititionszyklus von 3.
+<A NAME="90"></A>   */</FONT>
+<A NAME="91"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>           ETL = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="92"></A>
+<A NAME="93"></A>
+<A NAME="94"></A>  <FONT ID="FormalComment">/**
+<A NAME="95"></A>   * Standardkonstruktor.
+<A NAME="96"></A>   */</FONT>
+<A NAME="97"></A>  <FONT ID="Public">public</FONT> TurboSpinEchoUI() {}
+<A NAME="98"></A>
+<A NAME="99"></A>
+<A NAME="100"></A>  <FONT ID="FormalComment">/**
+<A NAME="101"></A>   * Diese Methode fuegt die Sequenzspezifischen Steuerelemente in das Panel
+<A NAME="102"></A>   * ein. Zunaechst wird fillPanel der Oberklasse aufzurufen, um Start- und
+<A NAME="103"></A>   * Abbrechenknopf einzufuegen, die in jeder Sequenz enthalten sind.
+<A NAME="104"></A>   */</FONT>
+<A NAME="105"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="106"></A>
+<A NAME="107"></A>    <FONT ID="SingleLineComment">// Enrichten des Eingabefeldes fuer die Anazhl der Echos pro Repititionszyklus
+<A NAME="108"></A></FONT>    pETL.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">199</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="109"></A>    pETL.setRange(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">16</FONT>);
+<A NAME="110"></A>    myPanel.add(pETL);
+<A NAME="111"></A>    pETL.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="112"></A>
+<A NAME="113"></A>
+<A NAME="114"></A>      <FONT ID="FormalComment">/**
+<A NAME="115"></A>       * Method declaration
+<A NAME="116"></A>       * 
+<A NAME="117"></A>       * 
+<A NAME="118"></A>       * @param e
+<A NAME="119"></A>       * 
+<A NAME="120"></A>       * @see
+<A NAME="121"></A>       */</FONT>
+<A NAME="122"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="123"></A>        updateTotalTime();
+<A NAME="124"></A>      } 
+<A NAME="125"></A>
+<A NAME="126"></A>    });
+<A NAME="127"></A>
+<A NAME="128"></A>    <FONT ID="SingleLineComment">// Einrichten des Schiebereglers fuer die Repititionszeit.
+<A NAME="129"></A></FONT>    ptrPanel = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.tr.title"</FONT>), <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">6100</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.tr.unit"</FONT>));
+<A NAME="130"></A>    ptrPanel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="131"></A>    ptrPanel.setToolTip(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.tr.tooltip"</FONT>));
+<A NAME="132"></A>    ptrPanel.setTextRange(<FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">6100</FONT>);
+<A NAME="133"></A>    ptrPanel.setTickSpacing(<FONT ID="IntegerLiteral">2000</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="134"></A>    ptrPanel.fillPanel();
+<A NAME="135"></A>    ptrPanel.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="136"></A>
+<A NAME="137"></A>
+<A NAME="138"></A>      <FONT ID="FormalComment">/**
+<A NAME="139"></A>       * Method declaration
+<A NAME="140"></A>       * 
+<A NAME="141"></A>       * 
+<A NAME="142"></A>       * @param e
+<A NAME="143"></A>       * 
+<A NAME="144"></A>       * @see
+<A NAME="145"></A>       */</FONT>
+<A NAME="146"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="147"></A>        updateTotalTime();
+<A NAME="148"></A>      } 
+<A NAME="149"></A>
+<A NAME="150"></A>    });
+<A NAME="151"></A>    myPanel.add(ptrPanel);
+<A NAME="152"></A>
+<A NAME="153"></A>    <FONT ID="SingleLineComment">// Einrichten des Schiebereglers fuer den zeitlichen Abstand zwischen den Echos.
+<A NAME="154"></A></FONT>    pESPPanel = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.esp.title"</FONT>), <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">102</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.esp.unit"</FONT>));
+<A NAME="155"></A>    pESPPanel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">78</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="156"></A>    pESPPanel.setToolTip(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.esp.tooltip"</FONT>));
+<A NAME="157"></A>    pESPPanel.setTextRange(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">102</FONT>);
+<A NAME="158"></A>    pESPPanel.setTickSpacing(<FONT ID="IntegerLiteral">20</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="159"></A>    pESPPanel.fillPanel();
+<A NAME="160"></A>    myPanel.add(pESPPanel);
+<A NAME="161"></A>
+<A NAME="162"></A>    <FONT ID="SingleLineComment">// Einrichten des Schiebereglers fuer die effektive TE-Zeit.
+<A NAME="163"></A></FONT>    pteffPanel = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.teff.title"</FONT>), <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">1010</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.teff.unit"</FONT>));
+<A NAME="164"></A>    pteffPanel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">151</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="165"></A>    pteffPanel.setToolTip(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.teff.tooltip"</FONT>));
+<A NAME="166"></A>    pteffPanel.setTextRange(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">1010</FONT>);
+<A NAME="167"></A>    pteffPanel.setTickSpacing(<FONT ID="IntegerLiteral">200</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="168"></A>    pteffPanel.fillPanel();
+<A NAME="169"></A>    myPanel.add(pteffPanel);
+<A NAME="170"></A>
+<A NAME="171"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="172"></A></FONT>    getValues();
+<A NAME="173"></A>    updateTotalTime();
+<A NAME="174"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="175"></A></FONT> 
+<A NAME="176"></A>
+<A NAME="177"></A>  <FONT ID="FormalComment">/**
+<A NAME="178"></A>   * Die Methode setzt die  Bedienelemente der Sequenzparameter auf die in
+<A NAME="179"></A>   * den entsprecheden Klassenvariablen gespeicherten Werte.
+<A NAME="180"></A>   */</FONT>
+<A NAME="181"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getValues() {
+<A NAME="182"></A>    pESPPanel.setValue(ESPTime);
+<A NAME="183"></A>    ptrPanel.setValue(trTime);
+<A NAME="184"></A>    pteffPanel.setValue(teffTime);
+<A NAME="185"></A>    pETL.setValue(<FONT ID="StringLiteral">""</FONT> + ETL);
+<A NAME="186"></A>  }   <FONT ID="SingleLineComment">// Methode getValues
+<A NAME="187"></A></FONT> 
+<A NAME="188"></A>
+<A NAME="189"></A>  <FONT ID="FormalComment">/**
+<A NAME="190"></A>   * Die Methode liest die aktuellen Sequenzparameterwerte aus den
+<A NAME="191"></A>   * Bedienelementen aus und speichert sie in den entsprechenden Klassenvariablen.
+<A NAME="192"></A>   */</FONT>
+<A NAME="193"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValues() {
+<A NAME="194"></A>    ESPTime = pESPPanel.getValue();
+<A NAME="195"></A>    trTime = ptrPanel.getValue();
+<A NAME="196"></A>    ETL = pETL.getValue();
+<A NAME="197"></A>    teffTime = pteffPanel.getValue();
+<A NAME="198"></A>  }   <FONT ID="SingleLineComment">// Methode setValues
+<A NAME="199"></A></FONT> 
+<A NAME="200"></A>
+<A NAME="201"></A>  <FONT ID="FormalComment">/**
+<A NAME="202"></A>   * Die Methode wird aufgerufen, wenn der Startknopf gedrueckt wurde.
+<A NAME="203"></A>   * Es wird eine neue Instanz der Berechnungsklasse erzeugt. Dieser werden die
+<A NAME="204"></A>   * aktuellen Sequenzparameter mitgeteilt. Dann wird die Berechnung des
+<A NAME="205"></A>   * Intensitaetsbildes angestossen.
+<A NAME="206"></A>   * @param e Das Ereignis, das beim Betaetigen des startknopfes ausgeloest wird.
+<A NAME="207"></A>   */</FONT>
+<A NAME="208"></A>  <FONT ID="Void">void</FONT> pbStart_actionPerformed(ActionEvent e) {
+<A NAME="209"></A>    <FONT ID="If">if</FONT> (pETL.getValue() * pESPPanel.getValue() &gt;= ptrPanel.getValue()) {
+<A NAME="210"></A>      ErrorMessage.showMessage(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.exception.etltr"</FONT>));
+<A NAME="211"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="212"></A>      <FONT ID="If">if</FONT> (pteffPanel.getValue() &gt;= ptrPanel.getValue()) {
+<A NAME="213"></A>        ErrorMessage.showMessage(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"turbospinecho.exception.tetr"</FONT>));
+<A NAME="214"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="215"></A>        <FONT ID="Super">super</FONT>.pbStart_actionPerformed(e);
+<A NAME="216"></A>
+<A NAME="217"></A>        <FONT ID="SingleLineComment">// Erzeugen einer neuen Instanz der Berechnungsklasse
+<A NAME="218"></A></FONT>        sequence = <FONT ID="New">new</FONT> <A HREF="../../../virtual/mrt/sequences/TurboSpinEcho.java.html">TurboSpinEcho</A>();
+<A NAME="219"></A>        sequence.setUI(<FONT ID="This">this</FONT>);
+<A NAME="220"></A>
+<A NAME="221"></A>        <A HREF="../../../virtual/mrt/sequences/TurboSpinEcho.java.html">TurboSpinEcho</A> tsesequence = (<A HREF="../../../virtual/mrt/sequences/TurboSpinEcho.java.html">TurboSpinEcho</A>) sequence;
+<A NAME="222"></A>
+<A NAME="223"></A>        <FONT ID="SingleLineComment">// Der Berechnungsklasse die aktuellen Parameterwerte mitteilen
+<A NAME="224"></A></FONT>        tsesequence.setTETime(pteffPanel.getValue());
+<A NAME="225"></A>        tsesequence.setTRTime(ptrPanel.getValue());
+<A NAME="226"></A>        tsesequence.setETL(pETL.getValue());
+<A NAME="227"></A>        tsesequence.setESPTime(pESPPanel.getValue());
+<A NAME="228"></A>
+<A NAME="229"></A>        <FONT ID="SingleLineComment">// Berechnung des Intensitaetsbildes anstossen
+<A NAME="230"></A></FONT>        mainFrame.createIntensityImage(sequence);
+<A NAME="231"></A>      }   <FONT ID="SingleLineComment">// if-else
+<A NAME="232"></A></FONT>     }    <FONT ID="SingleLineComment">// if-else
+<A NAME="233"></A></FONT>   }      <FONT ID="SingleLineComment">// Methode pbStart_actionPerformed
+<A NAME="234"></A></FONT> 
+<A NAME="235"></A>
+<A NAME="236"></A>  <FONT ID="FormalComment">/**
+<A NAME="237"></A>   * Die Methode wird aufgerufen, wenn der Stopknopf gedrueckt wurde. In diesem
+<A NAME="238"></A>   * Fall wird der Thread zur Berechnung des Bildes gestoppt und der Status des
+<A NAME="239"></A>   * Start- und Stopknopfes zurueckgesetzt.
+<A NAME="240"></A>   * @param e Das Ereignis, das beim Betaetigen des Stoppknopfes ausgeloest wird.
+<A NAME="241"></A>   */</FONT>
+<A NAME="242"></A>  <FONT ID="Void">void</FONT> pbStop_actionPerformed(ActionEvent e) {
+<A NAME="243"></A>    <FONT ID="Super">super</FONT>.pbStop_actionPerformed(e);
+<A NAME="244"></A>
+<A NAME="245"></A>    <FONT ID="SingleLineComment">// Stoppen des Berechnungsthreads
+<A NAME="246"></A></FONT>    sequence.stop();
+<A NAME="247"></A>  }   <FONT ID="SingleLineComment">// Methode pbStop_actionPerformed
+<A NAME="248"></A></FONT> 
+<A NAME="249"></A>
+<A NAME="250"></A>  <FONT ID="FormalComment">/**
+<A NAME="251"></A>   * Die Methode berechnet aus den aktuell eingestellten Sequenzparameterwerten
+<A NAME="252"></A>   * die theoretische Gesamtdauer der Berechnung des Bildes. Diese Zeit wird im
+<A NAME="253"></A>   * Kontrollbereich des Hauptfensters angezeigt.
+<A NAME="254"></A>   */</FONT>
+<A NAME="255"></A>  <FONT ID="Void">void</FONT> updateTotalTime() {
+<A NAME="256"></A>    <FONT ID="Long">long</FONT>  totaltime;
+<A NAME="257"></A>
+<A NAME="258"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="259"></A>      totaltime = <FONT ID="IntegerLiteral">256</FONT> * ptrPanel.getValue() * (pRect.getValue() / <FONT ID="IntegerLiteral">8</FONT>) / pETL.getValue();
+<A NAME="260"></A>      ;
+<A NAME="261"></A>
+<A NAME="262"></A>      totaltime *= pNEX.getValue();
+<A NAME="263"></A>
+<A NAME="264"></A>      <FONT ID="If">if</FONT> (tbPhOS.isSelected()) {
+<A NAME="265"></A>        <FONT ID="If">if</FONT> (pNEX.getValue() == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="266"></A>
+<A NAME="267"></A>          <FONT ID="SingleLineComment">// Phasen-OS mit einer Messung:
+<A NAME="268"></A></FONT>          <FONT ID="SingleLineComment">// -&gt; Messzeit verdoppelt sich,
+<A NAME="269"></A></FONT>          <FONT ID="SingleLineComment">// S/N Verhaeltnis verbessert sich um 1,41
+<A NAME="270"></A></FONT>          totaltime *= <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="271"></A>        } 
+<A NAME="272"></A>      } 
+<A NAME="273"></A>
+<A NAME="274"></A>      displayTotalTime(totaltime);
+<A NAME="275"></A>
+<A NAME="276"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="277"></A>  } 
+<A NAME="278"></A>
+<A NAME="279"></A>}
+<A NAME="280"></A>
+<A NAME="281"></A>
+<A NAME="282"></A>
+<A NAME="283"></A>
+<A NAME="284"></A>
+<A NAME="285"></A>
+<A NAME="286"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="287"></A>
+<A NAME="288"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TurboSpinEchoUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

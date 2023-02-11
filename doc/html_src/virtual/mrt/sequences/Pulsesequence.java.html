@@ -1,0 +1,844 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.sequences.Pulsesequence (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Pulsesequence</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.index.html" target="packageFrame">virtual.mrt.*</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts.*</A>;
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Diese Klasse ist die Oberklasse fuer alle Pulssequenz-Berechnungsklassen.
+<A NAME="32"></A> * Sie erweitert die Klasse Thread. Somit sind alle Pulssequenzen Threads.
+<A NAME="33"></A> * Das bietet die Moeglichkeit,
+<A NAME="34"></A> * die Abarbeitung zu stoppen und Fortschrittsanzeigen auszugeben.
+<A NAME="35"></A> * Die Klasse definiert Methoden zur Berechnung eines Bildes mittels der
+<A NAME="36"></A> * Pulssequenzformel. Da die Klasse abstract ist, muss sie erweitert werden.
+<A NAME="37"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="38"></A> * Thomas Hacklaender 2006.01.09:
+<A NAME="39"></A> * Kleinere Korrekturen. Mit "tha:" bezeichnet. &lt;br&gt;
+<A NAME="40"></A> * Thomas Hacklaender 2006.01.09:
+<A NAME="41"></A> * Medianfilterung fuer dieIntensity Matrix eingebaut. &lt;br&gt;
+<A NAME="42"></A> * Thomas Hacklaender 2000.02.13:
+<A NAME="43"></A> * Eine Verkleinerung des FOV bewirkt eine Vergroesserung des
+<A NAME="44"></A> * Bildes. integrateFOVInIntensityMartrix ersetzt durch scaleFOV. &lt;br&gt;
+<A NAME="45"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="46"></A> * simulateXAliasing in simulateFreqAliasing umbenannt. &lt;br&gt;
+<A NAME="47"></A> * Thomas Hacklaender 2000.08.14:
+<A NAME="48"></A> * Debugtext in convertIntensityMatrixTo12Bit auskommentiert.&lt;br&gt;
+<A NAME="49"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="50"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="51"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="52"></A> * @author   Christian Schalla
+<A NAME="53"></A> * @author   Andreas Truemper
+<A NAME="54"></A> * @version  1.2, 2002.10.13
+<A NAME="55"></A> */</FONT>
+<A NAME="56"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> Pulsesequence <FONT ID="Extends">extends</FONT> Thread {
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>  <FONT ID="FormalComment">/**
+<A NAME="60"></A>   * Matrix mit den T1-Werten.
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>[][]         T1Matrix;
+<A NAME="63"></A>
+<A NAME="64"></A>
+<A NAME="65"></A>  <FONT ID="FormalComment">/**
+<A NAME="66"></A>   * Matrix mit den T2-Werten.
+<A NAME="67"></A>   */</FONT>
+<A NAME="68"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>[][]         T2Matrix;
+<A NAME="69"></A>
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="FormalComment">/**
+<A NAME="72"></A>   * Matrix mit den Werten fuer die Protenendichte.
+<A NAME="73"></A>   */</FONT>
+<A NAME="74"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>[][]         PDMatrix;
+<A NAME="75"></A>
+<A NAME="76"></A>
+<A NAME="77"></A>  <FONT ID="FormalComment">/**
+<A NAME="78"></A>   * Ergebnismatrix, enthaelt die Intensitaetswerte.
+<A NAME="79"></A>   */</FONT>
+<A NAME="80"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>[][]         IntensityMatrix;
+<A NAME="81"></A>
+<A NAME="82"></A>
+<A NAME="83"></A>  <FONT ID="FormalComment">/**
+<A NAME="84"></A>   * Ergebnismatrix, automatisch auf 12-Bit gefenstert.
+<A NAME="85"></A>   */</FONT>
+<A NAME="86"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>[][]         Result12Bit;
+<A NAME="87"></A>
+<A NAME="88"></A>
+<A NAME="89"></A>  <FONT ID="FormalComment">/**
+<A NAME="90"></A>   * Das Ergebnisbild (12-Bit) als ImagePlus-Objekt.
+<A NAME="91"></A>   */</FONT>
+<A NAME="92"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../../virtual/tools/ImagePlus.java.html">ImagePlus</A>       ResultIP;
+<A NAME="93"></A>
+<A NAME="94"></A>
+<A NAME="95"></A>  <FONT ID="FormalComment">/**
+<A NAME="96"></A>   * Simulationszeitfaktor (0-100 Prozent).
+<A NAME="97"></A>   */</FONT>
+<A NAME="98"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>             iTimeFactor;
+<A NAME="99"></A>
+<A NAME="100"></A>
+<A NAME="101"></A>  <FONT ID="FormalComment">/**
+<A NAME="102"></A>   * Referenz zum Hauptfenster.
+<A NAME="103"></A>   */</FONT>
+<A NAME="104"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A>       mainFrame;
+<A NAME="105"></A>
+<A NAME="106"></A>
+<A NAME="107"></A>  <FONT ID="FormalComment">/**
+<A NAME="108"></A>   * Referenz zur Fortschrittsanzeige im Hauptfenster.
+<A NAME="109"></A>   */</FONT>
+<A NAME="110"></A>  <FONT ID="Protected">protected</FONT> JProgressBar    progressBar;
+<A NAME="111"></A>
+<A NAME="112"></A>
+<A NAME="113"></A>  <FONT ID="FormalComment">/**
+<A NAME="114"></A>   * Referenz auf die zugehoerige GUI-Klasse.
+<A NAME="115"></A>   */</FONT>
+<A NAME="116"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../../virtual/mrt/sequences/PulsesequenceUI.java.html">PulsesequenceUI</A> myUIClass;
+<A NAME="117"></A>
+<A NAME="118"></A>
+<A NAME="119"></A>  <FONT ID="FormalComment">/**
+<A NAME="120"></A>   * Standardkonstruktor. Er setzt die Prioritaet des Thread auf maximal.
+<A NAME="121"></A>   */</FONT>
+<A NAME="122"></A>  <FONT ID="Public">public</FONT> Pulsesequence() {
+<A NAME="123"></A>    <FONT ID="This">this</FONT>.setPriority(Thread.MAX_PRIORITY - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="124"></A>  }   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="125"></A></FONT>
+<A NAME="126"></A>
+<A NAME="127"></A>  <FONT ID="FormalComment">/**
+<A NAME="128"></A>   * Die Methode setzt die Referenz zum Hauptfenster. Anschliessend besorgt sich
+<A NAME="129"></A>   * die Methode Referenzen auf die Fortschrittsanzeige und den Simulationszeit-
+<A NAME="130"></A>   * faktor und speichert diese in Instanzvariablen.
+<A NAME="131"></A>   * @param vmrt Die Referenz auf das Hauptfenster.
+<A NAME="132"></A>   */</FONT>
+<A NAME="133"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setMainFrame(<A HREF="../../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> vmrt) {
+<A NAME="134"></A>    mainFrame = vmrt;
+<A NAME="135"></A>    iTimeFactor = mainFrame.getTimeFactor();
+<A NAME="136"></A>    progressBar = mainFrame.getProgressBar();
+<A NAME="137"></A>  }   <FONT ID="SingleLineComment">// Methode setMainFrame
+<A NAME="138"></A></FONT> 
+<A NAME="139"></A>
+<A NAME="140"></A>  <FONT ID="FormalComment">/**
+<A NAME="141"></A>   * Die Methode ruft die Rechenfunktion der Pulssequenz auf. Sie wird
+<A NAME="142"></A>   * automatisch aufgerufen, wenn Pulsesequence.start() aufgerufen wird.
+<A NAME="143"></A>   * aufgrund der Thread-Funktionalitaet darf die Rechenfunktion immer nur
+<A NAME="144"></A>   * ueber die start()-Methode aufgerufen werden.
+<A NAME="145"></A>   */</FONT>
+<A NAME="146"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run() {
+<A NAME="147"></A>    calculate();
+<A NAME="148"></A>    addSequenceParameterToImage();
+<A NAME="149"></A>  }   <FONT ID="SingleLineComment">// Methode run
+<A NAME="150"></A></FONT> 
+<A NAME="151"></A>
+<A NAME="152"></A>  <FONT ID="FormalComment">/**
+<A NAME="153"></A>   * Die Methode fuegt das Berechnungsdatum des Ergebnisbildes zu diesem Bild
+<A NAME="154"></A>   * hinzu. Somit ist diese Information auch vorhanden, wenn das Bild im
+<A NAME="155"></A>   * DICOM-Format abgespeichert wird. In den Unterklassen koennen weitere
+<A NAME="156"></A>   * Informationen (z.B. Seuqnzname) zum Bild hinzugefuegt werden.
+<A NAME="157"></A>   */</FONT>
+<A NAME="158"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> addSequenceParameterToImage() {
+<A NAME="159"></A>    ResultIP.setCurrentDate();
+<A NAME="160"></A>  }   <FONT ID="SingleLineComment">// Methode addSequenceParameterToImage()
+<A NAME="161"></A></FONT> 
+<A NAME="162"></A>
+<A NAME="163"></A>  <FONT ID="FormalComment">/**
+<A NAME="164"></A>   * Die Method liest aus dem uebergebenen FileLoader-Objekt die Rohdatenmatrizen
+<A NAME="165"></A>   * aus und legt sie in den lokalen Variablen ab. Ausserdem wird die
+<A NAME="166"></A>   * Ergebnismatrix initialisiert.
+<A NAME="167"></A>   * @param fl Das FileLoader-Objekt, dass die auszulesenden Rohdaten enthaelt.
+<A NAME="168"></A>   */</FONT>
+<A NAME="169"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setRawData(<A HREF="../../../virtual/mrt/FileLoader.java.html">FileLoader</A> fl) <FONT ID="Throws">throws</FONT> NullPointerException {
+<A NAME="170"></A>
+<A NAME="171"></A>    <FONT ID="SingleLineComment">// Wenn die Berechnung ohne vorheriges Laden eines Datensatzes angestossen
+<A NAME="172"></A></FONT>    <FONT ID="SingleLineComment">// wird, wird ein Fehler ausgegeben
+<A NAME="173"></A></FONT>    <FONT ID="If">if</FONT> (fl == <FONT ID="Null">null</FONT>) {
+<A NAME="174"></A>      myUIClass.enableStartButton(<FONT ID="True">true</FONT>);
+<A NAME="175"></A>      myUIClass.enableStopButton(<FONT ID="False">false</FONT>);
+<A NAME="176"></A>      <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> NullPointerException(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequence.exception.nodata"</FONT>));
+<A NAME="177"></A>    } 
+<A NAME="178"></A>
+<A NAME="179"></A>    <FONT ID="SingleLineComment">// Auslesen der Rophdatenmatrizen
+<A NAME="180"></A></FONT>    T1Matrix = fl.getT1Matrix();
+<A NAME="181"></A>    T2Matrix = fl.getT2Matrix();
+<A NAME="182"></A>    PDMatrix = fl.getPDMatrix();
+<A NAME="183"></A>
+<A NAME="184"></A>    <FONT ID="SingleLineComment">// Initialisieren der Ergebnismatrizen
+<A NAME="185"></A></FONT>    IntensityMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[PDMatrix.length][PDMatrix[<FONT ID="IntegerLiteral">0</FONT>].length];
+<A NAME="186"></A>    Result12Bit = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[PDMatrix.length][PDMatrix[<FONT ID="IntegerLiteral">0</FONT>].length];
+<A NAME="187"></A>  }   <FONT ID="SingleLineComment">// Methode setRawData
+<A NAME="188"></A></FONT> 
+<A NAME="189"></A>
+<A NAME="190"></A>  <FONT ID="FormalComment">/**
+<A NAME="191"></A>   * Die Methode stellt die Berechnungsfunktion fuer die Pulssequenz dar.
+<A NAME="192"></A>   * Allerdings muss die eigentliche Funktionalitaet in den Unterklassen
+<A NAME="193"></A>   * definiert werden. Diese Methode stoesst nach Berechnung des Intensitaetsbides
+<A NAME="194"></A>   * in der Unterklasse den potentiellen Artefakt-Simulator an.
+<A NAME="195"></A>   * Zum Ende der Methode wird die Fortschrittsanzeige zurueckgesetzt und
+<A NAME="196"></A>   * das Hauptfenster benachrichtigt, dass die Berechnung abgeschlossen ist.
+<A NAME="197"></A>   */</FONT>
+<A NAME="198"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculate() {
+<A NAME="199"></A>
+<A NAME="200"></A>    <FONT ID="SingleLineComment">// ... and dieser Stelle fuehren die Unterklassen ihren Code aus
+<A NAME="201"></A></FONT>
+<A NAME="202"></A>                <FONT ID="SingleLineComment">// tha: 2006.01.09
+<A NAME="203"></A></FONT>                checkIntensityMatrix();
+<A NAME="204"></A>                filterIntensityMatrix();
+<A NAME="205"></A>                
+<A NAME="206"></A>    <FONT ID="SingleLineComment">// Aufrufen eines potentiellen Artefakt-Simulators
+<A NAME="207"></A></FONT>    String  strArtmethod = myUIClass.getArtefactMethod();
+<A NAME="208"></A>
+<A NAME="209"></A>    <FONT ID="If">if</FONT> (strArtmethod != <FONT ID="Null">null</FONT>) {
+<A NAME="210"></A>      mainFrame.setStatusBar(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequence.statusbar.note.artefact"</FONT>));
+<A NAME="211"></A>      <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A>  art = myUIClass.getArtefact();
+<A NAME="212"></A>
+<A NAME="213"></A>      art.setSequence(<FONT ID="This">this</FONT>);
+<A NAME="214"></A>      art.setIntensityImage(IntensityMatrix);
+<A NAME="215"></A>      IntensityMatrix = art.calculate(strArtmethod);
+<A NAME="216"></A>    } 
+<A NAME="217"></A>
+<A NAME="218"></A>    <FONT ID="SingleLineComment">// Rauschen hinzufuegen
+<A NAME="219"></A></FONT>    addNoise();
+<A NAME="220"></A>
+<A NAME="221"></A>    <FONT ID="SingleLineComment">// Frequenz-Einfaltungen simulieren
+<A NAME="222"></A></FONT>    simulateFreqAliasing(myUIClass.pFOV.getValue());
+<A NAME="223"></A>
+<A NAME="224"></A>    <FONT ID="SingleLineComment">// Phasen-Einfaltungen simulieren
+<A NAME="225"></A></FONT>    <FONT ID="SingleLineComment">// &gt;&gt;&gt; tha 2000.05.14
+<A NAME="226"></A></FONT>    <FONT ID="SingleLineComment">// simulatePhaseWrapping();
+<A NAME="227"></A></FONT>    simulatePhAliasing(myUIClass.pFOV.getValue());
+<A NAME="228"></A>
+<A NAME="229"></A>    <FONT ID="SingleLineComment">// FOV-Einstellungen beruecksichtigen
+<A NAME="230"></A></FONT>    <FONT ID="SingleLineComment">// &gt;&gt;&gt; tha 2000.05.13
+<A NAME="231"></A></FONT>    <FONT ID="SingleLineComment">// integrateFOVInIntensityMartrix();
+<A NAME="232"></A></FONT>    scaleFOV();
+<A NAME="233"></A>
+<A NAME="234"></A>    <FONT ID="SingleLineComment">// &lt;&lt;&lt;
+<A NAME="235"></A></FONT>
+<A NAME="236"></A>    <FONT ID="SingleLineComment">// Rechteckiges FOV beruecksichtigen
+<A NAME="237"></A></FONT>    simulateRectFOV();
+<A NAME="238"></A>
+<A NAME="239"></A>    <FONT ID="SingleLineComment">// Nach der Berechnung die Fortschrittsanzeige zuruecksetzen
+<A NAME="240"></A></FONT>    <FONT ID="SingleLineComment">// und dem Hauptfenster mitteilen, dass die Berechnung fertig ist
+<A NAME="241"></A></FONT>    <FONT ID="SingleLineComment">// (Dies ist nur so moeglich, da die Berechnung im Thread stattfindet)
+<A NAME="242"></A></FONT>    progressBar.setValue(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="243"></A>    mainFrame.setStatusBar(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequence.statusbar.note.finished"</FONT>));
+<A NAME="244"></A>    convertIntensityMatrixTo12Bit();
+<A NAME="245"></A>    ResultIP = mainFrame.drawCreatedIntensityImage(<FONT ID="This">this</FONT>);
+<A NAME="246"></A>
+<A NAME="247"></A>    <FONT ID="SingleLineComment">// Zuecksetzen des Start- und Stopknopfes sowie der Restzueit
+<A NAME="248"></A></FONT>    myUIClass.pbStop.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="249"></A>    myUIClass.pbStart.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="250"></A>    myUIClass.displayRemainingTime((<FONT ID="Long">long</FONT>) <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="251"></A>  } 
+<A NAME="252"></A>
+<A NAME="253"></A>        
+<A NAME="254"></A>        <FONT ID="FormalComment">/**
+<A NAME="255"></A>         * Werte der IntensityMatrix mussen &gt;= 0 sein.
+<A NAME="256"></A>         * tha: 2006.01.09
+<A NAME="257"></A>         */</FONT>
+<A NAME="258"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> checkIntensityMatrix() {
+<A NAME="259"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; IntensityMatrix.length; x++) {
+<A NAME="260"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; IntensityMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="261"></A>                    <FONT ID="If">if</FONT> (IntensityMatrix[x][y] &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="262"></A>                        IntensityMatrix[x][y] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="263"></A>                    }
+<A NAME="264"></A>                }
+<A NAME="265"></A>            }
+<A NAME="266"></A>        }
+<A NAME="267"></A>
+<A NAME="268"></A>        
+<A NAME="269"></A>        <FONT ID="FormalComment">/**
+<A NAME="270"></A>         * Filtert die IntensityMatrix. Zur Beschleunigung wird der aussere Rahmen
+<A NAME="271"></A>         * von 1 Pixel Breite nicht berechnet.
+<A NAME="272"></A>         * tha: 2006.01.09
+<A NAME="273"></A>         */</FONT>
+<A NAME="274"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> filterIntensityMatrix() {
+<A NAME="275"></A>            <FONT ID="Int">int</FONT> medianUmgebung;
+<A NAME="276"></A>            <FONT ID="Int">int</FONT> diff;
+<A NAME="277"></A>            
+<A NAME="278"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">1</FONT>; x &lt; IntensityMatrix.length - <FONT ID="IntegerLiteral">1</FONT>; x++) {
+<A NAME="279"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">1</FONT>; y &lt; IntensityMatrix[<FONT ID="IntegerLiteral">0</FONT>].length - <FONT ID="IntegerLiteral">1</FONT>; y++) {
+<A NAME="280"></A>                    medianUmgebung = (IntensityMatrix[x-<FONT ID="IntegerLiteral">1</FONT>][y-<FONT ID="IntegerLiteral">1</FONT>] + IntensityMatrix[x][y-<FONT ID="IntegerLiteral">1</FONT>] + IntensityMatrix[x+<FONT ID="IntegerLiteral">1</FONT>][y-<FONT ID="IntegerLiteral">1</FONT>] +
+<A NAME="281"></A>                                      IntensityMatrix[x-<FONT ID="IntegerLiteral">1</FONT>][y]                             + IntensityMatrix[x+<FONT ID="IntegerLiteral">1</FONT>][y]   +
+<A NAME="282"></A>                                      IntensityMatrix[x-<FONT ID="IntegerLiteral">1</FONT>][y+<FONT ID="IntegerLiteral">1</FONT>] + IntensityMatrix[x][y+<FONT ID="IntegerLiteral">1</FONT>] + IntensityMatrix[x+<FONT ID="IntegerLiteral">1</FONT>][y+<FONT ID="IntegerLiteral">1</FONT>]) / <FONT ID="IntegerLiteral">8</FONT>;
+<A NAME="283"></A>                    diff = medianUmgebung - IntensityMatrix[x][y];
+<A NAME="284"></A>                    <FONT ID="If">if</FONT> (diff &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="285"></A>                        diff *= -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="286"></A>                    }
+<A NAME="287"></A>                    <FONT ID="If">if</FONT> (diff &gt; <FONT ID="IntegerLiteral">2</FONT> * IntensityMatrix[x][y]) {
+<A NAME="288"></A>                        IntensityMatrix[x][y] = medianUmgebung;
+<A NAME="289"></A>                    }
+<A NAME="290"></A>                }
+<A NAME="291"></A>            }
+<A NAME="292"></A>        }
+<A NAME="293"></A>
+<A NAME="294"></A>  <FONT ID="FormalComment">/**
+<A NAME="295"></A>   * Die Methode liefert die Ergebnismatrix (Intensitaetsmatrix) zurueck.
+<A NAME="296"></A>   * @return Die Ergbnismatrix.
+<A NAME="297"></A>   */</FONT>
+<A NAME="298"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] getIntensityMatrix() {
+<A NAME="299"></A>    <FONT ID="Return">return</FONT> IntensityMatrix;
+<A NAME="300"></A>  }   <FONT ID="SingleLineComment">// Methode getIntensityMatrix
+<A NAME="301"></A></FONT> 
+<A NAME="302"></A>
+<A NAME="303"></A>  <FONT ID="FormalComment">/**
+<A NAME="304"></A>   * Die Methode liefert das 12-Bit-Bild als eindimensionales Feld von 16-Bit-Zahlen
+<A NAME="305"></A>   * zurueck.
+<A NAME="306"></A>   * @return Das 12-Bit-Ergebnisbild.
+<A NAME="307"></A>   */</FONT>
+<A NAME="308"></A>  <FONT ID="Public">public</FONT> <FONT ID="Short">short</FONT>[] getShort12BitMatrix() {
+<A NAME="309"></A>    <FONT ID="Short">short</FONT>[] shortimg = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[Result12Bit.length * Result12Bit[<FONT ID="IntegerLiteral">0</FONT>].length];
+<A NAME="310"></A>
+<A NAME="311"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; Result12Bit.length; x++) {
+<A NAME="312"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Result12Bit[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="313"></A>        shortimg[(y * Result12Bit[<FONT ID="IntegerLiteral">0</FONT>].length) + x] = (<FONT ID="Short">short</FONT>) Result12Bit[x][y];
+<A NAME="314"></A>      } 
+<A NAME="315"></A>    } 
+<A NAME="316"></A>
+<A NAME="317"></A>    <FONT ID="Return">return</FONT> shortimg;
+<A NAME="318"></A>  }   <FONT ID="SingleLineComment">// Methode getShort12BitMatrix
+<A NAME="319"></A></FONT> 
+<A NAME="320"></A>
+<A NAME="321"></A>  <FONT ID="FormalComment">/**
+<A NAME="322"></A>   * Die Methode setzt die Referenz auf die zugehoerige UI-Klasse.
+<A NAME="323"></A>   * @param Referenz auf die zugehoerige UI-Klasse.
+<A NAME="324"></A>   */</FONT>
+<A NAME="325"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUI(<A HREF="../../../virtual/mrt/sequences/PulsesequenceUI.java.html">PulsesequenceUI</A> ui) {
+<A NAME="326"></A>    myUIClass = ui;
+<A NAME="327"></A>  }   <FONT ID="SingleLineComment">// Methode setUI
+<A NAME="328"></A></FONT> 
+<A NAME="329"></A>
+<A NAME="330"></A>  <FONT ID="FormalComment">/**
+<A NAME="331"></A>   * Die Methode konvertiert die zunaechst berechnete Intensitaetsmatrix in ein
+<A NAME="332"></A>   * 12-Bit Bild. Dazu wird zunaecht ein Histogramm des Intesitaetsbildes berechnet
+<A NAME="333"></A>   * und auf dessen Grundlage werden die Intensitaetswerte auf Grauwerte im Bereich
+<A NAME="334"></A>   * [0;4095] abgebildet.
+<A NAME="335"></A>   */</FONT>
+<A NAME="336"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> convertIntensityMatrixTo12Bit() {
+<A NAME="337"></A>
+<A NAME="338"></A>    <FONT ID="SingleLineComment">// Anzahl der Bits pro Pixel im Intensitaetsbild
+<A NAME="339"></A></FONT>    <FONT ID="Int">int</FONT>     OriginBitNum = (<FONT ID="Int">int</FONT>) (Math.pow(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">16</FONT>));
+<A NAME="340"></A>
+<A NAME="341"></A>    <FONT ID="SingleLineComment">// Anzahl der Bits pro Pixel im Resultatbild; gewoehnlich 12 Bit
+<A NAME="342"></A></FONT>    <FONT ID="Int">int</FONT>     ResultBitNum = (<FONT ID="Int">int</FONT>) (Math.pow(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">12</FONT>));
+<A NAME="343"></A>
+<A NAME="344"></A>    <FONT ID="SingleLineComment">// Summe der Grauwerte des Bildes;
+<A NAME="345"></A></FONT>    <FONT ID="Long">long</FONT>    sum;
+<A NAME="346"></A>
+<A NAME="347"></A>    <FONT ID="SingleLineComment">// Minimaler und maximaler Grauwert (bzw. 10% Perzentile)
+<A NAME="348"></A></FONT>    <FONT ID="Int">int</FONT>     min, max;
+<A NAME="349"></A>
+<A NAME="350"></A>    <FONT ID="SingleLineComment">// Hilfvariable zur Bestimmung der 10 bzw 90%-Perzentile
+<A NAME="351"></A></FONT>    <FONT ID="Int">int</FONT>     tmp;
+<A NAME="352"></A>
+<A NAME="353"></A>    <FONT ID="SingleLineComment">// Zentrum und Breite der automatischen 12-Bit Fensterung
+<A NAME="354"></A></FONT>    <FONT ID="Int">int</FONT>     center, width;
+<A NAME="355"></A>
+<A NAME="356"></A>    <FONT ID="SingleLineComment">// Hilfsvariable fuer die Fensterung
+<A NAME="357"></A></FONT>    <FONT ID="Int">int</FONT>     value;
+<A NAME="358"></A>
+<A NAME="359"></A>    <FONT ID="SingleLineComment">// Maximaler Intensitaetswert im Intensitaetsbild. Wird benoetigt fuer die
+<A NAME="360"></A></FONT>    <FONT ID="SingleLineComment">// Groessenbestimmung bzw. Umrechnung des Histogramms
+<A NAME="361"></A></FONT>    <FONT ID="Int">int</FONT>     maxint;
+<A NAME="362"></A>
+<A NAME="363"></A>    <FONT ID="SingleLineComment">// Abbildungsfaktor fuer die Fensterung. Gibt an, wie viele Grauwerte des
+<A NAME="364"></A></FONT>    <FONT ID="SingleLineComment">// Ausgangsbildes auf einen Grauwert im Zielbild abgebildet werden
+<A NAME="365"></A></FONT>    <FONT ID="Double">double</FONT>  step;
+<A NAME="366"></A>
+<A NAME="367"></A>    <FONT ID="SingleLineComment">// 
+<A NAME="368"></A></FONT>    <FONT ID="Int">int</FONT>     minPixelValue = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="369"></A>
+<A NAME="370"></A>    <FONT ID="SingleLineComment">// 
+<A NAME="371"></A></FONT>    <FONT ID="Int">int</FONT>     maxPixelValue = OriginBitNum;
+<A NAME="372"></A>
+<A NAME="373"></A>    <FONT ID="SingleLineComment">// linke und rechte Grenze des Fensterungs-Ausschnitts
+<A NAME="374"></A></FONT>    <FONT ID="Int">int</FONT>     minImageValue, maxImageValue;
+<A NAME="375"></A>
+<A NAME="376"></A>    <FONT ID="SingleLineComment">// Histogrammtabelle
+<A NAME="377"></A></FONT>    <FONT ID="Int">int</FONT>[]   histogramm = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[OriginBitNum];
+<A NAME="378"></A>
+<A NAME="379"></A>    <FONT ID="SingleLineComment">// Suchen des groessten Intensitaetswertes im Bild.
+<A NAME="380"></A></FONT>    <FONT ID="SingleLineComment">// Daraus ergibt sich die Groesse des Histogramms. (s.u.)
+<A NAME="381"></A></FONT>    maxint = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="382"></A>    <FONT ID="Int">int</FONT> minint = <FONT ID="IntegerLiteral">999999</FONT>;
+<A NAME="383"></A>    <FONT ID="SingleLineComment">// int numneg = 0;
+<A NAME="384"></A></FONT>
+<A NAME="385"></A>                <FONT ID="SingleLineComment">// tha: 2006.01.09
+<A NAME="386"></A></FONT>    <FONT ID="SingleLineComment">// for (int x = 0; x &lt; 156; x++) {
+<A NAME="387"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; IntensityMatrix.length; x++) {
+<A NAME="388"></A>      <FONT ID="SingleLineComment">// for (int y = 0; y &lt; 256; y++) {
+<A NAME="389"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; IntensityMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="390"></A>        <FONT ID="If">if</FONT> (IntensityMatrix[x][y] &gt; maxint) {
+<A NAME="391"></A>          maxint = IntensityMatrix[x][y];
+<A NAME="392"></A>        } 
+<A NAME="393"></A>        <FONT ID="If">if</FONT> (IntensityMatrix[x][y] &lt; minint) {
+<A NAME="394"></A>          minint = IntensityMatrix[x][y];
+<A NAME="395"></A>        }
+<A NAME="396"></A>                                <FONT ID="SingleLineComment">// tha: 2006.01.09: Unnoetig
+<A NAME="397"></A></FONT>        <FONT ID="SingleLineComment">// if (IntensityMatrix[x][y] &lt; 0) {
+<A NAME="398"></A></FONT>        <FONT ID="SingleLineComment">//  numneg++;
+<A NAME="399"></A></FONT>        <FONT ID="SingleLineComment">//  ;
+<A NAME="400"></A></FONT>        <FONT ID="SingleLineComment">//  IntensityMatrix[x][y] = 55000;
+<A NAME="401"></A></FONT>        <FONT ID="SingleLineComment">// } 
+<A NAME="402"></A></FONT>
+<A NAME="403"></A>      } 
+<A NAME="404"></A>    } 
+<A NAME="405"></A>
+<A NAME="406"></A>    <FONT ID="SingleLineComment">// GGf. runterkonvertieren des Bildes auf 16-Bit. Ist noetig, damit
+<A NAME="407"></A></FONT>    <FONT ID="SingleLineComment">// Histogrammtabelle nicht zu gross wird.
+<A NAME="408"></A></FONT>    <FONT ID="Double">double</FONT>  histfactor = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="409"></A>    <FONT ID="Int">int</FONT>     hlp = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="410"></A>
+<A NAME="411"></A>    <FONT ID="If">if</FONT> (maxint &gt; (Math.pow(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">16</FONT>) - <FONT ID="IntegerLiteral">1</FONT>)) {
+<A NAME="412"></A>
+<A NAME="413"></A>      <FONT ID="SingleLineComment">// Auskommentiert: tha 2000.8.14
+<A NAME="414"></A></FONT>      <FONT ID="SingleLineComment">// System.out.println("Achtung! Das Intesitaetsbild muss auf 16-Bit runterkonvertiert werden!");
+<A NAME="415"></A></FONT>      histfactor = (<FONT ID="Double">double</FONT>) (Math.pow(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">16</FONT>)) / (<FONT ID="Double">double</FONT>) (maxint);
+<A NAME="416"></A>
+<A NAME="417"></A>      <FONT ID="SingleLineComment">// Runterkonvertieren des Bildes auf 16-Bit-Intensitaetswerte
+<A NAME="418"></A></FONT>                        <FONT ID="SingleLineComment">// tha: 2006.01.09
+<A NAME="419"></A></FONT>      <FONT ID="SingleLineComment">// for (int x = 0; x &lt; 256; x++) {
+<A NAME="420"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; IntensityMatrix.length; x++) {
+<A NAME="421"></A>        <FONT ID="SingleLineComment">// for (int y = 0; y &lt; 256; y++) {
+<A NAME="422"></A></FONT>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; IntensityMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="423"></A>          hlp = (<FONT ID="Int">int</FONT>) (IntensityMatrix[x][y] * histfactor);
+<A NAME="424"></A>          <FONT ID="If">if</FONT> (hlp &gt;= <FONT ID="IntegerLiteral">65536</FONT>) {
+<A NAME="425"></A>            hlp = <FONT ID="IntegerLiteral">65535</FONT>;
+<A NAME="426"></A>          } 
+<A NAME="427"></A>          IntensityMatrix[x][y] = hlp;
+<A NAME="428"></A>        } 
+<A NAME="429"></A>      } 
+<A NAME="430"></A>    } 
+<A NAME="431"></A>
+<A NAME="432"></A>    <FONT ID="SingleLineComment">// Berechnen des Histogramms
+<A NAME="433"></A></FONT>                <FONT ID="SingleLineComment">// tha: 2006.01.09
+<A NAME="434"></A></FONT>    <FONT ID="SingleLineComment">// for (int x = 0; x &lt; 256; x++) {
+<A NAME="435"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; IntensityMatrix.length; x++) {
+<A NAME="436"></A>      <FONT ID="SingleLineComment">//for (int y = 0; y &lt; 256; y++) {
+<A NAME="437"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; IntensityMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="438"></A>        histogramm[Math.abs(IntensityMatrix[x][y])]++;
+<A NAME="439"></A>      } 
+<A NAME="440"></A>    } 
+<A NAME="441"></A>
+<A NAME="442"></A>    min = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="443"></A>    max = histogramm.length - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="444"></A>
+<A NAME="445"></A>    width = max - min;
+<A NAME="446"></A>    center = (min + max) / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="447"></A>
+<A NAME="448"></A>    minImageValue = center - (width / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="449"></A>    maxImageValue = center + (width / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="450"></A>
+<A NAME="451"></A>    <FONT ID="If">if</FONT> (center &gt; maxPixelValue) {
+<A NAME="452"></A>      center = maxPixelValue;
+<A NAME="453"></A>    } 
+<A NAME="454"></A>    <FONT ID="If">if</FONT> (center &lt; minPixelValue) {
+<A NAME="455"></A>      center = minPixelValue;
+<A NAME="456"></A>    } 
+<A NAME="457"></A>    <FONT ID="If">if</FONT> (width &gt; maxPixelValue) {
+<A NAME="458"></A>      width = maxPixelValue;
+<A NAME="459"></A>    } 
+<A NAME="460"></A>    <FONT ID="If">if</FONT> (width &lt; <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="461"></A>      width = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="462"></A>    } 
+<A NAME="463"></A>
+<A NAME="464"></A>    <FONT ID="If">if</FONT> (minImageValue &lt; minPixelValue) {
+<A NAME="465"></A>      minImageValue = minPixelValue;
+<A NAME="466"></A>    } 
+<A NAME="467"></A>    <FONT ID="If">if</FONT> (maxImageValue &gt; maxPixelValue) {
+<A NAME="468"></A>      maxImageValue = maxPixelValue;
+<A NAME="469"></A>    } 
+<A NAME="470"></A>
+<A NAME="471"></A>    step = (<FONT ID="Double">double</FONT>) ((<FONT ID="Double">double</FONT>) (ResultBitNum) / ((<FONT ID="Double">double</FONT>) (maxImageValue) - (<FONT ID="Double">double</FONT>) (minImageValue) + <FONT ID="FloatPointLiteral">1.0</FONT>));
+<A NAME="472"></A>
+<A NAME="473"></A>    <FONT ID="SingleLineComment">// Mappen der Grauwerte des 10%-Fensters auf 12-Bit
+<A NAME="474"></A></FONT>    value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="475"></A>                <FONT ID="SingleLineComment">// tha: 2006.01.09
+<A NAME="476"></A></FONT>    <FONT ID="SingleLineComment">// for (int x = 0; x &lt; 256; x++) {
+<A NAME="477"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; IntensityMatrix.length; x++) {
+<A NAME="478"></A>      <FONT ID="SingleLineComment">// for (int y = 0; y &lt; 256; y++) {
+<A NAME="479"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; IntensityMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="480"></A>        value = IntensityMatrix[x][y] - minImageValue;
+<A NAME="481"></A>        <FONT ID="If">if</FONT> (value &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="482"></A>          value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="483"></A>        } 
+<A NAME="484"></A>        value = (<FONT ID="Int">int</FONT>) ((<FONT ID="Double">double</FONT>) (value) * step);
+<A NAME="485"></A>        <FONT ID="If">if</FONT> (value &gt;= ResultBitNum) {
+<A NAME="486"></A>          value = ResultBitNum - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="487"></A>        } 
+<A NAME="488"></A>        Result12Bit[x][y] = value;
+<A NAME="489"></A>      }   <FONT ID="SingleLineComment">// for
+<A NAME="490"></A></FONT>     }    <FONT ID="SingleLineComment">// for
+<A NAME="491"></A></FONT> 
+<A NAME="492"></A>  }       <FONT ID="SingleLineComment">// Methode ConvertIntensityImageTo12Bit
+<A NAME="493"></A></FONT> 
+<A NAME="494"></A>
+<A NAME="495"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="496"></A>   * &gt;&gt;&gt; tha 2000.05.13: Ersetzt durch scaleFOV. Damit wird die Realitaet
+<A NAME="497"></A>   * besser simuliert.
+<A NAME="498"></A>   * Die Methode integriert die aktuelle Einstellung des FOV (Field of View)
+<A NAME="499"></A>   * in die Intensitaetsmatrix. Das bedeutet, dass die Randbereich mit Nullen
+<A NAME="500"></A>   * gefuellt werden. Dadurch wird natuerlich das Bild kleiner. In der Realitaet
+<A NAME="501"></A>   * wuerde sich das anders verhalten. Eine Verkleinerung des FOV haette eine
+<A NAME="502"></A>   * Verbessung der Aufloesung zur Folge. Zwar wuerde der dargestellte Bildausschnitt
+<A NAME="503"></A>   * kleiner, jedoch auch die Pixelgroesse. Wuerde man in der Simulation jedoch den
+<A NAME="504"></A>   * verkleinerten Bildausschnitt auf die Ursprungsgroesse vergroessern, haette dies
+<A NAME="505"></A>   * eine Verschlechterung der Aufloesung zur Folge, da die Rohdatenmatrizen
+<A NAME="506"></A>   * leider keine unendlich hohe Aufloesung aufweisen. Also haben wir uns dafuer
+<A NAME="507"></A>   * entschieden, das Bild kleiner darzustellen.
+<A NAME="508"></A>   * 
+<A NAME="509"></A>   * public void integrateFOVInIntensityMartrix() {
+<A NAME="510"></A>   * int fov = 256 - myUIClass.pFOV.getValue();
+<A NAME="511"></A>   * int fovDIV2 = fov / 2;
+<A NAME="512"></A>   * // Schwaerzen des linken und rechten Randes
+<A NAME="513"></A>   * for (int y = 0; y &lt; 256; y++) {
+<A NAME="514"></A>   * for (int x = 0; x &lt; fovDIV2; x++) {
+<A NAME="515"></A>   * IntensityMatrix[x][y] = 0;
+<A NAME="516"></A>   * }    // for x
+<A NAME="517"></A>   * for (int x = 256 - fovDIV2; x &lt; 256; x++) {
+<A NAME="518"></A>   * IntensityMatrix[x][y] = 0;
+<A NAME="519"></A>   * }    // for x
+<A NAME="520"></A>   * }    // for y
+<A NAME="521"></A>   * 
+<A NAME="522"></A>   * // Schwaerzen des oberen un unteren Randes
+<A NAME="523"></A>   * for (int x = 0; x &lt; 256; x++) {
+<A NAME="524"></A>   * for (int y = 0; y &lt; fovDIV2; y++) {
+<A NAME="525"></A>   * IntensityMatrix[x][y] = 0;
+<A NAME="526"></A>   * }    // for y
+<A NAME="527"></A>   * for (int y = 256 - fovDIV2; y &lt; 256; y++) {
+<A NAME="528"></A>   * IntensityMatrix[x][y] = 0;
+<A NAME="529"></A>   * }    // for y
+<A NAME="530"></A>   * }    // for x
+<A NAME="531"></A>   * }      // Methode integrateFOVInIntensityMartrix()
+<A NAME="532"></A>   */</FONT>
+<A NAME="533"></A>
+<A NAME="534"></A>
+<A NAME="535"></A>  <FONT ID="FormalComment">/**
+<A NAME="536"></A>   * Die Methode simuliert Einfaltungen in Frequenz-Richtung, die Aufgrund
+<A NAME="537"></A>   * eines zu klein gewaehlten FOV entstehen. Ausserhalb des Bildes liegende
+<A NAME="538"></A>   * signalgebende Pixel werden falsch frequenzkodiert und werden somit in
+<A NAME="539"></A>   * den Bildbereich projiziert.
+<A NAME="540"></A>   */</FONT>
+<A NAME="541"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> simulateFreqAliasing(<FONT ID="Int">int</FONT> freqFOV) {
+<A NAME="542"></A>    <FONT ID="If">if</FONT> (!myUIClass.tbFreqOS.isSelected() &amp; (freqFOV &lt; <FONT ID="IntegerLiteral">256</FONT>)) {
+<A NAME="543"></A>
+<A NAME="544"></A>      <FONT ID="Int">int</FONT> notvisible = <FONT ID="IntegerLiteral">256</FONT> - freqFOV;
+<A NAME="545"></A>      <FONT ID="Int">int</FONT> notvisibleDIV2 = notvisible / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="546"></A>
+<A NAME="547"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="548"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = notvisibleDIV2; x &lt; <FONT ID="IntegerLiteral">256</FONT> - notvisibleDIV2; x++) {
+<A NAME="549"></A>          <FONT ID="Int">int</FONT> hlpindex1 = x + freqFOV;
+<A NAME="550"></A>          <FONT ID="Int">int</FONT> hlpindex2 = x - freqFOV;
+<A NAME="551"></A>          <FONT ID="Int">int</FONT> hlpval1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="552"></A>          <FONT ID="Int">int</FONT> hlpval2 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="553"></A>
+<A NAME="554"></A>          <FONT ID="If">if</FONT> (hlpindex1 &lt; <FONT ID="IntegerLiteral">256</FONT>) {
+<A NAME="555"></A>            hlpval1 = IntensityMatrix[hlpindex1][y];
+<A NAME="556"></A>          } 
+<A NAME="557"></A>          <FONT ID="If">if</FONT> (hlpindex2 &gt;= <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="558"></A>            hlpval2 = IntensityMatrix[hlpindex2][y];
+<A NAME="559"></A>
+<A NAME="560"></A>          } 
+<A NAME="561"></A>          IntensityMatrix[x][y] = IntensityMatrix[x][y] + hlpval1 + hlpval2;
+<A NAME="562"></A>        } 
+<A NAME="563"></A>      } 
+<A NAME="564"></A>    } 
+<A NAME="565"></A>  } 
+<A NAME="566"></A>
+<A NAME="567"></A>
+<A NAME="568"></A>  <FONT ID="FormalComment">/**
+<A NAME="569"></A>   * Die Methode simuliert Einfaltungen in Phasen-Richtung, die Aufgrund
+<A NAME="570"></A>   * eines zu klein gewaehlten FOV entstehen. Ausserhalb des Bildes liegende
+<A NAME="571"></A>   * signalgebende Pixel werden falsch phasenkodiert und werden somit in
+<A NAME="572"></A>   * den Bildbereich projiziert.
+<A NAME="573"></A>   */</FONT>
+<A NAME="574"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> simulatePhAliasing(<FONT ID="Int">int</FONT> phFOV) {
+<A NAME="575"></A>    <FONT ID="If">if</FONT> (!myUIClass.tbPhOS.isSelected() &amp; (phFOV &lt; <FONT ID="IntegerLiteral">256</FONT>)) {
+<A NAME="576"></A>
+<A NAME="577"></A>      <FONT ID="Int">int</FONT> notvisible = <FONT ID="IntegerLiteral">256</FONT> - phFOV;
+<A NAME="578"></A>      <FONT ID="Int">int</FONT> notvisibleDIV2 = notvisible / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="579"></A>
+<A NAME="580"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="581"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = notvisibleDIV2; y &lt; <FONT ID="IntegerLiteral">256</FONT> - notvisibleDIV2; y++) {
+<A NAME="582"></A>          <FONT ID="Int">int</FONT> hlpindex1 = y + phFOV;
+<A NAME="583"></A>          <FONT ID="Int">int</FONT> hlpindex2 = y - phFOV;
+<A NAME="584"></A>          <FONT ID="Int">int</FONT> hlpval1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="585"></A>          <FONT ID="Int">int</FONT> hlpval2 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="586"></A>
+<A NAME="587"></A>          <FONT ID="If">if</FONT> (hlpindex1 &lt; <FONT ID="IntegerLiteral">256</FONT>) {
+<A NAME="588"></A>            hlpval1 = IntensityMatrix[x][hlpindex1];
+<A NAME="589"></A>          } 
+<A NAME="590"></A>          <FONT ID="If">if</FONT> (hlpindex2 &gt;= <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="591"></A>            hlpval2 = IntensityMatrix[x][hlpindex2];
+<A NAME="592"></A>
+<A NAME="593"></A>          } 
+<A NAME="594"></A>          IntensityMatrix[x][y] = IntensityMatrix[x][y] + hlpval1 + hlpval2;
+<A NAME="595"></A>        } 
+<A NAME="596"></A>      } 
+<A NAME="597"></A>    } 
+<A NAME="598"></A>  } 
+<A NAME="599"></A>
+<A NAME="600"></A>
+<A NAME="601"></A>  <FONT ID="FormalComment">/**
+<A NAME="602"></A>   * Die Methode simuliert ein rechteckiges FOV in Phasen-Richtung.
+<A NAME="603"></A>   */</FONT>
+<A NAME="604"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> simulateRectFOV() {
+<A NAME="605"></A>    <FONT ID="Int">int</FONT> phFOV;
+<A NAME="606"></A>
+<A NAME="607"></A>    <FONT ID="If">if</FONT> (myUIClass.pRect.getValue() != <FONT ID="IntegerLiteral">8</FONT>) {
+<A NAME="608"></A>      phFOV = myUIClass.pFOV.getValue() * myUIClass.pRect.getValue() / <FONT ID="IntegerLiteral">8</FONT>;
+<A NAME="609"></A>
+<A NAME="610"></A>      <FONT ID="SingleLineComment">// Einfaltungen simulieren
+<A NAME="611"></A></FONT>      simulatePhAliasing(phFOV);
+<A NAME="612"></A>
+<A NAME="613"></A>      <FONT ID="SingleLineComment">// nicht gemessene Bildanteile schwaerzen
+<A NAME="614"></A></FONT>      <FONT ID="Int">int</FONT> notvisible = (<FONT ID="IntegerLiteral">256</FONT> - phFOV) / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="615"></A>
+<A NAME="616"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="617"></A>        <FONT ID="If">if</FONT> ((y &lt; notvisible) | (y &gt;= phFOV + notvisible)) {
+<A NAME="618"></A>          <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="619"></A>            IntensityMatrix[x][y] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="620"></A>          } 
+<A NAME="621"></A>        } 
+<A NAME="622"></A>      } 
+<A NAME="623"></A>    } 
+<A NAME="624"></A>  } 
+<A NAME="625"></A>
+<A NAME="626"></A>
+<A NAME="627"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="628"></A>   * &gt;&gt;&gt; tha 2000.05.14: Ersetzt durch simulatePhAliasing
+<A NAME="629"></A>   * Die Methode simuliert Einfaltungen in Phasenkodierrichtung, die Aufgrund
+<A NAME="630"></A>   * eines zu klein gewaehlten FOV (bzw. Seitenverhaeltnisses) entstehen.
+<A NAME="631"></A>   * 
+<A NAME="632"></A>   * public void simulatePhaseWrapping() {
+<A NAME="633"></A>   * jigl.image.RealGrayImage origImage;
+<A NAME="634"></A>   * jigl.image.ComplexImage    transformedImg = new jigl.image.ComplexImage(256, 256);
+<A NAME="635"></A>   * float[][]                  fftReal;
+<A NAME="636"></A>   * float[][]                  fftImag;
+<A NAME="637"></A>   * jigl.image.ComplexImage    backTransform;
+<A NAME="638"></A>   * if (!myUIClass.tbPhOS.isSelected()) {
+<A NAME="639"></A>   * // Bild konvertieren
+<A NAME="640"></A>   * origImage = fft.FFTTools.makeRealGrayImage(IntensityMatrix);
+<A NAME="641"></A>   * // Fouriertransformation
+<A NAME="642"></A>   * transformedImg = jigl.image.utils.FFT.forward(origImage);
+<A NAME="643"></A>   * // Shiften
+<A NAME="644"></A>   * transformedImg = fft.FFTTools.shift(transformedImg, 128, 128);
+<A NAME="645"></A>   * // Jede 2. Zeile loeschen
+<A NAME="646"></A>   * for (int x = 0; x &lt; 256; x++) {
+<A NAME="647"></A>   * for (int y = 0; y &lt; 256; y++) {
+<A NAME="648"></A>   * if ((x % 2) == 0) {
+<A NAME="649"></A>   * transformedImg.setReal(x, y, 0);
+<A NAME="650"></A>   * // transformedImg.setImag(x,y,0);
+<A NAME="651"></A>   * }    // if
+<A NAME="652"></A>   * }    // for y
+<A NAME="653"></A>   * }      // for x
+<A NAME="654"></A>   * 
+<A NAME="655"></A>   * // Zurueckshiften
+<A NAME="656"></A>   * transformedImg = fft.FFTTools.shift(transformedImg, 128, 128);
+<A NAME="657"></A>   * // Ruecktransformation
+<A NAME="658"></A>   * backTransform = jigl.image.utils.FFT.inverse(transformedImg);
+<A NAME="659"></A>   * // Magnitudenbild berechnen
+<A NAME="660"></A>   * jigl.image.RealGrayImage magImg = backTransform.getMagnitudeImage();
+<A NAME="661"></A>   * // Wieder in Intensitaetsmatrix kopieren
+<A NAME="662"></A>   * for (int x = 0; x &lt; 256; x++) {
+<A NAME="663"></A>   * for (int y = 0; y &lt; 256; y++) {
+<A NAME="664"></A>   * IntensityMatrix[x][y] = (int) magImg.get(x, y);
+<A NAME="665"></A>   * }
+<A NAME="666"></A>   * }
+<A NAME="667"></A>   * }
+<A NAME="668"></A>   * }
+<A NAME="669"></A>   */</FONT>
+<A NAME="670"></A>
+<A NAME="671"></A>
+<A NAME="672"></A>  <FONT ID="FormalComment">/**
+<A NAME="673"></A>   * Die Methode fuegt der Intensitaetsmatrix ein Rauschen hinzu, das vom
+<A NAME="674"></A>   * eingestellten Signal-zu-Rausch-Verhaeltnis und der ausgewaehlten Spule
+<A NAME="675"></A>   * abhaengt. Die Spule liefert ein Grundrauschen im gesamten Bild,
+<A NAME="676"></A>   * wohingegen das Signal-zu-Rausch-Verhaeltnis nur ein Rauschen in
+<A NAME="677"></A>   * signalgebenden Bildteilen nach sich zieht.
+<A NAME="678"></A>   */</FONT>
+<A NAME="679"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addNoise() {
+<A NAME="680"></A>    <FONT ID="Double">double</FONT>  baseNoise = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="681"></A>    <FONT ID="Int">int</FONT>     coil = myUIClass.getCoil();
+<A NAME="682"></A>    Random  myRandomizer = <FONT ID="New">new</FONT> Random();
+<A NAME="683"></A>    <FONT ID="Double">double</FONT>  meanIntensity;
+<A NAME="684"></A>    <FONT ID="Double">double</FONT>  signalNoise = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="685"></A>    <FONT ID="Int">int</FONT>     val;
+<A NAME="686"></A>    <FONT ID="Int">int</FONT>     lVal;
+<A NAME="687"></A>    <FONT ID="Int">int</FONT>     bn;
+<A NAME="688"></A>    <FONT ID="Int">int</FONT>     sn;
+<A NAME="689"></A>
+<A NAME="690"></A>    <FONT ID="Double">double</FONT>  sum = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="691"></A>
+<A NAME="692"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="693"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="694"></A>        sum += IntensityMatrix[x][y];
+<A NAME="695"></A>      } 
+<A NAME="696"></A>    } 
+<A NAME="697"></A>    meanIntensity = sum / (<FONT ID="IntegerLiteral">256</FONT> * <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="698"></A>
+<A NAME="699"></A>    signalNoise = <FONT ID="FloatPointLiteral">1.0</FONT> - myUIClass.getSNRatio();
+<A NAME="700"></A>    <FONT ID="If">if</FONT> (signalNoise &lt; <FONT ID="FloatPointLiteral">0.0</FONT>) {
+<A NAME="701"></A>      signalNoise = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="702"></A>
+<A NAME="703"></A>      <FONT ID="SingleLineComment">// 10% des S/N Faktors
+<A NAME="704"></A></FONT>    } 
+<A NAME="705"></A>    signalNoise *= <FONT ID="FloatPointLiteral">0.10</FONT>;
+<A NAME="706"></A>
+<A NAME="707"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="708"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="709"></A>
+<A NAME="710"></A>        <FONT ID="Switch">switch</FONT> (coil) {
+<A NAME="711"></A>        <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">0</FONT>: {
+<A NAME="712"></A>
+<A NAME="713"></A>          <FONT ID="SingleLineComment">// Die Oberflaechenspule gibt optimales Signal
+<A NAME="714"></A></FONT>          baseNoise = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="715"></A>          <FONT ID="Break">break</FONT>;
+<A NAME="716"></A>        } 
+<A NAME="717"></A>        <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="718"></A>
+<A NAME="719"></A>          <FONT ID="SingleLineComment">// 5% des mittler Intensitaets-Wertes
+<A NAME="720"></A></FONT>          baseNoise = meanIntensity * <FONT ID="FloatPointLiteral">0.05</FONT>;
+<A NAME="721"></A>          <FONT ID="Break">break</FONT>;
+<A NAME="722"></A>        } 
+<A NAME="723"></A>        }
+<A NAME="724"></A>
+<A NAME="725"></A>        val = IntensityMatrix[x][y];
+<A NAME="726"></A>        bn = (<FONT ID="Int">int</FONT>) (baseNoise * myRandomizer.nextGaussian());
+<A NAME="727"></A>        sn = (<FONT ID="Int">int</FONT>) (val * signalNoise * myRandomizer.nextGaussian());
+<A NAME="728"></A>        lVal = val + bn + sn;
+<A NAME="729"></A>        <FONT ID="If">if</FONT> (lVal &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="730"></A>          lVal = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="731"></A>        } 
+<A NAME="732"></A>        <FONT ID="If">if</FONT> (lVal &gt; Integer.MAX_VALUE) {
+<A NAME="733"></A>          lVal = Integer.MAX_VALUE;
+<A NAME="734"></A>        } 
+<A NAME="735"></A>        IntensityMatrix[x][y] = (<FONT ID="Int">int</FONT>) lVal;
+<A NAME="736"></A>      } 
+<A NAME="737"></A>    } 
+<A NAME="738"></A>  }   <FONT ID="SingleLineComment">// Methode addNoiseToPDMatrix()
+<A NAME="739"></A></FONT> 
+<A NAME="740"></A>
+<A NAME="741"></A>  <FONT ID="FormalComment">/**
+<A NAME="742"></A>   * Skaliert das eingestellte FOV auf die volle Bildgroesse der IntensityMatrix
+<A NAME="743"></A>   * von 256*256 Pixel.
+<A NAME="744"></A>   * 
+<A NAME="745"></A>   * @author Thomas Hacklaender
+<A NAME="746"></A>   */</FONT>
+<A NAME="747"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> scaleFOV() {
+<A NAME="748"></A>
+<A NAME="749"></A>    <FONT ID="Int">int</FONT>[][] resultMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="750"></A>
+<A NAME="751"></A>    <FONT ID="Int">int</FONT>     fov = myUIClass.pFOV.getValue();
+<A NAME="752"></A>    <FONT ID="Double">double</FONT>  xs;
+<A NAME="753"></A>    <FONT ID="Double">double</FONT>  ys;
+<A NAME="754"></A>    <FONT ID="Int">int</FONT>     xFOV = (<FONT ID="IntegerLiteral">256</FONT> - fov) / <FONT ID="IntegerLiteral">2</FONT> - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="755"></A>    <FONT ID="Int">int</FONT>     yFOV = (<FONT ID="IntegerLiteral">256</FONT> - fov) / <FONT ID="IntegerLiteral">2</FONT> - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="756"></A>    <FONT ID="Double">double</FONT>  xScale = <FONT ID="FloatPointLiteral">256.0</FONT> / fov;
+<A NAME="757"></A>    <FONT ID="Double">double</FONT>  yScale = <FONT ID="FloatPointLiteral">256.0</FONT> / fov;
+<A NAME="758"></A>
+<A NAME="759"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="760"></A>      ys = y / yScale + yFOV;
+<A NAME="761"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="762"></A>        xs = x / xScale + xFOV;
+<A NAME="763"></A>        resultMatrix[x][y] = getInterpolatedPixel(xs, ys, IntensityMatrix);
+<A NAME="764"></A>      } 
+<A NAME="765"></A>    } 
+<A NAME="766"></A>
+<A NAME="767"></A>    IntensityMatrix = resultMatrix;
+<A NAME="768"></A>  } 
+<A NAME="769"></A>
+<A NAME="770"></A>
+<A NAME="771"></A>  <FONT ID="FormalComment">/**
+<A NAME="772"></A>   * Fuehrt eine bilineare Interpolation der Pixelwerte durch.
+<A NAME="773"></A>   * 
+<A NAME="774"></A>   * @param x     x-Koordinate des zu interpoliedrenden Pixels
+<A NAME="775"></A>   * @param y     y-Koordinate des zu interpoliedrenden Pixels
+<A NAME="776"></A>   * @param pixel Die zweidimensionale Matrix der Pixelwerte
+<A NAME="777"></A>   * @return      Der interpolierte Pixelwert.
+<A NAME="778"></A>   * 
+<A NAME="779"></A>   * @author Thomas Hacklaender
+<A NAME="780"></A>   */</FONT>
+<A NAME="781"></A>  <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> getInterpolatedPixel(<FONT ID="Double">double</FONT> x, <FONT ID="Double">double</FONT> y, <FONT ID="Int">int</FONT>[][] pixel) {
+<A NAME="782"></A>    <FONT ID="Int">int</FONT>     lowerLeft = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="783"></A>    <FONT ID="Int">int</FONT>     lowerRight;
+<A NAME="784"></A>    <FONT ID="Int">int</FONT>     upperLeft;
+<A NAME="785"></A>    <FONT ID="Int">int</FONT>     upperRight;
+<A NAME="786"></A>
+<A NAME="787"></A>    <FONT ID="Int">int</FONT>     xbase = (<FONT ID="Int">int</FONT>) x;
+<A NAME="788"></A>    <FONT ID="Int">int</FONT>     ybase = (<FONT ID="Int">int</FONT>) y;
+<A NAME="789"></A>    <FONT ID="Double">double</FONT>  xFraction = x - xbase;
+<A NAME="790"></A>    <FONT ID="Double">double</FONT>  yFraction = y - ybase;
+<A NAME="791"></A>
+<A NAME="792"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="793"></A>      lowerLeft = pixel[xbase][ybase];
+<A NAME="794"></A>      lowerRight = pixel[xbase + <FONT ID="IntegerLiteral">1</FONT>][ybase];
+<A NAME="795"></A>      upperLeft = pixel[xbase][ybase + <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="796"></A>      upperRight = pixel[xbase + <FONT ID="IntegerLiteral">1</FONT>][ybase + <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="797"></A>      <FONT ID="Double">double</FONT>  upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
+<A NAME="798"></A>      <FONT ID="Double">double</FONT>  lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
+<A NAME="799"></A>
+<A NAME="800"></A>      <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) (lowerAverage + yFraction * (upperAverage - lowerAverage));
+<A NAME="801"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="802"></A>      <FONT ID="Return">return</FONT> lowerLeft;
+<A NAME="803"></A>    } 
+<A NAME="804"></A>  } 
+<A NAME="805"></A>
+<A NAME="806"></A>
+<A NAME="807"></A>}
+<A NAME="808"></A>
+<A NAME="809"></A>
+<A NAME="810"></A>
+<A NAME="811"></A>
+<A NAME="812"></A>
+<A NAME="813"></A>
+<A NAME="814"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="815"></A>
+<A NAME="816"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Pulsesequence</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

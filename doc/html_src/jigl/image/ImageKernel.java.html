@@ -1,0 +1,390 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.ImageKernel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImageKernel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This library is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="9"></A> * License as published by the Free Software Foundation; either
+<A NAME="10"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="11"></A> * 
+<A NAME="12"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="13"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="14"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="15"></A> * Library General Public License for more details.
+<A NAME="16"></A> * 
+<A NAME="17"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="18"></A> * /jigl/licence.txt
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="22"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="23"></A>
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="FormalComment">/**
+<A NAME="26"></A> * ImageKernel is an extension of GrayImage with some pre-defined kernals.
+<A NAME="27"></A> */</FONT>
+<A NAME="28"></A>
+<A NAME="29"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ImageKernel <FONT ID="Extends">extends</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> {
+<A NAME="30"></A>
+<A NAME="31"></A>
+<A NAME="32"></A>  <FONT ID="FormalComment">/**
+<A NAME="33"></A>   * Uniform Kernal.
+<A NAME="34"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="35"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="36"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="37"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="38"></A>   * &lt;/TABLE&gt;
+<A NAME="39"></A>   */</FONT>
+<A NAME="40"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  UNIFORM = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="41"></A>
+<A NAME="42"></A>
+<A NAME="43"></A>  <FONT ID="FormalComment">/**
+<A NAME="44"></A>   * Sorbel Kernal with X orientation.
+<A NAME="45"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="46"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="47"></A>   * &lt;TR&gt;&lt;TD&gt;-2&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;2&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="48"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="49"></A>   * &lt;/TABLE&gt;
+<A NAME="50"></A>   */</FONT>
+<A NAME="51"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  SOBEL_X = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="52"></A>
+<A NAME="53"></A>
+<A NAME="54"></A>  <FONT ID="FormalComment">/**
+<A NAME="55"></A>   * Sobel Kernal with Y orientation.
+<A NAME="56"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="57"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-2&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="58"></A>   * &lt;TR&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="59"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;2&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="60"></A>   * &lt;/TABLE&gt;
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  SOBEL_Y = <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="63"></A>
+<A NAME="64"></A>
+<A NAME="65"></A>  <FONT ID="FormalComment">/**
+<A NAME="66"></A>   * Prewitt Kernal with X orientation.
+<A NAME="67"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="68"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="69"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="70"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="71"></A>   * &lt;/TABLE&gt;
+<A NAME="72"></A>   */</FONT>
+<A NAME="73"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  PREWITT_X = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="74"></A>
+<A NAME="75"></A>
+<A NAME="76"></A>  <FONT ID="FormalComment">/**
+<A NAME="77"></A>   * Prewitt Kernal with Y orientation.
+<A NAME="78"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="79"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="80"></A>   * &lt;TR&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="81"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="82"></A>   * &lt;/TABLE&gt;
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  PREWITT_Y = <FONT ID="IntegerLiteral">4</FONT>;
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Laplacian Kernel.
+<A NAME="89"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="90"></A>   * &lt;TR&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="91"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;4&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="92"></A>   * &lt;TR&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="93"></A>   * &lt;/TABLE&gt;
+<A NAME="94"></A>   */</FONT>
+<A NAME="95"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  LAPLACIAN = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="96"></A>
+<A NAME="97"></A>
+<A NAME="98"></A>  <FONT ID="FormalComment">/**
+<A NAME="99"></A>   * Laplacian 8 Kernel.
+<A NAME="100"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="101"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="102"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;-8&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="103"></A>   * &lt;TR&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="104"></A>   * &lt;/TABLE&gt;
+<A NAME="105"></A>   */</FONT>
+<A NAME="106"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  LAPLACIAN_8 = <FONT ID="IntegerLiteral">6</FONT>;
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Unsharpen Kernel.
+<A NAME="111"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="112"></A>   * &lt;TR&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="113"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;5&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="114"></A>   * &lt;TR&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="115"></A>   * &lt;/TABLE&gt;
+<A NAME="116"></A>   */</FONT>
+<A NAME="117"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  UNSHARP = <FONT ID="IntegerLiteral">7</FONT>;
+<A NAME="118"></A>
+<A NAME="119"></A>
+<A NAME="120"></A>  <FONT ID="FormalComment">/**
+<A NAME="121"></A>   * Unsharpen 8 Kernel.
+<A NAME="122"></A>   * &lt;TABLE BORDER CELLPADDING=5 COLS=3 WIDTH="13" &gt;
+<A NAME="123"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="124"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;9&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="125"></A>   * &lt;TR&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;TD&gt;-1&lt;/TD&gt;&lt;/TR&gt;
+<A NAME="126"></A>   * &lt;/TABLE&gt;
+<A NAME="127"></A>   */</FONT>
+<A NAME="128"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>  UNSHARP_8 = <FONT ID="IntegerLiteral">8</FONT>;
+<A NAME="129"></A>
+<A NAME="130"></A>
+<A NAME="131"></A>  <FONT ID="FormalComment">/**
+<A NAME="132"></A>   * Creates a kenel of one of the predefined types
+<A NAME="133"></A>   * @param val kernel type
+<A NAME="134"></A>   * @see jigl.image.ImageKernel#UNIFORM
+<A NAME="135"></A>   * @see jigl.image.ImageKernel#SOBEL_X
+<A NAME="136"></A>   * @see jigl.image.ImageKernel#SOBEL_Y
+<A NAME="137"></A>   * @see jigl.image.ImageKernel#PREWITT_X
+<A NAME="138"></A>   * @see jigl.image.ImageKernel#PREWITT_Y
+<A NAME="139"></A>   * @see jigl.image.ImageKernel#LAPLACIAN
+<A NAME="140"></A>   * @see jigl.image.ImageKernel#LAPLACIAN_8
+<A NAME="141"></A>   * @see jigl.image.ImageKernel#UNSHARP
+<A NAME="142"></A>   * @see jigl.image.ImageKernel#UNSHARP_8
+<A NAME="143"></A>   */</FONT>
+<A NAME="144"></A>  <FONT ID="Public">public</FONT> ImageKernel(<FONT ID="Int">int</FONT> val) <FONT ID="Throws">throws</FONT> <A HREF="../../jigl/image/InvalidKernelException.java.html">InvalidKernelException</A> {
+<A NAME="145"></A>
+<A NAME="146"></A>    <FONT ID="Super">super</FONT>(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">3</FONT>);
+<A NAME="147"></A>
+<A NAME="148"></A>    <FONT ID="Float">float</FONT>[][] data2 = <FONT ID="Null">null</FONT>;
+<A NAME="149"></A>
+<A NAME="150"></A>    <FONT ID="Switch">switch</FONT> (val) {
+<A NAME="151"></A>
+<A NAME="152"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">0</FONT>: {
+<A NAME="153"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="154"></A>         {
+<A NAME="155"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="156"></A>        }, {
+<A NAME="157"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="158"></A>        }, {
+<A NAME="159"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="160"></A>        }
+<A NAME="161"></A>      };
+<A NAME="162"></A>
+<A NAME="163"></A>      data2 = data1;
+<A NAME="164"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="165"></A>    } 
+<A NAME="166"></A>
+<A NAME="167"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="168"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="169"></A>         {
+<A NAME="170"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="171"></A>        }, {
+<A NAME="172"></A>          -<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">2</FONT>
+<A NAME="173"></A>        }, {
+<A NAME="174"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="175"></A>        }
+<A NAME="176"></A>      };
+<A NAME="177"></A>
+<A NAME="178"></A>      data2 = data1;
+<A NAME="179"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="180"></A>    } 
+<A NAME="181"></A>
+<A NAME="182"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">2</FONT>: {
+<A NAME="183"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="184"></A>         {
+<A NAME="185"></A>          -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">2</FONT>, -<FONT ID="IntegerLiteral">1</FONT>
+<A NAME="186"></A>        }, {
+<A NAME="187"></A>          <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="188"></A>        }, {
+<A NAME="189"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="190"></A>        }
+<A NAME="191"></A>      };
+<A NAME="192"></A>
+<A NAME="193"></A>      data2 = data1;
+<A NAME="194"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="195"></A>    } 
+<A NAME="196"></A>
+<A NAME="197"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">3</FONT>: {
+<A NAME="198"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="199"></A>         {
+<A NAME="200"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="201"></A>        }, {
+<A NAME="202"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="203"></A>        }, {
+<A NAME="204"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="205"></A>        }
+<A NAME="206"></A>      };
+<A NAME="207"></A>
+<A NAME="208"></A>      data2 = data1;
+<A NAME="209"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="210"></A>    } 
+<A NAME="211"></A>
+<A NAME="212"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: {
+<A NAME="213"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="214"></A>         {
+<A NAME="215"></A>          -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">1</FONT>
+<A NAME="216"></A>        }, {
+<A NAME="217"></A>          <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="218"></A>        }, {
+<A NAME="219"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="220"></A>        }
+<A NAME="221"></A>      };
+<A NAME="222"></A>
+<A NAME="223"></A>      data2 = data1;
+<A NAME="224"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="225"></A>    } 
+<A NAME="226"></A>
+<A NAME="227"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">5</FONT>: {
+<A NAME="228"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="229"></A>         {
+<A NAME="230"></A>          <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="231"></A>        }, {
+<A NAME="232"></A>          <FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="233"></A>        }, {
+<A NAME="234"></A>          <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="235"></A>        }
+<A NAME="236"></A>      };
+<A NAME="237"></A>
+<A NAME="238"></A>      data2 = data1;
+<A NAME="239"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="240"></A>    } 
+<A NAME="241"></A>
+<A NAME="242"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">6</FONT>: {
+<A NAME="243"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="244"></A>         {
+<A NAME="245"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="246"></A>        }, {
+<A NAME="247"></A>          <FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">8</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="248"></A>        }, {
+<A NAME="249"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>
+<A NAME="250"></A>        }
+<A NAME="251"></A>      };
+<A NAME="252"></A>
+<A NAME="253"></A>      data2 = data1;
+<A NAME="254"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="255"></A>    } 
+<A NAME="256"></A>
+<A NAME="257"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">7</FONT>: {
+<A NAME="258"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="259"></A>         {
+<A NAME="260"></A>          <FONT ID="IntegerLiteral">0</FONT>, -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="261"></A>        }, {
+<A NAME="262"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">5</FONT>, -<FONT ID="IntegerLiteral">1</FONT>
+<A NAME="263"></A>        }, {
+<A NAME="264"></A>          <FONT ID="IntegerLiteral">0</FONT>, -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="265"></A>        }
+<A NAME="266"></A>      };
+<A NAME="267"></A>
+<A NAME="268"></A>      data2 = data1;
+<A NAME="269"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="270"></A>    } 
+<A NAME="271"></A>
+<A NAME="272"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">8</FONT>: {
+<A NAME="273"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="274"></A>         {
+<A NAME="275"></A>          -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">1</FONT>
+<A NAME="276"></A>        }, {
+<A NAME="277"></A>          -<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">9</FONT>, -<FONT ID="IntegerLiteral">1</FONT>
+<A NAME="278"></A>        }, {
+<A NAME="279"></A>          -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">1</FONT>, -<FONT ID="IntegerLiteral">1</FONT>
+<A NAME="280"></A>        }
+<A NAME="281"></A>      };
+<A NAME="282"></A>
+<A NAME="283"></A>      data2 = data1;
+<A NAME="284"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="285"></A>    } 
+<A NAME="286"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">9</FONT>: {
+<A NAME="287"></A>      <FONT ID="Float">float</FONT>[][] data1 = {
+<A NAME="288"></A>         {
+<A NAME="289"></A>          <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="290"></A>        }, {
+<A NAME="291"></A>          <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="292"></A>        }, {
+<A NAME="293"></A>          <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>
+<A NAME="294"></A>        }
+<A NAME="295"></A>      };
+<A NAME="296"></A>
+<A NAME="297"></A>      data2 = data1;
+<A NAME="298"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="299"></A>    } 
+<A NAME="300"></A>
+<A NAME="301"></A>    <FONT ID="Default">default</FONT>:
+<A NAME="302"></A>      <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/image/InvalidKernelException.java.html">InvalidKernelException</A>();
+<A NAME="303"></A>    }
+<A NAME="304"></A>    data = data2;
+<A NAME="305"></A>  }
+<A NAME="306"></A>
+<A NAME="307"></A>
+<A NAME="308"></A>  <FONT ID="FormalComment">/**
+<A NAME="309"></A>   * Creates a uniform kernel of specified size
+<A NAME="310"></A>   * @param val uniform value for the kernel
+<A NAME="311"></A>   * @param dimension size of kernel (dimension X dimension)
+<A NAME="312"></A>   */</FONT>
+<A NAME="313"></A>  <FONT ID="Public">public</FONT> ImageKernel(<FONT ID="Float">float</FONT> val, <FONT ID="Int">int</FONT> dimension) {
+<A NAME="314"></A>    <FONT ID="Super">super</FONT>(dimension, dimension);
+<A NAME="315"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; dimension; x++) {
+<A NAME="316"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; dimension; y++) {
+<A NAME="317"></A>        data[x][y] = val;
+<A NAME="318"></A>      }
+<A NAME="319"></A>    }
+<A NAME="320"></A>
+<A NAME="321"></A>  }
+<A NAME="322"></A>
+<A NAME="323"></A>
+<A NAME="324"></A>  <FONT ID="FormalComment">/**
+<A NAME="325"></A>   * Creates a kernel out of the given data.
+<A NAME="326"></A>   * Note: The kernel created will have dimensions equal to the number of elements in the first row.
+<A NAME="327"></A>   * @param dat two-dimensional data array
+<A NAME="328"></A>   */</FONT>
+<A NAME="329"></A>  <FONT ID="Public">public</FONT> ImageKernel(<FONT ID="Float">float</FONT>[][] dat) {
+<A NAME="330"></A>    <FONT ID="Super">super</FONT>(dat.length, dat.length);
+<A NAME="331"></A>    data = dat;
+<A NAME="332"></A>
+<A NAME="333"></A>  }
+<A NAME="334"></A>
+<A NAME="335"></A>
+<A NAME="336"></A>  <FONT ID="FormalComment">/**
+<A NAME="337"></A>   * Creates an ImageKernel from a RealGrayImage
+<A NAME="338"></A>   */</FONT>
+<A NAME="339"></A>  <FONT ID="Public">public</FONT> ImageKernel(<A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> img) {
+<A NAME="340"></A>    <FONT ID="Super">super</FONT>(img);
+<A NAME="341"></A>  }
+<A NAME="342"></A>
+<A NAME="343"></A>
+<A NAME="344"></A>  <FONT ID="FormalComment">/**
+<A NAME="345"></A>   * Normalizes the ImageKernel by 255
+<A NAME="346"></A>   */</FONT>
+<A NAME="347"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> normalize() {
+<A NAME="348"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="349"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="350"></A>        data[y][x] = data[y][x] / <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="351"></A>      } 
+<A NAME="352"></A>    } 
+<A NAME="353"></A>
+<A NAME="354"></A>  } 
+<A NAME="355"></A>
+<A NAME="356"></A>}
+<A NAME="357"></A>
+<A NAME="358"></A>
+<A NAME="359"></A>
+<A NAME="360"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="361"></A>
+<A NAME="362"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImageKernel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

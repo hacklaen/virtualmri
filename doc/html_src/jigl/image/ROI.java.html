@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.ROI (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ROI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A>
+<A NAME="18"></A>
+<A NAME="19"></A><FONT ID="FormalComment">/**
+<A NAME="20"></A> * This implements the Region of Interest
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="26"></A>
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="FormalComment">/**
+<A NAME="29"></A> * The ROI class is the Region of Interest of a JIGL Image
+<A NAME="30"></A> * @see ImageCanvas
+<A NAME="31"></A> */</FONT>
+<A NAME="32"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ROI {
+<A NAME="33"></A>
+<A NAME="34"></A>  <FONT ID="Int">int</FONT>[] ROI_Array = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">4</FONT>];
+<A NAME="35"></A>
+<A NAME="36"></A>
+<A NAME="37"></A>  <FONT ID="FormalComment">/**
+<A NAME="38"></A>   * Creates a Region of Interest initialized to (0,0,0,0)
+<A NAME="39"></A>   */</FONT>
+<A NAME="40"></A>  <FONT ID="Public">public</FONT> ROI() {
+<A NAME="41"></A>    ROI_Array[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="42"></A>    ROI_Array[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="43"></A>    ROI_Array[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="44"></A>    ROI_Array[<FONT ID="IntegerLiteral">3</FONT>] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="45"></A>  }
+<A NAME="46"></A>
+<A NAME="47"></A>
+<A NAME="48"></A>  <FONT ID="FormalComment">/**
+<A NAME="49"></A>   * Creates a Region of Interest initialized to (a,b,c,d)
+<A NAME="50"></A>   * @param a upper x corner of the Region of Interest
+<A NAME="51"></A>   * @param b upper y corner of the Region of Interest
+<A NAME="52"></A>   * @param c lower x corner of the Region of Interest
+<A NAME="53"></A>   * @param d lower y corner of the Region of Interest
+<A NAME="54"></A>   */</FONT>
+<A NAME="55"></A>  <FONT ID="Public">public</FONT> ROI(<FONT ID="Int">int</FONT> a, <FONT ID="Int">int</FONT> b, <FONT ID="Int">int</FONT> c, <FONT ID="Int">int</FONT> d) {
+<A NAME="56"></A>    ROI_Array[<FONT ID="IntegerLiteral">0</FONT>] = a;
+<A NAME="57"></A>    ROI_Array[<FONT ID="IntegerLiteral">1</FONT>] = b;
+<A NAME="58"></A>    ROI_Array[<FONT ID="IntegerLiteral">2</FONT>] = c;
+<A NAME="59"></A>    ROI_Array[<FONT ID="IntegerLiteral">3</FONT>] = d;
+<A NAME="60"></A>  }
+<A NAME="61"></A>
+<A NAME="62"></A>
+<A NAME="63"></A>  <FONT ID="FormalComment">/**
+<A NAME="64"></A>   * Returns the upper y corner of the Region of Interest
+<A NAME="65"></A>   */</FONT>
+<A NAME="66"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> uy() {
+<A NAME="67"></A>    <FONT ID="Return">return</FONT> ROI_Array[<FONT ID="IntegerLiteral">0</FONT>];
+<A NAME="68"></A>  } 
+<A NAME="69"></A>
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="FormalComment">/**
+<A NAME="72"></A>   * Returns the upper x corner of the Region of Interest
+<A NAME="73"></A>   */</FONT>
+<A NAME="74"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> ux() {
+<A NAME="75"></A>    <FONT ID="Return">return</FONT> ROI_Array[<FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="76"></A>  } 
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Returns the lower y corner of the Region of Interest
+<A NAME="81"></A>   */</FONT>
+<A NAME="82"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> ly() {
+<A NAME="83"></A>    <FONT ID="Return">return</FONT> ROI_Array[<FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="84"></A>  } 
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Returns the lower x corner of the Region of Interest
+<A NAME="89"></A>   */</FONT>
+<A NAME="90"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> lx() {
+<A NAME="91"></A>    <FONT ID="Return">return</FONT> ROI_Array[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="92"></A>  } 
+<A NAME="93"></A>
+<A NAME="94"></A>
+<A NAME="95"></A>  <FONT ID="FormalComment">/**
+<A NAME="96"></A>   * Returns the width of the Region of Interest
+<A NAME="97"></A>   */</FONT>
+<A NAME="98"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> X() {
+<A NAME="99"></A>    <FONT ID="Return">return</FONT> lx() - ux();
+<A NAME="100"></A>  } 
+<A NAME="101"></A>
+<A NAME="102"></A>
+<A NAME="103"></A>  <FONT ID="FormalComment">/**
+<A NAME="104"></A>   * Returns the height of the Region of Interest
+<A NAME="105"></A>   */</FONT>
+<A NAME="106"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> Y() {
+<A NAME="107"></A>    <FONT ID="Return">return</FONT> ly() - uy();
+<A NAME="108"></A>  } 
+<A NAME="109"></A>
+<A NAME="110"></A>
+<A NAME="111"></A>  <FONT ID="FormalComment">/**
+<A NAME="112"></A>   * Sets the Region of Interest
+<A NAME="113"></A>   * @param a upper x corner of the Region of Interest
+<A NAME="114"></A>   * @param b upper y corner of the Region of Interest
+<A NAME="115"></A>   * @param c lower x corner of the Region of Interest
+<A NAME="116"></A>   * @param d lower y corner of the Region of Interest
+<A NAME="117"></A>   */</FONT>
+<A NAME="118"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setROI(<FONT ID="Int">int</FONT> a, <FONT ID="Int">int</FONT> b, <FONT ID="Int">int</FONT> c, <FONT ID="Int">int</FONT> d) {
+<A NAME="119"></A>    ROI_Array[<FONT ID="IntegerLiteral">0</FONT>] = a;
+<A NAME="120"></A>    ROI_Array[<FONT ID="IntegerLiteral">1</FONT>] = b;
+<A NAME="121"></A>    ROI_Array[<FONT ID="IntegerLiteral">2</FONT>] = c;
+<A NAME="122"></A>    ROI_Array[<FONT ID="IntegerLiteral">3</FONT>] = d;
+<A NAME="123"></A>  } 
+<A NAME="124"></A>
+<A NAME="125"></A>}
+<A NAME="126"></A>
+<A NAME="127"></A>
+<A NAME="128"></A>
+<A NAME="129"></A>
+<A NAME="130"></A>
+<A NAME="131"></A>
+<A NAME="132"></A>
+<A NAME="133"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="134"></A>
+<A NAME="135"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ROI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

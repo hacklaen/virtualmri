@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.utils.FFT (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FFT</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Package">package</FONT> <A HREF="../../../jigl.image.utils.index.html" target="packageFrame">jigl.image.utils</A>;
+<A NAME="19"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="20"></A><FONT ID="Import">import</FONT> <A HREF="../../../jigl.image.index.html" target="packageFrame">jigl.image.*</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="FormalComment">/**
+<A NAME="24"></A> * Class declaration
+<A NAME="25"></A> *
+<A NAME="26"></A> *
+<A NAME="27"></A> * @author
+<A NAME="28"></A> * @version %I%, %G%
+<A NAME="29"></A> */</FONT>
+<A NAME="30"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FFT {
+<A NAME="31"></A>
+<A NAME="32"></A>  <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>    MAX_POW = <FONT ID="IntegerLiteral">31</FONT>;
+<A NAME="33"></A>  <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>[]  pow2 = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[MAX_POW + <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="34"></A>
+<A NAME="35"></A>
+<A NAME="36"></A>  <FONT ID="SingleLineComment">// static initializer
+<A NAME="37"></A></FONT>  <FONT ID="Static">static</FONT> {
+<A NAME="38"></A>    pow2[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i &lt;= MAX_POW; i++) {
+<A NAME="41"></A>      pow2[i] = <FONT ID="IntegerLiteral">2</FONT> * pow2[i - <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="42"></A>    } 
+<A NAME="43"></A>  } 
+<A NAME="44"></A>
+<A NAME="45"></A>
+<A NAME="46"></A>  <FONT ID="FormalComment">/**
+<A NAME="47"></A>   * Method declaration
+<A NAME="48"></A>   *
+<A NAME="49"></A>   *
+<A NAME="50"></A>   * @param i
+<A NAME="51"></A>   * @param k
+<A NAME="52"></A>   *
+<A NAME="53"></A>   * @return
+<A NAME="54"></A>   *
+<A NAME="55"></A>   * @see
+<A NAME="56"></A>   */</FONT>
+<A NAME="57"></A>  <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> BitReverse(<FONT ID="Int">int</FONT> i, <FONT ID="Int">int</FONT> k) {
+<A NAME="58"></A>    <FONT ID="Int">int</FONT> rev = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="59"></A>
+<A NAME="60"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; k; ++j) {
+<A NAME="61"></A>      <FONT ID="If">if</FONT> ((i &amp; pow2[k - j - <FONT ID="IntegerLiteral">1</FONT>]) &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="62"></A>        rev |= pow2[j];
+<A NAME="63"></A>      } 
+<A NAME="64"></A>    } 
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="Return">return</FONT> rev;
+<A NAME="67"></A>  } 
+<A NAME="68"></A>
+<A NAME="69"></A>
+<A NAME="70"></A>  <FONT ID="FormalComment">/**
+<A NAME="71"></A>   * Dummy Constructor
+<A NAME="72"></A>   */</FONT>
+<A NAME="73"></A>  <FONT ID="Public">public</FONT> FFT() {}
+<A NAME="74"></A>
+<A NAME="75"></A>
+<A NAME="76"></A>  <FONT ID="FormalComment">/**
+<A NAME="77"></A>   * Do Forward FFT calculation
+<A NAME="78"></A>   */</FONT>
+<A NAME="79"></A>  <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A> forward(<A HREF="../../../jigl/image/Image.java.html">Image</A> im) {
+<A NAME="80"></A>    <FONT ID="Return">return</FONT> doFFT(im, <FONT ID="True">true</FONT>);
+<A NAME="81"></A>  } 
+<A NAME="82"></A>
+<A NAME="83"></A>
+<A NAME="84"></A>  <FONT ID="FormalComment">/**
+<A NAME="85"></A>   * Do Inverse FFT calculation
+<A NAME="86"></A>   */</FONT>
+<A NAME="87"></A>  <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A> inverse(<A HREF="../../../jigl/image/Image.java.html">Image</A> im) {
+<A NAME="88"></A>    <FONT ID="Return">return</FONT> doFFT(im, <FONT ID="False">false</FONT>);
+<A NAME="89"></A>  } 
+<A NAME="90"></A>
+<A NAME="91"></A>
+<A NAME="92"></A>  <FONT ID="FormalComment">/**
+<A NAME="93"></A>   * Do FFT calculation @param im image to do FFT on.
+<A NAME="94"></A>   * @param forward true=forward false=inverse
+<A NAME="95"></A>   */</FONT>
+<A NAME="96"></A>  <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A> doFFT(<A HREF="../../../jigl/image/Image.java.html">Image</A> im, <FONT ID="Boolean">boolean</FONT> forward) {
+<A NAME="97"></A>
+<A NAME="98"></A>    <FONT ID="Int">int</FONT>       x = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="99"></A>    <FONT ID="Int">int</FONT>       lgn = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="100"></A>    <FONT ID="Int">int</FONT>       n = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="101"></A>    <FONT ID="Int">int</FONT>       rev = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="102"></A>    <FONT ID="Int">int</FONT>       size = im.X() * im.Y();
+<A NAME="103"></A>    <FONT ID="Float">float</FONT>[][] a = <FONT ID="Null">null</FONT>;
+<A NAME="104"></A>
+<A NAME="105"></A>    <FONT ID="While">while</FONT> (x &lt;= MAX_POW) {
+<A NAME="106"></A>
+<A NAME="107"></A>      <FONT ID="SingleLineComment">// find the next-highest power of two after the total size of im
+<A NAME="108"></A></FONT>      <FONT ID="If">if</FONT> (pow2[x] &gt;= size) {
+<A NAME="109"></A>        lgn = x;
+<A NAME="110"></A>        n = pow2[lgn];
+<A NAME="111"></A>
+<A NAME="112"></A>        a = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[<FONT ID="IntegerLiteral">2</FONT>][n];
+<A NAME="113"></A>
+<A NAME="114"></A>        <FONT ID="SingleLineComment">// load the values from im into the new ComplexImage,
+<A NAME="115"></A></FONT>        <FONT ID="SingleLineComment">// in reverse bit order, padding with 0's.
+<A NAME="116"></A></FONT>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; n; y++) {
+<A NAME="117"></A>          rev = BitReverse(y, lgn);
+<A NAME="118"></A>          <FONT ID="Try">try</FONT> {
+<A NAME="119"></A>            <FONT ID="If">if</FONT> (forward == <FONT ID="True">true</FONT>) {
+<A NAME="120"></A>              <FONT ID="If">if</FONT> (im <FONT ID="InstanceOf">instanceof</FONT> <A HREF="../../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>) {
+<A NAME="121"></A>                <A HREF="../../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> ub = (<A HREF="../../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>) im;
+<A NAME="122"></A>
+<A NAME="123"></A>                <FONT ID="If">if</FONT> (y &lt; (ub.X() * ub.Y())) {
+<A NAME="124"></A>                  a[<FONT ID="IntegerLiteral">0</FONT>][rev] = ub.get(y % ub.X(), y / ub.X());
+<A NAME="125"></A>                  a[<FONT ID="IntegerLiteral">1</FONT>][rev] = <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="126"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="127"></A>                  a[<FONT ID="IntegerLiteral">0</FONT>][rev] = <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="128"></A>                  a[<FONT ID="IntegerLiteral">1</FONT>][rev] = <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="129"></A>                } 
+<A NAME="130"></A>              } <FONT ID="Else">else</FONT> {
+<A NAME="131"></A>                System.out.println(<FONT ID="StringLiteral">"Nichtunterstuetzter Bildtype bei FFT"</FONT>);
+<A NAME="132"></A>
+<A NAME="133"></A>                <FONT ID="SingleLineComment">// unsupported type - throw exception?
+<A NAME="134"></A></FONT>              } 
+<A NAME="135"></A>            } <FONT ID="Else">else</FONT> {  <FONT ID="SingleLineComment">// rueckwaerts
+<A NAME="136"></A></FONT>              <FONT ID="If">if</FONT> (im <FONT ID="InstanceOf">instanceof</FONT> <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A>) {
+<A NAME="137"></A>                <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A>  ci = (<A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A>) im;
+<A NAME="138"></A>
+<A NAME="139"></A>                <FONT ID="If">if</FONT> (y &lt; (ci.X() * ci.Y())) {
+<A NAME="140"></A>                  a[<FONT ID="IntegerLiteral">0</FONT>][rev] = (<FONT ID="Float">float</FONT>) ci.getReal(y % ci.X(), y / ci.X()) / (<FONT ID="Float">float</FONT>) n;
+<A NAME="141"></A>                  a[<FONT ID="IntegerLiteral">1</FONT>][rev] = (<FONT ID="Float">float</FONT>) ci.getImag(y % ci.X(), y / ci.X()) / (<FONT ID="Float">float</FONT>) n;
+<A NAME="142"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="143"></A>                  a[<FONT ID="IntegerLiteral">0</FONT>][rev] = (<FONT ID="Float">float</FONT>) <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="144"></A>                  a[<FONT ID="IntegerLiteral">1</FONT>][rev] = (<FONT ID="Float">float</FONT>) <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="145"></A>                } 
+<A NAME="146"></A>              } <FONT ID="Else">else</FONT> {
+<A NAME="147"></A>                System.out.println(<FONT ID="StringLiteral">"Nichtunterstuetzter Bildtype bei FFT"</FONT>);
+<A NAME="148"></A>
+<A NAME="149"></A>                <FONT ID="SingleLineComment">// unsupported type - throw exception?
+<A NAME="150"></A></FONT>              } 
+<A NAME="151"></A>            }         <FONT ID="SingleLineComment">// rueckwaerts
+<A NAME="152"></A></FONT> 
+<A NAME="153"></A>          }           <FONT ID="SingleLineComment">// try
+<A NAME="154"></A></FONT>           <FONT ID="Catch">catch</FONT> (ArrayIndexOutOfBoundsException e) {
+<A NAME="155"></A>            a[<FONT ID="IntegerLiteral">0</FONT>][rev] = (<FONT ID="Float">float</FONT>) <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="156"></A>            a[<FONT ID="IntegerLiteral">1</FONT>][rev] = (<FONT ID="Float">float</FONT>) <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="157"></A>          } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="158"></A>            System.out.println(<FONT ID="StringLiteral">"FFT Error:  "</FONT> + e.toString());
+<A NAME="159"></A>          } 
+<A NAME="160"></A>        }             <FONT ID="SingleLineComment">// for
+<A NAME="161"></A></FONT>         <FONT ID="Break">break</FONT>;
+<A NAME="162"></A>      }               <FONT ID="SingleLineComment">// if
+<A NAME="163"></A></FONT>       x++;
+<A NAME="164"></A>    } 
+<A NAME="165"></A>
+<A NAME="166"></A>
+<A NAME="167"></A>
+<A NAME="168"></A>    <FONT ID="SingleLineComment">// float[] t = new float[2];
+<A NAME="169"></A></FONT>    <FONT ID="SingleLineComment">// float[] u = new float[2];
+<A NAME="170"></A></FONT>    <FONT ID="Float">float</FONT>     t0, t1, u0, u1;
+<A NAME="171"></A>    <FONT ID="Float">float</FONT>     temp;
+<A NAME="172"></A>    <FONT ID="Float">float</FONT>     t2;
+<A NAME="173"></A>    <FONT ID="Int">int</FONT>       m = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="174"></A>    <FONT ID="Int">int</FONT>       mdiv2 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="175"></A>
+<A NAME="176"></A>    <FONT ID="SingleLineComment">// float[] omega_m = null;
+<A NAME="177"></A></FONT>    <FONT ID="SingleLineComment">// float[] omega_m = new float[2];
+<A NAME="178"></A></FONT>    <FONT ID="SingleLineComment">// float[] omega = new float[2];
+<A NAME="179"></A></FONT>    <FONT ID="Float">float</FONT>     omega_m0 = <FONT ID="FloatPointLiteral">0f</FONT>, omega_m1 = <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="180"></A>    <FONT ID="Float">float</FONT>     omega0, omega1;
+<A NAME="181"></A>    <FONT ID="Float">float</FONT>[][] b = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[<FONT ID="IntegerLiteral">2</FONT>][n];
+<A NAME="182"></A>    <FONT ID="Int">int</FONT>       i, j, k;
+<A NAME="183"></A>    <FONT ID="Int">int</FONT>       w, h, kplusmdiv2;
+<A NAME="184"></A>
+<A NAME="185"></A>    w = im.X();
+<A NAME="186"></A>    h = im.Y();
+<A NAME="187"></A>    <FONT ID="Double">double</FONT>  minustwotimesPIdivm;
+<A NAME="188"></A>    <FONT ID="Double">double</FONT>  minustwotimesPI = (-<FONT ID="FloatPointLiteral">2.0</FONT>) * Math.PI;
+<A NAME="189"></A>    <FONT ID="Double">double</FONT>  twotimesPIdivm;
+<A NAME="190"></A>    <FONT ID="Double">double</FONT>  twotimesPI = (<FONT ID="FloatPointLiteral">2.0</FONT>) * Math.PI;
+<A NAME="191"></A>
+<A NAME="192"></A>
+<A NAME="193"></A>    <FONT ID="Long">long</FONT>    starttime = System.currentTimeMillis();
+<A NAME="194"></A>
+<A NAME="195"></A>    <FONT ID="SingleLineComment">// do the FFT
+<A NAME="196"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> s = <FONT ID="IntegerLiteral">1</FONT>; s &lt;= lgn; s++) {
+<A NAME="197"></A>      m = pow2[s];
+<A NAME="198"></A>
+<A NAME="199"></A>      <FONT ID="SingleLineComment">// mdiv2 = m / 2;
+<A NAME="200"></A></FONT>      mdiv2 = m &gt;&gt; <FONT ID="IntegerLiteral">1</FONT>;   <FONT ID="SingleLineComment">// neu Jens
+<A NAME="201"></A></FONT>
+<A NAME="202"></A>      <FONT ID="SingleLineComment">// omega_m = new float[2];
+<A NAME="203"></A></FONT>
+<A NAME="204"></A>      <FONT ID="If">if</FONT> (forward == <FONT ID="True">true</FONT>) {
+<A NAME="205"></A>        minustwotimesPIdivm = minustwotimesPI / (<FONT ID="Double">double</FONT>) m;
+<A NAME="206"></A>        omega_m0 = (<FONT ID="Float">float</FONT>) (Math.cos(minustwotimesPIdivm));
+<A NAME="207"></A>        omega_m1 = (<FONT ID="Float">float</FONT>) (Math.sin(minustwotimesPIdivm));
+<A NAME="208"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="209"></A>        twotimesPIdivm = twotimesPI / (<FONT ID="Double">double</FONT>) m;
+<A NAME="210"></A>        omega_m0 = (<FONT ID="Float">float</FONT>) (Math.cos(twotimesPIdivm));
+<A NAME="211"></A>        omega_m1 = (<FONT ID="Float">float</FONT>) (Math.sin(twotimesPIdivm));
+<A NAME="212"></A>      } 
+<A NAME="213"></A>
+<A NAME="214"></A>      <FONT ID="SingleLineComment">// float[] omega = {(float)1f, (float)0f};
+<A NAME="215"></A></FONT>      <FONT ID="SingleLineComment">// float[] omega = {/*(float)*/1f, /*(float)*/0f}; // neu Jens
+<A NAME="216"></A></FONT>
+<A NAME="217"></A>      omega0 = <FONT ID="FloatPointLiteral">1f</FONT>;
+<A NAME="218"></A>      omega1 = <FONT ID="FloatPointLiteral">0f</FONT>;
+<A NAME="219"></A>
+<A NAME="220"></A>      <FONT ID="For">for</FONT> (j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; mdiv2; ++j) {
+<A NAME="221"></A>        <FONT ID="For">for</FONT> (k = j; k &lt; n; k += m) {
+<A NAME="222"></A>          kplusmdiv2 = k + mdiv2;
+<A NAME="223"></A>          t0 = omega0;
+<A NAME="224"></A>          t1 = omega1;
+<A NAME="225"></A>          u0 = a[<FONT ID="IntegerLiteral">0</FONT>][k];
+<A NAME="226"></A>          u1 = a[<FONT ID="IntegerLiteral">1</FONT>][k];
+<A NAME="227"></A>
+<A NAME="228"></A>          temp = (t0 * a[<FONT ID="IntegerLiteral">0</FONT>][kplusmdiv2]) - (t1 * a[<FONT ID="IntegerLiteral">1</FONT>][kplusmdiv2]);
+<A NAME="229"></A>          t1 = (t0 * a[<FONT ID="IntegerLiteral">1</FONT>][kplusmdiv2]) + (t1 * a[<FONT ID="IntegerLiteral">0</FONT>][kplusmdiv2]);
+<A NAME="230"></A>          t0 = temp;
+<A NAME="231"></A>
+<A NAME="232"></A>          <FONT ID="SingleLineComment">// a[k] = u + t; better way to do this?
+<A NAME="233"></A></FONT>          a[<FONT ID="IntegerLiteral">0</FONT>][k] = u0 + t0;
+<A NAME="234"></A>          a[<FONT ID="IntegerLiteral">1</FONT>][k] = u1 + t1;
+<A NAME="235"></A>          a[<FONT ID="IntegerLiteral">0</FONT>][kplusmdiv2] = u0 - t0;
+<A NAME="236"></A>          a[<FONT ID="IntegerLiteral">1</FONT>][kplusmdiv2] = u1 - t1;
+<A NAME="237"></A>        } 
+<A NAME="238"></A>        t2 = (omega0 * omega_m0) - (omega1 * omega_m1);
+<A NAME="239"></A>        omega1 = (omega0 * omega_m1) + (omega1 * omega_m0);
+<A NAME="240"></A>        omega0 = t2;
+<A NAME="241"></A>      } 
+<A NAME="242"></A>    } 
+<A NAME="243"></A>
+<A NAME="244"></A>    <FONT ID="SingleLineComment">// ComplexImage ar = new ComplexImage(im.X(),im.Y());
+<A NAME="245"></A></FONT>    <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A>  ar = <FONT ID="New">new</FONT> <A HREF="../../../jigl/image/ComplexImage.java.html">ComplexImage</A>(w, h);
+<A NAME="246"></A>
+<A NAME="247"></A>    <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; n; i++) {
+<A NAME="248"></A>
+<A NAME="249"></A>      <FONT ID="SingleLineComment">// ar.set(i % w, i / w, (float)a[0][i], (float)a[1][i]);
+<A NAME="250"></A></FONT>      ar.set(i % w, i / w, a[<FONT ID="IntegerLiteral">0</FONT>][i], a[<FONT ID="IntegerLiteral">1</FONT>][i]);
+<A NAME="251"></A>    } 
+<A NAME="252"></A>
+<A NAME="253"></A>    <FONT ID="Long">long</FONT>  endtime = System.currentTimeMillis();
+<A NAME="254"></A>
+<A NAME="255"></A>    <FONT ID="SingleLineComment">// IJ.write("Dauer der FFT: " + (endtime - starttime) + "ms");
+<A NAME="256"></A></FONT>
+<A NAME="257"></A>    <FONT ID="Return">return</FONT> ar;
+<A NAME="258"></A>
+<A NAME="259"></A>  } 
+<A NAME="260"></A>
+<A NAME="261"></A>
+<A NAME="262"></A>
+<A NAME="263"></A>
+<A NAME="264"></A>
+<A NAME="265"></A>
+<A NAME="266"></A>
+<A NAME="267"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="268"></A>   * float[] t = new float[2];
+<A NAME="269"></A>   * float[] u = new float[2];
+<A NAME="270"></A>   * float temp;
+<A NAME="271"></A>   * float t2;
+<A NAME="272"></A>   * int m=0;
+<A NAME="273"></A>   * int mdiv2=0;
+<A NAME="274"></A>   * float[] omega_m=null;
+<A NAME="275"></A>   * // float[][] b=new float[2][n];
+<A NAME="276"></A>   * // do the FFT
+<A NAME="277"></A>   * for (int s = 1; s &lt;= lgn; s++) {
+<A NAME="278"></A>   * m =pow2[s];
+<A NAME="279"></A>   * mdiv2 = m / 2;
+<A NAME="280"></A>   * omega_m = new float[2];
+<A NAME="281"></A>   * if (forward == true) {
+<A NAME="282"></A>   * omega_m[0] = (float)(Math.cos((-2.0 * Math.PI) / (double) m));
+<A NAME="283"></A>   * omega_m[1] = (float)(Math.sin((-2.0 * Math.PI) / (double) m));
+<A NAME="284"></A>   * }
+<A NAME="285"></A>   * else {
+<A NAME="286"></A>   * omega_m[0] = (float)(Math.cos(2.0 * Math.PI / (double) m));
+<A NAME="287"></A>   * omega_m[1] = (float)(Math.sin(2.0 * Math.PI / (double) m));
+<A NAME="288"></A>   * }
+<A NAME="289"></A>   * float[] omega = {(float)1f, (float)0f};
+<A NAME="290"></A>   * for (int j = 0; j &lt; mdiv2; ++j) {
+<A NAME="291"></A>   * for (int k = j; k &lt; n; k += m) {
+<A NAME="292"></A>   * t[0] = omega[0]; t[1] = omega[1];
+<A NAME="293"></A>   * u[0] = a[0][k]; u[1] = a[1][k];
+<A NAME="294"></A>   * temp = (t[0]*a[0][k+mdiv2]) - (t[1]*a[1][k+mdiv2]);
+<A NAME="295"></A>   * t[1] = (t[0]*a[1][k+mdiv2]) + (t[1]*a[0][k+mdiv2]);
+<A NAME="296"></A>   * t[0] = temp;
+<A NAME="297"></A>   * // a[k] = u + t; better way to do this?
+<A NAME="298"></A>   * a[0][k] = u[0]+t[0]; a[1][k] = u[1]+t[1];
+<A NAME="299"></A>   * a[0][k+mdiv2] = u[0]-t[0]; a[1][k+mdiv2] = u[1]-t[1];
+<A NAME="300"></A>   * } // for k
+<A NAME="301"></A>   * t2 = (omega[0]*omega_m[0]) - (omega[1]*omega_m[1]);
+<A NAME="302"></A>   * omega[1] = (omega[0]*omega_m[1]) + (omega[1]*omega_m[0]);
+<A NAME="303"></A>   * omega[0] = t2;
+<A NAME="304"></A>   * } // for j
+<A NAME="305"></A>   * } // for s
+<A NAME="306"></A>   * ComplexImage ar = new ComplexImage(im.X(),im.Y());
+<A NAME="307"></A>   * for (int i=0; i&lt;n; i++) {
+<A NAME="308"></A>   * ar.set(i % ar.X(), i / ar.X(), (float)a[0][i], (float)a[1][i]);
+<A NAME="309"></A>   * } // for i
+<A NAME="310"></A>   * return ar;
+<A NAME="311"></A>   * }
+<A NAME="312"></A>   */</FONT>
+<A NAME="313"></A>}
+<A NAME="314"></A>
+<A NAME="315"></A>
+<A NAME="316"></A>
+<A NAME="317"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="318"></A>
+<A NAME="319"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FFT</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

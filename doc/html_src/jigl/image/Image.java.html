@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.Image (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Image</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="18"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="19"></A>
+<A NAME="20"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="FormalComment">/**
+<A NAME="24"></A> * Image is the interface for ColorImage, ComplexImage, ConvertSignal, DiscreteSignal &lt;p&gt;
+<A NAME="25"></A> * In addition, all typed Image classes must support the following typed methods:
+<A NAME="26"></A> * 
+<A NAME="27"></A> * get
+<A NAME="28"></A> * set
+<A NAME="29"></A> * clear
+<A NAME="30"></A> * ...
+<A NAME="31"></A> */</FONT>
+<A NAME="32"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> Image {
+<A NAME="33"></A>
+<A NAME="34"></A>
+<A NAME="35"></A>  <FONT ID="FormalComment">/**
+<A NAME="36"></A>   * Returns the width of the image
+<A NAME="37"></A>   */</FONT>
+<A NAME="38"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> X();
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Returns the height of the image
+<A NAME="43"></A>   */</FONT>
+<A NAME="44"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> Y();
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Returns a string representation of an image
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Public">public</FONT> String toString();
+<A NAME="51"></A>
+<A NAME="52"></A>
+<A NAME="53"></A>  <FONT ID="FormalComment">/**
+<A NAME="54"></A>   * Turns this image into a Java Image (java.awt.Image).
+<A NAME="55"></A>   * @param none
+<A NAME="56"></A>   * @see java.awt.ImageProducer
+<A NAME="57"></A>   */</FONT>
+<A NAME="58"></A>  <FONT ID="Public">public</FONT> ImageProducer getJavaImage();
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>  <FONT ID="FormalComment">/**
+<A NAME="62"></A>   * Returns a deep copy of an image
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy();
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * Method declaration
+<A NAME="69"></A>   *
+<A NAME="70"></A>   *
+<A NAME="71"></A>   * @param r
+<A NAME="72"></A>   *
+<A NAME="73"></A>   * @return
+<A NAME="74"></A>   *
+<A NAME="75"></A>   * @see
+<A NAME="76"></A>   */</FONT>
+<A NAME="77"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r);
+<A NAME="78"></A>
+<A NAME="79"></A>
+<A NAME="80"></A>}   <FONT ID="SingleLineComment">// image
+<A NAME="81"></A></FONT>
+<A NAME="82"></A>
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="86"></A>
+<A NAME="87"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Image</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

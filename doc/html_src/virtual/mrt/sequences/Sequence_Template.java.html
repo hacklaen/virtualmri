@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.sequences.Sequence_Template (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Sequence_Template</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="FormalComment">/**
+<A NAME="24"></A> * Die Klasse bildet eine Vorlage zur Erstellung neuer Pulssequenzen.
+<A NAME="25"></A> * Der Klassenname sollte geaendert werden. Ebenso die Namen der Konstruktoren.
+<A NAME="26"></A> * Auch andere Vorkommen der Zeichenkette Sequence_Template sind durch den
+<A NAME="27"></A> * entsprechenden Sequenznamen zu ersetzen.
+<A NAME="28"></A> * Als einzigen Sequenzparameter enthaelt diese Vorlage die Repititionszeit,
+<A NAME="29"></A> * die in jeder aktuellen Pulssequenz sinnvoll ist.
+<A NAME="30"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="31"></A> * Thomas Hacklaender 2000.04.03:
+<A NAME="32"></A> * Zahlenwert fuer DELTAB und GYRO korrigiert. &lt;br&gt;
+<A NAME="33"></A> * Thomas Hacklaender 2000.04.03:
+<A NAME="34"></A> * Methode getTRTime eingefuegt. &lt;br&gt;
+<A NAME="35"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="36"></A> * Zahlenwert fuer DELTAB fuer 1,0 T korrigiert. &lt;br&gt;
+<A NAME="37"></A> * Thomas Hacklaender 2002.10.14:
+<A NAME="38"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="39"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="40"></A> * @author   Christian Schalla
+<A NAME="41"></A> * @author   Andreas Truemper
+<A NAME="42"></A> * @version  1.2, 2002.10.14
+<A NAME="43"></A> */</FONT>
+<A NAME="44"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Sequence_Template <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/sequences/Pulsesequence.java.html">Pulsesequence</A> {
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Magnetfeldinhomogenitaet.
+<A NAME="49"></A>   * Wir gehen von einem 1,0T Magnet aus, der im Abbildungsvolumen von
+<A NAME="50"></A>   * 0,5 m Durchmesser eine Feldinhomogenitaet von 5 ppm aufweist.
+<A NAME="51"></A>   * bei einem FOV von 50 cm und 256 Pixel Aufloesung hat jedes Pixel
+<A NAME="52"></A>   * eine Inhomoginitaet von 19,5 * 10^-9 T.
+<A NAME="53"></A>   * Berechnung der Relaxationszeit T2* siehe:
+<A NAME="54"></A>   * Hashemi R: MRI the basics. Williams, Baltimore, 1997. Seite 48.
+<A NAME="55"></A>   */</FONT>
+<A NAME="56"></A>  <FONT ID="Final">final</FONT> <FONT ID="Double">double</FONT>  DELTAB = <FONT ID="FloatPointLiteral">19.5E-9</FONT>;
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>  <FONT ID="FormalComment">/**
+<A NAME="60"></A>   * Gyromagnetische Verhaeltnis fuer Wasserstoff.
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Final">final</FONT> <FONT ID="Double">double</FONT>  GYRO = <FONT ID="FloatPointLiteral">42.6</FONT>;  <FONT ID="SingleLineComment">// (Mhz/Tesla)
+<A NAME="63"></A></FONT>
+<A NAME="64"></A>
+<A NAME="65"></A>  <FONT ID="FormalComment">/**
+<A NAME="66"></A>   * Klasseninterne Variable fuer die Repititionszeit. Der Wert wird aus den
+<A NAME="67"></A>   * GUI-Elementen ausgelesen. Andere Sequenzparameter benoetigen entsprechende
+<A NAME="68"></A>   * Variablen.
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>   trTime;
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * Standardkonstruktor.
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Public">public</FONT> Sequence_Template() {}
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Die Methode setzt die Parameterwerte der Sequenz in dem erzeugten Bild.
+<A NAME="81"></A>   * Diese Werte werden dann im DICOM-Format mit abgespeichert. Hat die Sequenz
+<A NAME="82"></A>   * weitere Parameter, so muessen diese ebenfalls gesetzt werden. Weitere
+<A NAME="83"></A>   * Methoden zum Setzen der Parameter sind setTI, setTE, setFA, setESP und
+<A NAME="84"></A>   * setETL.
+<A NAME="85"></A>   */</FONT>
+<A NAME="86"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> addSequenceParameterToImage() {
+<A NAME="87"></A>    ResultIP.setTR((<FONT ID="Double">double</FONT>) trTime);
+<A NAME="88"></A>    ResultIP.setSequence(<FONT ID="StringLiteral">"Sequence_Template"</FONT>);
+<A NAME="89"></A>  }   <FONT ID="SingleLineComment">// Methode addSequenceParameterToImage()
+<A NAME="90"></A></FONT> 
+<A NAME="91"></A>
+<A NAME="92"></A>  <FONT ID="FormalComment">/**
+<A NAME="93"></A>   * Die Methode uebernimmt die Berechnung des Intensitaetsbildes.
+<A NAME="94"></A>   * Um die Umrechnung in ein 12-Bit-Bild muss man sich nicht kuemmern. Dies
+<A NAME="95"></A>   * wird in der Oberklasse erledigt.
+<A NAME="96"></A>   */</FONT>
+<A NAME="97"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculate() {
+<A NAME="98"></A>
+<A NAME="99"></A>    <FONT ID="SingleLineComment">// Durchlaufen der Zeilen der Rohdatenmatrizen. Nach jeder Zeile wird die
+<A NAME="100"></A></FONT>    <FONT ID="SingleLineComment">// Fortschrittsanzeige um 1/256-stel erhoeht.
+<A NAME="101"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; PDMatrix.length; x++) {
+<A NAME="102"></A>
+<A NAME="103"></A>      <FONT ID="SingleLineComment">// Aktualisieren der Fortschrittsanzeige
+<A NAME="104"></A></FONT>      progressBar.setValue(x);
+<A NAME="105"></A>
+<A NAME="106"></A>      <FONT ID="SingleLineComment">// Nun wird die Restzeit der Berechnung berechnet und angezeigt.
+<A NAME="107"></A></FONT>      <FONT ID="Try">try</FONT> {
+<A NAME="108"></A>        <FONT ID="Long">long</FONT>  remainingtime = trTime * (<FONT ID="IntegerLiteral">256</FONT> - x);
+<A NAME="109"></A>
+<A NAME="110"></A>        myUIClass.displayRemainingTime(remainingtime);
+<A NAME="111"></A>        sleep((<FONT ID="Long">long</FONT>) ((((<FONT ID="Double">double</FONT>) (iTimeFactor)) / <FONT ID="IntegerLiteral">100</FONT>) * trTime));
+<A NAME="112"></A>      } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="113"></A>
+<A NAME="114"></A>      <FONT ID="SingleLineComment">// Durchlaufen der Spalten der Rohdatenmatrizen. Hier wird nun nach
+<A NAME="115"></A></FONT>      <FONT ID="SingleLineComment">// der entsprechenden Pulssequenzformel der Wert an jeder Stelle der
+<A NAME="116"></A></FONT>      <FONT ID="SingleLineComment">// Intensitaetsmatrix berechnet.
+<A NAME="117"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; PDMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="118"></A>        IntensityMatrix[x][y] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="119"></A>      }   <FONT ID="SingleLineComment">// for y
+<A NAME="120"></A></FONT> 
+<A NAME="121"></A>    }     <FONT ID="SingleLineComment">// for x
+<A NAME="122"></A></FONT> 
+<A NAME="123"></A>    <FONT ID="SingleLineComment">// In super.calculate wird die Fortschrittsanzeige zurueckgesetzt
+<A NAME="124"></A></FONT>    <FONT ID="SingleLineComment">// und dem Hautfenster mitgeteilt, dass die Berechnung fertig ist.
+<A NAME="125"></A></FONT>    <FONT ID="Super">super</FONT>.calculate();
+<A NAME="126"></A>  }   <FONT ID="SingleLineComment">// Methode calculate
+<A NAME="127"></A></FONT> 
+<A NAME="128"></A>
+<A NAME="129"></A>  <FONT ID="FormalComment">/**
+<A NAME="130"></A>   * Die Methode setzt die TR-Zeit. Sie sollte nicht geaendert oder geloescht
+<A NAME="131"></A>   * werden. Weitere Sequenzparameter benoetigen eine entsprechende Methode.
+<A NAME="132"></A>   * @param tr TR-Zeit
+<A NAME="133"></A>   */</FONT>
+<A NAME="134"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTRTime(<FONT ID="Int">int</FONT> tr) {
+<A NAME="135"></A>    trTime = tr;
+<A NAME="136"></A>  }   <FONT ID="SingleLineComment">// Methode setTRTime
+<A NAME="137"></A></FONT> 
+<A NAME="138"></A>}
+<A NAME="139"></A>
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>
+<A NAME="143"></A>
+<A NAME="144"></A>
+<A NAME="145"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="146"></A>
+<A NAME="147"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Sequence_Template</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

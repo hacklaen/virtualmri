@@ -1,0 +1,599 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>Installation</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Win32)">
+	<META NAME="CREATED" CONTENT="20060412;8381551">
+	<META NAME="CHANGED" CONTENT="20060412;8400990">
+	<META NAME="ProgId" CONTENT="FrontPage.Editor.Document">
+	<META HTTP-EQUIV="Content-Language" CONTENT="de">
+</HEAD>
+<BODY LANG="de-DE" DIR="LTR">
+<P><B><FONT SIZE=4><FONT FACE="Arial">Release Notes</FONT></FONT></B><BR><FONT FACE="Arial">(2006.01.10)</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Version 3.2.14</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Parameterbilder k&ouml;nnen
+	wahlweise als DICOM oder 16 Bit TIFF Bilder kodiert sein. (tha
+	2006.04.11) 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Version 3.2.12</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Optimierung der Applet Variante
+	(tha 2006.01.10) 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Beispieluntersuchung des Gehirns
+	ist als Resource im Programm verf&uuml;gbar (tha 2006.01.10) 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Das berechnete Bild wird mit einem
+	milden Median-Filter von &quot;Ausreissern&quot; befreit (tha
+	2006.01.10)</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Version 3.1</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Internationalisierung der Version
+	2.0 (tha 2002.11.26) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Korrektur einer Vielzahl von
+	kleineren Fehlern (tha 2002.11.26)</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Version 2.0&szlig;2</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Im Viewer &ouml;ffnen und
+	speichern durch die Panels der dcm-Bibliothek ersetzt: (tha
+	2000.8.20) 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>ViewerFrame</CODE> die
+		Methode <CODE>pbSave_actionPerformed</CODE> neu implementiert. Sie
+		verwendet jetzt das <CODE>ExportPanel</CODE> aus der
+		dcm-Bibliothek. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>ViewerFrame</CODE> die
+		Methode <CODE>pbLoad_actionPerformed</CODE> neu implementiert. Sie
+		verwendet jetzt das <CODE>ImportPanel</CODE> aus der
+		dcm-Bibliothek. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>ViewerFrame</CODE>
+		dieMethode <CODE>pbLoadSeries_actionPerformed</CODE> gel&ouml;scht,
+		da die Funktionalit&auml;t in der neuen <CODE>pbLoad_actionPerformed</CODE>
+		enthalten ist. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">Den Button &quot;LoadSeries&quot;
+		und den Men&uuml;eintrag &quot;Serie Oeffnen&quot; entfernt. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">Die Klasse <CODE>SeriesLoader</CODE>
+		komplett neu implementiert. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0cm">Programmfehler&nbsp; korrigiert:
+	Nachdem man einen Artefakt ausgew&auml;hlt hatte, war die Auswahl
+	'Kein Artefakt' wirkungslos. L&ouml;sung: Fuer 'Kein Artefakt' wurde
+	die neue Klasse <CODE>NoArtefact</CODE> erstellt. Sie wurde auch als
+	g&uuml;ltiger Artefakt in die Property- Datei
+	<CODE>vmrt_artefacts.properties</CODE> aufgenommen. Damit fallen die
+	Korrekturen der Indizes in <CODE>getArtefacts</CODE>,
+	<CODE>getSelectedArtefactUI</CODE> weg. Der neue &quot;Artefakt&quot;
+	wurde auch in die Property-Datei der Pulssequenzen
+	<CODE>vmrt_sequences.properties</CODE> aufgenommen. (tha 2000.8.19) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Programmfehler korrigiert, der
+	erst ab Java 1.3 auftritt: <CODE>pCanvas</CODE> und <CODE>pSequence</CODE>
+	waren gleichberechtigte Komponenten. Mouse-Events durften aber bei
+	sichtbarer <CODE>pSequence</CODE> nur an diese gelangen. L&ouml;sung:
+	Es muss eine z-Ordnung definiert werden. Auf die gesamte <CODE>ContentPane</CODE>
+	des Frams wird eine <CODE>JLayeredPane</CODE> gelegt. Alle
+	Komponenten werden auf die <CODE>JLayeredPane </CODE>gezeichnet.
+	<CODE>pSequence</CODE>&nbsp; wird in die &quot;sichtbarste&quot;
+	Ebene gezeichnet. (tha 2000.8.19) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Die Auswahl des <CODE>KSpaceManipulator</CODE>&nbsp;
+	wird auch im MRT erm&ouml;glicht. Dazu waren folgende spezielle
+	&Auml;nderungen notwendig: (tha 2000.8.18) 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">Der <CODE>KSpaceManipulator</CODE>&nbsp;
+		ben&ouml;tigt im Konstruktor eine Referenz auf die
+		Darstellungsebene der Bilder im &uuml;bergeordneten Frame. Hierzu
+		wird eine abstrakte Klasse <CODE>ImagePanel</CODE>&nbsp; definiert,
+		die dann von den Darstellungsebenen <CODE>DVPanel</CODE> des
+		Viewers und <CODE>MRTPanel</CODE> des MRT konkret implementiert
+		wird. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In der Klasse <CODE>MRTPanel</CODE>
+		wird die abstrakt definierte Methode <CODE>createNewImage(ImagePlus)</CODE>
+		nicht ben&ouml;tigt. Lediglich wegen der abstrakten Oberklasse war
+		eine Implementation notwendig. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0cm">Im Konstruktor von
+	<CODE>KSpaceManipulator</CODE>&nbsp; Code zum zentrieren des Frames
+	auf dem Bildschirm eingef&uuml;gt. (tha 2000.8.17) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Den Quellcode auf eine neue
+	Packagestruktur ge&auml;ndert. Neben den nicht im Einzelnen
+	dokumentierten &Auml;nderung der Namen der <CODE>package</CODE>
+	Statements ergaben sich folgende spezielle &Auml;nderungen: (tha
+	2000.8.17) 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>getArtefacts</CODE> in
+		der Methode <CODE>getArtefacts</CODE> den String <CODE>strArtefactUI</CODE>
+		auf die neue Packagestruktur ge&auml;ndert. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>SequenceCombo</CODE> in
+		der Methode <CODE>getSequences</CODE> den String <CODE>strSequenceUI</CODE>
+		auf die neue Packagestruktur ge&auml;ndert. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0cm">jigl wird weiterhin in der Version
+	1.3 verwendet, aber als externe Bibliothek (als JAR-File). Die
+	Version 1.4 bringt gegen&uuml;ber der bisher&nbsp; verwendeten
+	(modifizierten) Version 1.3 einen Geschwindigkeitsvorteil von 10% in
+	der Berechnung von Turbo- Spin- Echo Sequenzen. Allerdings scheint
+	es ein Skalierungsproblem mit der Signalintensit&auml;t den
+	r&uuml;cktransformierten Bildern zu geben. (tha 2000.8.15) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In den Klassen <CODE>FFTTools</CODE>,
+	<CODE>ImagePlus</CODE>, <CODE>Motion</CODE>, <CODE>PeriodicMotion</CODE>
+	und <CODE>TurboSpinEcho</CODE> die statischen Methodenaufrufe
+	<CODE>doFFT(Image, boolean)</CODE> auf die neu in <CODE>FFTTools</CODE>
+	aufgenommenen statischen Methoden <CODE>forwardFFT</CODE> und
+	<CODE>reverseFFT</CODE> ge&auml;ndert: 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">Ab der jigl-Bibliothek Version
+		1.4&nbsp; ist die statische&nbsp; Methode <CODE>doFFT</CODE> nicht
+		mehr implementiert. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In Version 1.3 gibt es zu <CODE>doFFT</CODE>
+		die alternativen Methoden <CODE><STRONG>static</STRONG></CODE>
+		<CODE>forward(Image)</CODE> und <CODE><STRONG>static</STRONG></CODE>
+		<CODE>inverse(Image)</CODE>. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In Version 1.4 gibt es nur noch
+		die Methoden <CODE>forward(Image)</CODE> und <CODE>reverse(Image)</CODE>,
+		beide nicht statisch. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">Um eine Kompatibilit&auml;t mit
+		beiden Versionen von jigl zu erm&ouml;glichen, werden die
+		Methodenaufruf &uuml;ber das Reflection-Interface von Java
+		implementiert<CODE>.</CODE> (tha 2000.8.15) 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0cm">Ein Bug&nbsp; beim Laden des
+	Referenzdatensatzes aus einem JAR-File beseitigt:
+	<CODE>CaseInfoFrame.setInfo(File, String)</CODE> gel&ouml;scht. In
+	<CODE>FileLoader</CODE> die Methode <CODE>getCaseInfoFile</CODE>
+	zugunsten von <CODE>getCaseInfoURL</CODE> ausgetauscht. In
+	<CODE>FileLoader.setReferenceData()</CODE> wird <CODE>idxParent =
+	null</CODE> gesetzt, da es sich um keine reale Datei handelt. (tha
+	2000.8.14) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Debug-Output in
+	<CODE>PeriodicMotion.motion_Std </CODE>auskommentiert. (tha
+	2000.8.14) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Debug-Output in <CODE>Motion.motion_Std
+	</CODE>auskommentiert. (tha 2000.8.14) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Debug-Output in
+	<CODE>LabelTFLabelPanel.pbUp_actionPerformed </CODE>auskommentiert.
+	(tha 2000.8.14) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Debug-Output in
+	<CODE>Pulsesequence.convertIntensityMatrixTo12Bit</CODE>
+	auskommentiert. (tha 2000.8.14) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Im Quellcode die absoluten
+	Methodenreferenzen <CODE>javax.swing...</CODE> durch <CODE><B>import</B>
+	javax.swing.*</CODE> ersetzt. (tha 2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In der Methode
+	<CODE>KSpaceManipulator.jbInit</CODE> die H&ouml;he des Frames von
+	539 auf 547 Pixel gesetzt. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In <CODE>KSpaceManipulatorCanvas.paint</CODE>
+	die Debug-Meldungen gel&ouml;scht. (tha 2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In <CODE>LabTFLabTFPanel.jbInit</CODE>
+	und <CODE>LabelTFLabelPane.jbInit</CODE>&nbsp; alle Dateinamen der
+	GIF-Bilder in Kleinbuchstaben umgewandelt. (tha 2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In <CODE>VMRTFrame.jbInit</CODE>
+	alle Dateinamen der GIF-Bilder in Kleinbuchstaben umgewandelt. (tha
+	2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Achtung:</B> Die
+	jigl-Bibliothek speichert die Bildmatrizen in der Form <CODE>data[y][x]</CODE>,
+	dieses Projekt aber in der Form <CODE>data[x][y]</CODE>. Deshalb
+	d&uuml;rfen die jigl-Konstruktoren, die im Aufruf eine Bildmatrix
+	vorsehen <B>nicht</B> <B>verwendet</B> werden. (tha 2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In
+	<CODE>KSpaceManipulatorCanvas.recalcTargetImage</CODE> die x- und
+	y-Koordinate getauscht. Dies war ein Bug, der durch die ebenfalls
+	falsche Koordinatenrichtung in <CODE>ImagePlus.calcFFT()</CODE>
+	bislang kompensiert wurde. (tha 2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Methode <CODE>FFTTools.getFFT(float[][])</CODE>
+	gel&ouml;scht, da sie im Projekt nicht mehr ben&ouml;tigt wird. (tha
+	2000.8.13) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In der jigl-Bibliothek Version 1.3
+	und 1.4 ist die Methode <CODE>RealGrayImage(float[][] dat)</CODE>
+	fehlerhaft implementiert. Um die Bibliothek trotzdem als Ganzes
+	&uuml;bernehmen zu k&ouml;nnen, sind in <CODE>FFTTools</CODE> und in
+	<CODE>ImagePlus</CODE> einige Anpassungen notwendig: (tha 2000.8.13)
+		</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>FFTTools</CODE> Methode
+		<CODE>RealGrayImage</CODE> <CODE>makeRealGrayImage(int, int,
+		short[])</CODE> eingef&uuml;gt. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>FFTTools</CODE> Methode
+		<CODE>RealGrayImage</CODE> <CODE>makeRealGrayImage(float[][])</CODE>
+		eingef&uuml;gt. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>FFTTools.getFFT</CODE>
+		den Aufruf von <CODE>RealGrayImage(float[][])</CODE> durch
+		<CODE>makeRealGrayImage(float[][])</CODE> ersetzt. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0cm">In <CODE>ImagePlus. calcFFT</CODE>
+		den Aufruf <CODE>RealGrayImage(float[][])</CODE> durch
+		<CODE>FFTTools.makeRealGrayImage(int, int, short[][])</CODE>
+		ersetzt.</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Erste im Web publizierte
+	Version 2.0&szlig;1</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Korrektur kleinere Fehler (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Neuformatierung des Quellcodes mit
+	JIndent nach den Sun-Konventionen (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Benutzerinterface vereinheitlicht.
+	Insbesondere identische Kn&ouml;pfe in der Hauptebene und
+	Men&uuml;eintr&auml;ge. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Implementation einer
+	&quot;Info-Dialogbox&quot; im MRT zur Darstellung von klinischen
+	Informationen zu dem ausgew&auml;hlten Rohdatensatz 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Implementation eines
+	&quot;Testbildes/-serie&quot; in den Viewer (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Modifikation des Testdatensatzes
+	im MRT (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">M&ouml;glichkeit, den Viewer und
+	den MRT als Applet und Application zu starten (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Umstellung auf Version 2.31 der
+	Dcm-Lib (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Umstellung auf vertikale
+	Scrollbalken (CSC) 
+	</P>
+	<LI><P><B>Version 1.0 entspricht dem Stand der Diplomarbeit</B> 
+	</P>
+</UL>
+<P>&nbsp;</P>
+<P><FONT FACE="Arial"><FONT SIZE=4><B>Internationalisierung</B></FONT></FONT></P>
+<P>Die Defaultsprache ist Englisch. Die folgenden Dateien mussen zur
+Internationalisierung an die neue Sprache angepasst werden. Dazu muss
+an den Dateinamen der L&auml;ndercode der neuen Sprache angeh&auml;ngt
+werden. Beispiel: mrt_loc.properties gilt f&uuml;r die englische
+(default) Version, mrt_log_de.properties f&uuml;r die deutsche
+Lokalisation.</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>vmrt_sequences.properties</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B>vmrt_artefacts.properties</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">virtual.mrt.resources:
+	<B>mrt_loc.properties</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">virtual.mrt.artefacts.resources:
+	<B>artefacts_loc.properties</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">virtual.mrt.sequences.resources:
+	<B>sequences_loc.properties</B> 
+	</P>
+	<LI><P>virtual.tools.resources: <B>tools_loc.properties</B> 
+	</P>
+</UL>
+<P>F&uuml;r die folgenden HTML-Dateien muss die jeweilige
+Sprachversion (auch &quot;_en&quot; f&uuml;r die Defaultsprache)
+hinterlegt sein. Diese Dateien werden allerdings nicht &uuml;ber den
+Java eigenen Rource-Mechanismus, sondern &uuml;ber Referencen in der
+Datei mrt_loc.properties eigelesen:</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">virtual.mrt.resources:
+	<B>refcaseinfo_en.htm</B> 
+	</P>
+	<LI><P>virtual.mrt.resources: <B>splash_en.htm</B> 
+	</P>
+</UL>
+<P>Zur Darstellung der Informationen &uuml;ber Patienten werden
+ebenfalls HTML-Dateien verwendet, die in der jeweilige Sprachversion
+(auch &quot;_en&quot; f&uuml;r die Defaultsprache) hinterlegt sein
+sollten F&uuml;r jede Sprache muss allerdings eine eigene &quot;.idx&quot;
+Datei vorhanden sein, in der dann unter dem Schl&uuml;ssel
+&quot;name.filename&quot; eine Referenz auf die entsprechende
+HTML-Datei hinterlegt ist.</P>
+<P><FONT FACE="Arial"><B><FONT SIZE=4>Relaese Notes<BR></FONT></B>(Zusammenfassung)</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Im Viewer werden jetzt die Import-
+	und Export-Panels der dcm-Bibliothek f&uuml;r &ouml;ffnen und
+	speichern von Bildern verwendet. (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Der Inhalt der Property- Datei
+	<CODE>vmrt_artefacts.properties</CODE> und <CODE>vmrt_sequences.properties</CODE>
+	wurde gegen&uuml;ber der Vorversion ge&auml;ndert. (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Programmfehler&nbsp; korrigiert:
+	Auch nach einer Berechnung mit einem Artefakt ist die Auswahl 'Kein
+	Artefakt' wirkungsam. (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Die k-Space Funktionen des Viewers
+	sind in gleicher Weise auch im MRT vorhanden. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Programmfehler ab Java 1.3
+	korrigiert: Im MRT verschwindet das Panel f&uuml;r die
+	Sequenzeinstellungen nicht mehr, wenn sich die Maus &uuml;ber einem
+	Bedienelement befindet (tha).&nbsp; 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B>Erste im Web publizierte
+	Version 2.0&szlig;1</B> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Korrektur kleinere Fehler (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Neuformatierung des Quellcodes mit
+	JIndent nach den Sun-Konventionen (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Benutzerinterface vereinheitlicht.
+	Insbesondere identische Kn&ouml;pfe in der Hauptebene und
+	Men&uuml;eintr&auml;ge. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Implementation einer
+	&quot;Info-Dialogbox&quot; im MRT zur Darstellung von klinischen
+	Informationen zu dem ausgew&auml;hlten Rohdatensatz. (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Implementation eines
+	&quot;Testbildes/-serie&quot; in den Viewer (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Modifikation des Testdatensatzes
+	im MRT (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">M&ouml;glichkeit, den Viewer und
+	den MRT als Applet und Application zu starten (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Umstellung auf Version 2.31 der
+	Dcm-Lib (tha) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Umstellung auf vertikale
+	Scrollbalken (csc) 
+	</P>
+	<LI><P><B>Version 1.0 entspricht dem Stand der Diplomarbeit</B> 
+	</P>
+</UL>
+<P>&nbsp;</P>
+<P><FONT FACE="Arial"><FONT SIZE=4><B>Bekannte Fehler</B></FONT></FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Die Applets laufen nicht &uuml;ber
+	das Web. Befinden sie sich lokal auf dem Rechner starten sie unter
+	Internet Explorer. Unter Netscape ist dies nicht nicht m&ouml;glich.
+		</P>
+	<LI><P STYLE="margin-bottom: 0cm">F&uuml;r Java Versionen 1.1.8 und
+	1.2: 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">Sobald der Mauszeiger auf ein
+		GUI-Element der Parametereinstellung der Me&szlig;sequenzen zeigt,
+		wird das Panel deaktiviert. 
+		</P>
+		<LI><P>In der Info-Dialgbox f&uuml;r den ausgew&auml;hlten Fall
+		erscheinen einige Rechtecke mit der Bezeichnung &quot;Header&quot;,
+		&quot;Titel&quot; oder &quot;Meta&quot;. 
+		</P>
+	</UL>
+</UL>
+<P>&nbsp;</P>
+<P><FONT FACE="Arial"><B><FONT SIZE=4>To Do Liste MRT/Viewer<BR></FONT></B>sortiert
+nach Priorit&auml;ten (2000.8.20)</FONT></P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0cm">Property-Datei
+	<CODE>vmrt_artefacts.properties</CODE>: Es sollte nur &uuml;berpr&uuml;ft
+	werden, ob _Class_x und _Name_x vorhanden sind. Es besteht in keine
+	Notwendigkeit, dass der Index bei einer bestimmten Zahl beginnt und
+	fortlaufend ist. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Property- Datei
+	<CODE>vmrt_sequences.properties</CODE>: Es sollte nur &uuml;berpr&uuml;ft
+	werden, ob _Class_x und _Name_x vorhanden sind. Es besteht in keine
+	Notwendigkeit, dass der Index bei einer bestimmten Zahl beginnt und
+	fortlaufend ist. Zur Zeit muss man f&uuml;r jede Sequenz jeden in
+	<CODE>vmrt_artefacts.properties</CODE> definierten Artefakt
+	auff&uuml;hren. Macht man das nicht, werden die Artefaktmethoden
+	nicht ausgef&uuml;hrt, obwohl der Artefakt ausgew&auml;hlt ist.
+	M&ouml;gliche L&ouml;sung: In <CODE>Artefact</CODE> wird eine
+	abstrakte Methode definiert, die als Standardberechnungsmethode
+	fungiert. Diese sollte dann nicht in <CODE>vmrt_sequences.properties</CODE>
+	eingetragen werden m&uuml;ssen. Nur wenn man eine andere
+	Berechnungsmethode haben m&ouml;chte, sollte ein Eintrag&nbsp;
+	notwendig sein. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">In ImagePlus die Methoden
+	getWindow und setWindow in getWidth und setWidth umbenennen (nach
+	DICOM wird unter dem Window die Kombination von Center und Width
+	verstanden). 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">DcmImage ist in Relikt der alten
+	dcm-Bibliothek. Darin ist die Klasse jetzt als GeneralImageIOD
+	implementiert. Nach M&ouml;glichkeit sollte DcmImage durch
+	GeneralImageIOD ersetzt werden, oder zumindest als abgeleitete
+	Klasse davon implementiert werden. M&ouml;glicherweise werden in der
+	aktuellen Konstellation die Pixeldaten durch eine versteckte
+	Referenz nach dem Einlesen doppelt im Speicher gehalten. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Das DcmDataObject mit den&nbsp;
+	Header-Informationen sollt von ImagePlus in die &quot;neue&quot;
+	DcmImage-Klasse wechseln. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Im Viewer, genau wie im MRT, eine
+	Info-Fenster f&uuml;r Informationen &uuml;ber den aktuellen Fall
+	erm&ouml;glichen. Hierzu k&ouml;nnte z.B. eine optionale Datei mit
+	Namen &quot;info.html&quot; im Verzeichnis der einzulesenen Bilder&nbsp;
+	hinterlegt werden. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Der Viewer sollte beim Aufruf als
+	Applet optional einen Parameter verstehen, &uuml;ber den ihm der
+	Name einer Indexdatei &uuml;bergeben werden kann, in der die Namen
+	von DICOM-Dateien auf dem Server stehen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Im Viewer und dem MRT sollte ein
+	Menupunkt untergebracht werden, &uuml;ber den das Ger&auml;t, sofern
+	es als Applet gestartet wird, Daten vom Server laden kann.</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B><I>In Arbeit CSC:</I></B> Im
+	Quellcode wurden an vielen Stellen expliziete
+	Windows-Pfad-Separatoren ('\') in Dateinamen angegeben. Hier muss
+	&uuml;berpr&uuml;ft werden, ob alle durch File.separator ersetzt
+	wurden 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B><I>In Arbeit CSC:</I></B> Alle
+	Property-Dateien werden z.Zt. mit &quot;eigenen&quot; Routinen
+	gelesen bzw. geschrieben. Dies sollt generell durch die Java-eigene
+	Variante ersetzt werden. Dadurch entfallen dann auch die &quot;&quot;
+	zur Kennzeichnung von String in der Property Datei. Beispiel:
+	Auswertung der Indexdatei der Rohdaten des Tomografen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B><I>In Arbeit CSC:</I></B>
+	K&ouml;nnen nicht alle Property-Dateien durch eine ersetzt werden?
+	Man k&ouml;nnte z.B. alle Properties des Tomografen mit &quot;vmrt.&quot;
+	beginnen lassen und alle f&uuml;r den Viewer mit &quot;dv.&quot;. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B><I>In Arbeit CSC:</I></B> Der
+	Speicherort der Property-Dateien sollte klar definiert sein. 1. im
+	user.dir, 2. im classpath. In der jetzigen Variante kann man nicht
+	einfach alle class-Dateien in einen jar-File compilieren, da
+	vmrt_artefact und vmrt_sequence im classpath liegen m&uuml;ssen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B><I>In Arbeit CSC:</I></B>
+	Property-Dateien sollten nicht generell vom Programm aus geschrieben
+	werden. Man wei&szlig; ja nicht, ob der User die Programme nicht
+	evl. von einer CD startet. Eine M&ouml;glichkeit w&auml;re z.B. in
+	der normalen Property Datei vorzugeben, wo standardm&auml;&szlig;ig
+	das Default-Verzeichnis f&uuml;r die Suche nach Dateien ist. Als
+	Erg&auml;nzung k&ouml;nnte man vom Programm aus versuchen in
+	user.dir eine tempor&auml;re Datei mit dem zuletzt verwendeten
+	Verzeichnis zu schreiben. Wenn das nicht gelingt, darf aber kein
+	Fehler generiert werden. Nach dieser optionalen, tempor&auml;ren
+	Datei k&ouml;nnte dann beim n&auml;chsten Programmstart gesucht
+	werden. 
+	</P>
+	<LI><P><B><I>In Arbeit CSC:</I></B> Der Viewer sollte mit
+	DICOM-Bildern beliebiger Matrixgr&ouml;&szlig;e zurechtkommen. 
+	</P>
+</OL>
+<P>&nbsp;</P>
+<P><FONT FACE="Arial"><B><FONT SIZE=4>To Do Liste Raw Editor<BR></FONT></B>sortiert
+nach Priorit&auml;ten (2000.8.9)</FONT></P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator: Die Mathematik des
+	Plugin funktioniert nicht zuverl&auml;ssig. Hier sollten
+	andere/alternative Verfahren, wie der Marquard-Algorithmus
+	implementiert werden. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Umstellung der Projektdateien auf
+	JBuilder Foundation 3.5. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator &amp; Painter: Die
+	Klasse ExportDialog wird von beiden Plugins benutzt. Sie geh&ouml;rt
+	deshalb ins Package &quot;tools&quot;. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Im Quellcode wurden an vielen
+	Stellen expliziete Windows-Pfad-Separatoren ('\') in Dateinamen
+	angegeben. Hier muss &uuml;berpr&uuml;ft werden, ob alle durch
+	File.separator ersetzt wurden 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Painter: Hier sollte die
+	M&ouml;glichkeit eingebaut werden, die Bilder zu fenstern. In der
+	aktuellen Version kann man manchmal &quot;gar nichts&quot; erkennen.
+		</P>
+	<LI><P STYLE="margin-bottom: 0cm">Painter: In der Dialogbox sollte
+	ein Knopf &quot;Speichern&quot; eingebaut werden, um auch
+	Zwischenergebnisse sichern zu k&ouml;nnen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Painter: Das Umschalten zwischen
+	Umriss/ausgef&uuml;llt zeichnen ist nicht intuitiv. Evl. dazu zwei
+	Radiokn&ouml;pfe zum Umschalten einbauen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Painter: &quot;Undo&quot; entweder
+	ausschreiben, oder als Icon dastellen. Die Icons zur Auswahl des 4.
+	Bildes mit grauem Hintergrund versehen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator: Den Quellcode mit dem
+	Ziel neu strukturieren, dass man verschieden Berechnungsverfahren
+	benutzen kann. Das einzige jetzt implementierte w&auml;re
+	LeastSquare. Die Funktionalit&auml;t aus dem eigentlichen Plugin
+	RawData_Calculator herausnehmen und in eine eigene Klasse kapseln.
+	In dieser ist aber noch keine Mathematik implementiert. Lediglich
+	der Rahmen und Schleifen &uuml;ber die Bildzeilen und Spalten. F&uuml;r
+	jeden Bildpunkt wird dann eine Klasse mit der eigentlichen
+	Mathematik aufgerufen. Sie bekommt alle Rohdatenwerte eines Voxels
+	und ein Array mit den DcmDataObjekts aller Bilder &uuml;bergeben.
+	Diese Berechnungsklasse wird zun&auml;chst abstract deklariert. Es
+	mu&szlig; Methoden geben, welche Parameter die Klasse berechnet etwa
+	&quot;boolean isCalculatingT1()&quot; und zur R&uuml;ckgabe der
+	Parameterwerte, etwa &quot;double getT1()&quot;. F&uuml;r jedes
+	mathematisches Verfahren mu&szlig; dann eine konkrete Implementation
+	vorgenommen werden. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator entprechend Punkt 9: Im
+	ImportDialog gibt es nur noch eine Zeile mit den Eingane f&uuml;r
+	dden Bereich der Bildnummern und die minimale Signalintensit&auml;t,
+	ab der die Berechnung startet. Man sollte vielleicht noch 3 weitere
+	Eingabefelder f&uuml;r Zahlenwerte vorsehen &uuml;ber die die
+	verschiedenen math. Modelle Parameter &uuml;bergeben bekommen (schon
+	in der abstrakten Klasse ber&uuml;cksichtigen). 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator entprechend Punkt 9:
+	Ein Auswahlmen&uuml; (Pop-up-menu) zur Auswahl des zu verwendenden
+	Algorithmus einbauen. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator entprechend Punkt 9:
+	Alle Rohdatenbilder enthalten zun&auml;chst den Wert 0. Durch ein
+	oder mehrfaches Aufrufen vonBerechnungsalgorithemen werden sie dann
+	mit Werten belegt. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator entprechend Punkt 9: Es
+	mu&szlig; einen Knopf &quot;Save&quot; geben, ducrh den die Werte
+	abgespeichertwerden. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Calculator: Dialogbox zentrieren
+	und etwas &quot;ansprechender&quot; gestalten&quot;. 
+	</P>
+	<LI><P>Calculator: Umstellen des Datenformates der T1,T2,PD etc.
+	Bilder von DICOM auf PNG: Damit w&auml;re es wesentlich einfacher
+	m&ouml;glich , die Basisbilder in einem anderen Grafikprogramm als
+	dem Stack-Painter zu bearbeiten. PNG erlaubt 16-Bit
+	Graustufenbilder. T1, T2 und PD k&ouml;nnten dann in der Form der
+	physikalischen Zahlenwerte gespeichert werden. SZ und Flow k&ouml;nnten
+	mit (physikalische Gr&ouml;&szlig;e*100)+32768 als
+	vorzeichenbehaftete Gr&ouml;&szlig;en abgelegt werden. Die
+	Standardnamen der Dateien sollten dann name_t1.png usw. lauten. 
+	</P>
+</OL>
+<P>&nbsp;</P>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>

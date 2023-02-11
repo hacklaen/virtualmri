@@ -1,0 +1,781 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.dv.DVPanel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DVPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.dv.index.html" target="packageFrame">virtual.dv</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="27"></A>
+<A NAME="28"></A>
+<A NAME="29"></A><FONT ID="FormalComment">/**
+<A NAME="30"></A> * Die Klasse implementiert die Zeichenflaeche des DICOMViewers.
+<A NAME="31"></A> * Insbesondere wird die paint-Methode der JScrollPane-Klasse ueberschrieben, um
+<A NAME="32"></A> * die Bilder, die Bildbeschriftungen und die Werkzeuge darzustellen.
+<A NAME="33"></A> * Darueber hinaus verwaltet die Klasse eine Referenz auf den gesamten Bildstapel
+<A NAME="34"></A> * und ist fuer das Hinzufuegen von Bildern zu diesem Stapel verantwortlich.
+<A NAME="35"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="36"></A> * Thomas Hacklaender 2000.8.18:
+<A NAME="37"></A> * Die Klasse von ImagePanel statt von JPanel abgeleitet.&lt;br&gt;
+<A NAME="38"></A> * Thomas Hacklaender 2000.4.3:
+<A NAME="39"></A> * In der Methode paint den Methodenaufruf getPixelSpacing fuer die x
+<A NAME="40"></A> * und die y-Richtung durch getPixelSpacingColumn und getPixelSpacingRow
+<A NAME="41"></A> * ersetzt.&lt;br&gt;
+<A NAME="42"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="43"></A> * @author   Christian Schalla
+<A NAME="44"></A> * @author   Andreas Truemper
+<A NAME="45"></A> * @version  1.1, 2000.8.18
+<A NAME="46"></A> */</FONT>
+<A NAME="47"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DVPanel <FONT ID="Extends">extends</FONT> <A HREF="../../virtual/tools/ImagePanel.java.html">ImagePanel</A> {
+<A NAME="48"></A>
+<A NAME="49"></A>
+<A NAME="50"></A>  <FONT ID="FormalComment">/**
+<A NAME="51"></A>   * Anzahl der Bilder, die gleichzeitig dargestellt werden (1 oder 4).
+<A NAME="52"></A>   */</FONT>
+<A NAME="53"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         iNumImages = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="54"></A>
+<A NAME="55"></A>
+<A NAME="56"></A>  <FONT ID="FormalComment">/**
+<A NAME="57"></A>   * Nummer des selektierten Bildes. Ist -1, wenn kein Bild selektiert ist.
+<A NAME="58"></A>   */</FONT>
+<A NAME="59"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         iActiveImage = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>  <FONT ID="FormalComment">/**
+<A NAME="63"></A>   * Verweis auf den Stapel aller Bilder.
+<A NAME="64"></A>   */</FONT>
+<A NAME="65"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>  is;
+<A NAME="66"></A>
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="FormalComment">/**
+<A NAME="69"></A>   * Der Bildausschnitt, der zusaetzlich gezeichnet werden muss, wenn die
+<A NAME="70"></A>   * Lupen-Funktion eingeschaltet ist.
+<A NAME="71"></A>   */</FONT>
+<A NAME="72"></A>  <FONT ID="Private">private</FONT> Image       zoomImage = <FONT ID="Null">null</FONT>;
+<A NAME="73"></A>
+<A NAME="74"></A>
+<A NAME="75"></A>  <FONT ID="FormalComment">/**
+<A NAME="76"></A>   * x-Position, an der das Zoombild gezeichnet werden soll.
+<A NAME="77"></A>   */</FONT>
+<A NAME="78"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         zoomX = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="79"></A>
+<A NAME="80"></A>
+<A NAME="81"></A>  <FONT ID="FormalComment">/**
+<A NAME="82"></A>   * y-Position, an der das Zoombild gezeichnet werden soll.
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         zoomY = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * x-Position des letzten Mausklicks.
+<A NAME="89"></A>   */</FONT>
+<A NAME="90"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         lastClickX = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="91"></A>
+<A NAME="92"></A>
+<A NAME="93"></A>  <FONT ID="FormalComment">/**
+<A NAME="94"></A>   * y-Position des letzten Mausklicks.
+<A NAME="95"></A>   */</FONT>
+<A NAME="96"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         lastClickY = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="97"></A>
+<A NAME="98"></A>
+<A NAME="99"></A>  <FONT ID="FormalComment">/**
+<A NAME="100"></A>   * x-Position des letzten MausRelease-Ereignisses.
+<A NAME="101"></A>   */</FONT>
+<A NAME="102"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         lastReleaseX = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="103"></A>
+<A NAME="104"></A>
+<A NAME="105"></A>  <FONT ID="FormalComment">/**
+<A NAME="106"></A>   * y-Position des letzten MausRelease-Ereignisses.
+<A NAME="107"></A>   */</FONT>
+<A NAME="108"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         lastReleaseY = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="109"></A>
+<A NAME="110"></A>
+<A NAME="111"></A>  <FONT ID="FormalComment">/**
+<A NAME="112"></A>   * Aktuelle x-Position des Mauszeigers.
+<A NAME="113"></A>   */</FONT>
+<A NAME="114"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         currentX = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="115"></A>
+<A NAME="116"></A>
+<A NAME="117"></A>  <FONT ID="FormalComment">/**
+<A NAME="118"></A>   * Aktuelle y-Position des Mauszeigers.
+<A NAME="119"></A>   */</FONT>
+<A NAME="120"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         currentY = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="121"></A>
+<A NAME="122"></A>
+<A NAME="123"></A>  <FONT ID="FormalComment">/**
+<A NAME="124"></A>   * aktueller Grauwert unter dem Mauszeiger.
+<A NAME="125"></A>   */</FONT>
+<A NAME="126"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         currentGray = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="127"></A>
+<A NAME="128"></A>
+<A NAME="129"></A>  <FONT ID="FormalComment">/**
+<A NAME="130"></A>   * Rueckreferenz zum Hauptfenster. Diese benoetigt, um Einstellungen
+<A NAME="131"></A>   * einiger Bedienelemente auszulesen.
+<A NAME="132"></A>   */</FONT>
+<A NAME="133"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A> myViewerFrame;
+<A NAME="134"></A>
+<A NAME="135"></A>
+<A NAME="136"></A>  <FONT ID="FormalComment">/**
+<A NAME="137"></A>   * Standard-Konstruktor.
+<A NAME="138"></A>   */</FONT>
+<A NAME="139"></A>  <FONT ID="Public">public</FONT> DVPanel() {}
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>  <FONT ID="FormalComment">/**
+<A NAME="143"></A>   * Konstruktor mit Rueckreferenz zum Hauptfenster als Parameter.
+<A NAME="144"></A>   * @param backReference Rueckreferenz zum Haupfenster. Sie wird benoetigt, um
+<A NAME="145"></A>   * Einstellungen einiger Bedienelemente auszulesen.
+<A NAME="146"></A>   */</FONT>
+<A NAME="147"></A>  <FONT ID="Public">public</FONT> DVPanel(<A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A> backReference) {
+<A NAME="148"></A>    myViewerFrame = backReference;
+<A NAME="149"></A>    is = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>();
+<A NAME="150"></A>  }   <FONT ID="SingleLineComment">// Konstruktor MyPanel(ViewerFrame backReference)
+<A NAME="151"></A></FONT>
+<A NAME="152"></A>
+<A NAME="153"></A>  <FONT ID="FormalComment">/**
+<A NAME="154"></A>   * Die Methode aktualisiert die Scrollbalkeneinstellungen in Abhaengigkeit davon,
+<A NAME="155"></A>   * ob ein oder vier Bilder gleichzeitig dargestellt werden sollen.
+<A NAME="156"></A>   */</FONT>
+<A NAME="157"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateScrollbar() {
+<A NAME="158"></A>
+<A NAME="159"></A>    <FONT ID="SingleLineComment">// Besorgen der Bildes mit der groessten Nummer
+<A NAME="160"></A></FONT>    <FONT ID="Int">int</FONT> num = is.getStackSize();
+<A NAME="161"></A>
+<A NAME="162"></A>    <FONT ID="If">if</FONT> (myViewerFrame.rb1Image.isSelected()) {
+<A NAME="163"></A>      myViewerFrame.sbVerScrollbar.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="164"></A>      myViewerFrame.sbVerScrollbar.setMaximum(num * <FONT ID="IntegerLiteral">512</FONT> + <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="165"></A>      myViewerFrame.sbVerScrollbar.setBlockIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="166"></A>      myViewerFrame.sbVerScrollbar.setUnitIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="167"></A>      myViewerFrame.sbVerScrollbar.setVisibleAmount(<FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="168"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="169"></A>      <FONT ID="Int">int</FONT> max = <FONT ID="IntegerLiteral">512</FONT>;
+<A NAME="170"></A>
+<A NAME="171"></A>      <FONT ID="If">if</FONT> (num &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="172"></A>        max = num / <FONT ID="IntegerLiteral">2</FONT> * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="173"></A>      }   <FONT ID="SingleLineComment">// if
+<A NAME="174"></A></FONT>       myViewerFrame.sbVerScrollbar.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="175"></A>      myViewerFrame.sbVerScrollbar.setMaximum(max);
+<A NAME="176"></A>      myViewerFrame.sbVerScrollbar.setBlockIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="177"></A>      myViewerFrame.sbVerScrollbar.setUnitIncrement(<FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="178"></A>      myViewerFrame.sbVerScrollbar.setVisibleAmount(<FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="179"></A>    }     <FONT ID="SingleLineComment">// if-else
+<A NAME="180"></A></FONT>   }      <FONT ID="SingleLineComment">// Methode updateScrollbar()
+<A NAME="181"></A></FONT> 
+<A NAME="182"></A>
+<A NAME="183"></A>  <FONT ID="FormalComment">/**
+<A NAME="184"></A>   * Die Methode setzt den internen Parameter, welcher angibt, wie viele Bilder
+<A NAME="185"></A>   * gleichzeitig dargestellt werden, auf 1. Ausserdem wird der Scrollbereich
+<A NAME="186"></A>   * aktualisiert.
+<A NAME="187"></A>   */</FONT>
+<A NAME="188"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setOneImage() {
+<A NAME="189"></A>    iNumImages = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="190"></A>    updateScrollbar();
+<A NAME="191"></A>    myViewerFrame.sbVerScrollbar.setValue((iActiveImage * <FONT ID="IntegerLiteral">512</FONT>) - <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="192"></A>  }   <FONT ID="SingleLineComment">// Methode setOneImage()
+<A NAME="193"></A></FONT> 
+<A NAME="194"></A>
+<A NAME="195"></A>  <FONT ID="FormalComment">/**
+<A NAME="196"></A>   * Die Methode setzt den internen Parameter, welcher angibt, wie viele Bilder
+<A NAME="197"></A>   * gleichzeitig dargestellt werden, auf 4. Ausserdem wird der Scrollbereich
+<A NAME="198"></A>   * aktualisiert
+<A NAME="199"></A>   */</FONT>
+<A NAME="200"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setFourImages() {
+<A NAME="201"></A>    iNumImages = <FONT ID="IntegerLiteral">4</FONT>;
+<A NAME="202"></A>    updateScrollbar();
+<A NAME="203"></A>    myViewerFrame.sbVerScrollbar.setValue(((iActiveImage / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>) - <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="204"></A>  }   <FONT ID="SingleLineComment">// Methode setFourImages()
+<A NAME="205"></A></FONT> 
+<A NAME="206"></A>
+<A NAME="207"></A>  <FONT ID="FormalComment">/**
+<A NAME="208"></A>   * Die Methode legt die Nummer des zur Zeit selektierten Bildes fest.
+<A NAME="209"></A>   * @param activeImage Die Nummer des selektierten Bildes.
+<A NAME="210"></A>   */</FONT>
+<A NAME="211"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setActiveImage(<FONT ID="Int">int</FONT> activeImage) {
+<A NAME="212"></A>    iActiveImage = activeImage;
+<A NAME="213"></A>  }   <FONT ID="SingleLineComment">// Methode setActiveImage(int activeImage)
+<A NAME="214"></A></FONT> 
+<A NAME="215"></A>
+<A NAME="216"></A>  <FONT ID="FormalComment">/**
+<A NAME="217"></A>   * Die Methode legt das Bild fest, das zusaetzlich eingezeichnet werden muss,
+<A NAME="218"></A>   * wenn die Lupen-Funktion eingeschaltet ist.
+<A NAME="219"></A>   * @param zoomI Der Bildauschnitt, der zusaetzlich gezeichnet werden muss.
+<A NAME="220"></A>   */</FONT>
+<A NAME="221"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setZoomImage(Image zoomI) {
+<A NAME="222"></A>    zoomImage = zoomI;
+<A NAME="223"></A>  }   <FONT ID="SingleLineComment">// Methode setZoomImage(Image zoomI)
+<A NAME="224"></A></FONT> 
+<A NAME="225"></A>
+<A NAME="226"></A>  <FONT ID="FormalComment">/**
+<A NAME="227"></A>   * Die Methode legt die x- und y-Position des Zoomfensters fest.
+<A NAME="228"></A>   * @param x Die x-Position des Zoomfensters.
+<A NAME="229"></A>   * @param y Die y-Position des Zoomfensters.
+<A NAME="230"></A>   */</FONT>
+<A NAME="231"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setZoomPos(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="232"></A>    zoomX = x;
+<A NAME="233"></A>    zoomY = y;
+<A NAME="234"></A>  }   <FONT ID="SingleLineComment">// Methode setZoomPos(int x, int y)
+<A NAME="235"></A></FONT> 
+<A NAME="236"></A>
+<A NAME="237"></A>  <FONT ID="FormalComment">/**
+<A NAME="238"></A>   * Die Methode legt die x- und y-Position des letzten Mausklicks fest.
+<A NAME="239"></A>   * @param x Die x-Position des letzten Mausklicks.
+<A NAME="240"></A>   * @param y Die y-Position des letzten Mausklicks.
+<A NAME="241"></A>   */</FONT>
+<A NAME="242"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setLastClickPos(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="243"></A>    lastClickX = x;
+<A NAME="244"></A>    lastClickY = y;
+<A NAME="245"></A>  }   <FONT ID="SingleLineComment">// Methode setLastClickPos(int x, int y)
+<A NAME="246"></A></FONT> 
+<A NAME="247"></A>
+<A NAME="248"></A>  <FONT ID="FormalComment">/**
+<A NAME="249"></A>   * Die Methode legt die x- und y-Position des letzten Mouse-Release Ereignisses
+<A NAME="250"></A>   * fest.
+<A NAME="251"></A>   * @param x Die x-Position des letzten Mouse-Release-Ereignisses.
+<A NAME="252"></A>   * @param y Die y-Position des letzten Mouse-Release-Ereignisses.
+<A NAME="253"></A>   */</FONT>
+<A NAME="254"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setReleasePos(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="255"></A>    lastReleaseX = x;
+<A NAME="256"></A>    lastReleaseY = y;
+<A NAME="257"></A>  }   <FONT ID="SingleLineComment">// Methode setReleasePos(int x, int y)
+<A NAME="258"></A></FONT> 
+<A NAME="259"></A>
+<A NAME="260"></A>  <FONT ID="FormalComment">/**
+<A NAME="261"></A>   * Die Methode legt die aktuelle x- und y-Position des Mauszeigers fest.
+<A NAME="262"></A>   * @param x Die aktuelle x-Position des Mauszeigers.
+<A NAME="263"></A>   * @param y Die aktuelle y-Position des Mauszeigers.
+<A NAME="264"></A>   */</FONT>
+<A NAME="265"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setCurrentPos(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="266"></A>    currentX = x;
+<A NAME="267"></A>    currentY = y;
+<A NAME="268"></A>  }   <FONT ID="SingleLineComment">// Methode setCurrentPos(int x, int y)
+<A NAME="269"></A></FONT> 
+<A NAME="270"></A>
+<A NAME="271"></A>  <FONT ID="FormalComment">/**
+<A NAME="272"></A>   * Die Methode legt den Grauwert an der aktuellen Mausposition fest. Dieser wird
+<A NAME="273"></A>   * zur Anzeige des Grauwerts bei Einstellung des entsprechenden Werkzeugs
+<A NAME="274"></A>   * benoetigt.
+<A NAME="275"></A>   * @param g Der Grauwert an der aktuellen Mausposition.
+<A NAME="276"></A>   */</FONT>
+<A NAME="277"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setGrayValue(<FONT ID="Int">int</FONT> g) {
+<A NAME="278"></A>    currentGray = g;
+<A NAME="279"></A>  }   <FONT ID="SingleLineComment">// Methode setGrayValue(int g)
+<A NAME="280"></A></FONT> 
+<A NAME="281"></A>
+<A NAME="282"></A>  <FONT ID="FormalComment">/**
+<A NAME="283"></A>   * Die Methode liefert die Nummer des zur Zeit selektierten Bildes.
+<A NAME="284"></A>   * @return Die Nummer des selktierten Bildes.
+<A NAME="285"></A>   */</FONT>
+<A NAME="286"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getActiveImage() {
+<A NAME="287"></A>    <FONT ID="Return">return</FONT> iActiveImage;
+<A NAME="288"></A>  }   <FONT ID="SingleLineComment">// Methode getActiveImage()
+<A NAME="289"></A></FONT> 
+<A NAME="290"></A>
+<A NAME="291"></A>  <FONT ID="FormalComment">/**
+<A NAME="292"></A>   * Die Methode liefert den Bildtstapel, also die Menge aller Bilder, die sich
+<A NAME="293"></A>   * zur Zeit im Scrollbereich befinden (auch wenn sie gerade nicht sichtbar
+<A NAME="294"></A>   * sind).
+<A NAME="295"></A>   * @return Der Stapel aller zur Zeit verfuegbarer Bilder.
+<A NAME="296"></A>   */</FONT>
+<A NAME="297"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A> getImageStack() {
+<A NAME="298"></A>    <FONT ID="Return">return</FONT> is;
+<A NAME="299"></A>  }   <FONT ID="SingleLineComment">// Methode getImageStack()
+<A NAME="300"></A></FONT> 
+<A NAME="301"></A>
+<A NAME="302"></A>  <FONT ID="FormalComment">/**
+<A NAME="303"></A>   * Die Methode erzeugt aus dem uebergebenen DcmImage-Objekt ein neues ImagePlus-Objekt
+<A NAME="304"></A>   * und fuegt dieses in den Bildstapel ein. Zuerst wird die Position bestimmt, an der
+<A NAME="305"></A>   * das Bild angelegt wird. Dann wird das Bild erzeugt und dargestellt und der Scrollbereich
+<A NAME="306"></A>   * aktualisiert.
+<A NAME="307"></A>   * @param di Das DcmImag-Objekt, aus dem ein ImagePlus-Objekt erzeugt werden soll.
+<A NAME="308"></A>   * @return Das neu erzeugte ImagePlus-Objekt.
+<A NAME="309"></A>   */</FONT>
+<A NAME="310"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> createNewImage(<A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A> di) {
+<A NAME="311"></A>
+<A NAME="312"></A>    <FONT ID="SingleLineComment">// Auslesen der Position fuer das neue Bild
+<A NAME="313"></A></FONT>    <FONT ID="Int">int</FONT>       pos = getPosForNewImage();
+<A NAME="314"></A>
+<A NAME="315"></A>    <FONT ID="SingleLineComment">// Erzeugen eines imagePlus-Objektes aus der 12Bit-Matrix
+<A NAME="316"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = is.createPictureAtPos(pos, di);
+<A NAME="317"></A>
+<A NAME="318"></A>    <FONT ID="SingleLineComment">// Tag setzen, dass ein neues Bild hinzugekommen ist
+<A NAME="319"></A></FONT>    myViewerFrame.setChanges();
+<A NAME="320"></A>
+<A NAME="321"></A>    <FONT ID="SingleLineComment">// Aktualisieren des Scrollbereichs
+<A NAME="322"></A></FONT>    updateScrollbar();
+<A NAME="323"></A>
+<A NAME="324"></A>    <FONT ID="SingleLineComment">// Ggf. neues Bild aktiveren und dorthin scrollen
+<A NAME="325"></A></FONT>    <FONT ID="If">if</FONT> (myViewerFrame.chbActivateNewImg.isSelected()) {
+<A NAME="326"></A>      setActiveImage(pos);
+<A NAME="327"></A>
+<A NAME="328"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="329"></A>        myViewerFrame.sbVerScrollbar.setValue(((pos - <FONT ID="IntegerLiteral">1</FONT>) / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="330"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="331"></A>        myViewerFrame.sbVerScrollbar.setValue((pos - <FONT ID="IntegerLiteral">1</FONT>) * <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="332"></A>      } 
+<A NAME="333"></A>    } 
+<A NAME="334"></A>
+<A NAME="335"></A>    <FONT ID="SingleLineComment">// Neuzeichnen des Canvas kann erst spaeter gemacht werden, da von
+<A NAME="336"></A></FONT>    <FONT ID="SingleLineComment">// VMRTFrame noch einige Parameter im imagePlus-Objekt gesetzt werden
+<A NAME="337"></A></FONT>
+<A NAME="338"></A>    <FONT ID="SingleLineComment">// Das neue Image-Objekt zurueckliefern
+<A NAME="339"></A></FONT>    <FONT ID="Return">return</FONT> ip;
+<A NAME="340"></A>  }   <FONT ID="SingleLineComment">// Methode createNewImage(DcmImage di)
+<A NAME="341"></A></FONT> 
+<A NAME="342"></A>
+<A NAME="343"></A>  <FONT ID="FormalComment">/**
+<A NAME="344"></A>   * Die Methode fuegt das uebergebene ImagePlus-Objekt in den Bildstapel ein.
+<A NAME="345"></A>   * Zuerst wird dafuer die Position bestimmt, an der das Bild eingefuegt wird.
+<A NAME="346"></A>   * Dann wird das Bild in den stack eingefuegt und der Scrollbereich
+<A NAME="347"></A>   * aktualisiert.
+<A NAME="348"></A>   * @param myip Das ImagePlus-Objekt, das in den Stack eingefuegt werden soll.
+<A NAME="349"></A>   * @return Die Position, an der das ImagePlus-Objekt eingefuegt wurde.
+<A NAME="350"></A>   */</FONT>
+<A NAME="351"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> createNewImage(<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> myip) {
+<A NAME="352"></A>
+<A NAME="353"></A>    <FONT ID="SingleLineComment">// Bestimmen der Position fuer das Bild
+<A NAME="354"></A></FONT>    <FONT ID="Int">int</FONT> pos = getPosForNewImage();
+<A NAME="355"></A>
+<A NAME="356"></A>    <FONT ID="SingleLineComment">// Einfuegen des ImagePlus-Objektes in den Stack
+<A NAME="357"></A></FONT>    is.setPictureAtPos(pos, myip);
+<A NAME="358"></A>    myViewerFrame.setChanges();
+<A NAME="359"></A>
+<A NAME="360"></A>    <FONT ID="SingleLineComment">// Aktualisieren des Scrollbereichs
+<A NAME="361"></A></FONT>    updateScrollbar();
+<A NAME="362"></A>
+<A NAME="363"></A>    <FONT ID="SingleLineComment">// Ggf. neues Bild aktiveren und dorthin scrollen
+<A NAME="364"></A></FONT>    <FONT ID="If">if</FONT> (myViewerFrame.chbActivateNewImg.isSelected()) {
+<A NAME="365"></A>      setActiveImage(pos);
+<A NAME="366"></A>
+<A NAME="367"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="368"></A>        myViewerFrame.sbVerScrollbar.setValue(((pos - <FONT ID="IntegerLiteral">1</FONT>) / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="369"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="370"></A>        myViewerFrame.sbVerScrollbar.setValue((pos - <FONT ID="IntegerLiteral">1</FONT>) * <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="371"></A>      } 
+<A NAME="372"></A>    } 
+<A NAME="373"></A>
+<A NAME="374"></A>    <FONT ID="SingleLineComment">// Das neue Image-Objekt zurueckliefern
+<A NAME="375"></A></FONT>    <FONT ID="Return">return</FONT> pos;
+<A NAME="376"></A>  }   <FONT ID="SingleLineComment">// Methode createNewImage(ImagePlus myip)
+<A NAME="377"></A></FONT> 
+<A NAME="378"></A>
+<A NAME="379"></A>  <FONT ID="FormalComment">/**
+<A NAME="380"></A>   * Die Methode bestimmt die Position fuer ein neu einzufuegendes Bild. Die
+<A NAME="381"></A>   * Position ist von den Benutzervorgaben abhaengig. Das Bild kann entweder
+<A NAME="382"></A>   * an der selektierten Position eingefuegt werden oder aber an der naechsten
+<A NAME="383"></A>   * freien Position.
+<A NAME="384"></A>   * @return Die Position, an der das naechste Bild eingefuegt werden soll.
+<A NAME="385"></A>   */</FONT>
+<A NAME="386"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> getPosForNewImage() {
+<A NAME="387"></A>
+<A NAME="388"></A>    <FONT ID="SingleLineComment">// Wenn der ImageStack noch leer (nicht vorhanden) ist, muss ein neuer
+<A NAME="389"></A></FONT>    <FONT ID="SingleLineComment">// erzeugt werden
+<A NAME="390"></A></FONT>    <FONT ID="If">if</FONT> (is == <FONT ID="Null">null</FONT>) {
+<A NAME="391"></A>      is = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>();
+<A NAME="392"></A>    } 
+<A NAME="393"></A>
+<A NAME="394"></A>    <FONT ID="SingleLineComment">// Wenn noch kein Bild selektiert war (noch keins vorhanden), so wird nun
+<A NAME="395"></A></FONT>    <FONT ID="SingleLineComment">// das erste Bild das aktive, ansonsten bleibt das alte selektierte Bild
+<A NAME="396"></A></FONT>    <FONT ID="SingleLineComment">// weiterhin selektiert
+<A NAME="397"></A></FONT>    iActiveImage = iActiveImage == -<FONT ID="IntegerLiteral">1</FONT> ? <FONT ID="IntegerLiteral">1</FONT> : iActiveImage;
+<A NAME="398"></A>
+<A NAME="399"></A>    <FONT ID="SingleLineComment">// Nun wird noch entschieden, ob das neue Bild an der selektierten Position
+<A NAME="400"></A></FONT>    <FONT ID="SingleLineComment">// oder an der naechsten freien Position positioniert wird
+<A NAME="401"></A></FONT>    <FONT ID="Int">int</FONT> pos = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="402"></A>
+<A NAME="403"></A>    <FONT ID="If">if</FONT> (myViewerFrame.rbNextImageAtSelection.isSelected()) {
+<A NAME="404"></A>      pos = iActiveImage;
+<A NAME="405"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="406"></A>      pos = is.getNextFreePosition();
+<A NAME="407"></A>      <FONT ID="If">if</FONT> (pos == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="408"></A>        pos++;
+<A NAME="409"></A>      } 
+<A NAME="410"></A>    } 
+<A NAME="411"></A>
+<A NAME="412"></A>    <FONT ID="Return">return</FONT> pos;
+<A NAME="413"></A>  }   <FONT ID="SingleLineComment">// Methode getPosForNewImage()
+<A NAME="414"></A></FONT> 
+<A NAME="415"></A>
+<A NAME="416"></A>  <FONT ID="FormalComment">/**
+<A NAME="417"></A>   * Die Methode liefert den aktuellen Offset des Scrollbalkens in Bildern zurueck.
+<A NAME="418"></A>   * @return Der aktuelle Offset des Scrollbalkens.
+<A NAME="419"></A>   */</FONT>
+<A NAME="420"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> getSBOffset() {
+<A NAME="421"></A>    <FONT ID="Int">int</FONT> off = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="422"></A>
+<A NAME="423"></A>    <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="424"></A>      off = myViewerFrame.sbVerScrollbar.getValue() / <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="425"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="426"></A>      off = myViewerFrame.sbVerScrollbar.getValue() / <FONT ID="IntegerLiteral">512</FONT>;
+<A NAME="427"></A>    } 
+<A NAME="428"></A>    <FONT ID="Return">return</FONT> off;
+<A NAME="429"></A>  }   <FONT ID="SingleLineComment">// Methode getSBOffset()
+<A NAME="430"></A></FONT> 
+<A NAME="431"></A>
+<A NAME="432"></A>  <FONT ID="FormalComment">/**
+<A NAME="433"></A>   * Die Paint Methode sorgt dafuer, dass alle gewuenschten Elemente auf der
+<A NAME="434"></A>   * Zeichenflaeche dargestellt werden. Die Methode wird immer dann aufgerufen,
+<A NAME="435"></A>   * wenn sich etwas auf der Zeichenflaeche veraendern soll. Dazu zaehlen Aenderungen
+<A NAME="436"></A>   * an den Bilder, an den Bildbeschriftungen oder Darstellungselemente, die durch
+<A NAME="437"></A>   * die Werkzeuge bedingt sind (Lupe, Distanzmessung, Winkelmessung).
+<A NAME="438"></A>   * @param g Der Graphikkontext.
+<A NAME="439"></A>   */</FONT>
+<A NAME="440"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> paint(Graphics g) {
+<A NAME="441"></A>
+<A NAME="442"></A>    <FONT ID="SingleLineComment">// Zunaechst mal den Graphikontext komplett loeschen
+<A NAME="443"></A></FONT>    g.clearRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="444"></A>
+<A NAME="445"></A>    <FONT ID="SingleLineComment">// Zeichnen des Bildes bzw. der Bilder
+<A NAME="446"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="447"></A>
+<A NAME="448"></A>    <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="449"></A>      <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="450"></A>
+<A NAME="451"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; <FONT ID="IntegerLiteral">4</FONT>; i++) {
+<A NAME="452"></A>        ip = is.getPictureAtPos(<FONT ID="IntegerLiteral">2</FONT> * off + i + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="453"></A>        <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="454"></A>          g.drawImage(ip.getAWTImage(), (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="455"></A>        } 
+<A NAME="456"></A>      } 
+<A NAME="457"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="458"></A>
+<A NAME="459"></A>      <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="460"></A>
+<A NAME="461"></A>      ip = is.getPictureAtPos(off + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="462"></A>      <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="463"></A>        g.drawImage(ip.getAWTImage(), <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="464"></A>      } 
+<A NAME="465"></A>    } 
+<A NAME="466"></A>
+<A NAME="467"></A>    <FONT ID="SingleLineComment">// Zeichnen der Umrandung der Bilder, dazu zunaechst Malfarbe auf
+<A NAME="468"></A></FONT>    <FONT ID="SingleLineComment">// weiss setzen. Fallunterscheidung 1/4 Bilder
+<A NAME="469"></A></FONT>
+<A NAME="470"></A>    g.setColor(Color.white);
+<A NAME="471"></A>    g.drawRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="472"></A>
+<A NAME="473"></A>    <FONT ID="Switch">switch</FONT> (iNumImages) {
+<A NAME="474"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: {
+<A NAME="475"></A>      g.drawLine(<FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="476"></A>      g.drawLine(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">255</FONT>);
+<A NAME="477"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="478"></A>    } 
+<A NAME="479"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="480"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="481"></A>    } 
+<A NAME="482"></A>    }   <FONT ID="SingleLineComment">// switch
+<A NAME="483"></A></FONT>
+<A NAME="484"></A>    <FONT ID="SingleLineComment">// Zeichnen der Umrandung des aktiven Bildes
+<A NAME="485"></A></FONT>    g.setColor(Color.red);
+<A NAME="486"></A>
+<A NAME="487"></A>    <FONT ID="If">if</FONT> (iActiveImage != -<FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="488"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="489"></A>        <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="490"></A>
+<A NAME="491"></A>        <FONT ID="If">if</FONT> (iActiveImage == off + <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="492"></A>          g.drawRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="493"></A>        } 
+<A NAME="494"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="495"></A>        <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="496"></A>
+<A NAME="497"></A>        <FONT ID="SingleLineComment">// Liegt aktives Bild im sichtbaren Scrollbereich ???
+<A NAME="498"></A></FONT>        <FONT ID="If">if</FONT> ((iActiveImage &gt; off * <FONT ID="IntegerLiteral">2</FONT>) &amp;&amp; (iActiveImage &lt;= (off * <FONT ID="IntegerLiteral">2</FONT> + <FONT ID="IntegerLiteral">4</FONT>))) {
+<A NAME="499"></A>          <FONT ID="Int">int</FONT> num = iActiveImage - (off * <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="500"></A>
+<A NAME="501"></A>          <FONT ID="Int">int</FONT> startx = <FONT ID="IntegerLiteral">0</FONT>, starty = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="502"></A>
+<A NAME="503"></A>          <FONT ID="Switch">switch</FONT> (num) {
+<A NAME="504"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="505"></A>            startx = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="506"></A>            starty = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="507"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="508"></A>          } 
+<A NAME="509"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">3</FONT>: {
+<A NAME="510"></A>            startx = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="511"></A>            starty = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="512"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="513"></A>          } 
+<A NAME="514"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">2</FONT>: {
+<A NAME="515"></A>            startx = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="516"></A>            starty = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="517"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="518"></A>          } 
+<A NAME="519"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: {
+<A NAME="520"></A>            startx = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="521"></A>            starty = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="522"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="523"></A>          } 
+<A NAME="524"></A>          }   <FONT ID="SingleLineComment">// switch
+<A NAME="525"></A></FONT>          g.drawRect(startx, starty, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">255</FONT>);
+<A NAME="526"></A>        }     <FONT ID="SingleLineComment">// if
+<A NAME="527"></A></FONT>       }      <FONT ID="SingleLineComment">// if-else
+<A NAME="528"></A></FONT>     }        <FONT ID="SingleLineComment">// if
+<A NAME="529"></A></FONT> 
+<A NAME="530"></A>
+<A NAME="531"></A>    <FONT ID="SingleLineComment">// Zeichnen der Bildbeschriftungen in gruen
+<A NAME="532"></A></FONT>    g.setColor(Color.green);
+<A NAME="533"></A>
+<A NAME="534"></A>    <FONT ID="SingleLineComment">// Auslesen der Bildkommentare fuer alle 4 Ecken
+<A NAME="535"></A></FONT>    String[]  commentsNW;
+<A NAME="536"></A>    String[]  commentsNE;
+<A NAME="537"></A>    String[]  commentsSW;
+<A NAME="538"></A>    String[]  commentsSE;
+<A NAME="539"></A>
+<A NAME="540"></A>    <FONT ID="If">if</FONT> (myViewerFrame.tbImageText.isSelected()) {
+<A NAME="541"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="542"></A>        Font  myFont = <FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="543"></A>
+<A NAME="544"></A>        g.setFont(myFont);
+<A NAME="545"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; <FONT ID="IntegerLiteral">4</FONT>; i++) {
+<A NAME="546"></A>          <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="547"></A>
+<A NAME="548"></A>          ip = is.getPictureAtPos(<FONT ID="IntegerLiteral">2</FONT> * off + <FONT ID="IntegerLiteral">1</FONT> + i);
+<A NAME="549"></A>          <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="550"></A>
+<A NAME="551"></A>            <FONT ID="SingleLineComment">// Einzeichnen der Kommentare
+<A NAME="552"></A></FONT>            commentsNW = ip.getTextNW();
+<A NAME="553"></A>            <FONT ID="If">if</FONT> (commentsNW != <FONT ID="Null">null</FONT>) {
+<A NAME="554"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsNW.length; j++) {
+<A NAME="555"></A>                g.drawString(commentsNW[j], (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">5</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">22</FONT> + <FONT ID="IntegerLiteral">12</FONT> * j);
+<A NAME="556"></A>              }   <FONT ID="SingleLineComment">// Ende for j
+<A NAME="557"></A></FONT>             } 
+<A NAME="558"></A>            commentsNE = ip.getTextNE();
+<A NAME="559"></A>            <FONT ID="If">if</FONT> (commentsNE != <FONT ID="Null">null</FONT>) {
+<A NAME="560"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsNE.length; j++) {
+<A NAME="561"></A>                g.drawString(commentsNE[j], ((i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>) + <FONT ID="IntegerLiteral">152</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + +<FONT ID="IntegerLiteral">10</FONT> + <FONT ID="IntegerLiteral">10</FONT> * j);
+<A NAME="562"></A>              }   <FONT ID="SingleLineComment">// Ende for j
+<A NAME="563"></A></FONT>             } 
+<A NAME="564"></A>            commentsSW = ip.getTextSW();
+<A NAME="565"></A>            <FONT ID="If">if</FONT> (commentsSW != <FONT ID="Null">null</FONT>) {
+<A NAME="566"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsSW.length; j++) {
+<A NAME="567"></A>                g.drawString(commentsSW[j], (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">5</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">256</FONT> - <FONT ID="IntegerLiteral">8</FONT> - <FONT ID="IntegerLiteral">10</FONT> * j);
+<A NAME="568"></A>              }   <FONT ID="SingleLineComment">// Ende for j
+<A NAME="569"></A></FONT>             } 
+<A NAME="570"></A>            commentsSE = ip.getTextSE();
+<A NAME="571"></A>            <FONT ID="If">if</FONT> (commentsSE != <FONT ID="Null">null</FONT>) {
+<A NAME="572"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsSE.length; j++) {
+<A NAME="573"></A>                g.drawString(commentsSE[j], ((i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>) + <FONT ID="IntegerLiteral">152</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">256</FONT> - <FONT ID="IntegerLiteral">8</FONT> - <FONT ID="IntegerLiteral">10</FONT> * j);
+<A NAME="574"></A>              }   <FONT ID="SingleLineComment">// Ende for j
+<A NAME="575"></A></FONT>             } 
+<A NAME="576"></A>
+<A NAME="577"></A>            <FONT ID="SingleLineComment">// Einzeichnen der Bildnummer
+<A NAME="578"></A></FONT>            g.drawString(<FONT ID="StringLiteral">"Bild "</FONT> + (<FONT ID="IntegerLiteral">2</FONT> * off + i + <FONT ID="IntegerLiteral">1</FONT>), (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">5</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="579"></A>          }       <FONT ID="SingleLineComment">// Ende if  (ip != null)
+<A NAME="580"></A></FONT>         }        <FONT ID="SingleLineComment">// Ende for i
+<A NAME="581"></A></FONT>       } <FONT ID="Else">else</FONT> {
+<A NAME="582"></A>        Font  myFont = <FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="583"></A>
+<A NAME="584"></A>        g.setFont(myFont);
+<A NAME="585"></A>        <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="586"></A>
+<A NAME="587"></A>        ip = is.getPictureAtPos(off + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="588"></A>        <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="589"></A>
+<A NAME="590"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Kommentare
+<A NAME="591"></A></FONT>          commentsNW = ip.getTextNW();
+<A NAME="592"></A>          <FONT ID="If">if</FONT> (commentsNW != <FONT ID="Null">null</FONT>) {
+<A NAME="593"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; commentsNW.length; i++) {
+<A NAME="594"></A>              g.drawString(commentsNW[i], <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">30</FONT> + <FONT ID="IntegerLiteral">15</FONT> * i);
+<A NAME="595"></A>            }     <FONT ID="SingleLineComment">// Ende for i
+<A NAME="596"></A></FONT>           } 
+<A NAME="597"></A>          commentsNE = ip.getTextNE();
+<A NAME="598"></A>          <FONT ID="If">if</FONT> (commentsNE != <FONT ID="Null">null</FONT>) {
+<A NAME="599"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; commentsNE.length; i++) {
+<A NAME="600"></A>              g.drawString(commentsNE[i], <FONT ID="IntegerLiteral">393</FONT>, <FONT ID="IntegerLiteral">15</FONT> + <FONT ID="IntegerLiteral">15</FONT> * i);
+<A NAME="601"></A>            }     <FONT ID="SingleLineComment">// Ende for i
+<A NAME="602"></A></FONT>           } 
+<A NAME="603"></A>          commentsSW = ip.getTextSW();
+<A NAME="604"></A>          <FONT ID="If">if</FONT> (commentsSW != <FONT ID="Null">null</FONT>) {
+<A NAME="605"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; commentsSW.length; i++) {
+<A NAME="606"></A>              g.drawString(commentsSW[i], <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">500</FONT> - <FONT ID="IntegerLiteral">15</FONT> * i);
+<A NAME="607"></A>            }     <FONT ID="SingleLineComment">// Ende for i
+<A NAME="608"></A></FONT>           } 
+<A NAME="609"></A>          commentsSE = ip.getTextSE();
+<A NAME="610"></A>          <FONT ID="If">if</FONT> (commentsSE != <FONT ID="Null">null</FONT>) {
+<A NAME="611"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; commentsSE.length; i++) {
+<A NAME="612"></A>              g.drawString(commentsSE[i], <FONT ID="IntegerLiteral">390</FONT>, <FONT ID="IntegerLiteral">500</FONT> - <FONT ID="IntegerLiteral">15</FONT> * i);
+<A NAME="613"></A>            }     <FONT ID="SingleLineComment">// Ende for i
+<A NAME="614"></A></FONT>           } 
+<A NAME="615"></A>
+<A NAME="616"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Bildnummer
+<A NAME="617"></A></FONT>          g.drawString(<FONT ID="StringLiteral">"Bild "</FONT> + (off + <FONT ID="IntegerLiteral">1</FONT>), <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">15</FONT>);
+<A NAME="618"></A>        }         <FONT ID="SingleLineComment">// Ende if (ip != null)
+<A NAME="619"></A></FONT>       }          <FONT ID="SingleLineComment">// Ende if (numImages)
+<A NAME="620"></A></FONT>     }            <FONT ID="SingleLineComment">// Ende if tb_ImageText gedrueckt
+<A NAME="621"></A></FONT> 
+<A NAME="622"></A>
+<A NAME="623"></A>    <FONT ID="SingleLineComment">// Einzeichnen der Lupe (falls selektiert)
+<A NAME="624"></A></FONT>    <FONT ID="If">if</FONT> (myViewerFrame.rbZoom.isSelected()) {
+<A NAME="625"></A>      <FONT ID="If">if</FONT> (zoomImage != <FONT ID="Null">null</FONT>) {
+<A NAME="626"></A>        g.drawImage(zoomImage, zoomX, zoomY, <FONT ID="This">this</FONT>);
+<A NAME="627"></A>        g.setColor(Color.yellow);
+<A NAME="628"></A>        g.drawRect(zoomX - <FONT ID="IntegerLiteral">1</FONT>, zoomY - <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">65</FONT>, <FONT ID="IntegerLiteral">65</FONT>);
+<A NAME="629"></A>      } 
+<A NAME="630"></A>    }   <FONT ID="SingleLineComment">// if (Lupe)
+<A NAME="631"></A></FONT> 
+<A NAME="632"></A>    <FONT ID="SingleLineComment">// Einzeichnen der Grauwertmessung (falls selektiert)
+<A NAME="633"></A></FONT>    <FONT ID="If">if</FONT> (myViewerFrame.rbGrayValue.isSelected()) {
+<A NAME="634"></A>      <FONT ID="If">if</FONT> (currentGray != (-<FONT ID="IntegerLiteral">1</FONT>)) {
+<A NAME="635"></A>        <FONT ID="Int">int</FONT> offX = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="636"></A>        <FONT ID="Int">int</FONT> offY = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="637"></A>
+<A NAME="638"></A>        <FONT ID="If">if</FONT> (currentX &gt; (<FONT ID="This">this</FONT>.getWidth() - <FONT ID="IntegerLiteral">40</FONT>)) {
+<A NAME="639"></A>          offX = -<FONT ID="IntegerLiteral">30</FONT>;
+<A NAME="640"></A>        } 
+<A NAME="641"></A>        <FONT ID="If">if</FONT> (currentY &gt; (<FONT ID="This">this</FONT>.getHeight() - <FONT ID="IntegerLiteral">40</FONT>)) {
+<A NAME="642"></A>          offY = -<FONT ID="IntegerLiteral">20</FONT>;
+<A NAME="643"></A>        } 
+<A NAME="644"></A>        <FONT ID="This">this</FONT>.getWidth();
+<A NAME="645"></A>        g.setColor(Color.yellow);
+<A NAME="646"></A>        g.fillRect(currentX + offX, currentY + offY, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="647"></A>        g.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="648"></A>        g.setColor(Color.black);
+<A NAME="649"></A>        g.drawString(<FONT ID="StringLiteral">""</FONT> + currentGray, currentX + offX + <FONT ID="IntegerLiteral">2</FONT>, currentY + offY + <FONT ID="IntegerLiteral">9</FONT>);
+<A NAME="650"></A>      } 
+<A NAME="651"></A>    }   <FONT ID="SingleLineComment">// if (Grauwert-Messung)
+<A NAME="652"></A></FONT> 
+<A NAME="653"></A>    <FONT ID="SingleLineComment">// Einzeichnen der Hilfslinie fuer die Distanzmessung (falls selektiert)
+<A NAME="654"></A></FONT>    <FONT ID="If">if</FONT> (myViewerFrame.rbDistance.isSelected()) {
+<A NAME="655"></A>      <FONT ID="If">if</FONT> ((lastClickX != -<FONT ID="IntegerLiteral">1</FONT>) &amp;&amp; (currentX != -<FONT ID="IntegerLiteral">1</FONT>)) {
+<A NAME="656"></A>
+<A NAME="657"></A>        <FONT ID="SingleLineComment">// Einzeichnen der Distanzlinie
+<A NAME="658"></A></FONT>        g.setColor(Color.yellow);
+<A NAME="659"></A>        g.drawLine(lastClickX, lastClickY, currentX, currentY);
+<A NAME="660"></A>
+<A NAME="661"></A>        <FONT ID="SingleLineComment">// Berechenen der Distanz in Pixeln
+<A NAME="662"></A></FONT>        <FONT ID="Int">int</FONT>     distanceX = Math.abs(lastClickX - currentX);
+<A NAME="663"></A>        <FONT ID="Int">int</FONT>     distanceY = Math.abs(lastClickY - currentY);
+<A NAME="664"></A>
+<A NAME="665"></A>        <FONT ID="SingleLineComment">// Besorgen des Pixel-Spacings
+<A NAME="666"></A></FONT>        <FONT ID="Double">double</FONT>  spacingX = ip.getPixelSpacingColumn();
+<A NAME="667"></A>        <FONT ID="Double">double</FONT>  spacingY = ip.getPixelSpacingRow();
+<A NAME="668"></A>        String  unit = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="669"></A>
+<A NAME="670"></A>        <FONT ID="If">if</FONT> ((spacingX &gt; <FONT ID="IntegerLiteral">0</FONT>) &amp;&amp; (spacingY &gt; <FONT ID="IntegerLiteral">0</FONT>)) {
+<A NAME="671"></A>          distanceX *= spacingX;
+<A NAME="672"></A>          distanceY *= spacingY;
+<A NAME="673"></A>          unit = <FONT ID="StringLiteral">" mm"</FONT>;
+<A NAME="674"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="675"></A>          unit = <FONT ID="StringLiteral">" Pixel"</FONT>;
+<A NAME="676"></A>        } 
+<A NAME="677"></A>        <FONT ID="Int">int</FONT> distance = (<FONT ID="Int">int</FONT>) Math.sqrt(Math.pow(distanceX, <FONT ID="IntegerLiteral">2</FONT>) + Math.pow(distanceY, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="678"></A>
+<A NAME="679"></A>        <FONT ID="If">if</FONT> (myViewerFrame.rb1Image.isSelected()) {
+<A NAME="680"></A>          distance /= <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="681"></A>
+<A NAME="682"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Distanz (gelb hinterlegt);
+<A NAME="683"></A></FONT>        } 
+<A NAME="684"></A>        <FONT ID="Int">int</FONT> offX = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="685"></A>        <FONT ID="Int">int</FONT> offY = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="686"></A>
+<A NAME="687"></A>        <FONT ID="If">if</FONT> (currentX &gt; (<FONT ID="This">this</FONT>.getWidth() - <FONT ID="IntegerLiteral">60</FONT>)) {
+<A NAME="688"></A>          offX = -<FONT ID="IntegerLiteral">50</FONT>;
+<A NAME="689"></A>        } 
+<A NAME="690"></A>        <FONT ID="If">if</FONT> (currentY &gt; (<FONT ID="This">this</FONT>.getHeight() - <FONT ID="IntegerLiteral">30</FONT>)) {
+<A NAME="691"></A>          offY = -<FONT ID="IntegerLiteral">20</FONT>;
+<A NAME="692"></A>        } 
+<A NAME="693"></A>        g.fillRect(currentX + offX, currentY + offY, <FONT ID="IntegerLiteral">50</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="694"></A>        g.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="695"></A>        g.setColor(Color.black);
+<A NAME="696"></A>        g.drawString(<FONT ID="StringLiteral">""</FONT> + distance + unit, currentX + offX + <FONT ID="IntegerLiteral">2</FONT>, currentY + offY + <FONT ID="IntegerLiteral">9</FONT>);
+<A NAME="697"></A>
+<A NAME="698"></A>      } 
+<A NAME="699"></A>    }   <FONT ID="SingleLineComment">// if (Abstandsmessung)
+<A NAME="700"></A></FONT> 
+<A NAME="701"></A>    <FONT ID="SingleLineComment">// Einzeichnen der Hilfslinie fuer die Winkelmessung (falls selektiert)
+<A NAME="702"></A></FONT>    <FONT ID="If">if</FONT> (myViewerFrame.rbAngel.isSelected()) {
+<A NAME="703"></A>      <FONT ID="If">if</FONT> ((lastClickX != -<FONT ID="IntegerLiteral">1</FONT>) &amp;&amp; (currentX != -<FONT ID="IntegerLiteral">1</FONT>)) {
+<A NAME="704"></A>        <FONT ID="If">if</FONT> (lastReleaseX == -<FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="705"></A>
+<A NAME="706"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Rferenzlinie
+<A NAME="707"></A></FONT>          g.setColor(Color.yellow);
+<A NAME="708"></A>          g.drawLine(lastClickX, lastClickY, currentX, currentY);
+<A NAME="709"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="710"></A>
+<A NAME="711"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Referenzlinie und der zweiten Linie
+<A NAME="712"></A></FONT>          g.setColor(Color.yellow);
+<A NAME="713"></A>          g.drawLine(lastClickX, lastClickY, lastReleaseX, lastReleaseY);
+<A NAME="714"></A>          g.drawLine(lastClickX, lastClickY, currentX, currentY);
+<A NAME="715"></A>
+<A NAME="716"></A>          <FONT ID="SingleLineComment">// Berechnen des Winkels
+<A NAME="717"></A></FONT>          <FONT ID="Double">double</FONT>  a1 = (<FONT ID="Double">double</FONT>) lastReleaseX - lastClickX;
+<A NAME="718"></A>          <FONT ID="Double">double</FONT>  a2 = (<FONT ID="Double">double</FONT>) lastReleaseY - lastClickY;
+<A NAME="719"></A>          <FONT ID="Double">double</FONT>  b1 = (<FONT ID="Double">double</FONT>) currentX - lastClickX;
+<A NAME="720"></A>          <FONT ID="Double">double</FONT>  b2 = (<FONT ID="Double">double</FONT>) currentY - lastClickY;
+<A NAME="721"></A>          <FONT ID="Double">double</FONT>  cosPhi = ((a1 * b1) + (a2 * b2)) / (Math.sqrt(a1 * a1 + a2 * a2) * Math.sqrt(b1 * b1 + b2 * b2));
+<A NAME="722"></A>          <FONT ID="Int">int</FONT>     phi = (<FONT ID="Int">int</FONT>) (Math.acos(cosPhi) * <FONT ID="IntegerLiteral">360</FONT> / Math.PI / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="723"></A>
+<A NAME="724"></A>          <FONT ID="SingleLineComment">// Einzeichnen des Winkels
+<A NAME="725"></A></FONT>          <FONT ID="Int">int</FONT>     offX = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="726"></A>          <FONT ID="Int">int</FONT>     offY = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="727"></A>
+<A NAME="728"></A>          <FONT ID="If">if</FONT> (currentX &gt; (<FONT ID="This">this</FONT>.getWidth() - <FONT ID="IntegerLiteral">40</FONT>)) {
+<A NAME="729"></A>            offX = -<FONT ID="IntegerLiteral">35</FONT>;
+<A NAME="730"></A>          } 
+<A NAME="731"></A>          <FONT ID="If">if</FONT> (currentY &gt; (<FONT ID="This">this</FONT>.getHeight() - <FONT ID="IntegerLiteral">30</FONT>)) {
+<A NAME="732"></A>            offY = -<FONT ID="IntegerLiteral">20</FONT>;
+<A NAME="733"></A>          } 
+<A NAME="734"></A>          g.fillRect(currentX + offX, currentY + offY, <FONT ID="IntegerLiteral">25</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="735"></A>          g.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="736"></A>          g.setColor(Color.black);
+<A NAME="737"></A>          g.drawString(<FONT ID="StringLiteral">""</FONT> + phi + <FONT ID="StringLiteral">"°"</FONT>, currentX + offX + <FONT ID="IntegerLiteral">2</FONT>, currentY + offY + <FONT ID="IntegerLiteral">9</FONT>);
+<A NAME="738"></A>        }   <FONT ID="SingleLineComment">// if-else
+<A NAME="739"></A></FONT>       }    <FONT ID="SingleLineComment">// if
+<A NAME="740"></A></FONT>     }      <FONT ID="SingleLineComment">// if (Winkelmessung)
+<A NAME="741"></A></FONT> 
+<A NAME="742"></A>  }         <FONT ID="SingleLineComment">// Methode paint()
+<A NAME="743"></A></FONT> 
+<A NAME="744"></A>}
+<A NAME="745"></A>
+<A NAME="746"></A>
+<A NAME="747"></A>
+<A NAME="748"></A>
+<A NAME="749"></A>
+<A NAME="750"></A>
+<A NAME="751"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="752"></A>
+<A NAME="753"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DVPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

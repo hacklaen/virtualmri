@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.Histogramm (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Histogramm</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * Die Klasse stellt ein Fenster zur Anzeige eines Histogramms dar. Sie
+<A NAME="29"></A> * verwaltet das Bild, von dem das Histogramm dargestellt werden soll und
+<A NAME="30"></A> * die benoetigten Methoden zum Berechnen des Histogramms.
+<A NAME="31"></A> * 
+<A NAME="32"></A> * @author   Christian Schalla
+<A NAME="33"></A> * @author   Andreas Truemper
+<A NAME="34"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="35"></A> */</FONT>
+<A NAME="36"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Histogramm <FONT ID="Extends">extends</FONT> JFrame {
+<A NAME="37"></A>
+<A NAME="38"></A>
+<A NAME="39"></A>  <FONT ID="FormalComment">/**
+<A NAME="40"></A>   * Das Bild, von dem das Histogramm dargestellt werden soll.
+<A NAME="41"></A>   */</FONT>
+<A NAME="42"></A>  <FONT ID="Private">private</FONT> <FONT ID="Short">short</FONT>[][]     image;
+<A NAME="43"></A>
+<A NAME="44"></A>
+<A NAME="45"></A>  <FONT ID="FormalComment">/**
+<A NAME="46"></A>   * Die Histogrammtabelle. Sie enthaelt nach der Berechnung fuer jeden
+<A NAME="47"></A>   * Grauwert die Anzahl der Pixel mit diesem Grauwert.
+<A NAME="48"></A>   */</FONT>
+<A NAME="49"></A>  <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[]      histogram;
+<A NAME="50"></A>
+<A NAME="51"></A>
+<A NAME="52"></A>  <FONT ID="FormalComment">/**
+<A NAME="53"></A>   * Die maximale Anzahl an Pixeln mit einem Grauwert
+<A NAME="54"></A>   */</FONT>
+<A NAME="55"></A>  <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>        maxValue;
+<A NAME="56"></A>
+<A NAME="57"></A>
+<A NAME="58"></A>  <FONT ID="FormalComment">/**
+<A NAME="59"></A>   * Breite des Histogrammfensters.
+<A NAME="60"></A>   */</FONT>
+<A NAME="61"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     FRAME_WIDTH = <FONT ID="IntegerLiteral">295</FONT>;
+<A NAME="62"></A>
+<A NAME="63"></A>
+<A NAME="64"></A>  <FONT ID="FormalComment">/**
+<A NAME="65"></A>   * Hoehe des Histogrammfensters.
+<A NAME="66"></A>   */</FONT>
+<A NAME="67"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     FRAME_HEIGHT = <FONT ID="IntegerLiteral">150</FONT>;
+<A NAME="68"></A>
+<A NAME="69"></A>
+<A NAME="70"></A>  <FONT ID="FormalComment">/**
+<A NAME="71"></A>   * Wenn ein Grauwert mit mehr als durch diesen Anteil angebenen Pixeln am
+<A NAME="72"></A>   * Gesamthistogramm beteiligt ist, wird er abgeschnitten (und im Histogramm
+<A NAME="73"></A>   * rot markiert.
+<A NAME="74"></A>   */</FONT>
+<A NAME="75"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>  PERCENTAGE = <FONT ID="FloatPointLiteral">0.05</FONT>;
+<A NAME="76"></A>
+<A NAME="77"></A>
+<A NAME="78"></A>  <FONT ID="FormalComment">/**
+<A NAME="79"></A>   * Referenz auf das aufrufende Fenster.
+<A NAME="80"></A>   */</FONT>
+<A NAME="81"></A>  <FONT ID="Private">private</FONT> Frame         parent = <FONT ID="Null">null</FONT>;
+<A NAME="82"></A>
+<A NAME="83"></A>
+<A NAME="84"></A>  <FONT ID="FormalComment">/**
+<A NAME="85"></A>   * Der Konstruktor baut das Histogrammfenster auf, stellt aber noch nicht
+<A NAME="86"></A>   * das Histogramm dar. Wenn dieser Konstruktor verwendet wird, muﬂ das
+<A NAME="87"></A>   * Histogramm durch die Methode computeHistogramm dargestellt werden.
+<A NAME="88"></A>   */</FONT>
+<A NAME="89"></A>  <FONT ID="Public">public</FONT> Histogramm() {
+<A NAME="90"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="91"></A>      jbInit();
+<A NAME="92"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="93"></A>  }   <FONT ID="SingleLineComment">// Konstruktor
+<A NAME="94"></A></FONT>
+<A NAME="95"></A>
+<A NAME="96"></A>  <FONT ID="FormalComment">/**
+<A NAME="97"></A>   * Der Konstruktor baut das Histogrammfenster auf und berechnet das Histogramm
+<A NAME="98"></A>   * des uebergebenen Bildes und stellt dies dar.
+<A NAME="99"></A>   * @param img Das Bild, dessen Histogramm berechnet werden soll.
+<A NAME="100"></A>   * @param title Der Titel des Histogrammfensters.
+<A NAME="101"></A>   */</FONT>
+<A NAME="102"></A>  <FONT ID="Public">public</FONT> Histogramm(Frame p, <FONT ID="Short">short</FONT> img[][], String title) {
+<A NAME="103"></A>    <FONT ID="Super">super</FONT>(title);
+<A NAME="104"></A>    parent = p;
+<A NAME="105"></A>    image = img;
+<A NAME="106"></A>    computeHistogramm();
+<A NAME="107"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="108"></A>      jbInit();
+<A NAME="109"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="110"></A>  }   <FONT ID="SingleLineComment">// Konstruktor
+<A NAME="111"></A></FONT>
+<A NAME="112"></A>
+<A NAME="113"></A>  <FONT ID="FormalComment">/**
+<A NAME="114"></A>   * Die Methode stellt ein leeres Histogrammfenster dar. Sie legt nur die
+<A NAME="115"></A>   * Groesse und Position des Fensters fest.
+<A NAME="116"></A>   */</FONT>
+<A NAME="117"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="118"></A>    <FONT ID="This">this</FONT>.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+<A NAME="119"></A>    <FONT ID="If">if</FONT> (parent != <FONT ID="Null">null</FONT>) {
+<A NAME="120"></A>      <FONT ID="This">this</FONT>.setLocation(parent.getLocationOnScreen().x + (parent.getSize().width / <FONT ID="IntegerLiteral">2</FONT>) - (<FONT ID="This">this</FONT>.getSize().width / <FONT ID="IntegerLiteral">2</FONT>), parent.getLocationOnScreen().y + (parent.getSize().height / <FONT ID="IntegerLiteral">2</FONT>) - (<FONT ID="This">this</FONT>.getSize().width / <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="121"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="122"></A>      <FONT ID="This">this</FONT>.setLocation(<FONT ID="IntegerLiteral">200</FONT>, <FONT ID="IntegerLiteral">200</FONT>);
+<A NAME="123"></A>    } 
+<A NAME="124"></A>    <FONT ID="This">this</FONT>.setResizable(<FONT ID="False">false</FONT>);
+<A NAME="125"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="126"></A></FONT> 
+<A NAME="127"></A>
+<A NAME="128"></A>  <FONT ID="FormalComment">/**
+<A NAME="129"></A>   * Die Methode setzt das Bild, dessen Histogramm berechnet werden soll.
+<A NAME="130"></A>   * Sie berechnet das Histogramm allerdings noch nicht. Dazu muss die Methode
+<A NAME="131"></A>   * computeHistogramm() aufgerufen werden.
+<A NAME="132"></A>   * @param i Das Bild, dessen Histogramm dargestellt werden soll.
+<A NAME="133"></A>   */</FONT>
+<A NAME="134"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setImage(<FONT ID="Short">short</FONT>[][] i) {
+<A NAME="135"></A>    image = i;
+<A NAME="136"></A>  }   <FONT ID="SingleLineComment">// Methode setImage
+<A NAME="137"></A></FONT> 
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Die Methode berechnet das Histogramm des in der Instanzvariablen image gespeicherten
+<A NAME="141"></A>   * Bildes. Dabei werden zur Zeit nur Bilder mit 256 Grauwerten unterstuetzt.
+<A NAME="142"></A>   */</FONT>
+<A NAME="143"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> computeHistogramm() {
+<A NAME="144"></A>    <FONT ID="Int">int</FONT> total = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="145"></A>
+<A NAME="146"></A>    <FONT ID="SingleLineComment">// Initialisieren der Histogrammtabelle
+<A NAME="147"></A></FONT>    histogram = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="148"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; histogram.length; j++) {
+<A NAME="149"></A>      histogram[j] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="150"></A>    }   <FONT ID="SingleLineComment">// for j
+<A NAME="151"></A></FONT> 
+<A NAME="152"></A>    <FONT ID="SingleLineComment">// Berechnung des Histogramms
+<A NAME="153"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; image.length; x++) {
+<A NAME="154"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; image[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="155"></A>        histogram[image[x][y]]++;
+<A NAME="156"></A>        total++;
+<A NAME="157"></A>      }   <FONT ID="SingleLineComment">// for y
+<A NAME="158"></A></FONT>     }    <FONT ID="SingleLineComment">// for x
+<A NAME="159"></A></FONT> 
+<A NAME="160"></A>    <FONT ID="SingleLineComment">// Normalisierung des Histogramms
+<A NAME="161"></A></FONT>    maxValue = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="162"></A>    <FONT ID="Int">int</FONT> sum = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="163"></A>
+<A NAME="164"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; histogram.length; i++) {
+<A NAME="165"></A>      sum += histogram[i];
+<A NAME="166"></A>      histogram[i] = histogram[i] / total;
+<A NAME="167"></A>
+<A NAME="168"></A>      <FONT ID="If">if</FONT> (histogram[i] &lt; PERCENTAGE) {
+<A NAME="169"></A>        <FONT ID="If">if</FONT> (histogram[i] &gt; maxValue) {
+<A NAME="170"></A>          maxValue = histogram[i];
+<A NAME="171"></A>        } 
+<A NAME="172"></A>      } 
+<A NAME="173"></A>    }   <FONT ID="SingleLineComment">// for i
+<A NAME="174"></A></FONT> 
+<A NAME="175"></A>  }     <FONT ID="SingleLineComment">// computeHistogramm
+<A NAME="176"></A></FONT> 
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Die Methode zeichnet das Histogramm einschliesslich des Koordinatensystems
+<A NAME="180"></A>   * und der Beschriftung.
+<A NAME="181"></A>   * @param g Der Grafikkontext.
+<A NAME="182"></A>   */</FONT>
+<A NAME="183"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> paint(Graphics g) {
+<A NAME="184"></A>
+<A NAME="185"></A>    <FONT ID="SingleLineComment">// Setzen der Farbe fuer die Histogrammbalken
+<A NAME="186"></A></FONT>    g.setColor(Color.black);
+<A NAME="187"></A>
+<A NAME="188"></A>    <FONT ID="SingleLineComment">// Zeichnen der Koordinatenachsen
+<A NAME="189"></A></FONT>    g.drawLine(<FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">130</FONT>, <FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">30</FONT>);    <FONT ID="SingleLineComment">// y-Achse
+<A NAME="190"></A></FONT>    g.drawLine(<FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">130</FONT>, <FONT ID="IntegerLiteral">280</FONT>, <FONT ID="IntegerLiteral">130</FONT>);  <FONT ID="SingleLineComment">// x-Achse
+<A NAME="191"></A></FONT>
+<A NAME="192"></A>    <FONT ID="SingleLineComment">// Beschriften der x-Achse
+<A NAME="193"></A></FONT>    Font  myFont = <FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="194"></A>
+<A NAME="195"></A>    g.setFont(myFont);
+<A NAME="196"></A>    g.drawString(<FONT ID="StringLiteral">"1"</FONT>, <FONT ID="IntegerLiteral">20</FONT>, <FONT ID="IntegerLiteral">145</FONT>);
+<A NAME="197"></A>    g.drawString(<FONT ID="StringLiteral">"128"</FONT>, <FONT ID="IntegerLiteral">145</FONT>, <FONT ID="IntegerLiteral">145</FONT>);
+<A NAME="198"></A>    g.drawString(<FONT ID="StringLiteral">"255"</FONT>, <FONT ID="IntegerLiteral">274</FONT>, <FONT ID="IntegerLiteral">145</FONT>);
+<A NAME="199"></A>
+<A NAME="200"></A>    <FONT ID="SingleLineComment">// Beschriften der y-Achse
+<A NAME="201"></A></FONT>    <FONT ID="SingleLineComment">// g.drawString(""+maxValue,5,35);
+<A NAME="202"></A></FONT>
+<A NAME="203"></A>    <FONT ID="SingleLineComment">// Berechnen des y-Skalierungsfaktors
+<A NAME="204"></A></FONT>    <FONT ID="Double">double</FONT>  yscale = ((<FONT ID="Double">double</FONT>) (FRAME_HEIGHT) - <FONT ID="FloatPointLiteral">40.0</FONT>) / maxValue;
+<A NAME="205"></A>
+<A NAME="206"></A>    <FONT ID="SingleLineComment">// Zeichnen der Histogrammbalken
+<A NAME="207"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; histogram.length; i++) {
+<A NAME="208"></A>      <FONT ID="If">if</FONT> (histogram[i] &gt; PERCENTAGE) {
+<A NAME="209"></A>        g.setColor(Color.red);
+<A NAME="210"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="211"></A>        g.setColor(Color.black);
+<A NAME="212"></A>      } 
+<A NAME="213"></A>      g.drawLine(i + <FONT ID="IntegerLiteral">25</FONT>, <FONT ID="IntegerLiteral">130</FONT>, i + <FONT ID="IntegerLiteral">25</FONT>, <FONT ID="IntegerLiteral">130</FONT> - (<FONT ID="Int">int</FONT>) ((<FONT ID="Double">double</FONT>) (histogram[i]) * yscale));
+<A NAME="214"></A>    }   <FONT ID="SingleLineComment">// for i
+<A NAME="215"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode paint
+<A NAME="216"></A></FONT> 
+<A NAME="217"></A>}
+<A NAME="218"></A>
+<A NAME="219"></A>
+<A NAME="220"></A>
+<A NAME="221"></A>
+<A NAME="222"></A>
+<A NAME="223"></A>
+<A NAME="224"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="225"></A>
+<A NAME="226"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Histogramm</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

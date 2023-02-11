@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.IntegerDocument (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">IntegerDocument</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> javax.swing.text.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="FormalComment">/**
+<A NAME="29"></A> * Die Klasse erweitert das Standardmodell fuer Dokumente um die Methode
+<A NAME="30"></A> * insertString. Via Integer.parseInt wird geprueft, ob die eingegebene Zeichenkette
+<A NAME="31"></A> * gueltig ist. Dies ist der Fall, wenn es sich um eine (positive oder negative)
+<A NAME="32"></A> * Ganzzahl handelt.
+<A NAME="33"></A> * 
+<A NAME="34"></A> * @author   Christian Schalla
+<A NAME="35"></A> * @author   Andreas Truemper
+<A NAME="36"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> IntegerDocument <FONT ID="Extends">extends</FONT> PlainDocument {
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Ueberladene Methode der Klasse PlainDocument. Sie sorgt dafuer, daﬂ nur Zahlen als
+<A NAME="43"></A>   * Eingabe akzeptiert werden.
+<A NAME="44"></A>   * @param  offset Einfuegeposition.
+<A NAME="45"></A>   * @param  s Die Zeichenkette im Dokument.
+<A NAME="46"></A>   */</FONT>
+<A NAME="47"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> insertString(<FONT ID="Int">int</FONT> offset, String s, AttributeSet attributeSet) <FONT ID="Throws">throws</FONT> BadLocationException {
+<A NAME="48"></A>
+<A NAME="49"></A>    <FONT ID="SingleLineComment">// Integer eingegeben ?
+<A NAME="50"></A></FONT>    <FONT ID="If">if</FONT> ((offset == <FONT ID="IntegerLiteral">0</FONT>) &amp;&amp; (s.compareTo(<FONT ID="StringLiteral">"-"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>)) {
+<A NAME="51"></A>      <FONT ID="Super">super</FONT>.insertString(offset, s, attributeSet);
+<A NAME="52"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="53"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="54"></A>        Integer.parseInt(s);
+<A NAME="55"></A>      } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="56"></A>
+<A NAME="57"></A>        <FONT ID="SingleLineComment">// Fehler bei parseInt: Signalton ausgeben und nichts tun
+<A NAME="58"></A></FONT>        Toolkit.getDefaultToolkit().beep();
+<A NAME="59"></A>        <FONT ID="Return">return</FONT>;
+<A NAME="60"></A>      } 
+<A NAME="61"></A>
+<A NAME="62"></A>      <FONT ID="SingleLineComment">// parseInt hat funktioniert: Fuege String durch Aufruf der Methode
+<A NAME="63"></A></FONT>      <FONT ID="SingleLineComment">// insertString der Oberklasse ein
+<A NAME="64"></A></FONT>      <FONT ID="Super">super</FONT>.insertString(offset, s, attributeSet);
+<A NAME="65"></A>    }   <FONT ID="SingleLineComment">// if-else
+<A NAME="66"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode insertString
+<A NAME="67"></A></FONT> 
+<A NAME="68"></A>}
+<A NAME="69"></A>
+<A NAME="70"></A>
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>
+<A NAME="74"></A>
+<A NAME="75"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="76"></A>
+<A NAME="77"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">IntegerDocument</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

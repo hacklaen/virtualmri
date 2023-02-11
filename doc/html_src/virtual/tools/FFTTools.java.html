@@ -1,0 +1,627 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.FFTTools (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FFTTools</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * Die Klasse kapselt einige Funktionen, die zur Berechnung der
+<A NAME="29"></A> * Fouriertransformation eines Bildes nuetzlich sind.
+<A NAME="30"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="31"></A> * Thomas Hacklaender 2000.8.15:
+<A NAME="32"></A> * In getReshiftedIFFT den statischen Methodenaufruf doFFT(Image, boolean) durch
+<A NAME="33"></A> * die eigene Methode reverseFFT ersetzt.&lt;br&gt;
+<A NAME="34"></A> * Thomas Hacklaender 2000.8.15:
+<A NAME="35"></A> * Zwei neue statische Methoden zur Fouriertransformation und Rücktransformation
+<A NAME="36"></A> * forwardFFT und reverseFFT implementiert. Diese verwenden die jigl-Bibliothek.
+<A NAME="37"></A> * In jigl 1.3 lauten die Methoden FFT.forward und FFT.inverse. Sie sind statisch
+<A NAME="38"></A> * definiert. In jigl 1.4 sind sie nicht statisch und lauten forward und reverse.
+<A NAME="39"></A> * Durch Introspection wird eine Kompatibilität mit den jigl  1.3 und 1.4
+<A NAME="40"></A> * erzielt.&lt;br&gt;
+<A NAME="41"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="42"></A> * !!! Achtung: Die jigl-Bibliothek speichert die Bildmatrizen in der
+<A NAME="43"></A> * Form data[y][x], dieses Projekt aber in der Form data[x][y]. Deshalb
+<A NAME="44"></A> * duerfen die jigl-Konstruktoren, die im Aufruf eine Bildmatrix vorsehen
+<A NAME="45"></A> * nicht verwendet werden.!!!&lt;br&gt;
+<A NAME="46"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="47"></A> * Methode getFFT(float[][]) geloescht, da sie im Projekt nicht mehr
+<A NAME="48"></A> * benoetigt wird.&lt;br&gt;
+<A NAME="49"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="50"></A> * In der jigl-Bibliothek Version 1.3 und 1.4 ist die Methode
+<A NAME="51"></A> * RealGrayImage(float[][] dat) fehlerhat implementtiert. Um die Bibliothek
+<A NAME="52"></A> * trotzdem als Ganzes uebernehmen zu koennen, sind hier und in ImagePlus
+<A NAME="53"></A> * einige Anpassungen notwendig:&lt;br&gt;
+<A NAME="54"></A> * Methode RealGrayImage makeRealGrayImage(int, int, short[]) eingefügt.&lt;br&gt;
+<A NAME="55"></A> * Methode RealGrayImage makeRealGrayImage(float[][]) eingefügt.&lt;br&gt;
+<A NAME="56"></A> * In der Methode getFFT den Aufruf von RealGrayImage(float[][]) durch
+<A NAME="57"></A> * makeRealGrayImage(float[][]) ersetzt.&lt;br&gt;
+<A NAME="58"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="59"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="60"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="61"></A> * @author   Christian Schalla
+<A NAME="62"></A> * @author   Andreas Truemper
+<A NAME="63"></A> * @version  1.2, 2002.10.13
+<A NAME="64"></A> */</FONT>
+<A NAME="65"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FFTTools {
+<A NAME="66"></A>
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="FormalComment">/**
+<A NAME="69"></A>   * Standardkonstruktor.
+<A NAME="70"></A>   */</FONT>
+<A NAME="71"></A>  <FONT ID="Public">public</FONT> FFTTools() {}
+<A NAME="72"></A>
+<A NAME="73"></A>
+<A NAME="74"></A>  <FONT ID="FormalComment">/**
+<A NAME="75"></A>   * Die Methode berechnet die Fourier-Trasformation eines Bildes
+<A NAME="76"></A>   * @param img Das Ursprungsbild.
+<A NAME="77"></A>   * @return Die Fourier-Trasformierte des Ursprungsbildes.
+<A NAME="78"></A>   * @author Thomas Hacklaender
+<A NAME="79"></A>   */</FONT>
+<A NAME="80"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> forwardFFT(<A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A> img) {
+<A NAME="81"></A>    <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> fourImage = <FONT ID="Null">null</FONT>;
+<A NAME="82"></A>
+<A NAME="83"></A>    <A HREF="../../jigl/image/utils/FFT.java.html">jigl.image.utils.FFT</A>    fft = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/utils/FFT.java.html">jigl.image.utils.FFT</A>();
+<A NAME="84"></A>
+<A NAME="85"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="86"></A>
+<A NAME="87"></A>      <FONT ID="SingleLineComment">// Testet, ob jigl Version 1.3
+<A NAME="88"></A></FONT>      java.lang.reflect.Method  m = fft.getClass().getDeclaredMethod(<FONT ID="StringLiteral">"inverse"</FONT>, <FONT ID="New">new</FONT> Class[] {
+<A NAME="89"></A>        <A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A>.<FONT ID="Class">class</FONT>
+<A NAME="90"></A>      });
+<A NAME="91"></A>
+<A NAME="92"></A>      <FONT ID="SingleLineComment">// ist Version 1.3
+<A NAME="93"></A></FONT>      m = fft.getClass().getDeclaredMethod(<FONT ID="StringLiteral">"forward"</FONT>, <FONT ID="New">new</FONT> Class[] {
+<A NAME="94"></A>        <A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A>.<FONT ID="Class">class</FONT>
+<A NAME="95"></A>      });
+<A NAME="96"></A>      fourImage = (<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>) m.invoke(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> Object[] {
+<A NAME="97"></A>        img
+<A NAME="98"></A>      });
+<A NAME="99"></A>      m = <FONT ID="Null">null</FONT>;
+<A NAME="100"></A>    } <FONT ID="Catch">catch</FONT> (Exception e1) {
+<A NAME="101"></A>
+<A NAME="102"></A>      <FONT ID="SingleLineComment">// jigl Version 1.4
+<A NAME="103"></A></FONT>      <FONT ID="Try">try</FONT> {
+<A NAME="104"></A>        java.lang.reflect.Method  m = fft.getClass().getDeclaredMethod(<FONT ID="StringLiteral">"forward"</FONT>, <FONT ID="New">new</FONT> Class[] {
+<A NAME="105"></A>          <A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A>.<FONT ID="Class">class</FONT>
+<A NAME="106"></A>        });
+<A NAME="107"></A>
+<A NAME="108"></A>        fourImage = (<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>) m.invoke(fft, <FONT ID="New">new</FONT> Object[] {
+<A NAME="109"></A>          img
+<A NAME="110"></A>        });
+<A NAME="111"></A>        m = <FONT ID="Null">null</FONT>;
+<A NAME="112"></A>      } <FONT ID="Catch">catch</FONT> (Exception e2) {
+<A NAME="113"></A>        System.out.println(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"ffttools.exception.notfound.forward"</FONT>));
+<A NAME="114"></A>      } 
+<A NAME="115"></A>    } 
+<A NAME="116"></A>    fft = <FONT ID="Null">null</FONT>;
+<A NAME="117"></A>    <FONT ID="Return">return</FONT> fourImage;
+<A NAME="118"></A>  } 
+<A NAME="119"></A>
+<A NAME="120"></A>
+<A NAME="121"></A>  <FONT ID="FormalComment">/**
+<A NAME="122"></A>   * Die Methode berechnet die Fourier-Rücktrasformation eines Bildes
+<A NAME="123"></A>   * @param fourImage Das Fourier-Bild.
+<A NAME="124"></A>   * @return Die Rücktransformierte des Fourier-Bildes.
+<A NAME="125"></A>   * @author Thomas Hacklaender
+<A NAME="126"></A>   */</FONT>
+<A NAME="127"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> reverseFFT(<A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A> img) {
+<A NAME="128"></A>    <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> compImage = <FONT ID="Null">null</FONT>;
+<A NAME="129"></A>
+<A NAME="130"></A>    <A HREF="../../jigl/image/utils/FFT.java.html">jigl.image.utils.FFT</A>    fft = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/utils/FFT.java.html">jigl.image.utils.FFT</A>();
+<A NAME="131"></A>
+<A NAME="132"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="133"></A>
+<A NAME="134"></A>      <FONT ID="SingleLineComment">// jigl Version 1.3
+<A NAME="135"></A></FONT>      java.lang.reflect.Method  m = fft.getClass().getDeclaredMethod(<FONT ID="StringLiteral">"inverse"</FONT>, <FONT ID="New">new</FONT> Class[] {
+<A NAME="136"></A>        <A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A>.<FONT ID="Class">class</FONT>
+<A NAME="137"></A>      });
+<A NAME="138"></A>
+<A NAME="139"></A>      compImage = (<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>) m.invoke(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> Object[] {
+<A NAME="140"></A>        img
+<A NAME="141"></A>      });
+<A NAME="142"></A>      m = <FONT ID="Null">null</FONT>;
+<A NAME="143"></A>    } <FONT ID="Catch">catch</FONT> (Exception e1) {
+<A NAME="144"></A>
+<A NAME="145"></A>      <FONT ID="SingleLineComment">// jigl Version 1.4
+<A NAME="146"></A></FONT>      <FONT ID="Try">try</FONT> {
+<A NAME="147"></A>        java.lang.reflect.Method  m = fft.getClass().getDeclaredMethod(<FONT ID="StringLiteral">"reverse"</FONT>, <FONT ID="New">new</FONT> Class[] {
+<A NAME="148"></A>          <A HREF="../../jigl/image/Image.java.html">jigl.image.Image</A>.<FONT ID="Class">class</FONT>
+<A NAME="149"></A>        });
+<A NAME="150"></A>
+<A NAME="151"></A>        compImage = (<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>) m.invoke(fft, <FONT ID="New">new</FONT> Object[] {
+<A NAME="152"></A>          img
+<A NAME="153"></A>        });
+<A NAME="154"></A>        m = <FONT ID="Null">null</FONT>;
+<A NAME="155"></A>      } <FONT ID="Catch">catch</FONT> (Exception e2) {
+<A NAME="156"></A>        System.out.println(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"ffttools.exception.notfound.inverse"</FONT>));
+<A NAME="157"></A>      } 
+<A NAME="158"></A>    } 
+<A NAME="159"></A>    fft = <FONT ID="Null">null</FONT>;
+<A NAME="160"></A>    <FONT ID="Return">return</FONT> compImage;
+<A NAME="161"></A>  } 
+<A NAME="162"></A>
+<A NAME="163"></A>
+<A NAME="164"></A>  <FONT ID="FormalComment">/**
+<A NAME="165"></A>   * Die Methode berechnet aus dem gegebenen Real- und Imaginaerteil der FFT
+<A NAME="166"></A>   * eines Bildes das Magnitudenbild der Fouriertransformation.
+<A NAME="167"></A>   * @param imageReal Der Realteil der FFT des Ursprungsbildes.
+<A NAME="168"></A>   * @param imageImag Der Imaginaerteil der FFT des Ursprungsbildes.
+<A NAME="169"></A>   * @return Ein eindimensionales Feld von Ganzzahlen, das zur Erzeugung einer
+<A NAME="170"></A>   * MemoryImageSource benutzt werden kann.
+<A NAME="171"></A>   */</FONT>
+<A NAME="172"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>[] getShiftedFFTImageSource(<FONT ID="Float">float</FONT>[][] imageReal, <FONT ID="Float">float</FONT>[][] imageImag) {
+<A NAME="173"></A>
+<A NAME="174"></A>    <FONT ID="SingleLineComment">// Shiften
+<A NAME="175"></A></FONT>    <FONT ID="Float">float</FONT>[][] shiftedImgRe = shift(imageReal, <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="176"></A>    <FONT ID="Float">float</FONT>[][] shiftedImgIm = shift(imageImag, <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="177"></A>
+<A NAME="178"></A>    <FONT ID="SingleLineComment">// Berechnen des Magnitudenbildes
+<A NAME="179"></A></FONT>    <FONT ID="Float">float</FONT>[][] magImage = magnitude(shiftedImgRe, shiftedImgIm);
+<A NAME="180"></A>
+<A NAME="181"></A>    <FONT ID="SingleLineComment">// Logarithmisch skalieren
+<A NAME="182"></A></FONT>    <FONT ID="Float">float</FONT>[][] magscaleImage = scaleMagnitude(magImage);
+<A NAME="183"></A>
+<A NAME="184"></A>    <FONT ID="SingleLineComment">// Fenstern
+<A NAME="185"></A></FONT>    <FONT ID="Int">int</FONT>[][]   windowedImg = autoWindow(magscaleImage);
+<A NAME="186"></A>
+<A NAME="187"></A>    <FONT ID="SingleLineComment">// In ein 1-dim. Feld umwandeln
+<A NAME="188"></A></FONT>    <FONT ID="Int">int</FONT>[]     magnitudeImage = convertIntArrayToImage(windowedImg);
+<A NAME="189"></A>
+<A NAME="190"></A>    <FONT ID="Return">return</FONT> magnitudeImage;
+<A NAME="191"></A>  }   <FONT ID="SingleLineComment">// Methode getShiftedFFTImageSource(float[][] imageReal, float[][] imageImag)
+<A NAME="192"></A></FONT> 
+<A NAME="193"></A>
+<A NAME="194"></A>  <FONT ID="FormalComment">/**
+<A NAME="195"></A>   * Die Methode berechnet aus einem ImagePlus-Objekt
+<A NAME="196"></A>   * das Magnitudenbild der Fouriertransformation.
+<A NAME="197"></A>   * @param ip das Ursprungsbild.
+<A NAME="198"></A>   * @return Ein eindimensionales Feld von Ganzzahlen, das zur Erzeugung einer
+<A NAME="199"></A>   * MemoryImageSource benutzt werden kann.
+<A NAME="200"></A>   */</FONT>
+<A NAME="201"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>[] getShiftedFFTImageSource(<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip) {
+<A NAME="202"></A>
+<A NAME="203"></A>    <FONT ID="SingleLineComment">// Auslesen der Real- und Imaginaerteils der FFT des Bildes
+<A NAME="204"></A></FONT>    <FONT ID="Float">float</FONT>[][] imageReal = ip.getFFTImageReal();
+<A NAME="205"></A>    <FONT ID="Float">float</FONT>[][] imageImag = ip.getFFTImageImag();
+<A NAME="206"></A>
+<A NAME="207"></A>    <FONT ID="SingleLineComment">// Berechnen des magnitudenbildes
+<A NAME="208"></A></FONT>    <FONT ID="Return">return</FONT> getShiftedFFTImageSource(imageReal, imageImag);
+<A NAME="209"></A>  }   <FONT ID="SingleLineComment">// Methode getShiftedFFTImageSource(ImagePlus ip)
+<A NAME="210"></A></FONT> 
+<A NAME="211"></A>
+<A NAME="212"></A>  <FONT ID="FormalComment">/**
+<A NAME="213"></A>   * Die Methode berechnet die Ruecktransformation eines fouriertransformierten
+<A NAME="214"></A>   * Bildes.
+<A NAME="215"></A>   * @param imgReal Der Reateil der Fourier-Transformation.
+<A NAME="216"></A>   * @param imgImag Der Imaginaerteil der Fourier-Transformation.
+<A NAME="217"></A>   * @return Ein eindimensionales Feld von Ganzzahlen, das zur Erzeugung einer
+<A NAME="218"></A>   * MemoryImageSource benutzt werden kann.
+<A NAME="219"></A>   */</FONT>
+<A NAME="220"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] getReshiftedIFFT(<FONT ID="Float">float</FONT>[][] imgReal, <FONT ID="Float">float</FONT>[][] imgImag) {
+<A NAME="221"></A>
+<A NAME="222"></A>    <FONT ID="SingleLineComment">// Zurueckshiften des Bildes
+<A NAME="223"></A></FONT>    <FONT ID="Float">float</FONT>[][]               re = shift(imgReal, <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="224"></A>    <FONT ID="Float">float</FONT>[][]               im = shift(imgImag, <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="225"></A>
+<A NAME="226"></A>    <FONT ID="Int">int</FONT>                     size = imgReal.length;
+<A NAME="227"></A>
+<A NAME="228"></A>    <FONT ID="SingleLineComment">// Erzeugen eines ComplexImage-Objekts
+<A NAME="229"></A></FONT>    <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> comImg = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>(size, size);
+<A NAME="230"></A>
+<A NAME="231"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="232"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="233"></A>        comImg.setReal(x, y, re[x][y]);
+<A NAME="234"></A>        comImg.setImag(x, y, im[x][y]);
+<A NAME="235"></A>      }   <FONT ID="SingleLineComment">// for
+<A NAME="236"></A></FONT>     }    <FONT ID="SingleLineComment">// for
+<A NAME="237"></A></FONT> 
+<A NAME="238"></A>    <FONT ID="SingleLineComment">// Ruecktransformation
+<A NAME="239"></A></FONT>    <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> origImage = <FONT ID="Null">null</FONT>;
+<A NAME="240"></A>
+<A NAME="241"></A>    origImage = FFTTools.reverseFFT(comImg);
+<A NAME="242"></A>
+<A NAME="243"></A>    <FONT ID="SingleLineComment">// Real- und Imaginaerteil auslesen
+<A NAME="244"></A></FONT>    <FONT ID="Float">float</FONT>[][] origImageReal = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="245"></A>    <FONT ID="Float">float</FONT>[][] origImageImag = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="246"></A>
+<A NAME="247"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="248"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="249"></A>        origImageReal[x][y] = origImage.getReal(x, y);
+<A NAME="250"></A>        origImageImag[x][y] = origImage.getImag(x, y);
+<A NAME="251"></A>      }   <FONT ID="SingleLineComment">// for
+<A NAME="252"></A></FONT>     }    <FONT ID="SingleLineComment">// for
+<A NAME="253"></A></FONT> 
+<A NAME="254"></A>    <FONT ID="Float">float</FONT>[][] magImage = magnitude(origImageReal, origImageImag);
+<A NAME="255"></A>
+<A NAME="256"></A>    <FONT ID="Return">return</FONT> magImage;
+<A NAME="257"></A>  }   <FONT ID="SingleLineComment">// getReshiftedIFFT(float[][] imgReal, float[][] imgImag)
+<A NAME="258"></A></FONT> 
+<A NAME="259"></A>
+<A NAME="260"></A>  <FONT ID="FormalComment">/**
+<A NAME="261"></A>   * Die Methode berechnet die Ruecktransformation eines fouriertransformierten
+<A NAME="262"></A>   * Bildes und stellt diese als eindimensionales Feld von Ganzzahlen und in
+<A NAME="263"></A>   * 8-Bit konvertiert zur Verfuegung.
+<A NAME="264"></A>   * @param imgReal Der Reateil der Fourier-Transformation.
+<A NAME="265"></A>   * @param imgImag Der Imaginaerteil der Fourier-Transformation.
+<A NAME="266"></A>   * @return Ein eindimensionales Feld von Ganzzahlen, das zur Erzeugung einer
+<A NAME="267"></A>   * MemoryImageSource benutzt werden kann.
+<A NAME="268"></A>   */</FONT>
+<A NAME="269"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>[] getReshiftedIFFTImageSource(<FONT ID="Float">float</FONT>[][] imgReal, <FONT ID="Float">float</FONT>[][] imgImag) {
+<A NAME="270"></A>    <FONT ID="Float">float</FONT>[][] reshiftedIFFT = getReshiftedIFFT(imgReal, imgImag);
+<A NAME="271"></A>    <FONT ID="Int">int</FONT>[][]   windowedImage = autoWindow(reshiftedIFFT);
+<A NAME="272"></A>    <FONT ID="Int">int</FONT>[]     finalImage = convertIntArrayToImage(windowedImage);
+<A NAME="273"></A>
+<A NAME="274"></A>    <FONT ID="Return">return</FONT> finalImage;
+<A NAME="275"></A>  }   <FONT ID="SingleLineComment">// Methode get ReshiftedIFFTImageSource
+<A NAME="276"></A></FONT> 
+<A NAME="277"></A>
+<A NAME="278"></A>  <FONT ID="FormalComment">/**
+<A NAME="279"></A>   * Die Methode konvertiert ein zweidimensionales Feld von Fließkommazahlen
+<A NAME="280"></A>   * in ein eindimensionales Feld von Ganzzahlen und wandelt dieses in 8 Bit um.
+<A NAME="281"></A>   * @param origImg Das Fliekommaarray.
+<A NAME="282"></A>   * @return Das eindimensionale Feld von Ganzzahlen, das als ImageSource verwendet
+<A NAME="283"></A>   * kann.
+<A NAME="284"></A>   */</FONT>
+<A NAME="285"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>[] convertTo8BitImageSrc(<FONT ID="Float">float</FONT>[][] origImg) {
+<A NAME="286"></A>    <FONT ID="Int">int</FONT>[][] windowedImage = autoWindow(origImg);
+<A NAME="287"></A>    <FONT ID="Int">int</FONT>[]   finalImage = convertIntArrayToImage(windowedImage);
+<A NAME="288"></A>
+<A NAME="289"></A>    <FONT ID="Return">return</FONT> finalImage;
+<A NAME="290"></A>  } 
+<A NAME="291"></A>
+<A NAME="292"></A>
+<A NAME="293"></A>  <FONT ID="FormalComment">/**
+<A NAME="294"></A>   * Die Methode verschiebt ein Bild um den angegebenen Betrag nach rechts und
+<A NAME="295"></A>   * nach unten.
+<A NAME="296"></A>   * @param img Das zu verschiebende Bild.
+<A NAME="297"></A>   * @param offx Der Betrag, um den das Bild nach rechts verschoben werden soll.
+<A NAME="298"></A>   * @param offy Der Betrag, um den das Bild nach unten verschoben werden soll.
+<A NAME="299"></A>   * @return Das verschobene Bild.
+<A NAME="300"></A>   */</FONT>
+<A NAME="301"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] shift(<FONT ID="Float">float</FONT>[][] img, <FONT ID="Int">int</FONT> offx, <FONT ID="Int">int</FONT> offy) {
+<A NAME="302"></A>    <FONT ID="Int">int</FONT>       size = img.length;
+<A NAME="303"></A>    <FONT ID="Float">float</FONT>[][] shiftedImage = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="304"></A>
+<A NAME="305"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="306"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="307"></A>        shiftedImage[(x + offx) % size][(y + offy) % size] = img[x][y];
+<A NAME="308"></A>      } 
+<A NAME="309"></A>    } 
+<A NAME="310"></A>    <FONT ID="Return">return</FONT> shiftedImage;
+<A NAME="311"></A>  }   <FONT ID="SingleLineComment">// Methode shift
+<A NAME="312"></A></FONT> 
+<A NAME="313"></A>
+<A NAME="314"></A>  <FONT ID="FormalComment">/**
+<A NAME="315"></A>   * Die Methode verschiebt ein Bild um den angegebenen Betrag nach rechts und
+<A NAME="316"></A>   * nach unten.
+<A NAME="317"></A>   * @param img Das zu verschiebende Bild.
+<A NAME="318"></A>   * @param offx Der Betrag, um den das Bild nach rechts verschoben werden soll.
+<A NAME="319"></A>   * @param offy Der Betrag, um den das Bild nach unten verschoben werden soll.
+<A NAME="320"></A>   * @return Das verschobene Bild.
+<A NAME="321"></A>   */</FONT>
+<A NAME="322"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> shift(<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> img, <FONT ID="Int">int</FONT> offx, <FONT ID="Int">int</FONT> offy) {
+<A NAME="323"></A>    <FONT ID="Int">int</FONT>                     size = <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="324"></A>    <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> shiftedImage = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="325"></A>
+<A NAME="326"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="327"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="328"></A>        shiftedImage.set((x + offx) % size, (y + offy) % size, img.getReal(x, y), img.getImag(x, y));
+<A NAME="329"></A>      } 
+<A NAME="330"></A>    } 
+<A NAME="331"></A>    <FONT ID="Return">return</FONT> shiftedImage;
+<A NAME="332"></A>  }   <FONT ID="SingleLineComment">// Methode shift
+<A NAME="333"></A></FONT> 
+<A NAME="334"></A>
+<A NAME="335"></A>  <FONT ID="FormalComment">/**
+<A NAME="336"></A>   * Die Methode berechnet aus dem Real- und Imaginaerteil eines fouriertransformierten
+<A NAME="337"></A>   * Bildes das Magnitudenbild.
+<A NAME="338"></A>   * @param re Der Realteil des fouriertransformierten Bildes.
+<A NAME="339"></A>   * @param im Der Imaginaerteil des fouriertransformierten Bildes.
+<A NAME="340"></A>   * @return Das Magnitudenbild.
+<A NAME="341"></A>   */</FONT>
+<A NAME="342"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] magnitude(<FONT ID="Float">float</FONT> re[][], <FONT ID="Float">float</FONT> im[][]) {
+<A NAME="343"></A>    <FONT ID="Int">int</FONT>   size = re.length;
+<A NAME="344"></A>    <FONT ID="Float">float</FONT> result[][] = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="345"></A>
+<A NAME="346"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="347"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="348"></A>        result[x][y] = (<FONT ID="Float">float</FONT>) (Math.sqrt(re[x][y] * re[x][y] + im[x][y] * im[x][y]));
+<A NAME="349"></A>      } 
+<A NAME="350"></A>    } 
+<A NAME="351"></A>    <FONT ID="Return">return</FONT> result;
+<A NAME="352"></A>  }   <FONT ID="SingleLineComment">// Methode magnitude
+<A NAME="353"></A></FONT> 
+<A NAME="354"></A>
+<A NAME="355"></A>  <FONT ID="FormalComment">/**
+<A NAME="356"></A>   * Die Methode berechnet aus dem Real- und Imaginaerteil eines fouriertransformierten
+<A NAME="357"></A>   * Bildes das Phasenbild.
+<A NAME="358"></A>   * @param re Der Realteil des fouriertransformierten Bildes.
+<A NAME="359"></A>   * @param im Der Imaginaerteil des fouriertransformierten Bildes.
+<A NAME="360"></A>   * @return Das Phasenbild.
+<A NAME="361"></A>   */</FONT>
+<A NAME="362"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] calcPhase(<FONT ID="Float">float</FONT> re[][], <FONT ID="Float">float</FONT> im[][]) {
+<A NAME="363"></A>    <FONT ID="Float">float</FONT> result[][] = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="364"></A>
+<A NAME="365"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="366"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="367"></A>        result[x][y] = (<FONT ID="Float">float</FONT>) (Math.atan(im[x][y] / re[x][y]));
+<A NAME="368"></A>      } 
+<A NAME="369"></A>    } 
+<A NAME="370"></A>    <FONT ID="Return">return</FONT> result;
+<A NAME="371"></A>  }   <FONT ID="SingleLineComment">// Methode calcPhase
+<A NAME="372"></A></FONT> 
+<A NAME="373"></A>
+<A NAME="374"></A>  <FONT ID="FormalComment">/**
+<A NAME="375"></A>   * Die Methode skaliert die Grauwerte eine Bildes logarithmisch. Dies wird
+<A NAME="376"></A>   * zur Anzeige des Magnitudenbildes einer Fouriertransformation benoetigt.
+<A NAME="377"></A>   * @param img Das Bild, dessen Grauwerte log. skaliert werden sollen.
+<A NAME="378"></A>   * @return Das Bild, dessen Grauwerte log. skaliert wurden.
+<A NAME="379"></A>   */</FONT>
+<A NAME="380"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] scaleMagnitude(<FONT ID="Float">float</FONT> img[][]) {
+<A NAME="381"></A>    <FONT ID="Int">int</FONT>   size = img.length;
+<A NAME="382"></A>    <FONT ID="Float">float</FONT> result[][] = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="383"></A>    <FONT ID="Float">float</FONT> max = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="384"></A>
+<A NAME="385"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="386"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="387"></A>        result[x][y] = (<FONT ID="Float">float</FONT>) (<FONT ID="IntegerLiteral">30</FONT> * (Math.log(<FONT ID="IntegerLiteral">1</FONT> + img[x][y])) / Math.log(<FONT ID="FloatPointLiteral">1.1</FONT>));
+<A NAME="388"></A>        <FONT ID="If">if</FONT> (result[x][y] &gt; max) {
+<A NAME="389"></A>          max = result[x][y];
+<A NAME="390"></A>
+<A NAME="391"></A>          <FONT ID="SingleLineComment">// if (result[x][y]&gt;255) result[x][y]=255;
+<A NAME="392"></A></FONT>        } 
+<A NAME="393"></A>      } 
+<A NAME="394"></A>    } 
+<A NAME="395"></A>    <FONT ID="Return">return</FONT> result;
+<A NAME="396"></A>  }   <FONT ID="SingleLineComment">// Methode scaleMagnitude
+<A NAME="397"></A></FONT> 
+<A NAME="398"></A>
+<A NAME="399"></A>  <FONT ID="FormalComment">/**
+<A NAME="400"></A>   * Die Methode fenstert ein Bild so, dass alle Grauwerte dargestellt werden.
+<A NAME="401"></A>   * @param Das zu fensternde Bild.
+<A NAME="402"></A>   * @return Das automatisch gefensterte Bild.
+<A NAME="403"></A>   */</FONT>
+<A NAME="404"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>[][] autoWindow(<FONT ID="Float">float</FONT> img[][]) {
+<A NAME="405"></A>    <FONT ID="Int">int</FONT>     size = img.length;
+<A NAME="406"></A>    <FONT ID="Long">long</FONT>    min = <FONT ID="IntegerLiteral">999999999</FONT>;
+<A NAME="407"></A>    <FONT ID="Long">long</FONT>    max = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="408"></A>    <FONT ID="Int">int</FONT>[][] windowedImage = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[size][size];
+<A NAME="409"></A>    <FONT ID="Double">double</FONT>  step;
+<A NAME="410"></A>
+<A NAME="411"></A>    <FONT ID="SingleLineComment">// Bestimmen des groessten und kleinsten Wertes
+<A NAME="412"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="413"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="414"></A>        <FONT ID="If">if</FONT> ((<FONT ID="Long">long</FONT>) img[x][y] &gt; max) {
+<A NAME="415"></A>          max = (<FONT ID="Long">long</FONT>) img[x][y];
+<A NAME="416"></A>        } 
+<A NAME="417"></A>        <FONT ID="If">if</FONT> ((<FONT ID="Long">long</FONT>) img[x][y] &lt; min) {
+<A NAME="418"></A>          min = (<FONT ID="Long">long</FONT>) img[x][y];
+<A NAME="419"></A>        } 
+<A NAME="420"></A>      } 
+<A NAME="421"></A>    } 
+<A NAME="422"></A>
+<A NAME="423"></A>    <FONT ID="SingleLineComment">// Nun aufgrund des groessten und kleinsten Wertes auf 256 Graustufen Fenstern
+<A NAME="424"></A></FONT>    step = (<FONT ID="Double">double</FONT>) (max - min) / (<FONT ID="Double">double</FONT>) <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="425"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="426"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="427"></A>        <FONT ID="Int">int</FONT> val = (<FONT ID="Int">int</FONT>) ((<FONT ID="Double">double</FONT>) (img[x][y] - min) / step);
+<A NAME="428"></A>
+<A NAME="429"></A>        windowedImage[x][y] = val;
+<A NAME="430"></A>      } 
+<A NAME="431"></A>    } 
+<A NAME="432"></A>
+<A NAME="433"></A>    <FONT ID="Return">return</FONT> windowedImage;
+<A NAME="434"></A>
+<A NAME="435"></A>  }   <FONT ID="SingleLineComment">// Methode autoWindow
+<A NAME="436"></A></FONT> 
+<A NAME="437"></A>
+<A NAME="438"></A>  <FONT ID="FormalComment">/**
+<A NAME="439"></A>   * Die Methode konvertiert ein zweidimensionales Feld von Ganzzahlen in
+<A NAME="440"></A>   * ein eindimensionales Feld von Ganzzahlen, aus dem ein Grauwertbild mittels
+<A NAME="441"></A>   * einer MemoryImageSource erstellt werden kann.
+<A NAME="442"></A>   * @param source Das zu konvertierende zweidimensionale Feld.
+<A NAME="443"></A>   * @return Das Feld, welches zur Erzeugung einer MemoryImageSource dienen kann.
+<A NAME="444"></A>   */</FONT>
+<A NAME="445"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT>[] convertIntArrayToImage(<FONT ID="Int">int</FONT>[][] source) {
+<A NAME="446"></A>    <FONT ID="Int">int</FONT>   size = source.length;
+<A NAME="447"></A>    <FONT ID="Int">int</FONT>[] intArray = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[size * size];
+<A NAME="448"></A>
+<A NAME="449"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; (size * size); i++) {
+<A NAME="450"></A>      <FONT ID="Int">int</FONT> hlp = (<FONT ID="Int">int</FONT>) source[i / size][i % size];
+<A NAME="451"></A>
+<A NAME="452"></A>      hlp = hlp &amp; <FONT ID="IntegerLiteral">0xff</FONT>;
+<A NAME="453"></A>      intArray[i] = (<FONT ID="IntegerLiteral">255</FONT> &lt;&lt; <FONT ID="IntegerLiteral">24</FONT>) | hlp &lt;&lt; <FONT ID="IntegerLiteral">16</FONT> | hlp &lt;&lt; <FONT ID="IntegerLiteral">8</FONT> | hlp;
+<A NAME="454"></A>    } 
+<A NAME="455"></A>
+<A NAME="456"></A>    <FONT ID="Return">return</FONT> intArray;
+<A NAME="457"></A>  }   <FONT ID="SingleLineComment">// Methode convertIntArrayToImage
+<A NAME="458"></A></FONT> 
+<A NAME="459"></A>
+<A NAME="460"></A>  <FONT ID="FormalComment">/**
+<A NAME="461"></A>   * Die Methode liefert den Realteil eines komplexen Bildes zurueck.
+<A NAME="462"></A>   * @param  ci Das komplexe Bild.
+<A NAME="463"></A>   * @return Der Realteil des komplexen Bildes.
+<A NAME="464"></A>   */</FONT>
+<A NAME="465"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] getReal(<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> ci) {
+<A NAME="466"></A>    <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> X = <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="467"></A>    <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> Y = <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="468"></A>
+<A NAME="469"></A>    <FONT ID="Float">float</FONT>[][] re = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[X][Y];
+<A NAME="470"></A>
+<A NAME="471"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="472"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="473"></A>        re[x][y] = ci.getReal(x, y);
+<A NAME="474"></A>      } 
+<A NAME="475"></A>    } 
+<A NAME="476"></A>    <FONT ID="Return">return</FONT> re;
+<A NAME="477"></A>  } 
+<A NAME="478"></A>
+<A NAME="479"></A>
+<A NAME="480"></A>  <FONT ID="FormalComment">/**
+<A NAME="481"></A>   * Die Methode liefert den Imaginaerteil eines komplexen Bildes zurueck.
+<A NAME="482"></A>   * @param  ci Das komplexe Bild.
+<A NAME="483"></A>   * @return Der Imaginaerteil des komplexen Bildes.
+<A NAME="484"></A>   */</FONT>
+<A NAME="485"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Float">float</FONT>[][] getImag(<A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> ci) {
+<A NAME="486"></A>    <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> X = <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="487"></A>    <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> Y = <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="488"></A>
+<A NAME="489"></A>    <FONT ID="Float">float</FONT>[][] im = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[X][Y];
+<A NAME="490"></A>
+<A NAME="491"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="492"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="493"></A>        im[x][y] = ci.getImag(x, y);
+<A NAME="494"></A>      } 
+<A NAME="495"></A>    } 
+<A NAME="496"></A>    <FONT ID="Return">return</FONT> im;
+<A NAME="497"></A>  } 
+<A NAME="498"></A>
+<A NAME="499"></A>
+<A NAME="500"></A>  <FONT ID="FormalComment">/**
+<A NAME="501"></A>   * Die Methode erstellt aus einer Matrix von Integerwerten ein RealGrayImage-Objekt.
+<A NAME="502"></A>   * @param img Die Matrix mit Integerwerten.
+<A NAME="503"></A>   * @return Das RealGrayImage-Objekt.
+<A NAME="504"></A>   */</FONT>
+<A NAME="505"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A> makeRealGrayImage(<FONT ID="Int">int</FONT>[][] img) {
+<A NAME="506"></A>    <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>  rg = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>(img.length, img[<FONT ID="IntegerLiteral">0</FONT>].length);
+<A NAME="507"></A>
+<A NAME="508"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; img.length; x++) {
+<A NAME="509"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; img[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="510"></A>        rg.set(x, y, (<FONT ID="Float">float</FONT>) img[x][y]);
+<A NAME="511"></A>      } 
+<A NAME="512"></A>    } 
+<A NAME="513"></A>    <FONT ID="Return">return</FONT> rg;
+<A NAME="514"></A>  } 
+<A NAME="515"></A>
+<A NAME="516"></A>
+<A NAME="517"></A>  <FONT ID="FormalComment">/**
+<A NAME="518"></A>   * Die Methode erstellt aus einer Matrix von Float-Werten ein RealGrayImage-Objekt.
+<A NAME="519"></A>   * @param img Die Matrix mit Float-Werten.
+<A NAME="520"></A>   * @return Das RealGrayImage-Objekt.
+<A NAME="521"></A>   * @author tha 2000.8.13
+<A NAME="522"></A>   */</FONT>
+<A NAME="523"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A> makeRealGrayImage(<FONT ID="Float">float</FONT>[][] img) {
+<A NAME="524"></A>    <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>  rg = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>(img.length, img[<FONT ID="IntegerLiteral">0</FONT>].length);
+<A NAME="525"></A>
+<A NAME="526"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; img.length; x++) {
+<A NAME="527"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; img[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="528"></A>        rg.set(x, y, img[x][y]);
+<A NAME="529"></A>      } 
+<A NAME="530"></A>    } 
+<A NAME="531"></A>    <FONT ID="Return">return</FONT> rg;
+<A NAME="532"></A>  } 
+<A NAME="533"></A>
+<A NAME="534"></A>
+<A NAME="535"></A>  <FONT ID="FormalComment">/**
+<A NAME="536"></A>   * Die Methode erstellt aus einem Vektor von Short-Werten ein RealGrayImage-Objekt.
+<A NAME="537"></A>   * @param dimX Groesse des Bildes in x-Richtung
+<A NAME="538"></A>   * @param dimY Groesse des Bildes in y-Richtung
+<A NAME="539"></A>   * @param img Der Vektor mit Short-Werten.
+<A NAME="540"></A>   * @return Das RealGrayImage-Objekt.
+<A NAME="541"></A>   * @author tha 2000.8.13
+<A NAME="542"></A>   */</FONT>
+<A NAME="543"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A> makeRealGrayImage(<FONT ID="Int">int</FONT> dimX, <FONT ID="Int">int</FONT> dimY, <FONT ID="Short">short</FONT>[] img) {
+<A NAME="544"></A>    <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>  rg = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>(dimX, dimY);
+<A NAME="545"></A>
+<A NAME="546"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; dimX; x++) {
+<A NAME="547"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; dimY; y++) {
+<A NAME="548"></A>        rg.set(x, y, (<FONT ID="Float">float</FONT>) img[y * dimX + x]);
+<A NAME="549"></A>      } 
+<A NAME="550"></A>    } 
+<A NAME="551"></A>    <FONT ID="Return">return</FONT> rg;
+<A NAME="552"></A>  } 
+<A NAME="553"></A>
+<A NAME="554"></A>
+<A NAME="555"></A>  <FONT ID="FormalComment">/**
+<A NAME="556"></A>   * Die Methode berechnet die Fourier-Transformation eines Bildes und liefert
+<A NAME="557"></A>   * diese als 3-dimensionales Feld zurueck.
+<A NAME="558"></A>   * @param myFloatImage Das Bild, dessen FFT berechnet werden soll.
+<A NAME="559"></A>   * @return Ein dredimensionales Feld von Ganzzahlen. returnImg[0] ist der
+<A NAME="560"></A>   * Realteil, returnImg[1] der Imaginaerteil. die 2. Komponente des Feldes
+<A NAME="561"></A>   * repraesentiert die x-Koordinate, die 3. Komponente die y-Koordinate.
+<A NAME="562"></A>   */</FONT>
+<A NAME="563"></A>
+<A NAME="564"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="565"></A>   * tha 2000.8.13: Methode wird nicht laenger benoetigt
+<A NAME="566"></A>   * public static float[][][] getFFT(float[][] myFloatImage) {
+<A NAME="567"></A>   * // Erzeugen eines REalGrayImage-Objektes, mit dem die FFT durchgefuehrt wird
+<A NAME="568"></A>   * // Ersetzt: 2000.8.13 tha
+<A NAME="569"></A>   * // jigl.image.RealGrayImage  rgImg = new jigl.image.RealGrayImage(myFloatImage);
+<A NAME="570"></A>   * jigl.image.RealGrayImage rgImg = makeRealGrayImage(myFloatImage);
+<A NAME="571"></A>   * // Durchfuehren der FFT
+<A NAME="572"></A>   * jigl.image.ComplexImage    cImg = jigl.image.utils.FFT.doFFT(rgImg, true);
+<A NAME="573"></A>   * // Extrahieren des Real- und Imaginaerteils uas dem komplexen Bild
+<A NAME="574"></A>   * float[][]                  fftImageReal = new float[256][256];
+<A NAME="575"></A>   * float[][]                  fftImageImag = new float[256][256];
+<A NAME="576"></A>   * for (int x = 0; x &lt; 256; x++) {
+<A NAME="577"></A>   * for (int y = 0; y &lt; 256; y++) {
+<A NAME="578"></A>   * fftImageReal[x][y] = cImg.getReal(x, y);
+<A NAME="579"></A>   * fftImageImag[x][y] = cImg.getImag(x, y);
+<A NAME="580"></A>   * }    // for
+<A NAME="581"></A>   * }    // for
+<A NAME="582"></A>   * 
+<A NAME="583"></A>   * float[][][] returnimg = new float[2][256][256];
+<A NAME="584"></A>   * returnimg[0] = fftImageReal;
+<A NAME="585"></A>   * returnimg[1] = fftImageImag;
+<A NAME="586"></A>   * return returnimg;
+<A NAME="587"></A>   * }
+<A NAME="588"></A>   */</FONT>
+<A NAME="589"></A>
+<A NAME="590"></A>}
+<A NAME="591"></A>
+<A NAME="592"></A>
+<A NAME="593"></A>
+<A NAME="594"></A>
+<A NAME="595"></A>
+<A NAME="596"></A>
+<A NAME="597"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="598"></A>
+<A NAME="599"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FFTTools</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.artefacts.ArtefactUI (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ArtefactUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.index.html" target="packageFrame">virtual.mrt.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Diese Klasse ist die abstrakte Oberklasse fuer alle Oberflaechenklassen fuer
+<A NAME="32"></A> * Artefakt-Simulatoren. Sie stellt insbesondere eine Referenz auf den Bereich
+<A NAME="33"></A> * zur Verfuegung, in das die Oberflaechenelemente hineingezeichnet werden koennen.
+<A NAME="34"></A> * 
+<A NAME="35"></A> * @author   Christian Schalla
+<A NAME="36"></A> * @author   Andreas Truemper
+<A NAME="37"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="38"></A> */</FONT>
+<A NAME="39"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> ArtefactUI {
+<A NAME="40"></A>
+<A NAME="41"></A>
+<A NAME="42"></A>  <FONT ID="FormalComment">/**
+<A NAME="43"></A>   * Referenz auf den Bereich, in dem die Oberflaechenelemente des Artefakt-Simulators
+<A NAME="44"></A>   * dargestellt werden koennen.
+<A NAME="45"></A>   */</FONT>
+<A NAME="46"></A>  <FONT ID="Protected">protected</FONT> JPanel  myPanel;
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * Referenz auf das Hauptfenster.
+<A NAME="51"></A>   */</FONT>
+<A NAME="52"></A>  <FONT ID="Public">public</FONT> <A HREF="../../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A>  mainFrame;
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>  <FONT ID="FormalComment">/**
+<A NAME="56"></A>   * Die Variable merkt sich, ob die Ereignisbehandlungsroutinen der Bedienelemente
+<A NAME="57"></A>   * schon initialisiert wurden. Ist dies der Fall, so werden sie nicht erneut
+<A NAME="58"></A>   * initialisiert, da ansonsten immer mehrere Ereignisse gleichzeitig ausgeloest
+<A NAME="59"></A>   * werden.
+<A NAME="60"></A>   */</FONT>
+<A NAME="61"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>   isInitialized = <FONT ID="False">false</FONT>;
+<A NAME="62"></A>
+<A NAME="63"></A>
+<A NAME="64"></A>  <FONT ID="FormalComment">/**
+<A NAME="65"></A>   * Standardkonstruktor.
+<A NAME="66"></A>   */</FONT>
+<A NAME="67"></A>  <FONT ID="Public">public</FONT> ArtefactUI() {}  <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="68"></A></FONT>
+<A NAME="69"></A>
+<A NAME="70"></A>  <FONT ID="FormalComment">/**
+<A NAME="71"></A>   * Die Methode setzt die Referenz auf den Bereich, in dem die Oberflaechenelemente
+<A NAME="72"></A>   * des Artefakt-Simulators dargestellt werden koennen.
+<A NAME="73"></A>   * @param p Referenz auf den Bereich zur Darstellung der Bedienelemente.
+<A NAME="74"></A>   */</FONT>
+<A NAME="75"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUIPanel(JPanel p) {
+<A NAME="76"></A>    myPanel = p;
+<A NAME="77"></A>  }   <FONT ID="SingleLineComment">// Methode set SettingPanel
+<A NAME="78"></A></FONT> 
+<A NAME="79"></A>
+<A NAME="80"></A>  <FONT ID="FormalComment">/**
+<A NAME="81"></A>   * Die Methode setzt die Referenz auf das Hauptfenster.
+<A NAME="82"></A>   * @param vmrt Die Referenz auf das Hauptfenster.
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setMainFrame(<A HREF="../../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> vmrt) {
+<A NAME="85"></A>    mainFrame = vmrt;
+<A NAME="86"></A>  }   <FONT ID="SingleLineComment">// Methode setMainFrame
+<A NAME="87"></A></FONT> 
+<A NAME="88"></A>
+<A NAME="89"></A>  <FONT ID="FormalComment">/**
+<A NAME="90"></A>   * Die Methode setzt die Werte der Oberflaechenelemente auf die in den
+<A NAME="91"></A>   * Klassenvariablen gespeicherten Werte. Dies wird beim Umschalten zwischen
+<A NAME="92"></A>   * Artefakt-Simulatoren benötigt, um die eingestellten Werte nicht zu verlieren.
+<A NAME="93"></A>   * In dieser Oberklasse hat die Methode allerdings keine Funktionalität.
+<A NAME="94"></A>   */</FONT>
+<A NAME="95"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Void">void</FONT> getValues();
+<A NAME="96"></A>
+<A NAME="97"></A>
+<A NAME="98"></A>  <FONT ID="FormalComment">/**
+<A NAME="99"></A>   * Die Methode liest die aktuellen Parameterwerte aus den
+<A NAME="100"></A>   * Bedienelementen aus und speichert sie in den entsprechenden Klassenvariablen.
+<A NAME="101"></A>   * In dieser Oberklasse weist die Methode allerdings keine Funktionalitaet auf.
+<A NAME="102"></A>   */</FONT>
+<A NAME="103"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Void">void</FONT> setValues();
+<A NAME="104"></A>
+<A NAME="105"></A>
+<A NAME="106"></A>  <FONT ID="FormalComment">/**
+<A NAME="107"></A>   * Die Methode stellt die Bedienelemente des Artefakt-Simulators im dafuer
+<A NAME="108"></A>   * vorgesehenen Bereich dar.
+<A NAME="109"></A>   */</FONT>
+<A NAME="110"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fillPanel() {
+<A NAME="111"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="112"></A>      jbInit();
+<A NAME="113"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="114"></A>      ex.printStackTrace();
+<A NAME="115"></A>    } 
+<A NAME="116"></A>  }   <FONT ID="SingleLineComment">// Methode fillPanel
+<A NAME="117"></A></FONT> 
+<A NAME="118"></A>
+<A NAME="119"></A>  <FONT ID="FormalComment">/**
+<A NAME="120"></A>   * Die Methode ist in dieser abstrakten Oberklasse leer. Sie wird in den
+<A NAME="121"></A>   * abgeleiteten Klassen dazu verwendet, um weitere Bedien- und Informationselemente
+<A NAME="122"></A>   * einzurichten.
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {}
+<A NAME="125"></A>
+<A NAME="126"></A>
+<A NAME="127"></A>  <FONT ID="FormalComment">/**
+<A NAME="128"></A>   * Die Methode erzeugt eine neue Instanz der Berechnungsklasse des
+<A NAME="129"></A>   * Artefakt-Simulators und liefert diese zurueck. In dieser Oberklasse
+<A NAME="130"></A>   * hat die Methode allerdings keine Funktionalitaet.
+<A NAME="131"></A>   */</FONT>
+<A NAME="132"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A> createManipulator();
+<A NAME="133"></A>
+<A NAME="134"></A>
+<A NAME="135"></A>}
+<A NAME="136"></A>
+<A NAME="137"></A>
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="143"></A>
+<A NAME="144"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ArtefactUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

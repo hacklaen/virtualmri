@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.VMRT (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">VMRT</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.UIManager;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Die Klasse ist die Hauptklasse des virtuellen Tomographen. Sie wird nur zum
+<A NAME="32"></A> * Starten benoetigt, indem eine Instanz von VMRT erzeugt wird. In deren Konstruktor
+<A NAME="33"></A> * wird dan wiederum eine Instnaz von VMRTFrame erzeugt, wodurch das Hauptfenster
+<A NAME="34"></A> * des virtuellen Tomographen dargestellt wird.
+<A NAME="35"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="36"></A> * Thomas Hacklaender 2006.1.2:
+<A NAME="37"></A> * Applet/Application als Startklassen getrennt.&lt;br&gt;
+<A NAME="38"></A> * Thomas Hacklaender 2000.7.2:
+<A NAME="39"></A> * Spash-Screen zeigt die AboutBox
+<A NAME="40"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="41"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="42"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="43"></A> * @author   Christian Schalla
+<A NAME="44"></A> * @author   Andreas Truemper
+<A NAME="45"></A> * @version  1.2, 2002.10.13
+<A NAME="46"></A> */</FONT>
+<A NAME="47"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> VMRT {
+<A NAME="48"></A>
+<A NAME="49"></A>
+<A NAME="50"></A>  <FONT ID="FormalComment">/**
+<A NAME="51"></A>   * Standardkonstruktor.
+<A NAME="52"></A>   */</FONT>
+<A NAME="53"></A>  <FONT ID="Public">public</FONT> VMRT() {}
+<A NAME="54"></A>
+<A NAME="55"></A>        
+<A NAME="56"></A>  <FONT ID="FormalComment">/**
+<A NAME="57"></A>   * Die Methode erzeugt eine neue Instanz der Klasse VMRT und setzt das
+<A NAME="58"></A>   * Look&amp;Feel. Es wird das Systemtypische Look&amp;Feel verwendet.
+<A NAME="59"></A>   * @param args Befehlszeilenargumente. Sie werden hier einfach ignoriert.
+<A NAME="60"></A>   */</FONT>
+<A NAME="61"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<A NAME="62"></A>    (<FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/VMRT.java.html">VMRT</A>()).runApplication();
+<A NAME="63"></A>  } 
+<A NAME="64"></A>
+<A NAME="65"></A>
+<A NAME="66"></A>  <FONT ID="FormalComment">/**
+<A NAME="67"></A>   * Method declaration
+<A NAME="68"></A>   * 
+<A NAME="69"></A>   * 
+<A NAME="70"></A>   * @param isApplication
+<A NAME="71"></A>   * 
+<A NAME="72"></A>   * @see
+<A NAME="73"></A>   */</FONT>
+<A NAME="74"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runApplication() {
+<A NAME="75"></A>
+<A NAME="76"></A>            VMRTFrame.setLookAndFeel();
+<A NAME="77"></A>
+<A NAME="78"></A>            <FONT ID="SingleLineComment">// Instanz des Hauptfensters erzeugen
+<A NAME="79"></A></FONT>            <A HREF="../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> frame = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A>(<FONT ID="True">true</FONT>);
+<A NAME="80"></A>            frame.showCentered();
+<A NAME="81"></A>  } 
+<A NAME="82"></A>
+<A NAME="83"></A>}
+<A NAME="84"></A>
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>
+<A NAME="88"></A>
+<A NAME="89"></A>
+<A NAME="90"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="91"></A>
+<A NAME="92"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">VMRT</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.sequences.GERefocused (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">GERefocused</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="FormalComment">/**
+<A NAME="24"></A> * Die Klasse berechnet ein Intensitaetsbild mittels einer refokussierten
+<A NAME="25"></A> * Gradientenechosequenz. Geraeteparameter sind Repititions- und Echozeit, sowie
+<A NAME="26"></A> * der Flipwinkel.
+<A NAME="27"></A> * 
+<A NAME="28"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="29"></A> * Thomas Hacklaender 2000.04.03:
+<A NAME="30"></A> * Zahlenwert fuer DELTAB und GYRO korrigiert. &lt;br&gt;
+<A NAME="31"></A> * Thomas Hacklaender 2000.04.03:
+<A NAME="32"></A> * Methode getTRTime eingefuegt. &lt;br&gt;
+<A NAME="33"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="34"></A> * Zahlenwert fuer DELTAB fuer 1,0 T korrigiert. &lt;br&gt;
+<A NAME="35"></A> * Thomas Hacklaender 2002.10.14:
+<A NAME="36"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="37"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="38"></A> * @author   Christian Schalla
+<A NAME="39"></A> * @author   Andreas Truemper
+<A NAME="40"></A> * @version  1.2, 2002.10.14
+<A NAME="41"></A> */</FONT>
+<A NAME="42"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> GERefocused <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/sequences/Pulsesequence.java.html">Pulsesequence</A> {
+<A NAME="43"></A>
+<A NAME="44"></A>
+<A NAME="45"></A>  <FONT ID="FormalComment">/**
+<A NAME="46"></A>   * Magnetfeldinhomogenitaet.
+<A NAME="47"></A>   * Wir gehen von einem 1,0T Magnet aus, der im Abbildungsvolumen von
+<A NAME="48"></A>   * 0,5 m Durchmesser eine Feldinhomogenitaet von 5 ppm aufweist.
+<A NAME="49"></A>   * bei einem FOV von 50 cm und 256 Pixel Aufloesung hat jedes Pixel
+<A NAME="50"></A>   * eine Inhomoginitaet von 19,5 * 10^-9 T.
+<A NAME="51"></A>   * Berechnung der Relaxationszeit T2* siehe:
+<A NAME="52"></A>   * Hashemi R: MRI the basics. Williams, Baltimore, 1997. Seite 48.
+<A NAME="53"></A>   */</FONT>
+<A NAME="54"></A>  <FONT ID="Final">final</FONT> <FONT ID="Double">double</FONT>  DELTAB = <FONT ID="FloatPointLiteral">19.5E-9</FONT>;
+<A NAME="55"></A>
+<A NAME="56"></A>
+<A NAME="57"></A>  <FONT ID="FormalComment">/**
+<A NAME="58"></A>   * Gyromagnetische Verhaeltnis fuer Wasserstoff.
+<A NAME="59"></A>   */</FONT>
+<A NAME="60"></A>  <FONT ID="Final">final</FONT> <FONT ID="Double">double</FONT>  GYRO = <FONT ID="FloatPointLiteral">42.6</FONT>;  <FONT ID="SingleLineComment">// (Mhz/Tesla)
+<A NAME="61"></A></FONT>
+<A NAME="62"></A>
+<A NAME="63"></A>  <FONT ID="FormalComment">/**
+<A NAME="64"></A>   * Repititionszeit.
+<A NAME="65"></A>   */</FONT>
+<A NAME="66"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>   trTime;
+<A NAME="67"></A>
+<A NAME="68"></A>
+<A NAME="69"></A>  <FONT ID="FormalComment">/**
+<A NAME="70"></A>   * Echozeit.
+<A NAME="71"></A>   */</FONT>
+<A NAME="72"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>   teTime;
+<A NAME="73"></A>
+<A NAME="74"></A>
+<A NAME="75"></A>  <FONT ID="FormalComment">/**
+<A NAME="76"></A>   * Flipwinkel
+<A NAME="77"></A>   */</FONT>
+<A NAME="78"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>   angel;
+<A NAME="79"></A>
+<A NAME="80"></A>
+<A NAME="81"></A>  <FONT ID="FormalComment">/**
+<A NAME="82"></A>   * Standardkonstruktor
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Public">public</FONT> GERefocused() {}
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Die Methode fuegt die Sequenzparameterwerte zum berechneten Bild hinzu.
+<A NAME="89"></A>   * Dadurch kann eine DICOM-Datei mit allen relevanten Informationen
+<A NAME="90"></A>   * gespeichert werden.
+<A NAME="91"></A>   */</FONT>
+<A NAME="92"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> addSequenceParameterToImage() {
+<A NAME="93"></A>    ResultIP.setTR((<FONT ID="Double">double</FONT>) trTime);
+<A NAME="94"></A>    ResultIP.setTE((<FONT ID="Double">double</FONT>) teTime);
+<A NAME="95"></A>    ResultIP.setFA((<FONT ID="Double">double</FONT>) angel);
+<A NAME="96"></A>    ResultIP.setSequence(<FONT ID="StringLiteral">"GE-refocused"</FONT>);
+<A NAME="97"></A>  }   <FONT ID="SingleLineComment">// Methode addSequenceParameterToImage()
+<A NAME="98"></A></FONT> 
+<A NAME="99"></A>
+<A NAME="100"></A>  <FONT ID="FormalComment">/**
+<A NAME="101"></A>   * Die Methode berechnet aus den Rohdatenmatrizen und den Sequenzparameterwerten
+<A NAME="102"></A>   * die Intensitaetsmatrix. Ausserdem ist sie fuer die Aktualisierung der
+<A NAME="103"></A>   * Fortschrittsanzeige und das Einhalten des Simulationszeitfaktors verantwortlich.
+<A NAME="104"></A>   */</FONT>
+<A NAME="105"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculate() {
+<A NAME="106"></A>
+<A NAME="107"></A>    <FONT ID="SingleLineComment">// Sinus und Kosinus ausserhalb der Schleifen berechnen.
+<A NAME="108"></A></FONT>    <FONT ID="Double">double</FONT>  dangel = (<FONT ID="Double">double</FONT>) angel * Math.PI / <FONT ID="IntegerLiteral">180</FONT>;
+<A NAME="109"></A>    <FONT ID="Double">double</FONT>  sinangel = Math.sin(dangel);
+<A NAME="110"></A>    <FONT ID="Double">double</FONT>  cosangel = Math.sin(dangel);
+<A NAME="111"></A>
+<A NAME="112"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; PDMatrix.length; x++) {
+<A NAME="113"></A>
+<A NAME="114"></A>      <FONT ID="SingleLineComment">// Aktualisieren der Fortschrittsanzeige
+<A NAME="115"></A></FONT>      progressBar.setValue(x);
+<A NAME="116"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="117"></A>        <FONT ID="If">if</FONT> ((x % <FONT ID="IntegerLiteral">10</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="118"></A>          sleep(<FONT ID="IntegerLiteral">5</FONT>);
+<A NAME="119"></A>        } 
+<A NAME="120"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="121"></A>      ;
+<A NAME="122"></A>
+<A NAME="123"></A>      <FONT ID="SingleLineComment">// Berechnen und Anzeigen der Restzeit sowie ggf. warten
+<A NAME="124"></A></FONT>      <FONT ID="Try">try</FONT> {
+<A NAME="125"></A>        <FONT ID="Int">int</FONT>   nex = myUIClass.pNEX.getValue();
+<A NAME="126"></A>        <FONT ID="Long">long</FONT>  remainingtime = trTime * (<FONT ID="IntegerLiteral">256</FONT> - x) * nex;
+<A NAME="127"></A>
+<A NAME="128"></A>        myUIClass.displayRemainingTime(remainingtime);
+<A NAME="129"></A>        sleep((<FONT ID="Long">long</FONT>) ((((<FONT ID="Double">double</FONT>) (iTimeFactor)) / <FONT ID="IntegerLiteral">100</FONT>) * trTime));
+<A NAME="130"></A>      } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="131"></A>
+<A NAME="132"></A>      <FONT ID="SingleLineComment">// Berechnen der Intensitaetsmatrix
+<A NAME="133"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; PDMatrix[<FONT ID="IntegerLiteral">0</FONT>].length; y++) {
+<A NAME="134"></A>        <FONT ID="If">if</FONT> (T1Matrix[x][y] == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="135"></A>          T1Matrix[x][y] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="136"></A>        } 
+<A NAME="137"></A>        <FONT ID="If">if</FONT> (T2Matrix[x][y] == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="138"></A>          T2Matrix[x][y] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="139"></A>
+<A NAME="140"></A>        } 
+<A NAME="141"></A>        <FONT ID="Double">double</FONT>  t2x = (<FONT ID="Double">double</FONT>) (<FONT ID="IntegerLiteral">1</FONT> / ((<FONT ID="IntegerLiteral">1</FONT> / (<FONT ID="Double">double</FONT>) T2Matrix[x][y]) + GYRO * DELTAB));
+<A NAME="142"></A>
+<A NAME="143"></A>        IntensityMatrix[x][y] = (<FONT ID="Int">int</FONT>) ((PDMatrix[x][y]) * (sinangel) / (<FONT ID="IntegerLiteral">1</FONT> + (T1Matrix[x][y] / t2x) - ((T1Matrix[x][y] / t2x) - <FONT ID="IntegerLiteral">1</FONT>) + cosangel));
+<A NAME="144"></A>
+<A NAME="145"></A>      }   <FONT ID="SingleLineComment">// for y
+<A NAME="146"></A></FONT>     }    <FONT ID="SingleLineComment">// for x
+<A NAME="147"></A></FONT> 
+<A NAME="148"></A>    <FONT ID="SingleLineComment">// In super.calculate wird die Fortschrittsanzeige zurueckgesetzt
+<A NAME="149"></A></FONT>    <FONT ID="SingleLineComment">// und dem Hautfenster mitgeteilt, dass die Berechnung fertig ist.
+<A NAME="150"></A></FONT>    <FONT ID="Super">super</FONT>.calculate();
+<A NAME="151"></A>  }   <FONT ID="SingleLineComment">// Methode calculate
+<A NAME="152"></A></FONT> 
+<A NAME="153"></A>
+<A NAME="154"></A>  <FONT ID="FormalComment">/**
+<A NAME="155"></A>   * Die Methode setzt das Klassenattribut fuer die TR-Zeit nach dem Auselesen
+<A NAME="156"></A>   * aus dem Bedienelement.
+<A NAME="157"></A>   * @param tr TR-Zeit.
+<A NAME="158"></A>   */</FONT>
+<A NAME="159"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTRTime(<FONT ID="Int">int</FONT> tr) {
+<A NAME="160"></A>    trTime = tr;
+<A NAME="161"></A>  }   <FONT ID="SingleLineComment">// Methode setTRTime
+<A NAME="162"></A></FONT> 
+<A NAME="163"></A>
+<A NAME="164"></A>  <FONT ID="FormalComment">/**
+<A NAME="165"></A>   * Die Methode setzt das Klassenattribut fuer die TE-Zeit nach dem Auselesen
+<A NAME="166"></A>   * aus dem Bedienelement.
+<A NAME="167"></A>   * @param te TE-Zeit.
+<A NAME="168"></A>   */</FONT>
+<A NAME="169"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTETime(<FONT ID="Int">int</FONT> te) {
+<A NAME="170"></A>    teTime = te;
+<A NAME="171"></A>  }   <FONT ID="SingleLineComment">// Methode setTETime
+<A NAME="172"></A></FONT> 
+<A NAME="173"></A>
+<A NAME="174"></A>  <FONT ID="FormalComment">/**
+<A NAME="175"></A>   * Die Methode setzt das Klassenattribut fuer den Flipwinkel nach dem Auselesen
+<A NAME="176"></A>   * aus dem Bedienelement.
+<A NAME="177"></A>   * @param an Der Flipwinkel.
+<A NAME="178"></A>   */</FONT>
+<A NAME="179"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setAngel(<FONT ID="Int">int</FONT> an) {
+<A NAME="180"></A>    angel = an;
+<A NAME="181"></A>  }   <FONT ID="SingleLineComment">// Methode setAngel
+<A NAME="182"></A></FONT> 
+<A NAME="183"></A>
+<A NAME="184"></A>  <FONT ID="FormalComment">/**
+<A NAME="185"></A>   * Die Methode liefert die aktuell eingestellte Repititionszeit der Pulssequenz
+<A NAME="186"></A>   * zurueck.
+<A NAME="187"></A>   * @return TR-Zeit.
+<A NAME="188"></A>   */</FONT>
+<A NAME="189"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getTRTime() {
+<A NAME="190"></A>    <FONT ID="Return">return</FONT> trTime;
+<A NAME="191"></A>  } 
+<A NAME="192"></A>
+<A NAME="193"></A>}
+<A NAME="194"></A>
+<A NAME="195"></A>
+<A NAME="196"></A>
+<A NAME="197"></A>
+<A NAME="198"></A>
+<A NAME="199"></A>
+<A NAME="200"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="201"></A>
+<A NAME="202"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">GERefocused</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

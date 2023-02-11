@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.Tools (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Tools</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.net.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * Die Klasse stellt einige Grundlegende Hilfsfunktionen zur Verfuegung, die
+<A NAME="29"></A> * an verschiedenen Stellen benoetigt werden.
+<A NAME="30"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="31"></A> * Thomas Hacklaender 2000.07.13:
+<A NAME="32"></A> * Methoden url2File und file2URL implementiert. &lt;br&gt;
+<A NAME="33"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="34"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="35"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="36"></A> * @author   Christian Schalla
+<A NAME="37"></A> * @author   Andreas Truemper
+<A NAME="38"></A> * @version  1.2, 2002.10.16
+<A NAME="39"></A> */</FONT>
+<A NAME="40"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Tools {
+<A NAME="41"></A>
+<A NAME="42"></A>
+<A NAME="43"></A>  <FONT ID="FormalComment">/**
+<A NAME="44"></A>   * Standardkonstruktor
+<A NAME="45"></A>   */</FONT>
+<A NAME="46"></A>  <FONT ID="Public">public</FONT> Tools() {}   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="47"></A></FONT>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * Die Methode wandelt eine Zeichenkette in eine Ganzzahl um. Zuvor muss
+<A NAME="51"></A>   * sichergestellt sein, dass die Zeichenkette auch wirklich nur eine
+<A NAME="52"></A>   * Ganzzahl enthaelt
+<A NAME="53"></A>   * @param st Die umzuwandelnde Zeichenkette
+<A NAME="54"></A>   * @return Die Ganzahl, die aus der Zeichenkette gewonnen wurde
+<A NAME="55"></A>   */</FONT>
+<A NAME="56"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> stringToInt(String st) {
+<A NAME="57"></A>    <FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="58"></A>
+<A NAME="59"></A>    <FONT ID="If">if</FONT> (checkInteger(st)) {
+<A NAME="60"></A>      i = Integer.parseInt(st);
+<A NAME="61"></A>    } 
+<A NAME="62"></A>    <FONT ID="Return">return</FONT> i;
+<A NAME="63"></A>  }   <FONT ID="SingleLineComment">// Methode stringToInt
+<A NAME="64"></A></FONT> 
+<A NAME="65"></A>
+<A NAME="66"></A>  <FONT ID="FormalComment">/**
+<A NAME="67"></A>   * Die Methode prueft, ob es sich bei der uebergebenen Zeichenkette um eine
+<A NAME="68"></A>   * Ganzzhal handelt.
+<A NAME="69"></A>   * @param st Die zu pruefende Zeichenkette
+<A NAME="70"></A>   * @return Wahrheitswert. true, wenn Zeichenkette eine Ganzzahl ist, sonst false
+<A NAME="71"></A>   */</FONT>
+<A NAME="72"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> checkInteger(String st) {
+<A NAME="73"></A>    <FONT ID="Boolean">boolean</FONT> b = <FONT ID="False">false</FONT>;
+<A NAME="74"></A>
+<A NAME="75"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="76"></A>      <FONT ID="Int">int</FONT> i = Integer.parseInt(st);
+<A NAME="77"></A>
+<A NAME="78"></A>      b = <FONT ID="True">true</FONT>;
+<A NAME="79"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="80"></A>      b = <FONT ID="False">false</FONT>;
+<A NAME="81"></A>    }   <FONT ID="SingleLineComment">// catch
+<A NAME="82"></A></FONT>     <FONT ID="Return">return</FONT> b;
+<A NAME="83"></A>  }   <FONT ID="SingleLineComment">// Methode checkInteger
+<A NAME="84"></A></FONT> 
+<A NAME="85"></A>
+<A NAME="86"></A>  <FONT ID="FormalComment">/**
+<A NAME="87"></A>   * Die Method prueft, ob eine Ganzzahl innerhalb eines Intervalls liegt.
+<A NAME="88"></A>   * @param value Die zu pruefende Zahl
+<A NAME="89"></A>   * @param Die untere Schranke des Intervalls
+<A NAME="90"></A>   * @param Die obere Schranke des Intervalls
+<A NAME="91"></A>   * @return Wahrheitswert. true, wenn Wert innerhalb des Intervalls liegt, sonst false
+<A NAME="92"></A>   */</FONT>
+<A NAME="93"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> checkIntRange(String value, <FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="94"></A>    <FONT ID="Boolean">boolean</FONT> b = <FONT ID="False">false</FONT>;
+<A NAME="95"></A>
+<A NAME="96"></A>    <FONT ID="If">if</FONT> (checkInteger(value)) {
+<A NAME="97"></A>      <FONT ID="Int">int</FONT> val = stringToInt(value);
+<A NAME="98"></A>
+<A NAME="99"></A>      <FONT ID="If">if</FONT> ((val &gt;= min) &amp; (val &lt;= max)) {
+<A NAME="100"></A>        b = <FONT ID="True">true</FONT>;
+<A NAME="101"></A>      } 
+<A NAME="102"></A>    } 
+<A NAME="103"></A>    <FONT ID="Return">return</FONT> b;
+<A NAME="104"></A>  }   <FONT ID="SingleLineComment">// Methode checkIntRange
+<A NAME="105"></A></FONT> 
+<A NAME="106"></A>
+<A NAME="107"></A>  <FONT ID="FormalComment">/**
+<A NAME="108"></A>   * Die Methode blendet eine Fehlerbox in der Bildschirmmitte auf.
+<A NAME="109"></A>   * @param msg Der in der Dialogbox darzustellende Text.
+<A NAME="110"></A>   */</FONT>
+<A NAME="111"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> showErrorMessage(String msg) {
+<A NAME="112"></A>    JOptionPane.showMessageDialog(<FONT ID="Null">null</FONT>, msg, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"tools.errormessage.title"</FONT>), JOptionPane.ERROR_MESSAGE);
+<A NAME="113"></A>  }   <FONT ID="SingleLineComment">// Methode showErrorMessage
+<A NAME="114"></A></FONT> 
+<A NAME="115"></A>
+<A NAME="116"></A>  <FONT ID="FormalComment">/**
+<A NAME="117"></A>   * Die Methode liefert zu einer URL ein Objekt vom Typ File. Die URL muss
+<A NAME="118"></A>   * muss vom Protokoll-Typ "file" sein. Sonst wird 'null' zurueckgegeben.
+<A NAME="119"></A>   * 
+<A NAME="120"></A>   * @param theURL  Die URL .
+<A NAME="121"></A>   * @return        Das File-Objekt.
+<A NAME="122"></A>   * @author Thomas Hacklaender
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> File url2File(URL theURL) {
+<A NAME="125"></A>    <FONT ID="If">if</FONT> (theURL.getProtocol().compareTo(<FONT ID="StringLiteral">"file"</FONT>) != <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="126"></A>      <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="127"></A>    } 
+<A NAME="128"></A>    String  p = theURL.getFile();
+<A NAME="129"></A>    <FONT ID="Int">int</FONT>     i = p.lastIndexOf(<FONT ID="CharacerLiteral">'/'</FONT>);
+<A NAME="130"></A>
+<A NAME="131"></A>    <FONT ID="If">if</FONT> (p.startsWith(<FONT ID="StringLiteral">"/"</FONT>)) {
+<A NAME="132"></A>      ;
+<A NAME="133"></A>      p = p.substring(<FONT ID="IntegerLiteral">1</FONT>, i);
+<A NAME="134"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="135"></A>      p = p.substring(<FONT ID="IntegerLiteral">0</FONT>, i);
+<A NAME="136"></A>    } 
+<A NAME="137"></A>
+<A NAME="138"></A>    p = p.replace(<FONT ID="CharacerLiteral">'/'</FONT>, File.separatorChar);
+<A NAME="139"></A>
+<A NAME="140"></A>    String  c = theURL.getFile();
+<A NAME="141"></A>    <FONT ID="Int">int</FONT>     j = c.lastIndexOf(<FONT ID="CharacerLiteral">'/'</FONT>);
+<A NAME="142"></A>
+<A NAME="143"></A>    c = c.substring(j + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="144"></A>
+<A NAME="145"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(p, c);
+<A NAME="146"></A>  } 
+<A NAME="147"></A>
+<A NAME="148"></A>
+<A NAME="149"></A>  <FONT ID="FormalComment">/**
+<A NAME="150"></A>   * Die Methode liefert zu einem File ein Objekt vom Typ URL.
+<A NAME="151"></A>   * @param theFile Der File.
+<A NAME="152"></A>   * @return        Das URL-Objekt.
+<A NAME="153"></A>   */</FONT>
+<A NAME="154"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> URL file2URL(File theFile) {
+<A NAME="155"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="156"></A>      <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"file"</FONT>, <FONT ID="StringLiteral">""</FONT>, theFile.getPath().replace(File.separatorChar, <FONT ID="CharacerLiteral">'/'</FONT>));
+<A NAME="157"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="158"></A>      <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="159"></A>    } 
+<A NAME="160"></A>  } 
+<A NAME="161"></A>
+<A NAME="162"></A>}
+<A NAME="163"></A>
+<A NAME="164"></A>
+<A NAME="165"></A>
+<A NAME="166"></A>
+<A NAME="167"></A>
+<A NAME="168"></A>
+<A NAME="169"></A>
+<A NAME="170"></A>
+<A NAME="171"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="172"></A>
+<A NAME="173"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Tools</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

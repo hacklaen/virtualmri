@@ -1,0 +1,382 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.dv.ProjParamDlg (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ProjParamDlg</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.dv.index.html" target="packageFrame">virtual.dv</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Die Klasse implementiert ein Dialogfenster zur Eingabe der Parameter zur
+<A NAME="32"></A> * Berechnung einer 90°-Projektion des Datensatzes. Die Parameter sind die Nummer
+<A NAME="33"></A> * des Start- und Endbildes, die in die Berechnung mit einbezogen werden sollen,
+<A NAME="34"></A> * die Schicht, die berechnet werden soll (1-256) und ob eine Interpolation
+<A NAME="35"></A> * vorgenommen werden soll.
+<A NAME="36"></A> * &lt;br&gt;
+<A NAME="37"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="38"></A> * Thomas Hacklaender 2002.10.12:
+<A NAME="39"></A> * setLabel seit Java 1.1 deprecated.&lt;br&gt;
+<A NAME="40"></A> * 
+<A NAME="41"></A> * @author   Christian Schalla
+<A NAME="42"></A> * @author   Andreas Truemper
+<A NAME="43"></A> * @version  1.1, 2002.10.12
+<A NAME="44"></A> */</FONT>
+<A NAME="45"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ProjParamDlg <FONT ID="Extends">extends</FONT> JDialog {
+<A NAME="46"></A>
+<A NAME="47"></A>
+<A NAME="48"></A>  <FONT ID="FormalComment">/**
+<A NAME="49"></A>   * Rahmen, in dem die Bedienelemente dargestellt werdn.
+<A NAME="50"></A>   */</FONT>
+<A NAME="51"></A>  <FONT ID="Private">private</FONT> Panel             panel1 = <FONT ID="New">new</FONT> Panel();
+<A NAME="52"></A>
+<A NAME="53"></A>
+<A NAME="54"></A>  <FONT ID="FormalComment">/**
+<A NAME="55"></A>   * Label zur Beschreibung des Dialogs
+<A NAME="56"></A>   */</FONT>
+<A NAME="57"></A>  <FONT ID="Private">private</FONT> JLabel            lText = <FONT ID="New">new</FONT> JLabel();
+<A NAME="58"></A>
+<A NAME="59"></A>
+<A NAME="60"></A>  <FONT ID="FormalComment">/**
+<A NAME="61"></A>   * Elemente zur Eingabe der Bilder, die in die Berechnung einbezogen
+<A NAME="62"></A>   * werden sollen
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/LabTFLabTFPanel.java.html">LabTFLabTFPanel</A>   pImages = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/LabTFLabTFPanel.java.html">LabTFLabTFPanel</A>(<FONT ID="StringLiteral">"Von Bild"</FONT>, <FONT ID="StringLiteral">"1"</FONT>, <FONT ID="StringLiteral">"bis Bild"</FONT>, <FONT ID="StringLiteral">"1"</FONT>);
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * OK-Knopf
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Private">private</FONT> JButton           pbOK = <FONT ID="New">new</FONT> JButton();
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * Abbrechen-Knopf
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Private">private</FONT> JButton           pbCancel = <FONT ID="New">new</FONT> JButton();
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Label fuer die zu berechnende Schicht
+<A NAME="81"></A>   */</FONT>
+<A NAME="82"></A>  <FONT ID="Private">private</FONT> JLabel            jLabel1 = <FONT ID="New">new</FONT> JLabel();
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="FormalComment">/**
+<A NAME="86"></A>   * Textfeld zur Eingabe der zu berechnenden Schicht
+<A NAME="87"></A>   */</FONT>
+<A NAME="88"></A>  <FONT ID="Private">private</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A> pSlice = <FONT ID="New">new</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>(<FONT ID="StringLiteral">"Schicht"</FONT>, <FONT ID="StringLiteral">"128"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="89"></A>
+<A NAME="90"></A>
+<A NAME="91"></A>  <FONT ID="FormalComment">/**
+<A NAME="92"></A>   * Kontrollkaestchen zur Auswahl der Interpolation
+<A NAME="93"></A>   */</FONT>
+<A NAME="94"></A>  <FONT ID="Private">private</FONT> JCheckBox         cbInterpolate = <FONT ID="New">new</FONT> JCheckBox();
+<A NAME="95"></A>
+<A NAME="96"></A>
+<A NAME="97"></A>  <FONT ID="FormalComment">/**
+<A NAME="98"></A>   * Label fuer die Interpolation
+<A NAME="99"></A>   */</FONT>
+<A NAME="100"></A>  <FONT ID="Private">private</FONT> JLabel            jLabel2 = <FONT ID="New">new</FONT> JLabel();
+<A NAME="101"></A>
+<A NAME="102"></A>
+<A NAME="103"></A>  <FONT ID="FormalComment">/**
+<A NAME="104"></A>   * Rueckreferenz auf das aufrufende Fenster
+<A NAME="105"></A>   */</FONT>
+<A NAME="106"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A>       mainFrame;
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Meker fuer die zu berechnende Projektion
+<A NAME="111"></A>   */</FONT>
+<A NAME="112"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>               projection = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="113"></A>
+<A NAME="114"></A>
+<A NAME="115"></A>  <FONT ID="FormalComment">/**
+<A NAME="116"></A>   * Der Konstrukor erzeugt ein Dialogfenster mit dem angegebenen Titel.
+<A NAME="117"></A>   * Es kann angegeben werden, ob der Dialog modal oder nicht modal sein soll.
+<A NAME="118"></A>   * In diesem Konstruktor wird die Goesse und Lage des Dialogfeldes festgelegt.
+<A NAME="119"></A>   * Das Dialogfenster wir immer genau mittig uf dem aufrufenden Fenster
+<A NAME="120"></A>   * dargestellt.
+<A NAME="121"></A>   * @param frame Referenz auf das aufrufende Fenster.
+<A NAME="122"></A>   * @param title Titel des Dialogfensters.
+<A NAME="123"></A>   * @param Schalter fuer modale / nicht modale Darstellung
+<A NAME="124"></A>   */</FONT>
+<A NAME="125"></A>  <FONT ID="Public">public</FONT> ProjParamDlg(Frame frame, String title, <FONT ID="Boolean">boolean</FONT> modal) {
+<A NAME="126"></A>    <FONT ID="Super">super</FONT>(frame, title, modal);
+<A NAME="127"></A>
+<A NAME="128"></A>    <FONT ID="SingleLineComment">// Darstellen der Bedienelemente
+<A NAME="129"></A></FONT>    enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+<A NAME="130"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="131"></A>      jbInit();
+<A NAME="132"></A>      getContentPane().add(panel1);
+<A NAME="133"></A>      pack();
+<A NAME="134"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="135"></A>      ex.printStackTrace();
+<A NAME="136"></A>    } 
+<A NAME="137"></A>
+<A NAME="138"></A>    <FONT ID="SingleLineComment">// Rueckreferenz auf das aufrufende Fenster speichern
+<A NAME="139"></A></FONT>    mainFrame = (<A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A>) frame;
+<A NAME="140"></A>
+<A NAME="141"></A>    <FONT ID="SingleLineComment">// Groesse und Position festlegen
+<A NAME="142"></A></FONT>    <FONT ID="This">this</FONT>.setSize(<FONT ID="IntegerLiteral">272</FONT>, <FONT ID="IntegerLiteral">250</FONT>);
+<A NAME="143"></A>    <FONT ID="This">this</FONT>.setResizable(<FONT ID="False">false</FONT>);
+<A NAME="144"></A>    <FONT ID="This">this</FONT>.setLocation(frame.getLocationOnScreen().x + (frame.getSize().width / <FONT ID="IntegerLiteral">2</FONT>) - (<FONT ID="This">this</FONT>.getSize().width / <FONT ID="IntegerLiteral">2</FONT>), frame.getLocationOnScreen().y + (frame.getSize().height / <FONT ID="IntegerLiteral">2</FONT>) - (<FONT ID="This">this</FONT>.getSize().width / <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="145"></A>  }   <FONT ID="SingleLineComment">// Konstruktor ProjParamDlg(Frame frame, String title, boolean modal)
+<A NAME="146"></A></FONT>
+<A NAME="147"></A>
+<A NAME="148"></A>  <FONT ID="FormalComment">/**
+<A NAME="149"></A>   * Der Konstruktor erzeugt ein nicht modales Dialogfenster ohne Titel.
+<A NAME="150"></A>   * @param frame Referenz auf das aufrufende Fenster.
+<A NAME="151"></A>   */</FONT>
+<A NAME="152"></A>  <FONT ID="Public">public</FONT> ProjParamDlg(Frame frame) {
+<A NAME="153"></A>    <FONT ID="This">this</FONT>(frame, <FONT ID="StringLiteral">""</FONT>, <FONT ID="False">false</FONT>);
+<A NAME="154"></A>  }   <FONT ID="SingleLineComment">// Konstruktor ProjParamDlg(Frame frame)
+<A NAME="155"></A></FONT>
+<A NAME="156"></A>
+<A NAME="157"></A>  <FONT ID="FormalComment">/**
+<A NAME="158"></A>   * Der Konstruktor erzeugt ein Dialogfenster ohne Titel. Es kann angegeben werden,
+<A NAME="159"></A>   * ob der Dialog modal oder nicht modal sein soll.
+<A NAME="160"></A>   * @param frame Referenz auf das aufrufende Fenster.
+<A NAME="161"></A>   * @param Schalter fuer modale / nicht modale Darstellung
+<A NAME="162"></A>   */</FONT>
+<A NAME="163"></A>  <FONT ID="Public">public</FONT> ProjParamDlg(Frame frame, <FONT ID="Boolean">boolean</FONT> modal) {
+<A NAME="164"></A>    <FONT ID="This">this</FONT>(frame, <FONT ID="StringLiteral">""</FONT>, modal);
+<A NAME="165"></A>  }   <FONT ID="SingleLineComment">// Konstruktor ProjParamDlg(Frame frame, boolean modal)
+<A NAME="166"></A></FONT>
+<A NAME="167"></A>
+<A NAME="168"></A>  <FONT ID="FormalComment">/**
+<A NAME="169"></A>   * Der Konstrukor erzeugt ein nicht modales Dialogfenster mit dem angegebenen Titel.
+<A NAME="170"></A>   * @param frame Referenz auf das aufrufende Fenster.
+<A NAME="171"></A>   * @param title Titel des Dialogfensters.
+<A NAME="172"></A>   */</FONT>
+<A NAME="173"></A>  <FONT ID="Public">public</FONT> ProjParamDlg(Frame frame, String title) {
+<A NAME="174"></A>    <FONT ID="This">this</FONT>(frame, title, <FONT ID="False">false</FONT>);
+<A NAME="175"></A>  }   <FONT ID="SingleLineComment">// Konstruktor ProjParamDlg(Frame frame, String title)
+<A NAME="176"></A></FONT>
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Die Methode richtet die Bedienelemente ein und stellt diese dar.
+<A NAME="180"></A>   */</FONT>
+<A NAME="181"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="182"></A>
+<A NAME="183"></A>    <FONT ID="SingleLineComment">// Einrichten des Panels, in dem die bedienelemente dargestellt werden
+<A NAME="184"></A></FONT>    panel1.setSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">359</FONT>, <FONT ID="IntegerLiteral">269</FONT>));
+<A NAME="185"></A>
+<A NAME="186"></A>    <FONT ID="SingleLineComment">// Einrichten des Dialogtextes
+<A NAME="187"></A></FONT>    lText.setText(<FONT ID="StringLiteral">"Welche Bilder moechten sie in die"</FONT>);
+<A NAME="188"></A>    lText.setForeground(Color.black);
+<A NAME="189"></A>    lText.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">9</FONT>, <FONT ID="IntegerLiteral">296</FONT>, <FONT ID="IntegerLiteral">17</FONT>));
+<A NAME="190"></A>    jLabel1.setText(<FONT ID="StringLiteral">"Berechnung einbeziehen?"</FONT>);
+<A NAME="191"></A>    jLabel1.setForeground(Color.black);
+<A NAME="192"></A>    jLabel1.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">242</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="193"></A>
+<A NAME="194"></A>    <FONT ID="SingleLineComment">// Einrichten der Elemente zur Eingabe der Bilder, die in die Berechnung
+<A NAME="195"></A></FONT>    <FONT ID="SingleLineComment">// einbezogen werden sollen
+<A NAME="196"></A></FONT>    pImages.setBounds(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">59</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">30</FONT>);
+<A NAME="197"></A>
+<A NAME="198"></A>    <FONT ID="SingleLineComment">// Einrichten des OK-Knopfes
+<A NAME="199"></A></FONT>    pbOK.setText(<FONT ID="StringLiteral">"OK"</FONT>);
+<A NAME="200"></A>    pbOK.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">194</FONT>, <FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="201"></A>    pbOK.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="202"></A>
+<A NAME="203"></A>
+<A NAME="204"></A>      <FONT ID="FormalComment">/**
+<A NAME="205"></A>       * Method declaration
+<A NAME="206"></A>       * 
+<A NAME="207"></A>       * 
+<A NAME="208"></A>       * @param e
+<A NAME="209"></A>       * 
+<A NAME="210"></A>       * @see
+<A NAME="211"></A>       */</FONT>
+<A NAME="212"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="213"></A>        pbOK_actionPerformed();
+<A NAME="214"></A>      } 
+<A NAME="215"></A>
+<A NAME="216"></A>    });
+<A NAME="217"></A>
+<A NAME="218"></A>    <FONT ID="SingleLineComment">// Einrichten des Abbrechen-Knopfes
+<A NAME="219"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="220"></A></FONT>    <FONT ID="SingleLineComment">// pbCancel.setText("jButton2");
+<A NAME="221"></A></FONT>    <FONT ID="SingleLineComment">// pbCancel.setLabel("Abbrechen");
+<A NAME="222"></A></FONT>    pbCancel.setText(<FONT ID="StringLiteral">"Abbrechen"</FONT>);
+<A NAME="223"></A>    pbCancel.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">140</FONT>, <FONT ID="IntegerLiteral">194</FONT>, <FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="224"></A>    pbCancel.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="225"></A>
+<A NAME="226"></A>
+<A NAME="227"></A>      <FONT ID="FormalComment">/**
+<A NAME="228"></A>       * Method declaration
+<A NAME="229"></A>       * 
+<A NAME="230"></A>       * 
+<A NAME="231"></A>       * @param e
+<A NAME="232"></A>       * 
+<A NAME="233"></A>       * @see
+<A NAME="234"></A>       */</FONT>
+<A NAME="235"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="236"></A>        pbCancel_actionPerformed();
+<A NAME="237"></A>      } 
+<A NAME="238"></A>
+<A NAME="239"></A>    });
+<A NAME="240"></A>
+<A NAME="241"></A>    <FONT ID="SingleLineComment">// Einrichten der Elemente zur Eingabe der Schicht, die berechnet werden soll
+<A NAME="242"></A></FONT>    jLabel2.setText(<FONT ID="StringLiteral">"Welche Schicht moechten Sie berechnen?"</FONT>);
+<A NAME="243"></A>    jLabel2.setForeground(Color.black);
+<A NAME="244"></A>    jLabel2.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">93</FONT>, <FONT ID="IntegerLiteral">237</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="245"></A>
+<A NAME="246"></A>    pSlice.setBounds(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">123</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">30</FONT>);
+<A NAME="247"></A>    pSlice.setRange(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">255</FONT>);
+<A NAME="248"></A>
+<A NAME="249"></A>    <FONT ID="SingleLineComment">// Einricht der Checkbox zum Ein/Ausschalten der Interpolation
+<A NAME="250"></A></FONT>    cbInterpolate.setText(<FONT ID="StringLiteral">"Interpolation ein/aus"</FONT>);
+<A NAME="251"></A>    cbInterpolate.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="252"></A>    cbInterpolate.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">155</FONT>, <FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">23</FONT>));
+<A NAME="253"></A>
+<A NAME="254"></A>    <FONT ID="SingleLineComment">// Hinzufuegen der Bedienelemente zum Panel
+<A NAME="255"></A></FONT>    panel1.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="256"></A>    panel1.add(lText, <FONT ID="Null">null</FONT>);
+<A NAME="257"></A>    panel1.add(pImages, <FONT ID="Null">null</FONT>);
+<A NAME="258"></A>    panel1.add(pbOK, <FONT ID="Null">null</FONT>);
+<A NAME="259"></A>    panel1.add(pbCancel, <FONT ID="Null">null</FONT>);
+<A NAME="260"></A>    panel1.add(jLabel1, <FONT ID="Null">null</FONT>);
+<A NAME="261"></A>    panel1.add(pSlice, <FONT ID="Null">null</FONT>);
+<A NAME="262"></A>    panel1.add(cbInterpolate, <FONT ID="Null">null</FONT>);
+<A NAME="263"></A>    panel1.add(jLabel2, <FONT ID="Null">null</FONT>);
+<A NAME="264"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="265"></A></FONT> 
+<A NAME="266"></A>
+<A NAME="267"></A>  <FONT ID="FormalComment">/**
+<A NAME="268"></A>   * Die Methode setzt den Inhalt der beiden Textfelder auf die angegebenen Werte.
+<A NAME="269"></A>   * Diese Mthode wird zur sinnvollen Voreinstellung der Textfelder benoetigt und vom
+<A NAME="270"></A>   * DICOM-Viewer aufgerufen.
+<A NAME="271"></A>   * @param from Inhalt des ersten Textfeldes (Startbild fuer die Berechnung).
+<A NAME="272"></A>   * @param to Inhalt des zweiten Textfeldes (Endbild fuer die Berechnung).
+<A NAME="273"></A>   */</FONT>
+<A NAME="274"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setImages(<FONT ID="Int">int</FONT> from, <FONT ID="Int">int</FONT> to) {
+<A NAME="275"></A>    pImages.setRange1(from, to);
+<A NAME="276"></A>    pImages.setRange2(from, to);
+<A NAME="277"></A>    pImages.setValue1(<FONT ID="StringLiteral">""</FONT> + from);
+<A NAME="278"></A>    pImages.setValue2(<FONT ID="StringLiteral">""</FONT> + to);
+<A NAME="279"></A>  }   <FONT ID="SingleLineComment">// Methode setImages(int from, int to)
+<A NAME="280"></A></FONT> 
+<A NAME="281"></A>
+<A NAME="282"></A>  <FONT ID="FormalComment">/**
+<A NAME="283"></A>   * Die Methode setz den Code fuer die zu berechnende Projektion. In Abhaengigkeit
+<A NAME="284"></A>   * von dieser Einstellung wird eine der beiden 90 Grad Projektionen durchgefuehrt.
+<A NAME="285"></A>   * @param nr Code fuer die Projektionsart
+<A NAME="286"></A>   */</FONT>
+<A NAME="287"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setProjectionNr(<FONT ID="Int">int</FONT> nr) {
+<A NAME="288"></A>    projection = nr;
+<A NAME="289"></A>  }   <FONT ID="SingleLineComment">// Methode setProjectionNr(int nr)
+<A NAME="290"></A></FONT> 
+<A NAME="291"></A>
+<A NAME="292"></A>  <FONT ID="FormalComment">/**
+<A NAME="293"></A>   * Die Methode schliesst das Dialogfenster, wenn der Schliessen-Knopf gedrueckt
+<A NAME="294"></A>   * wurde.
+<A NAME="295"></A>   * @param e Ereignis, das bei der Zustandsaenderung des Fensters erzeugt wird.
+<A NAME="296"></A>   */</FONT>
+<A NAME="297"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> processWindowEvent(WindowEvent e) {
+<A NAME="298"></A>    <FONT ID="If">if</FONT> (e.getID() == WindowEvent.WINDOW_CLOSING) {
+<A NAME="299"></A>      cancel();
+<A NAME="300"></A>    } 
+<A NAME="301"></A>    <FONT ID="Super">super</FONT>.processWindowEvent(e);
+<A NAME="302"></A>  }   <FONT ID="SingleLineComment">// Methode processWindowEvent(WindowEvent e)
+<A NAME="303"></A></FONT> 
+<A NAME="304"></A>
+<A NAME="305"></A>  <FONT ID="FormalComment">/**
+<A NAME="306"></A>   * Die Methode zerstoert das aktuelle Dialogfenster. Sie wird aufgerufen, wenn
+<A NAME="307"></A>   * der Schliessen- oder der Abbrechen-Knopf gedrueckt wurde.
+<A NAME="308"></A>   */</FONT>
+<A NAME="309"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> cancel() {
+<A NAME="310"></A>    dispose();
+<A NAME="311"></A>  } 
+<A NAME="312"></A>
+<A NAME="313"></A>
+<A NAME="314"></A>  <FONT ID="FormalComment">/**
+<A NAME="315"></A>   * Die Methode wird aufgerufen, wenn der Abbrechen-Knopf gedrueckt wurde.
+<A NAME="316"></A>   * Das Dialogfenster wird dann zerstoert.
+<A NAME="317"></A>   */</FONT>
+<A NAME="318"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbCancel_actionPerformed() {
+<A NAME="319"></A>    cancel();
+<A NAME="320"></A>  }   <FONT ID="SingleLineComment">// Methode pbCancel_actionPerformed
+<A NAME="321"></A></FONT> 
+<A NAME="322"></A>
+<A NAME="323"></A>  <FONT ID="FormalComment">/**
+<A NAME="324"></A>   * Die Methode wird aufgerufen, wenn der OK-Knopf gedrueckt wurde. Es wird
+<A NAME="325"></A>   * dann eine der beiden Methoden zur Berechnung einer 90°-Projektion
+<A NAME="326"></A>   * mit den entsprechenden Parametern aufgerufen. Anschliessend wird das
+<A NAME="327"></A>   * Dialogfenster geschlossen.
+<A NAME="328"></A>   */</FONT>
+<A NAME="329"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbOK_actionPerformed() {
+<A NAME="330"></A>    <FONT ID="Int">int</FONT>     from = pImages.getValue1();
+<A NAME="331"></A>    <FONT ID="Int">int</FONT>     to = pImages.getValue2();
+<A NAME="332"></A>    <FONT ID="Int">int</FONT>     slice = pSlice.getValue();
+<A NAME="333"></A>    <FONT ID="Boolean">boolean</FONT> inter = cbInterpolate.isSelected();
+<A NAME="334"></A>
+<A NAME="335"></A>    <FONT ID="If">if</FONT> (projection == <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="336"></A>      mainFrame.createNewProj2Image(from, to, slice, inter);
+<A NAME="337"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="338"></A>      mainFrame.createNewProj1Image(from, to, slice, inter);
+<A NAME="339"></A>    } 
+<A NAME="340"></A>
+<A NAME="341"></A>    dispose();
+<A NAME="342"></A>  }   <FONT ID="SingleLineComment">// Methode pbOK_actionPerformed()
+<A NAME="343"></A></FONT> 
+<A NAME="344"></A>}
+<A NAME="345"></A>
+<A NAME="346"></A>
+<A NAME="347"></A>
+<A NAME="348"></A>
+<A NAME="349"></A>
+<A NAME="350"></A>
+<A NAME="351"></A>
+<A NAME="352"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="353"></A>
+<A NAME="354"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ProjParamDlg</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

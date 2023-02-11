@@ -1,0 +1,1188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.GrayImage (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">GrayImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="18"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="FormalComment">/**
+<A NAME="23"></A> * GrayImage is a 2-d array of shorts
+<A NAME="24"></A> */</FONT>
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> GrayImage <FONT ID="Implements">implements</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> {
+<A NAME="27"></A>
+<A NAME="28"></A>
+<A NAME="29"></A>  <FONT ID="FormalComment">/**
+<A NAME="30"></A>   * Two dimensional integer array
+<A NAME="31"></A>   */</FONT>
+<A NAME="32"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Short">short</FONT>[][] data;
+<A NAME="33"></A>
+<A NAME="34"></A>
+<A NAME="35"></A>  <FONT ID="FormalComment">/**
+<A NAME="36"></A>   * Cartesian width
+<A NAME="37"></A>   */</FONT>
+<A NAME="38"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>       X;
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Cartesian height
+<A NAME="43"></A>   */</FONT>
+<A NAME="44"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>       Y;
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Creates an empty two dimensional GrayImage with a height and width of zero
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Public">public</FONT> GrayImage() {
+<A NAME="51"></A>    X = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="52"></A>    Y = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="53"></A>    data = <FONT ID="Null">null</FONT>;
+<A NAME="54"></A>  }
+<A NAME="55"></A>
+<A NAME="56"></A>
+<A NAME="57"></A>  <FONT ID="FormalComment">/**
+<A NAME="58"></A>   * Creates a two dimensional GrayImage with a height and width of x and y repectively
+<A NAME="59"></A>   */</FONT>
+<A NAME="60"></A>  <FONT ID="Public">public</FONT> GrayImage(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="61"></A>    X = x;
+<A NAME="62"></A>    Y = y;
+<A NAME="63"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[Y][X];
+<A NAME="64"></A>  }
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * Creates a two dimensional GrayImage with a height and width of x and y repectively
+<A NAME="69"></A>   * @param x width of image
+<A NAME="70"></A>   * @param y height of image
+<A NAME="71"></A>   * @param dat one dimensional array of short.  The array is length x*y.
+<A NAME="72"></A>   */</FONT>
+<A NAME="73"></A>
+<A NAME="74"></A>  <FONT ID="Public">public</FONT> GrayImage(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Short">short</FONT>[] dat) {
+<A NAME="75"></A>    X = x;
+<A NAME="76"></A>    Y = y;
+<A NAME="77"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[Y][X];
+<A NAME="78"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> a = <FONT ID="IntegerLiteral">0</FONT>; a &lt; y; a++) {
+<A NAME="79"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> b = <FONT ID="IntegerLiteral">0</FONT>; b &lt; x; b++) {
+<A NAME="80"></A>        data[a][b] = dat[a * Y + b];
+<A NAME="81"></A>      }
+<A NAME="82"></A>    }
+<A NAME="83"></A>  }
+<A NAME="84"></A>
+<A NAME="85"></A>
+<A NAME="86"></A>  <FONT ID="FormalComment">/**
+<A NAME="87"></A>   * Creates a two dimensional GrayImage from a two dimensional array
+<A NAME="88"></A>   * @param dat two dimensional array of short
+<A NAME="89"></A>   */</FONT>
+<A NAME="90"></A>
+<A NAME="91"></A>  <FONT ID="Public">public</FONT> GrayImage(<FONT ID="Short">short</FONT>[][] dat) {
+<A NAME="92"></A>    <FONT ID="Int">int</FONT> max = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="93"></A>
+<A NAME="94"></A>    Y = dat.length;
+<A NAME="95"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; X; y++) {
+<A NAME="96"></A>      <FONT ID="If">if</FONT> (dat[y].length &gt; max) {
+<A NAME="97"></A>        max = dat[y].length;
+<A NAME="98"></A>      } 
+<A NAME="99"></A>    }
+<A NAME="100"></A>    X = max;
+<A NAME="101"></A>
+<A NAME="102"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> a = <FONT ID="IntegerLiteral">0</FONT>; a &lt; Y; a++) {
+<A NAME="103"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> b = <FONT ID="IntegerLiteral">0</FONT>; b &lt; X; b++) {
+<A NAME="104"></A>        <FONT ID="If">if</FONT> (b &lt; data[a].length) {
+<A NAME="105"></A>          data[a][b] = dat[a][b];
+<A NAME="106"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="107"></A>          data[a][b] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="108"></A>        }
+<A NAME="109"></A>      }
+<A NAME="110"></A>    }
+<A NAME="111"></A>
+<A NAME="112"></A>    data = dat;
+<A NAME="113"></A>  }
+<A NAME="114"></A>
+<A NAME="115"></A>
+<A NAME="116"></A>  <FONT ID="FormalComment">/**
+<A NAME="117"></A>   * Creates a two dimensional GrayImage (shallow copy) from GrayImage img
+<A NAME="118"></A>   */</FONT>
+<A NAME="119"></A>  <FONT ID="Public">public</FONT> GrayImage(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> img) {
+<A NAME="120"></A>    X = img.X();
+<A NAME="121"></A>    Y = img.Y();
+<A NAME="122"></A>    data = img.data;
+<A NAME="123"></A>  }
+<A NAME="124"></A>
+<A NAME="125"></A>
+<A NAME="126"></A>  <FONT ID="FormalComment">/**
+<A NAME="127"></A>   * Creates an two dimensional GrayImage from the standard java.awt.Image
+<A NAME="128"></A>   */</FONT>
+<A NAME="129"></A>  <FONT ID="Public">public</FONT> GrayImage(java.awt.Image img) {
+<A NAME="130"></A>    <FONT ID="Int">int</FONT> w = img.getWidth(DummyObserver.dummy);
+<A NAME="131"></A>    <FONT ID="Int">int</FONT> h = img.getHeight(DummyObserver.dummy);
+<A NAME="132"></A>
+<A NAME="133"></A>    X = w;
+<A NAME="134"></A>    Y = h;
+<A NAME="135"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[Y][X];
+<A NAME="136"></A>    InitFromImage(img, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, w, h);
+<A NAME="137"></A>  }
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>  <FONT ID="FormalComment">/**
+<A NAME="141"></A>   * Makes a deep copy of this image
+<A NAME="142"></A>   * @param none
+<A NAME="143"></A>   * @return a deep copy of GrayImage
+<A NAME="144"></A>   */</FONT>
+<A NAME="145"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy() {
+<A NAME="146"></A>    <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> g = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(X, Y);
+<A NAME="147"></A>
+<A NAME="148"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="149"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="150"></A>        g.data[y][x] = data[y][x];
+<A NAME="151"></A>      } 
+<A NAME="152"></A>    } 
+<A NAME="153"></A>    <FONT ID="Return">return</FONT> g;
+<A NAME="154"></A>  } 
+<A NAME="155"></A>
+<A NAME="156"></A>
+<A NAME="157"></A>  <FONT ID="FormalComment">/**
+<A NAME="158"></A>   * Makes a copy of this image with a buffer so the resulting image has a width x and height y
+<A NAME="159"></A>   * @param none
+<A NAME="160"></A>   * @return a deep copy of GrayImage
+<A NAME="161"></A>   */</FONT>
+<A NAME="162"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> addbuffer(<FONT ID="Int">int</FONT> w, <FONT ID="Int">int</FONT> h, <FONT ID="Int">int</FONT> color) {
+<A NAME="163"></A>    <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> g = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(w, h);
+<A NAME="164"></A>
+<A NAME="165"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="166"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="167"></A>        <FONT ID="If">if</FONT> ((x &lt; X) &amp;&amp; (y &lt; Y)) {
+<A NAME="168"></A>          g.data[y][x] = data[y][x];
+<A NAME="169"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="170"></A>          g.data[y][x] = (<FONT ID="Short">short</FONT>) color;
+<A NAME="171"></A>        }
+<A NAME="172"></A>      } 
+<A NAME="173"></A>    } 
+<A NAME="174"></A>    <FONT ID="Return">return</FONT> g;
+<A NAME="175"></A>  } 
+<A NAME="176"></A>
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Makes a copy of this image with a buffer so the resulting image has a width x and height y
+<A NAME="180"></A>   * @param none
+<A NAME="181"></A>   * @return a deep copy of GrayImage
+<A NAME="182"></A>   */</FONT>
+<A NAME="183"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> addbuffer(<FONT ID="Int">int</FONT> w, <FONT ID="Int">int</FONT> h, <FONT ID="Int">int</FONT> xoff, <FONT ID="Int">int</FONT> yoff, <FONT ID="Int">int</FONT> color) {
+<A NAME="184"></A>    <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> g = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>(w, h);
+<A NAME="185"></A>
+<A NAME="186"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="187"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="188"></A>        <FONT ID="If">if</FONT> ((x &lt; xoff) || (y &lt; yoff)) {
+<A NAME="189"></A>          g.data[y][x] = (<FONT ID="Short">short</FONT>) color;
+<A NAME="190"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ((x &gt; xoff + X) || (y &gt; yoff + Y)) {
+<A NAME="191"></A>          g.data[y][x] = (<FONT ID="Short">short</FONT>) color;
+<A NAME="192"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="193"></A>          g.data[y][x] = data[y - yoff][x - xoff];
+<A NAME="194"></A>        }
+<A NAME="195"></A>      } 
+<A NAME="196"></A>    } 
+<A NAME="197"></A>    <FONT ID="Return">return</FONT> g;
+<A NAME="198"></A>  } 
+<A NAME="199"></A>
+<A NAME="200"></A>
+<A NAME="201"></A>  <FONT ID="FormalComment">/**
+<A NAME="202"></A>   * Method declaration
+<A NAME="203"></A>   *
+<A NAME="204"></A>   *
+<A NAME="205"></A>   * @param img
+<A NAME="206"></A>   * @param x
+<A NAME="207"></A>   * @param y
+<A NAME="208"></A>   * @param w
+<A NAME="209"></A>   * @param h
+<A NAME="210"></A>   *
+<A NAME="211"></A>   * @see
+<A NAME="212"></A>   */</FONT>
+<A NAME="213"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> InitFromImage(java.awt.Image img, <FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> w, <FONT ID="Int">int</FONT> h) {
+<A NAME="214"></A>    <FONT ID="Int">int</FONT>           pixels[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[w * h];
+<A NAME="215"></A>    PixelGrabber  pg = <FONT ID="New">new</FONT> PixelGrabber(img, x, y, w, h, pixels, <FONT ID="IntegerLiteral">0</FONT>, w);
+<A NAME="216"></A>
+<A NAME="217"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="218"></A>      pg.grabPixels();
+<A NAME="219"></A>    } <FONT ID="Catch">catch</FONT> (InterruptedException e) {
+<A NAME="220"></A>      System.err.println(<FONT ID="StringLiteral">"interrupted waiting for pixels!"</FONT>);
+<A NAME="221"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="222"></A>    } 
+<A NAME="223"></A>    <FONT ID="If">if</FONT> ((pg.status() &amp; ImageObserver.ABORT) != <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="224"></A>      System.err.println(<FONT ID="StringLiteral">"image fetch aborted or errored"</FONT>);
+<A NAME="225"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="226"></A>    } 
+<A NAME="227"></A>
+<A NAME="228"></A>    <FONT ID="SingleLineComment">// convert from grabbed pixels
+<A NAME="229"></A></FONT>    <FONT ID="Int">int</FONT> red = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="230"></A>    <FONT ID="Int">int</FONT> green = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="231"></A>    <FONT ID="Int">int</FONT> blue = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="232"></A>    <FONT ID="Int">int</FONT> index = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="233"></A>
+<A NAME="234"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = <FONT ID="IntegerLiteral">0</FONT>; iy &lt; Y; iy++) {
+<A NAME="235"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = <FONT ID="IntegerLiteral">0</FONT>; ix &lt; X; ix++) {
+<A NAME="236"></A>        red = <FONT ID="IntegerLiteral">0x0FF</FONT> &amp; pixels[index] &gt;&gt; <FONT ID="IntegerLiteral">16</FONT>;
+<A NAME="237"></A>        green = <FONT ID="IntegerLiteral">0x0FF</FONT> &amp; pixels[index] &gt;&gt; <FONT ID="IntegerLiteral">8</FONT>;
+<A NAME="238"></A>        blue = <FONT ID="IntegerLiteral">0x0FF</FONT> &amp; pixels[index];
+<A NAME="239"></A>        data[iy][ix] = (<FONT ID="Short">short</FONT>) ((<FONT ID="Double">double</FONT>) red * <FONT ID="FloatPointLiteral">0.299</FONT> + (<FONT ID="Double">double</FONT>) green * <FONT ID="FloatPointLiteral">0.587</FONT> + (<FONT ID="Double">double</FONT>) blue * <FONT ID="FloatPointLiteral">0.114</FONT>);
+<A NAME="240"></A>        index++;
+<A NAME="241"></A>      } 
+<A NAME="242"></A>    } 
+<A NAME="243"></A>  } 
+<A NAME="244"></A>
+<A NAME="245"></A>
+<A NAME="246"></A>  <FONT ID="FormalComment">/**
+<A NAME="247"></A>   * Returns the width (maximum X value)
+<A NAME="248"></A>   * @param none
+<A NAME="249"></A>   */</FONT>
+<A NAME="250"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> X() {
+<A NAME="251"></A>    <FONT ID="Return">return</FONT> X;
+<A NAME="252"></A>  } 
+<A NAME="253"></A>
+<A NAME="254"></A>
+<A NAME="255"></A>  <FONT ID="FormalComment">/**
+<A NAME="256"></A>   * Returns the height (maximum Y value)
+<A NAME="257"></A>   * @param none
+<A NAME="258"></A>   */</FONT>
+<A NAME="259"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> Y() {
+<A NAME="260"></A>    <FONT ID="Return">return</FONT> Y;
+<A NAME="261"></A>  } 
+<A NAME="262"></A>
+<A NAME="263"></A>
+<A NAME="264"></A>  <FONT ID="FormalComment">/**
+<A NAME="265"></A>   * Returns the pixel value at the given x, y value
+<A NAME="266"></A>   * @param x  the X coordinant
+<A NAME="267"></A>   * @param y  the Y coordinant
+<A NAME="268"></A>   */</FONT>
+<A NAME="269"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> get(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="270"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) data[y][x];
+<A NAME="271"></A>  } 
+<A NAME="272"></A>
+<A NAME="273"></A>
+<A NAME="274"></A>  <FONT ID="FormalComment">/**
+<A NAME="275"></A>   * Sets the pixel value at x, y to a given value
+<A NAME="276"></A>   * @param x the X coordinant
+<A NAME="277"></A>   * @param y the Y coordinant
+<A NAME="278"></A>   * @param value the value to set the pixel to
+<A NAME="279"></A>   */</FONT>
+<A NAME="280"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value) {
+<A NAME="281"></A>    data[y][x] = (<FONT ID="Short">short</FONT>) value;
+<A NAME="282"></A>  } 
+<A NAME="283"></A>
+<A NAME="284"></A>
+<A NAME="285"></A>
+<A NAME="286"></A>
+<A NAME="287"></A>  <FONT ID="FormalComment">/**
+<A NAME="288"></A>   * Clears the image to zero
+<A NAME="289"></A>   * @param none
+<A NAME="290"></A>   */</FONT>
+<A NAME="291"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> clear() {
+<A NAME="292"></A>    clear(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="293"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="294"></A>  } 
+<A NAME="295"></A>
+<A NAME="296"></A>
+<A NAME="297"></A>  <FONT ID="FormalComment">/**
+<A NAME="298"></A>   * Clears to constant value
+<A NAME="299"></A>   * @param val the value to "clear" the image to
+<A NAME="300"></A>   */</FONT>
+<A NAME="301"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> clear(<FONT ID="Int">int</FONT> val) {
+<A NAME="302"></A>    <FONT ID="Int">int</FONT> x, y;
+<A NAME="303"></A>
+<A NAME="304"></A>    <FONT ID="For">for</FONT> (y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="305"></A>      <FONT ID="For">for</FONT> (x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="306"></A>        data[y][x] = (<FONT ID="Short">short</FONT>) val;
+<A NAME="307"></A>      } 
+<A NAME="308"></A>    } 
+<A NAME="309"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="310"></A>  } 
+<A NAME="311"></A>
+<A NAME="312"></A>
+<A NAME="313"></A>  <FONT ID="FormalComment">/**
+<A NAME="314"></A>   * Adds a value to a single pixel
+<A NAME="315"></A>   * @param x X-coordinant
+<A NAME="316"></A>   * @param y Y-coordinant
+<A NAME="317"></A>   * @param value the value to add to the pixel
+<A NAME="318"></A>   */</FONT>
+<A NAME="319"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value) {
+<A NAME="320"></A>    data[y][x] += (<FONT ID="Short">short</FONT>) value;
+<A NAME="321"></A>  } 
+<A NAME="322"></A>
+<A NAME="323"></A>
+<A NAME="324"></A>  <FONT ID="FormalComment">/**
+<A NAME="325"></A>   * Subtracts a value from a single pixel
+<A NAME="326"></A>   * @param x X-coordinant
+<A NAME="327"></A>   * @param y Y-coordinant
+<A NAME="328"></A>   * @param value the value to subtract from the pixel
+<A NAME="329"></A>   */</FONT>
+<A NAME="330"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value) {
+<A NAME="331"></A>    data[y][x] -= (<FONT ID="Short">short</FONT>) value;
+<A NAME="332"></A>  } 
+<A NAME="333"></A>
+<A NAME="334"></A>
+<A NAME="335"></A>  <FONT ID="FormalComment">/**
+<A NAME="336"></A>   * Mutiplies a single pixel by a value
+<A NAME="337"></A>   * @param x X-coordinant
+<A NAME="338"></A>   * @param y Y-coordinant
+<A NAME="339"></A>   * @param value - the value to mutiply to the pixel
+<A NAME="340"></A>   */</FONT>
+<A NAME="341"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value) {
+<A NAME="342"></A>    data[y][x] *= (<FONT ID="Short">short</FONT>) value;
+<A NAME="343"></A>  } 
+<A NAME="344"></A>
+<A NAME="345"></A>
+<A NAME="346"></A>  <FONT ID="FormalComment">/**
+<A NAME="347"></A>   * Divides a single pixel by a value
+<A NAME="348"></A>   * @param x X-coordinant
+<A NAME="349"></A>   * @param y Y-coordinant
+<A NAME="350"></A>   * @param value - the value to mutiply to the pixel
+<A NAME="351"></A>   */</FONT>
+<A NAME="352"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value) {
+<A NAME="353"></A>    data[y][x] /= (<FONT ID="Short">short</FONT>) value;
+<A NAME="354"></A>  } 
+<A NAME="355"></A>
+<A NAME="356"></A>
+<A NAME="357"></A>  <FONT ID="FormalComment">/**
+<A NAME="358"></A>   * Finds the minimum value of this image
+<A NAME="359"></A>   * @param none
+<A NAME="360"></A>   * @return an integer containing the minimum value
+<A NAME="361"></A>   */</FONT>
+<A NAME="362"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> min() {
+<A NAME="363"></A>    <FONT ID="Short">short</FONT> p;
+<A NAME="364"></A>    <FONT ID="Short">short</FONT> min = Short.MAX_VALUE;
+<A NAME="365"></A>
+<A NAME="366"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="367"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="368"></A>        p = data[y][x];
+<A NAME="369"></A>        <FONT ID="If">if</FONT> (p &lt; min) {
+<A NAME="370"></A>          min = p;
+<A NAME="371"></A>        } 
+<A NAME="372"></A>      } 
+<A NAME="373"></A>    } 
+<A NAME="374"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) min;
+<A NAME="375"></A>  } 
+<A NAME="376"></A>
+<A NAME="377"></A>
+<A NAME="378"></A>  <FONT ID="FormalComment">/**
+<A NAME="379"></A>   * Finds the maximum value of this image
+<A NAME="380"></A>   * @param none
+<A NAME="381"></A>   * @return an integer containing the maximum value
+<A NAME="382"></A>   */</FONT>
+<A NAME="383"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> max() {
+<A NAME="384"></A>    <FONT ID="Short">short</FONT> p;
+<A NAME="385"></A>    <FONT ID="Short">short</FONT> max = Short.MIN_VALUE;
+<A NAME="386"></A>
+<A NAME="387"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="388"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="389"></A>        p = data[y][x];
+<A NAME="390"></A>        <FONT ID="If">if</FONT> (p &gt; max) {
+<A NAME="391"></A>          max = p;
+<A NAME="392"></A>        } 
+<A NAME="393"></A>      } 
+<A NAME="394"></A>    } 
+<A NAME="395"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) max;
+<A NAME="396"></A>  } 
+<A NAME="397"></A>
+<A NAME="398"></A>
+<A NAME="399"></A>  <FONT ID="FormalComment">/**
+<A NAME="400"></A>   * Adds a value to all the pixels in this image
+<A NAME="401"></A>   * @param v value to be added to the pixels
+<A NAME="402"></A>   * @return this
+<A NAME="403"></A>   */</FONT>
+<A NAME="404"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> add(<FONT ID="Int">int</FONT> v) {
+<A NAME="405"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="406"></A>
+<A NAME="407"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="408"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="409"></A>        data[y][x] += sv;
+<A NAME="410"></A>      } 
+<A NAME="411"></A>    } 
+<A NAME="412"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="413"></A>  } 
+<A NAME="414"></A>
+<A NAME="415"></A>
+<A NAME="416"></A>  <FONT ID="FormalComment">/**
+<A NAME="417"></A>   * Subtracts a value from all the pixels in this image
+<A NAME="418"></A>   * @param v value to be added to the pixels
+<A NAME="419"></A>   * @return this
+<A NAME="420"></A>   */</FONT>
+<A NAME="421"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> subtract(<FONT ID="Int">int</FONT> v) {
+<A NAME="422"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="423"></A>
+<A NAME="424"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="425"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="426"></A>        data[y][x] -= sv;
+<A NAME="427"></A>      } 
+<A NAME="428"></A>    } 
+<A NAME="429"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="430"></A>  } 
+<A NAME="431"></A>
+<A NAME="432"></A>
+<A NAME="433"></A>  <FONT ID="FormalComment">/**
+<A NAME="434"></A>   * Multiplies all the pixels in this image by a value
+<A NAME="435"></A>   * @param v value to be added to the pixels
+<A NAME="436"></A>   * @return this
+<A NAME="437"></A>   */</FONT>
+<A NAME="438"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> multiply(<FONT ID="Int">int</FONT> v) {
+<A NAME="439"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="440"></A>
+<A NAME="441"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="442"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="443"></A>        data[y][x] *= sv;
+<A NAME="444"></A>      } 
+<A NAME="445"></A>    } 
+<A NAME="446"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="447"></A>  } 
+<A NAME="448"></A>
+<A NAME="449"></A>
+<A NAME="450"></A>  <FONT ID="FormalComment">/**
+<A NAME="451"></A>   * Divides all the pixels in this image by a value
+<A NAME="452"></A>   * @param v value to be added to the pixels
+<A NAME="453"></A>   * @return this
+<A NAME="454"></A>   */</FONT>
+<A NAME="455"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> divide(<FONT ID="Int">int</FONT> v) {
+<A NAME="456"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="457"></A>
+<A NAME="458"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="459"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="460"></A>        data[y][x] /= sv;
+<A NAME="461"></A>      } 
+<A NAME="462"></A>    } 
+<A NAME="463"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="464"></A>  } 
+<A NAME="465"></A>
+<A NAME="466"></A>
+<A NAME="467"></A>  <FONT ID="FormalComment">/**
+<A NAME="468"></A>   * Adds all the values together
+<A NAME="469"></A>   */</FONT>
+<A NAME="470"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> addSum() {
+<A NAME="471"></A>    <FONT ID="Int">int</FONT> sum = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="472"></A>
+<A NAME="473"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="474"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="475"></A>        sum += data[y][x];
+<A NAME="476"></A>      }
+<A NAME="477"></A>    }
+<A NAME="478"></A>    <FONT ID="Return">return</FONT> sum;
+<A NAME="479"></A>  } 
+<A NAME="480"></A>
+<A NAME="481"></A>
+<A NAME="482"></A>  <FONT ID="FormalComment">/**
+<A NAME="483"></A>   * Adds absolute value of all the values together
+<A NAME="484"></A>   */</FONT>
+<A NAME="485"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> absSum() {
+<A NAME="486"></A>    <FONT ID="Int">int</FONT> sum = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="487"></A>
+<A NAME="488"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="489"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="490"></A>        <FONT ID="If">if</FONT> (data[y][x] &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="491"></A>          sum += -(data[y][x]);
+<A NAME="492"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="493"></A>          sum += data[y][x];
+<A NAME="494"></A>        }
+<A NAME="495"></A>      }
+<A NAME="496"></A>    }
+<A NAME="497"></A>    <FONT ID="Return">return</FONT> sum;
+<A NAME="498"></A>  } 
+<A NAME="499"></A>
+<A NAME="500"></A>
+<A NAME="501"></A>  <FONT ID="FormalComment">/**
+<A NAME="502"></A>   * Adds the square of all the values together
+<A NAME="503"></A>   */</FONT>
+<A NAME="504"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Long">long</FONT> sqrSum() {
+<A NAME="505"></A>    <FONT ID="Long">long</FONT>  sum = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="506"></A>
+<A NAME="507"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="508"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="509"></A>        sum += (data[y][x] * data[y][x]);
+<A NAME="510"></A>      }
+<A NAME="511"></A>    }
+<A NAME="512"></A>    <FONT ID="Return">return</FONT> sum;
+<A NAME="513"></A>  } 
+<A NAME="514"></A>
+<A NAME="515"></A>
+<A NAME="516"></A>  <FONT ID="FormalComment">/**
+<A NAME="517"></A>   * Adds another GrayImage to this image
+<A NAME="518"></A>   * @param im the GrayImage to add
+<A NAME="519"></A>   * @return this
+<A NAME="520"></A>   */</FONT>
+<A NAME="521"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> add(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im) {
+<A NAME="522"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="523"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="524"></A>        <FONT ID="If">if</FONT> (y &lt; im.Y() &amp;&amp; x &lt; im.X()) {
+<A NAME="525"></A>          data[y][x] += im.get(x, y);
+<A NAME="526"></A>        } 
+<A NAME="527"></A>      } 
+<A NAME="528"></A>    } 
+<A NAME="529"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="530"></A>  } 
+<A NAME="531"></A>
+<A NAME="532"></A>
+<A NAME="533"></A>  <FONT ID="FormalComment">/**
+<A NAME="534"></A>   * Subtracts a GrayImage from this image
+<A NAME="535"></A>   * @param im the GrayImage to subtract
+<A NAME="536"></A>   * @return this
+<A NAME="537"></A>   */</FONT>
+<A NAME="538"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> subtract(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im) {
+<A NAME="539"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="540"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="541"></A>        <FONT ID="If">if</FONT> (y &lt; im.Y() &amp;&amp; x &lt; im.X()) {
+<A NAME="542"></A>          data[y][x] -= im.get(x, y);
+<A NAME="543"></A>        } 
+<A NAME="544"></A>      } 
+<A NAME="545"></A>    } 
+<A NAME="546"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="547"></A>  } 
+<A NAME="548"></A>
+<A NAME="549"></A>
+<A NAME="550"></A>  <FONT ID="FormalComment">/**
+<A NAME="551"></A>   * Subtracts the second image from the first and returns the absolute value
+<A NAME="552"></A>   */</FONT>
+<A NAME="553"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> diff(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im) {
+<A NAME="554"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="555"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="556"></A>        data[y][x] -= im.get(x, y);
+<A NAME="557"></A>        <FONT ID="If">if</FONT> (data[y][x] &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="558"></A>          data[y][x] = (<FONT ID="Short">short</FONT>) -data[y][x];
+<A NAME="559"></A>        } 
+<A NAME="560"></A>      } 
+<A NAME="561"></A>    } 
+<A NAME="562"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="563"></A>  } 
+<A NAME="564"></A>
+<A NAME="565"></A>
+<A NAME="566"></A>  <FONT ID="FormalComment">/**
+<A NAME="567"></A>   * Multiplies a GrayImage by this image
+<A NAME="568"></A>   * @param im the GrayImage to multiply
+<A NAME="569"></A>   * @return this
+<A NAME="570"></A>   */</FONT>
+<A NAME="571"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> multiply(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im) {
+<A NAME="572"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="573"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="574"></A>        <FONT ID="If">if</FONT> (y &lt; im.Y() &amp;&amp; x &lt; im.X()) {
+<A NAME="575"></A>          data[y][x] *= im.get(x, y);
+<A NAME="576"></A>        } 
+<A NAME="577"></A>      } 
+<A NAME="578"></A>    } 
+<A NAME="579"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="580"></A>  } 
+<A NAME="581"></A>
+<A NAME="582"></A>
+<A NAME="583"></A>  <FONT ID="FormalComment">/**
+<A NAME="584"></A>   * Divides this image by a GrayImage
+<A NAME="585"></A>   * @param im the GrayImage to divide
+<A NAME="586"></A>   * @return this
+<A NAME="587"></A>   */</FONT>
+<A NAME="588"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> divide(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im) {
+<A NAME="589"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="590"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="591"></A>        <FONT ID="If">if</FONT> (y &lt; im.Y() &amp;&amp; x &lt; im.X()) {
+<A NAME="592"></A>          data[y][x] /= im.get(x, y);
+<A NAME="593"></A>        } 
+<A NAME="594"></A>      } 
+<A NAME="595"></A>    } 
+<A NAME="596"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="597"></A>  } 
+<A NAME="598"></A>
+<A NAME="599"></A>
+<A NAME="600"></A>  <FONT ID="FormalComment">/**
+<A NAME="601"></A>   * Prints this image in integer format.
+<A NAME="602"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;-Example of output on an image with width 100 and height 120:&lt;/DT&gt;
+<A NAME="603"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="604"></A>   * &lt;DT&gt;10 20 32 12 32 56 40 59 42 39 43 ...&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="605"></A>   */</FONT>
+<A NAME="606"></A>  <FONT ID="Public">public</FONT> String toString() {
+<A NAME="607"></A>    String  str = X + <FONT ID="StringLiteral">":"</FONT> + Y + <FONT ID="StringLiteral">"\n"</FONT>;
+<A NAME="608"></A>
+<A NAME="609"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="610"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="611"></A>        str += data[y][x] + <FONT ID="StringLiteral">" "</FONT>;
+<A NAME="612"></A>      } 
+<A NAME="613"></A>      str += <FONT ID="StringLiteral">"\n"</FONT>;
+<A NAME="614"></A>    } 
+<A NAME="615"></A>    <FONT ID="Return">return</FONT> str;
+<A NAME="616"></A>  } 
+<A NAME="617"></A>
+<A NAME="618"></A>
+<A NAME="619"></A>  <FONT ID="FormalComment">/**
+<A NAME="620"></A>   * Turns this image into a Java Image (java.awt.Image). Note: This method also scales the image
+<A NAME="621"></A>   * so all the values are between 0 and 255.
+<A NAME="622"></A>   * @param none
+<A NAME="623"></A>   * @see java.awt.ImageProducer
+<A NAME="624"></A>   */</FONT>
+<A NAME="625"></A>  <FONT ID="Public">public</FONT> ImageProducer getJavaImage() {
+<A NAME="626"></A>
+<A NAME="627"></A>    <FONT ID="SingleLineComment">// get range of this image
+<A NAME="628"></A></FONT>    <FONT ID="Int">int</FONT> min = min();
+<A NAME="629"></A>    <FONT ID="Int">int</FONT> max = max();
+<A NAME="630"></A>
+<A NAME="631"></A>    <FONT ID="SingleLineComment">// keep byte images in original range
+<A NAME="632"></A></FONT>    <FONT ID="If">if</FONT> (min &gt;= <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; max &lt;= <FONT ID="IntegerLiteral">255</FONT>) {
+<A NAME="633"></A>      min = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="634"></A>      max = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="635"></A>    } 
+<A NAME="636"></A>    <FONT ID="Int">int</FONT> range = max - min;
+<A NAME="637"></A>
+<A NAME="638"></A>    <FONT ID="SingleLineComment">// convert jigl image to java image
+<A NAME="639"></A></FONT>    <FONT ID="Int">int</FONT> pix[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[X * Y];
+<A NAME="640"></A>    <FONT ID="Int">int</FONT> index = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="641"></A>    <FONT ID="Int">int</FONT> value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="642"></A>
+<A NAME="643"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="644"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="645"></A>
+<A NAME="646"></A>        <FONT ID="SingleLineComment">// scale image values
+<A NAME="647"></A></FONT>        value = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Float">float</FONT>) data[y][x] - min));
+<A NAME="648"></A>
+<A NAME="649"></A>        value = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; value;   <FONT ID="SingleLineComment">// take lower 8 bits
+<A NAME="650"></A></FONT>
+<A NAME="651"></A>        <FONT ID="SingleLineComment">// put this pixel in the java image
+<A NAME="652"></A></FONT>        pix[index] = (<FONT ID="IntegerLiteral">0xFF</FONT> &lt;&lt; <FONT ID="IntegerLiteral">24</FONT>) | (value &lt;&lt; <FONT ID="IntegerLiteral">16</FONT>) | (value &lt;&lt; <FONT ID="IntegerLiteral">8</FONT>) | value;
+<A NAME="653"></A>        index++;
+<A NAME="654"></A>      } 
+<A NAME="655"></A>    } 
+<A NAME="656"></A>
+<A NAME="657"></A>    <FONT ID="SingleLineComment">// return java image
+<A NAME="658"></A></FONT>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> MemoryImageSource(X, Y, pix, <FONT ID="IntegerLiteral">0</FONT>, X);
+<A NAME="659"></A>  } 
+<A NAME="660"></A>
+<A NAME="661"></A>
+<A NAME="662"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="663"></A>   * Level operations
+<A NAME="664"></A>   */</FONT>
+<A NAME="665"></A>
+<A NAME="666"></A>
+<A NAME="667"></A>  <FONT ID="FormalComment">/**
+<A NAME="668"></A>   * Scales the range of this image to byte (0..255)
+<A NAME="669"></A>   * @param none
+<A NAME="670"></A>   */</FONT>
+<A NAME="671"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> byteSize() {
+<A NAME="672"></A>
+<A NAME="673"></A>    <FONT ID="SingleLineComment">// get range of this image
+<A NAME="674"></A></FONT>    <FONT ID="Float">float</FONT> min = min();
+<A NAME="675"></A>    <FONT ID="Float">float</FONT> max = max();
+<A NAME="676"></A>
+<A NAME="677"></A>    <FONT ID="Float">float</FONT> range = max - min;
+<A NAME="678"></A>
+<A NAME="679"></A>    <FONT ID="SingleLineComment">// convert to byte depth
+<A NAME="680"></A></FONT>    <FONT ID="Int">int</FONT>   value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="681"></A>
+<A NAME="682"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="683"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="684"></A>        value = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Float">float</FONT>) data[y][x] - min));
+<A NAME="685"></A>        value = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; value;
+<A NAME="686"></A>        data[y][x] = (<FONT ID="Short">short</FONT>) value;
+<A NAME="687"></A>      } 
+<A NAME="688"></A>    } 
+<A NAME="689"></A>
+<A NAME="690"></A>  } 
+<A NAME="691"></A>
+<A NAME="692"></A>
+<A NAME="693"></A>  <FONT ID="FormalComment">/**
+<A NAME="694"></A>   * Clips the range of this image to an arbitrary min/max
+<A NAME="695"></A>   * @param min minimum value
+<A NAME="696"></A>   * @param max maximum value
+<A NAME="697"></A>   */</FONT>
+<A NAME="698"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> clip(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="699"></A>    <FONT ID="Int">int</FONT> value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="700"></A>
+<A NAME="701"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="702"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="703"></A>        value = data[y][x];
+<A NAME="704"></A>        value = (value &gt; max) ? max : value;
+<A NAME="705"></A>        value = (value &lt; min) ? min : value;
+<A NAME="706"></A>        data[y][x] = (<FONT ID="Short">short</FONT>) value;
+<A NAME="707"></A>      } 
+<A NAME="708"></A>    } 
+<A NAME="709"></A>
+<A NAME="710"></A>  } 
+<A NAME="711"></A>
+<A NAME="712"></A>
+<A NAME="713"></A>  <FONT ID="FormalComment">/**
+<A NAME="714"></A>   * Method declaration
+<A NAME="715"></A>   *
+<A NAME="716"></A>   *
+<A NAME="717"></A>   * @param vals
+<A NAME="718"></A>   * @param size
+<A NAME="719"></A>   *
+<A NAME="720"></A>   * @return
+<A NAME="721"></A>   *
+<A NAME="722"></A>   * @see
+<A NAME="723"></A>   */</FONT>
+<A NAME="724"></A>  <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[] sort(<FONT ID="Double">double</FONT> vals[], <FONT ID="Int">int</FONT> size) {
+<A NAME="725"></A>    <FONT ID="Int">int</FONT>     i, j;
+<A NAME="726"></A>    <FONT ID="Double">double</FONT>  temp;
+<A NAME="727"></A>
+<A NAME="728"></A>    <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; size; i++) {
+<A NAME="729"></A>      <FONT ID="For">for</FONT> (j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; size - <FONT ID="IntegerLiteral">1</FONT>; j++) {
+<A NAME="730"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="731"></A>          <FONT ID="If">if</FONT> (vals[j] &gt; vals[j + <FONT ID="IntegerLiteral">1</FONT>]) {
+<A NAME="732"></A>            temp = vals[j];
+<A NAME="733"></A>            vals[j] = vals[j + <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="734"></A>            vals[j + <FONT ID="IntegerLiteral">1</FONT>] = temp;
+<A NAME="735"></A>          } 
+<A NAME="736"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="737"></A>      } 
+<A NAME="738"></A>    }
+<A NAME="739"></A>
+<A NAME="740"></A>    <FONT ID="Return">return</FONT> vals;
+<A NAME="741"></A>  } 
+<A NAME="742"></A>
+<A NAME="743"></A>
+<A NAME="744"></A>  <FONT ID="FormalComment">/**
+<A NAME="745"></A>   * Performs median filter on this image
+<A NAME="746"></A>   * @param size the size of the median filter
+<A NAME="747"></A>   */</FONT>
+<A NAME="748"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> median(<FONT ID="Int">int</FONT> size) {
+<A NAME="749"></A>
+<A NAME="750"></A>    <FONT ID="Int">int</FONT>     NumX = (size &gt; X) ? X : size;
+<A NAME="751"></A>    <FONT ID="Int">int</FONT>     NumY = (size &gt; Y) ? Y : size;
+<A NAME="752"></A>    <FONT ID="Int">int</FONT>     midX = NumX / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="753"></A>    <FONT ID="Int">int</FONT>     midY = NumY / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="754"></A>    <FONT ID="Double">double</FONT>  value[] = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[NumX * NumY];
+<A NAME="755"></A>    <FONT ID="Int">int</FONT>     count;
+<A NAME="756"></A>
+<A NAME="757"></A>    <FONT ID="SingleLineComment">// for every pixel in the original image
+<A NAME="758"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="759"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="760"></A>
+<A NAME="761"></A>        <FONT ID="SingleLineComment">// find median value
+<A NAME="762"></A></FONT>        count = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="763"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = -midY; j &lt;= midY; j++) {
+<A NAME="764"></A>          <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = -midX; i &lt;= midX; i++) {
+<A NAME="765"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="766"></A>              value[count++] = data[y + j][x + i];
+<A NAME="767"></A>            } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="768"></A>
+<A NAME="769"></A>              <FONT ID="SingleLineComment">// ignore out of bounds pixels
+<A NAME="770"></A></FONT>            } 
+<A NAME="771"></A>          } 
+<A NAME="772"></A>        } 
+<A NAME="773"></A>        value = sort(value, count);
+<A NAME="774"></A>        data[y][x] = (<FONT ID="Short">short</FONT>) value[count / <FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="775"></A>      } 
+<A NAME="776"></A>    } 
+<A NAME="777"></A>
+<A NAME="778"></A>  } 
+<A NAME="779"></A>
+<A NAME="780"></A>
+<A NAME="781"></A>  <FONT ID="SingleLineComment">// **************************************************************************************
+<A NAME="782"></A></FONT>  <FONT ID="SingleLineComment">// ****************************         ROI Stuff         *******************************
+<A NAME="783"></A></FONT>  <FONT ID="SingleLineComment">// **************************************************************************************
+<A NAME="784"></A></FONT>
+<A NAME="785"></A>
+<A NAME="786"></A>
+<A NAME="787"></A>  <FONT ID="FormalComment">/**
+<A NAME="788"></A>   * Makes a deep copy of a Region of Interest
+<A NAME="789"></A>   * @param r Region of Interest
+<A NAME="790"></A>   * @return a deep copy of GrayImage
+<A NAME="791"></A>   */</FONT>
+<A NAME="792"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="793"></A>    <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> g = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A>((r.lx() - r.ux()), (r.ly() - r.uy()));
+<A NAME="794"></A>
+<A NAME="795"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="796"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="797"></A>        g.data[y][x] = data[y][x];
+<A NAME="798"></A>      } 
+<A NAME="799"></A>    } 
+<A NAME="800"></A>    <FONT ID="Return">return</FONT> g;
+<A NAME="801"></A>  } 
+<A NAME="802"></A>
+<A NAME="803"></A>
+<A NAME="804"></A>  <FONT ID="FormalComment">/**
+<A NAME="805"></A>   * Sets the pixel value at x, y to a given value in a Region of Interest
+<A NAME="806"></A>   * @param x the X coordinant
+<A NAME="807"></A>   * @param y the Y coordinant
+<A NAME="808"></A>   * @param value the value to set the pixel to
+<A NAME="809"></A>   * @param r Region of Interest
+<A NAME="810"></A>   */</FONT>
+<A NAME="811"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="812"></A>    data[(r.uy() + y)][(r.ux() + x)] = (<FONT ID="Short">short</FONT>) value;
+<A NAME="813"></A>  } 
+<A NAME="814"></A>
+<A NAME="815"></A>
+<A NAME="816"></A>  <FONT ID="FormalComment">/**
+<A NAME="817"></A>   * Adds a value to a single pixel in a Region of Interest
+<A NAME="818"></A>   * @param x X-coordinant
+<A NAME="819"></A>   * @param y Y-coordinant
+<A NAME="820"></A>   * @param value the value to add to the pixel
+<A NAME="821"></A>   * @param r Region of Interest
+<A NAME="822"></A>   */</FONT>
+<A NAME="823"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="824"></A>    data[(r.uy() + y)][(r.ux() + x)] += (<FONT ID="Short">short</FONT>) value;
+<A NAME="825"></A>  } 
+<A NAME="826"></A>
+<A NAME="827"></A>
+<A NAME="828"></A>  <FONT ID="FormalComment">/**
+<A NAME="829"></A>   * Subtracts a value from a single pixel in a Region of Interest
+<A NAME="830"></A>   * @param x X-coordinant
+<A NAME="831"></A>   * @param y Y-coordinant
+<A NAME="832"></A>   * @param value the value to subtract from the pixel
+<A NAME="833"></A>   * @param r Region of Interest
+<A NAME="834"></A>   */</FONT>
+<A NAME="835"></A>
+<A NAME="836"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="837"></A>    data[(r.uy() + y)][(r.ux() + x)] -= (<FONT ID="Short">short</FONT>) value;
+<A NAME="838"></A>  } 
+<A NAME="839"></A>
+<A NAME="840"></A>
+<A NAME="841"></A>  <FONT ID="FormalComment">/**
+<A NAME="842"></A>   * Mutiplies a single pixel by a value in a Region of Interest
+<A NAME="843"></A>   * @param x X-coordinant
+<A NAME="844"></A>   * @param y Y-coordinant
+<A NAME="845"></A>   * @param value - the value to mutiply to the pixel
+<A NAME="846"></A>   * @param r Region of Interest
+<A NAME="847"></A>   */</FONT>
+<A NAME="848"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="849"></A>    data[(r.uy() + y)][(r.ux() + x)] *= (<FONT ID="Short">short</FONT>) value;
+<A NAME="850"></A>  } 
+<A NAME="851"></A>
+<A NAME="852"></A>
+<A NAME="853"></A>  <FONT ID="FormalComment">/**
+<A NAME="854"></A>   * Divides a single pixel by a value in a Region of Interest
+<A NAME="855"></A>   * @param x X-coordinant
+<A NAME="856"></A>   * @param y Y-coordinant
+<A NAME="857"></A>   * @param value - the value to mutiply to the pixel
+<A NAME="858"></A>   * @param r Region of Interest
+<A NAME="859"></A>   */</FONT>
+<A NAME="860"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="861"></A>    data[(r.uy() + y)][(r.ux() + x)] /= (<FONT ID="Short">short</FONT>) value;
+<A NAME="862"></A>  } 
+<A NAME="863"></A>
+<A NAME="864"></A>
+<A NAME="865"></A>  <FONT ID="FormalComment">/**
+<A NAME="866"></A>   * Finds the minimum value in a Region of Interest
+<A NAME="867"></A>   * @param r Region of Interest
+<A NAME="868"></A>   * @return an integer containing the minimum value
+<A NAME="869"></A>   * 
+<A NAME="870"></A>   */</FONT>
+<A NAME="871"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> min(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="872"></A>    <FONT ID="Short">short</FONT> p;
+<A NAME="873"></A>    <FONT ID="Short">short</FONT> min = Short.MAX_VALUE;
+<A NAME="874"></A>
+<A NAME="875"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="876"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="877"></A>        p = data[y][x];
+<A NAME="878"></A>        <FONT ID="If">if</FONT> (p &lt; min) {
+<A NAME="879"></A>          min = p;
+<A NAME="880"></A>        } 
+<A NAME="881"></A>      } 
+<A NAME="882"></A>    } 
+<A NAME="883"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) min;
+<A NAME="884"></A>  } 
+<A NAME="885"></A>
+<A NAME="886"></A>
+<A NAME="887"></A>  <FONT ID="FormalComment">/**
+<A NAME="888"></A>   * Finds the maximum value in a Region of Interest
+<A NAME="889"></A>   * @param r Region of Interest
+<A NAME="890"></A>   * @return an integer containing the maximum value
+<A NAME="891"></A>   */</FONT>
+<A NAME="892"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> max(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="893"></A>    <FONT ID="Short">short</FONT> p;
+<A NAME="894"></A>    <FONT ID="Short">short</FONT> max = Short.MIN_VALUE;
+<A NAME="895"></A>
+<A NAME="896"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="897"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="898"></A>        p = data[y][x];
+<A NAME="899"></A>        <FONT ID="If">if</FONT> (p &gt; max) {
+<A NAME="900"></A>          max = p;
+<A NAME="901"></A>        } 
+<A NAME="902"></A>      } 
+<A NAME="903"></A>    } 
+<A NAME="904"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) max;
+<A NAME="905"></A>  } 
+<A NAME="906"></A>
+<A NAME="907"></A>
+<A NAME="908"></A>  <FONT ID="FormalComment">/**
+<A NAME="909"></A>   * Adds a value to all the pixels in a Region of Interest
+<A NAME="910"></A>   * @param v value to be added to the pixels
+<A NAME="911"></A>   * @param r Region of Interest
+<A NAME="912"></A>   * @return this
+<A NAME="913"></A>   */</FONT>
+<A NAME="914"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> add(<FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="915"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="916"></A>
+<A NAME="917"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="918"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="919"></A>        data[y][x] += sv;
+<A NAME="920"></A>      } 
+<A NAME="921"></A>    } 
+<A NAME="922"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="923"></A>  } 
+<A NAME="924"></A>
+<A NAME="925"></A>
+<A NAME="926"></A>  <FONT ID="FormalComment">/**
+<A NAME="927"></A>   * Subtracts a value from all the pixels in a Region of Interest
+<A NAME="928"></A>   * @param v value to be added to the pixels
+<A NAME="929"></A>   * @param r Region of Interest
+<A NAME="930"></A>   * @return this
+<A NAME="931"></A>   */</FONT>
+<A NAME="932"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> subtract(<FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="933"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="934"></A>
+<A NAME="935"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="936"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="937"></A>        data[y][x] -= sv;
+<A NAME="938"></A>      } 
+<A NAME="939"></A>    } 
+<A NAME="940"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="941"></A>  } 
+<A NAME="942"></A>
+<A NAME="943"></A>
+<A NAME="944"></A>  <FONT ID="FormalComment">/**
+<A NAME="945"></A>   * Multiplies all the pixels in a Region of Interest by a value
+<A NAME="946"></A>   * @param v value to be added to the pixels
+<A NAME="947"></A>   * @param r Region of Interest
+<A NAME="948"></A>   * @return this
+<A NAME="949"></A>   */</FONT>
+<A NAME="950"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> multiply(<FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="951"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="952"></A>
+<A NAME="953"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="954"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="955"></A>        data[y][x] *= sv;
+<A NAME="956"></A>      } 
+<A NAME="957"></A>    } 
+<A NAME="958"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="959"></A>  } 
+<A NAME="960"></A>
+<A NAME="961"></A>
+<A NAME="962"></A>  <FONT ID="FormalComment">/**
+<A NAME="963"></A>   * Divides all the pixels by a value in a Region of Interest
+<A NAME="964"></A>   * @param v value to be added to the pixels
+<A NAME="965"></A>   * @param r Region of Interest
+<A NAME="966"></A>   * @return this
+<A NAME="967"></A>   */</FONT>
+<A NAME="968"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> divide(<FONT ID="Int">int</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="969"></A>    <FONT ID="Short">short</FONT> sv = (<FONT ID="Short">short</FONT>) v;
+<A NAME="970"></A>
+<A NAME="971"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="972"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="973"></A>        data[y][x] /= sv;
+<A NAME="974"></A>      } 
+<A NAME="975"></A>    } 
+<A NAME="976"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="977"></A>  } 
+<A NAME="978"></A>
+<A NAME="979"></A>
+<A NAME="980"></A>  <FONT ID="FormalComment">/**
+<A NAME="981"></A>   * Adds a Region of Interest in another GrayImage to a Region of Interest of this image
+<A NAME="982"></A>   * @param im the GrayImage to add
+<A NAME="983"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="984"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="985"></A>   * @return this
+<A NAME="986"></A>   */</FONT>
+<A NAME="987"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> add(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="988"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="989"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="990"></A>        data[x][y] += im.get((x - sourceImage.ux() + destImage.ux()), (y - sourceImage.uy() + destImage.uy()));
+<A NAME="991"></A>      } 
+<A NAME="992"></A>    } 
+<A NAME="993"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="994"></A>  } 
+<A NAME="995"></A>
+<A NAME="996"></A>
+<A NAME="997"></A>  <FONT ID="FormalComment">/**
+<A NAME="998"></A>   * Subtracts a Region of Interest in another GrayImage from a Region of Interest of this image
+<A NAME="999"></A>   * @param im the GrayImage to subtract
+<A NAME="1000"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1001"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1002"></A>   * @return this
+<A NAME="1003"></A>   */</FONT>
+<A NAME="1004"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> subtract(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1005"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="1006"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="1007"></A>        data[x][y] -= im.get((x - sourceImage.ux() + destImage.ux()), (y - sourceImage.uy() + destImage.uy()));
+<A NAME="1008"></A>      } 
+<A NAME="1009"></A>    } 
+<A NAME="1010"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1011"></A>  } 
+<A NAME="1012"></A>
+<A NAME="1013"></A>
+<A NAME="1014"></A>  <FONT ID="FormalComment">/**
+<A NAME="1015"></A>   * Multiplies a Region of Interest of another GrayImage by a Region of Interest of this image
+<A NAME="1016"></A>   * @param im the GrayImage to multiply
+<A NAME="1017"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1018"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1019"></A>   * @return this
+<A NAME="1020"></A>   */</FONT>
+<A NAME="1021"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> multiply(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1022"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="1023"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="1024"></A>        data[x][y] *= im.get((x - sourceImage.ux() + destImage.ux()), (y - sourceImage.uy() + destImage.uy()));
+<A NAME="1025"></A>      } 
+<A NAME="1026"></A>    } 
+<A NAME="1027"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1028"></A>  } 
+<A NAME="1029"></A>
+<A NAME="1030"></A>
+<A NAME="1031"></A>  <FONT ID="FormalComment">/**
+<A NAME="1032"></A>   * Divides by a Region of Interest in this image by a Region of Interest of another GrayImage
+<A NAME="1033"></A>   * @param im the GrayImage to divide
+<A NAME="1034"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="1035"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="1036"></A>   * @return this
+<A NAME="1037"></A>   */</FONT>
+<A NAME="1038"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> divide(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="1039"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="1040"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="1041"></A>        data[x][y] /= im.get((x - sourceImage.ux() + destImage.ux()), (y - sourceImage.uy() + destImage.uy()));
+<A NAME="1042"></A>      } 
+<A NAME="1043"></A>    } 
+<A NAME="1044"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="1045"></A>  } 
+<A NAME="1046"></A>
+<A NAME="1047"></A>
+<A NAME="1048"></A>  <FONT ID="FormalComment">/**
+<A NAME="1049"></A>   * Prints a Region of Interest in integer format.
+<A NAME="1050"></A>   * @param r Region of Interest
+<A NAME="1051"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;-Example of output on an image with width 100 and height 120:&lt;/DT&gt;
+<A NAME="1052"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="1053"></A>   * &lt;DT&gt;10 20 32 12 32 56 40 59 42 39 43 ...&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="1054"></A>   */</FONT>
+<A NAME="1055"></A>  <FONT ID="Public">public</FONT> String toString(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1056"></A>    String  str = X + <FONT ID="StringLiteral">":"</FONT> + Y + <FONT ID="StringLiteral">"\n"</FONT>;
+<A NAME="1057"></A>
+<A NAME="1058"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="1059"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="1060"></A>        str += data[y][x] + <FONT ID="StringLiteral">" "</FONT>;
+<A NAME="1061"></A>      } 
+<A NAME="1062"></A>      str += <FONT ID="StringLiteral">"\n"</FONT>;
+<A NAME="1063"></A>    } 
+<A NAME="1064"></A>    <FONT ID="Return">return</FONT> str;
+<A NAME="1065"></A>  } 
+<A NAME="1066"></A>
+<A NAME="1067"></A>
+<A NAME="1068"></A>  <FONT ID="FormalComment">/**
+<A NAME="1069"></A>   * Clips the range of this image to an arbitrary min/max in a Region of Interest
+<A NAME="1070"></A>   * @param min minimum value
+<A NAME="1071"></A>   * @param max maximum value
+<A NAME="1072"></A>   * @param r Region of Interest
+<A NAME="1073"></A>   */</FONT>
+<A NAME="1074"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> clip(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1075"></A>    <FONT ID="Int">int</FONT> value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="1076"></A>
+<A NAME="1077"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="1078"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="1079"></A>        value = data[y][x];
+<A NAME="1080"></A>        value = (value &gt; max) ? max : value;
+<A NAME="1081"></A>        value = (value &lt; min) ? min : value;
+<A NAME="1082"></A>        data[y][x] = (<FONT ID="Short">short</FONT>) value;
+<A NAME="1083"></A>      } 
+<A NAME="1084"></A>    } 
+<A NAME="1085"></A>
+<A NAME="1086"></A>  } 
+<A NAME="1087"></A>
+<A NAME="1088"></A>
+<A NAME="1089"></A>  <FONT ID="FormalComment">/**
+<A NAME="1090"></A>   * Performs median filter in a Region of Interest
+<A NAME="1091"></A>   * @param size the size of the median filter
+<A NAME="1092"></A>   * @param r Region of Interest
+<A NAME="1093"></A>   */</FONT>
+<A NAME="1094"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> median(<FONT ID="Int">int</FONT> size, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="1095"></A>
+<A NAME="1096"></A>    <FONT ID="Int">int</FONT>     NumX = (size &gt; X) ? X : size;
+<A NAME="1097"></A>    <FONT ID="Int">int</FONT>     NumY = (size &gt; Y) ? Y : size;
+<A NAME="1098"></A>    <FONT ID="Int">int</FONT>     midX = NumX / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="1099"></A>    <FONT ID="Int">int</FONT>     midY = NumY / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="1100"></A>    <FONT ID="Double">double</FONT>  value[] = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[NumX * NumY];
+<A NAME="1101"></A>    <FONT ID="Int">int</FONT>     count;
+<A NAME="1102"></A>
+<A NAME="1103"></A>    <FONT ID="SingleLineComment">// for every pixel in the original image
+<A NAME="1104"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="1105"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.lx(); x++) {
+<A NAME="1106"></A>
+<A NAME="1107"></A>        <FONT ID="SingleLineComment">// find median value
+<A NAME="1108"></A></FONT>        count = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="1109"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = -midY; j &lt;= midY; j++) {
+<A NAME="1110"></A>          <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = -midX; i &lt;= midX; i++) {
+<A NAME="1111"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="1112"></A>              value[count++] = data[y + j][x + i];
+<A NAME="1113"></A>            } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="1114"></A>
+<A NAME="1115"></A>              <FONT ID="SingleLineComment">// ignore out of bounds pixels
+<A NAME="1116"></A></FONT>            } 
+<A NAME="1117"></A>          } 
+<A NAME="1118"></A>        } 
+<A NAME="1119"></A>        value = sort(value, count);
+<A NAME="1120"></A>        data[y][x] = (<FONT ID="Short">short</FONT>) value[count / <FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="1121"></A>      } 
+<A NAME="1122"></A>    } 
+<A NAME="1123"></A>
+<A NAME="1124"></A>  } 
+<A NAME="1125"></A>
+<A NAME="1126"></A>
+<A NAME="1127"></A>  <FONT ID="FormalComment">/**
+<A NAME="1128"></A>   * Method declaration
+<A NAME="1129"></A>   *
+<A NAME="1130"></A>   *
+<A NAME="1131"></A>   * @param args
+<A NAME="1132"></A>   *
+<A NAME="1133"></A>   * @see
+<A NAME="1134"></A>   */</FONT>
+<A NAME="1135"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<A NAME="1136"></A>
+<A NAME="1137"></A>
+<A NAME="1138"></A>
+<A NAME="1139"></A>    <FONT ID="SingleLineComment">// test area
+<A NAME="1140"></A></FONT>
+<A NAME="1141"></A>    <FONT ID="Int">int</FONT>[][] array = {
+<A NAME="1142"></A>       {
+<A NAME="1143"></A>        <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">6</FONT>
+<A NAME="1144"></A>      }, {
+<A NAME="1145"></A>        <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">6</FONT>
+<A NAME="1146"></A>      }, {
+<A NAME="1147"></A>        <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">6</FONT>
+<A NAME="1148"></A>      }
+<A NAME="1149"></A>    };
+<A NAME="1150"></A>
+<A NAME="1151"></A>    System.out.println(array[<FONT ID="IntegerLiteral">0</FONT>].length);
+<A NAME="1152"></A>    System.out.println(array[<FONT ID="IntegerLiteral">6</FONT>][<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="1153"></A>  } 
+<A NAME="1154"></A>
+<A NAME="1155"></A>}
+<A NAME="1156"></A>
+<A NAME="1157"></A>
+<A NAME="1158"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="1159"></A>
+<A NAME="1160"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">GrayImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

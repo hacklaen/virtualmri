@@ -1,0 +1,799 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.FileLoader (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FileLoader</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> *
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> *
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> *
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.util.Random;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> java.net.*;
+<A NAME="27"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> javax.imageio.*;
+<A NAME="29"></A><FONT ID="Import">import</FONT> javax.imageio.stream.*;
+<A NAME="30"></A>
+<A NAME="31"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="32"></A>
+<A NAME="33"></A><FONT ID="Import">import</FONT> rad.dicom.dcm.*;
+<A NAME="34"></A><FONT ID="Import">import</FONT> rad.dicom.ima.*;
+<A NAME="35"></A>
+<A NAME="36"></A>
+<A NAME="37"></A><FONT ID="FormalComment">/**
+<A NAME="38"></A> * Die Klasse laedt einen Rohdatensatz aus Dateien.
+<A NAME="39"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="40"></A> * Thomas Hacklaender 2006.4.11:
+<A NAME="41"></A> * Parameterbilder koennen wahlweise DICOM oder 16-Bit TIFF Bilder sein.&lt;br&gt;
+<A NAME="42"></A> * Thomas Hacklaender 2000.8.14:
+<A NAME="43"></A> * Die Methode File getCaseInfoFile zugunsten von URL getCaseInfoURL()
+<A NAME="44"></A> * ausgetauscht.&lt;br&gt;
+<A NAME="45"></A> * Thomas Hacklaender 2000.8.14:
+<A NAME="46"></A> * In loadReferenceData() wird idxParent = null gesetzt, da es sich um keine
+<A NAME="47"></A> * reale Datei handelt.&lt;br&gt;
+<A NAME="48"></A> * Thomas Hacklaender 2000.7.14:
+<A NAME="49"></A> * .idx-Datei als Java Property-Datei umdefiniert:&lt;br&gt;
+<A NAME="50"></A> * &lt;ul&gt;
+<A NAME="51"></A> * &lt;li&gt; name.t1 = Filename der T1 Rohdatenmatrix &lt;/li&gt;
+<A NAME="52"></A> * &lt;li&gt; name.t2 = Filename der T2 Rohdatenmatrix &lt;/li&gt;
+<A NAME="53"></A> * &lt;li&gt; name.pd = Filename der Protonendichte Rohdatenmatrix &lt;/li&gt;
+<A NAME="54"></A> * &lt;li&gt; name.sz = Filename der Suszeptibilitäts Rohdatenmatrix &lt;/li&gt;
+<A NAME="55"></A> * &lt;li&gt; name.fl = Filename der Fluss Rohdatenmatrix &lt;/li&gt;
+<A NAME="56"></A> * &lt;li&gt; name.info = Filename der Fall-Info Datei&lt;/li&gt;
+<A NAME="57"></A> * &lt;li&gt; title = Titel des Falls &lt;/li&gt;&lt;/ul&gt;
+<A NAME="58"></A> * Thomas Hacklaender 2000.4.3:
+<A NAME="59"></A> * Umstellung auf die aktuelle Version 2.1 des dcm-Package.&lt;br&gt;
+<A NAME="60"></A> * Thomas Hacklaender 2000.4.3:
+<A NAME="61"></A> * Neues Testbild in loadReferenceData definiert.&lt;br&gt;
+<A NAME="62"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="63"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="64"></A> * Thomas Hacklaender 2002.10.27:
+<A NAME="65"></A> * Keys der Properties in der Index Datei geaendert:&lt;br&gt;
+<A NAME="66"></A> * name.info -&gt; name.filename.&lt;br&gt;
+<A NAME="67"></A> * title -&gt; name.title.&lt;br&gt;
+<A NAME="68"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="69"></A> * @author   Christian Schalla
+<A NAME="70"></A> * @author   Andreas Truemper
+<A NAME="71"></A> * @version  1.3, 2002.10.27
+<A NAME="72"></A> */</FONT>
+<A NAME="73"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FileLoader {
+<A NAME="74"></A>    
+<A NAME="75"></A>    
+<A NAME="76"></A>    <FONT ID="SingleLineComment">// th 2005.11.11, added
+<A NAME="77"></A></FONT>    ResourceBundle        frameRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_frame"</FONT>);
+<A NAME="78"></A>    
+<A NAME="79"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="80"></A>     * Private Konstanten zur Bezeichnung der Rodatenmatrizen
+<A NAME="81"></A>     */</FONT>
+<A NAME="82"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>     MATRIX_T1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="83"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>     MATRIX_T2 = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="84"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>     MATRIX_PD = <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="85"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>     MATRIX_SZ = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="86"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>     MATRIX_FL = <FONT ID="IntegerLiteral">4</FONT>;
+<A NAME="87"></A>    
+<A NAME="88"></A>    
+<A NAME="89"></A>    <FONT ID="FormalComment">/**
+<A NAME="90"></A>     * Matrix mit den T1-Werten. Defaultwert ist 0.
+<A NAME="91"></A>     */</FONT>
+<A NAME="92"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>[][]       t1Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="93"></A>    
+<A NAME="94"></A>    
+<A NAME="95"></A>    <FONT ID="FormalComment">/**
+<A NAME="96"></A>     * Matrix mit den T2-Werten. Defaultwert ist 0.
+<A NAME="97"></A>     */</FONT>
+<A NAME="98"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>[][]       t2Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="99"></A>    
+<A NAME="100"></A>    
+<A NAME="101"></A>    <FONT ID="FormalComment">/**
+<A NAME="102"></A>     * Matrix mit den Protonendichtewerten. Defaultwert ist 0.
+<A NAME="103"></A>     */</FONT>
+<A NAME="104"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>[][]       pdMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="105"></A>    
+<A NAME="106"></A>    
+<A NAME="107"></A>    <FONT ID="FormalComment">/**
+<A NAME="108"></A>     * Matrix mit den Suszeptibilitaetswerten. Defaultwert ist 0.
+<A NAME="109"></A>     */</FONT>
+<A NAME="110"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>[][]       szMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="111"></A>    
+<A NAME="112"></A>    
+<A NAME="113"></A>    <FONT ID="FormalComment">/**
+<A NAME="114"></A>     * Matrix mit den Flusswerten. Defaultwert ist 0.
+<A NAME="115"></A>     */</FONT>
+<A NAME="116"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>[][]       flMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="117"></A>    
+<A NAME="118"></A>    
+<A NAME="119"></A>    <FONT ID="FormalComment">/**
+<A NAME="120"></A>     * Das DcmDataObject (enthaelt Bildparameter, jedoch nicht mehr die Pixeldaten)
+<A NAME="121"></A>     */</FONT>
+<A NAME="122"></A>    <FONT ID="Private">private</FONT> DcmDataObject       ddo = <FONT ID="Null">null</FONT>;
+<A NAME="123"></A>    
+<A NAME="124"></A>    
+<A NAME="125"></A>    <FONT ID="FormalComment">/**
+<A NAME="126"></A>     * Der Titel des Rohdatensatzes
+<A NAME="127"></A>     */</FONT>
+<A NAME="128"></A>    <FONT ID="Private">private</FONT> String        caseInfoTitle = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="129"></A>    
+<A NAME="130"></A>    
+<A NAME="131"></A>    <FONT ID="FormalComment">/**
+<A NAME="132"></A>     * URL der Case-Info Datei
+<A NAME="133"></A>     */</FONT>
+<A NAME="134"></A>    <FONT ID="Private">private</FONT> URL                 caseInfoURL = <FONT ID="Null">null</FONT>;
+<A NAME="135"></A>    
+<A NAME="136"></A>    
+<A NAME="137"></A>    <FONT ID="FormalComment">/**
+<A NAME="138"></A>     * True, wenn der Referenzdatensatz geladen wurde
+<A NAME="139"></A>     */</FONT>
+<A NAME="140"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>       isReferenceData = <FONT ID="False">false</FONT>;
+<A NAME="141"></A>    
+<A NAME="142"></A>    
+<A NAME="143"></A>    <FONT ID="FormalComment">/**
+<A NAME="144"></A>     * Standardkonstruktor.
+<A NAME="145"></A>     */</FONT>
+<A NAME="146"></A>    <FONT ID="Public">public</FONT> FileLoader() {}
+<A NAME="147"></A>    
+<A NAME="148"></A>    
+<A NAME="149"></A>    <FONT ID="FormalComment">/**
+<A NAME="150"></A>     * Die Methode liefert die Matrix mit den T1-Werten zurueck.
+<A NAME="151"></A>     * @return Die Matrix mit den T1-Werten.
+<A NAME="152"></A>     */</FONT>
+<A NAME="153"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] getT1Matrix() {
+<A NAME="154"></A>        <FONT ID="Return">return</FONT> t1Matrix;
+<A NAME="155"></A>    }   <FONT ID="SingleLineComment">// Methode getT1Matrix
+<A NAME="156"></A></FONT>    
+<A NAME="157"></A>    
+<A NAME="158"></A>    <FONT ID="FormalComment">/**
+<A NAME="159"></A>     * Die Methode liefert die Matrix mit den T2-Werten zurueck.
+<A NAME="160"></A>     * @return Die Matrix mit den T2-Werten.
+<A NAME="161"></A>     */</FONT>
+<A NAME="162"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] getT2Matrix() {
+<A NAME="163"></A>        <FONT ID="Return">return</FONT> t2Matrix;
+<A NAME="164"></A>    }   <FONT ID="SingleLineComment">// Methode getT2Matrix
+<A NAME="165"></A></FONT>    
+<A NAME="166"></A>    
+<A NAME="167"></A>    <FONT ID="FormalComment">/**
+<A NAME="168"></A>     * Die Methode liefert die Matrix mit den PD-Werten zurueck.
+<A NAME="169"></A>     * @return Die Matrix mit den PD-Werten.
+<A NAME="170"></A>     */</FONT>
+<A NAME="171"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] getPDMatrix() {
+<A NAME="172"></A>        <FONT ID="Return">return</FONT> pdMatrix;
+<A NAME="173"></A>    }   <FONT ID="SingleLineComment">// Methode getPDMatrix
+<A NAME="174"></A></FONT>    
+<A NAME="175"></A>    
+<A NAME="176"></A>    <FONT ID="FormalComment">/**
+<A NAME="177"></A>     * Die Methode liefert die Matrix mit den Suszeptibilitaetswerten zurueck.
+<A NAME="178"></A>     * @return Die Matrix mit den Suszeptibilitaetswerten.
+<A NAME="179"></A>     */</FONT>
+<A NAME="180"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] getSZMatrix() {
+<A NAME="181"></A>        <FONT ID="Return">return</FONT> szMatrix;
+<A NAME="182"></A>    }   <FONT ID="SingleLineComment">// Methode getSZMatrix
+<A NAME="183"></A></FONT>    
+<A NAME="184"></A>    
+<A NAME="185"></A>    <FONT ID="FormalComment">/**
+<A NAME="186"></A>     * Die Methode liefert die Matrix mit den Flusswerten zurueck.
+<A NAME="187"></A>     * @return Die Matrix mit den Flusswerten.
+<A NAME="188"></A>     */</FONT>
+<A NAME="189"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] getFLMatrix() {
+<A NAME="190"></A>        <FONT ID="Return">return</FONT> flMatrix;
+<A NAME="191"></A>    }   <FONT ID="SingleLineComment">// Methode getFLMatrix
+<A NAME="192"></A></FONT>    
+<A NAME="193"></A>    
+<A NAME="194"></A>    <FONT ID="FormalComment">/**
+<A NAME="195"></A>     * Die Methode liefert das DcmDataObject zurueck. Dieses enthaelt allerdings
+<A NAME="196"></A>     * keine Pixel-Informationen mehr. Es dient lediglich dazu, die zusaetzlichen
+<A NAME="197"></A>     * Bildinformationen zu speichern. Somit koennen neu erzeugte Bilder mit den
+<A NAME="198"></A>     * gleichen Informationen versehen und im DICOM-Format abgespeichert werden.
+<A NAME="199"></A>     * @return Das DicomDataObject
+<A NAME="200"></A>     */</FONT>
+<A NAME="201"></A>    <FONT ID="Public">public</FONT> DcmDataObject getDcmDataObject() {
+<A NAME="202"></A>        <FONT ID="Return">return</FONT> ddo;
+<A NAME="203"></A>    }   <FONT ID="SingleLineComment">// Methode getDcmDataObject
+<A NAME="204"></A></FONT>    
+<A NAME="205"></A>    
+<A NAME="206"></A>    <FONT ID="FormalComment">/**
+<A NAME="207"></A>     * Die Methode liefert den Titel des Rohdatensatzes zurueck.
+<A NAME="208"></A>     * @return Der Titel des Rohdatensatzes.
+<A NAME="209"></A>     * @author Thomas Hacklaender
+<A NAME="210"></A>     */</FONT>
+<A NAME="211"></A>    <FONT ID="Public">public</FONT> String getCaseInfoTitle() {
+<A NAME="212"></A>        <FONT ID="Return">return</FONT> caseInfoTitle;
+<A NAME="213"></A>    }
+<A NAME="214"></A>    
+<A NAME="215"></A>    
+<A NAME="216"></A>    <FONT ID="FormalComment">/**
+<A NAME="217"></A>     * Die Methode liefert die URL der optionalen Case-Info Datei zurueck.
+<A NAME="218"></A>     * @return Die URL der optionalen Case-Info Datei.
+<A NAME="219"></A>     * @author Thomas Hacklaender
+<A NAME="220"></A>     */</FONT>
+<A NAME="221"></A>    <FONT ID="Public">public</FONT> URL getCaseInfoURL() {
+<A NAME="222"></A>        <FONT ID="Return">return</FONT> caseInfoURL;
+<A NAME="223"></A>    }
+<A NAME="224"></A>    
+<A NAME="225"></A>    
+<A NAME="226"></A>    <FONT ID="FormalComment">/**
+<A NAME="227"></A>     * Die Methode laedt die Rohdaten aus einer Datei. Zunaechst werden aus der
+<A NAME="228"></A>     * uebergebenen Indexdatei die 5 anderen Dateinamen ausgelesen. Danach werden
+<A NAME="229"></A>     * aus diesen Dateien die Rohdatenmatrizen gelesen.
+<A NAME="230"></A>     * @param dir Pfad der Indexdatei.
+<A NAME="231"></A>     * @param file Dateiname der Indexdatei.
+<A NAME="232"></A>     */</FONT>
+<A NAME="233"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> loadData(String dir, String file) {
+<A NAME="234"></A>        FileInputStream fis = <FONT ID="Null">null</FONT>;
+<A NAME="235"></A>        Properties  prop = <FONT ID="New">new</FONT> Properties();
+<A NAME="236"></A>        String    s;
+<A NAME="237"></A>        
+<A NAME="238"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="239"></A>            fis = <FONT ID="New">new</FONT> FileInputStream(dir + File.separator + file);
+<A NAME="240"></A>            prop.load(fis);
+<A NAME="241"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="242"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="243"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="244"></A>        }
+<A NAME="245"></A>        
+<A NAME="246"></A>        s = prop.getProperty(<FONT ID="StringLiteral">"name.t1"</FONT>);
+<A NAME="247"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="248"></A>            loadImage(MATRIX_T1, s, dir);
+<A NAME="249"></A>        }
+<A NAME="250"></A>        
+<A NAME="251"></A>        s = prop.getProperty(<FONT ID="StringLiteral">"name.t2"</FONT>);
+<A NAME="252"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="253"></A>            loadImage(MATRIX_T2, s, dir);
+<A NAME="254"></A>        }
+<A NAME="255"></A>        
+<A NAME="256"></A>        s = prop.getProperty(<FONT ID="StringLiteral">"name.pd"</FONT>);
+<A NAME="257"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="258"></A>            loadImage(MATRIX_PD, s, dir);
+<A NAME="259"></A>        }
+<A NAME="260"></A>        
+<A NAME="261"></A>        s = prop.getProperty(<FONT ID="StringLiteral">"name.fl"</FONT>);
+<A NAME="262"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="263"></A>            loadImage(MATRIX_FL, s, dir);
+<A NAME="264"></A>        }
+<A NAME="265"></A>        
+<A NAME="266"></A>        s = prop.getProperty(<FONT ID="StringLiteral">"name.sz"</FONT>);
+<A NAME="267"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="268"></A>            loadImage(MATRIX_SZ, s, dir);
+<A NAME="269"></A>        }
+<A NAME="270"></A>        
+<A NAME="271"></A>        <FONT ID="SingleLineComment">// th 2002.10.27
+<A NAME="272"></A></FONT>        <FONT ID="SingleLineComment">// s = prop.getProperty("title");
+<A NAME="273"></A></FONT>        s = prop.getProperty(<FONT ID="StringLiteral">"name.title"</FONT>);
+<A NAME="274"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="275"></A>            caseInfoTitle = s;
+<A NAME="276"></A>        }
+<A NAME="277"></A>        
+<A NAME="278"></A>        <FONT ID="SingleLineComment">// th 2002.10.27
+<A NAME="279"></A></FONT>        <FONT ID="SingleLineComment">// s = prop.getProperty("name.info");
+<A NAME="280"></A></FONT>        s = prop.getProperty(<FONT ID="StringLiteral">"name.filename"</FONT>);
+<A NAME="281"></A>        <FONT ID="If">if</FONT> (s != <FONT ID="Null">null</FONT>) {
+<A NAME="282"></A>            <FONT ID="SingleLineComment">// Datensatz ueber eine idx Datei beschrieben
+<A NAME="283"></A></FONT>            File f = <FONT ID="New">new</FONT> File(dir, s);
+<A NAME="284"></A>            <FONT ID="If">if</FONT> (f != <FONT ID="Null">null</FONT>) {
+<A NAME="285"></A>                caseInfoURL = Tools.file2URL(f);
+<A NAME="286"></A>            }
+<A NAME="287"></A>        }
+<A NAME="288"></A>    }
+<A NAME="289"></A>    
+<A NAME="290"></A>    
+<A NAME="291"></A>    <FONT ID="FormalComment">/**
+<A NAME="292"></A>     * Die Methode laedt eines der Rohdatenbilder. Welches Bild geladen wird,
+<A NAME="293"></A>     * wird durch einen Parameter bestimmt.
+<A NAME="294"></A>     * @param type Gibt an, welches Rohdatenbild geladen werden soll.
+<A NAME="295"></A>     * @param filename Der Dateiname des zu ladenden Bildes.
+<A NAME="296"></A>     * @param path Das Verzeichnis, in dem sich das zu ladende Rohdatenbild befindet.
+<A NAME="297"></A>     */</FONT>
+<A NAME="298"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadImage(<FONT ID="Int">int</FONT> type, String filename, String path) {
+<A NAME="299"></A>        File f = <FONT ID="New">new</FONT> File(path + File.separator + filename);
+<A NAME="300"></A>        loadImage(type, f);
+<A NAME="301"></A>    }
+<A NAME="302"></A>    
+<A NAME="303"></A>    
+<A NAME="304"></A>    <FONT ID="FormalComment">/**
+<A NAME="305"></A>     * Die Methode laedt eines der Rohdatenbilder. Welches Bild geladen wird,
+<A NAME="306"></A>     * wird durch einen Parameter bestimmt.
+<A NAME="307"></A>     * @param type Gibt an, welches Rohdatenbild geladen werden soll.
+<A NAME="308"></A>     * @param f Der File des zu ladenden Bildes.
+<A NAME="309"></A>     */</FONT>
+<A NAME="310"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadImage(<FONT ID="Int">int</FONT> type, File f) {
+<A NAME="311"></A>        FileInputStream fis;
+<A NAME="312"></A>        <FONT ID="Byte">byte</FONT>[]          buf;
+<A NAME="313"></A>        
+<A NAME="314"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="315"></A>            fis = <FONT ID="New">new</FONT> FileInputStream(f);
+<A NAME="316"></A>        } <FONT ID="Catch">catch</FONT> (IOException e) {
+<A NAME="317"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="318"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="319"></A>        }
+<A NAME="320"></A>        buf = readFirst256ByteAndClose(fis);
+<A NAME="321"></A>        <FONT ID="If">if</FONT> (buf == <FONT ID="Null">null</FONT>) {
+<A NAME="322"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="323"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="324"></A>        }
+<A NAME="325"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="326"></A>            fis = <FONT ID="New">new</FONT> FileInputStream(f);
+<A NAME="327"></A>        } <FONT ID="Catch">catch</FONT> (IOException e) {
+<A NAME="328"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="329"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="330"></A>        }
+<A NAME="331"></A>        loadImage(buf, type, fis);
+<A NAME="332"></A>    }
+<A NAME="333"></A>    
+<A NAME="334"></A>    
+<A NAME="335"></A>    <FONT ID="FormalComment">/**
+<A NAME="336"></A>     * Die Methode laedt eines der Rohdatenbilder. Welches Bild geladen wird,
+<A NAME="337"></A>     * wird durch einen Parameter bestimmt.
+<A NAME="338"></A>     * @param type Gibt an, welches Rohdatenbild geladen werden soll.
+<A NAME="339"></A>     * @param url Die URL des zu ladenden Bildes.
+<A NAME="340"></A>     */</FONT>
+<A NAME="341"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadImage(<FONT ID="Int">int</FONT> type, URL url) {
+<A NAME="342"></A>        InputStream is;
+<A NAME="343"></A>        <FONT ID="Byte">byte</FONT>[]      buf;
+<A NAME="344"></A>        
+<A NAME="345"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="346"></A>            is = url.openStream();
+<A NAME="347"></A>        } <FONT ID="Catch">catch</FONT> (IOException e) {
+<A NAME="348"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="349"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="350"></A>        }
+<A NAME="351"></A>        buf = readFirst256ByteAndClose(is);
+<A NAME="352"></A>        <FONT ID="If">if</FONT> (buf == <FONT ID="Null">null</FONT>) {
+<A NAME="353"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="354"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="355"></A>        }
+<A NAME="356"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="357"></A>            is = url.openStream();
+<A NAME="358"></A>        } <FONT ID="Catch">catch</FONT> (IOException e) {
+<A NAME="359"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="360"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="361"></A>        }
+<A NAME="362"></A>        loadImage(buf, type, is);
+<A NAME="363"></A>    }
+<A NAME="364"></A>    
+<A NAME="365"></A>    
+<A NAME="366"></A>    <FONT ID="FormalComment">/**
+<A NAME="367"></A>     *
+<A NAME="368"></A>     * @param is
+<A NAME="369"></A>     */</FONT>
+<A NAME="370"></A>    <FONT ID="Private">private</FONT> <FONT ID="Byte">byte</FONT>[] readFirst256ByteAndClose(InputStream is) {
+<A NAME="371"></A>        <FONT ID="Byte">byte</FONT>[] buf = <FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="372"></A>        
+<A NAME="373"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="374"></A>            is.read(buf);
+<A NAME="375"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="376"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="377"></A>        } <FONT ID="Finally">finally</FONT> {
+<A NAME="378"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="379"></A>                is.close();
+<A NAME="380"></A>            } <FONT ID="Catch">catch</FONT> (IOException e) {}
+<A NAME="381"></A>        }
+<A NAME="382"></A>        <FONT ID="Return">return</FONT> buf;
+<A NAME="383"></A>    }
+<A NAME="384"></A>    
+<A NAME="385"></A>    
+<A NAME="386"></A>    <FONT ID="FormalComment">/**
+<A NAME="387"></A>     * Die Methode laedt eines der Rohdatenbilder. Welches Bild geladen wird,
+<A NAME="388"></A>     * wird durch einen Parameter bestimmt.
+<A NAME="389"></A>     * @param type Gibt an, welches Rohdatenbild geladen werden soll.
+<A NAME="390"></A>     * @param url Die URL des zu ladenden Bildes.
+<A NAME="391"></A>     */</FONT>
+<A NAME="392"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadImage(<FONT ID="Byte">byte</FONT>[] buf, <FONT ID="Int">int</FONT> type, InputStream is) {
+<A NAME="393"></A>        
+<A NAME="394"></A>        <FONT ID="SingleLineComment">// Testen auf Kennung fuer TIFF Images
+<A NAME="395"></A></FONT>        <FONT ID="If">if</FONT> (((buf[<FONT ID="IntegerLiteral">0</FONT>] == <FONT ID="CharacerLiteral">'M'</FONT>) &amp;&amp; (buf[<FONT ID="IntegerLiteral">1</FONT>] == <FONT ID="CharacerLiteral">'M'</FONT>)) || ((buf[<FONT ID="IntegerLiteral">0</FONT>] == <FONT ID="CharacerLiteral">'I'</FONT>) &amp;&amp; (buf[<FONT ID="IntegerLiteral">1</FONT>] == <FONT ID="CharacerLiteral">'I'</FONT>))) {
+<A NAME="396"></A>            loadTiffImage(type, is);
+<A NAME="397"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="398"></A>            loadDcmImage(type, is);
+<A NAME="399"></A>        }
+<A NAME="400"></A>        
+<A NAME="401"></A>        <FONT ID="SingleLineComment">// Hochskalieren der PD-Werte
+<A NAME="402"></A></FONT>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="403"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="404"></A>                pdMatrix[x][y] *= <FONT ID="IntegerLiteral">25</FONT>;
+<A NAME="405"></A>            }
+<A NAME="406"></A>        }
+<A NAME="407"></A>    }
+<A NAME="408"></A>    
+<A NAME="409"></A>    
+<A NAME="410"></A>    <FONT ID="FormalComment">/**
+<A NAME="411"></A>     * Die Methode laedt eines der Rohdatenbilder im DICOM Format.
+<A NAME="412"></A>     * Welches Bild geladen wird, wird durch einen Parameter bestimmt.
+<A NAME="413"></A>     * @param type Gibt an, welches Rohdatenbild geladen werden soll.
+<A NAME="414"></A>     * @param is Der InputStream des zu ladenden Bildes.
+<A NAME="415"></A>     */</FONT>
+<A NAME="416"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadTiffImage(<FONT ID="Int">int</FONT> type, InputStream is) {
+<A NAME="417"></A>        DataBuffer      buf;
+<A NAME="418"></A>        BufferedImage   bi = <FONT ID="Null">null</FONT>;
+<A NAME="419"></A>        ImageReader     reader = <FONT ID="Null">null</FONT>;
+<A NAME="420"></A>        Iterator        iter = <FONT ID="Null">null</FONT>;
+<A NAME="421"></A>        
+<A NAME="422"></A>        iter = ImageIO.getImageReadersByFormatName(<FONT ID="StringLiteral">"TIFF"</FONT>);
+<A NAME="423"></A>        <FONT ID="If">if</FONT> (iter == <FONT ID="Null">null</FONT>) {
+<A NAME="424"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="425"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="426"></A>        }
+<A NAME="427"></A>        
+<A NAME="428"></A>        reader = (javax.imageio.ImageReader) iter.next();
+<A NAME="429"></A>        <FONT ID="If">if</FONT> (reader == <FONT ID="Null">null</FONT>) {
+<A NAME="430"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="431"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="432"></A>        }
+<A NAME="433"></A>        
+<A NAME="434"></A>        reader.setInput(<FONT ID="New">new</FONT> MemoryCacheImageInputStream(is));
+<A NAME="435"></A>        
+<A NAME="436"></A>        <FONT ID="SingleLineComment">// TIFF Codec in JAI_ImageIO-1_0_01 erzeugt eine interne Exception beim
+<A NAME="437"></A></FONT>        <FONT ID="SingleLineComment">// Einlesen von TIFF Bildern, die mit ImageJ erzeugt wurden.
+<A NAME="438"></A></FONT>        <FONT ID="SingleLineComment">// In JAI_ImageIO-1_1 ist der Fehler behoben
+<A NAME="439"></A></FONT>        <FONT ID="Try">try</FONT> {
+<A NAME="440"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="441"></A>                bi = reader.read(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="442"></A>            } <FONT ID="Catch">catch</FONT> (IOException e) {
+<A NAME="443"></A>                System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="444"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="445"></A>            }
+<A NAME="446"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="447"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exeption.tiffcodec"</FONT>));
+<A NAME="448"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="449"></A>        }
+<A NAME="450"></A>        
+<A NAME="451"></A>        <FONT ID="If">if</FONT> (bi.getType() != BufferedImage.TYPE_USHORT_GRAY) {
+<A NAME="452"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="453"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="454"></A>        }
+<A NAME="455"></A>        
+<A NAME="456"></A>        <FONT ID="SingleLineComment">// Es muss ein unsigned short Buffer mit einer Bank sein
+<A NAME="457"></A></FONT>        buf = bi.getData().getDataBuffer();
+<A NAME="458"></A>        <FONT ID="If">if</FONT> (! (buf <FONT ID="InstanceOf">instanceof</FONT> DataBufferUShort)) {
+<A NAME="459"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="460"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="461"></A>        }
+<A NAME="462"></A>        <FONT ID="If">if</FONT> (buf.getNumBanks() != <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="463"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="464"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="465"></A>        }
+<A NAME="466"></A>        
+<A NAME="467"></A>        <FONT ID="SingleLineComment">// Es koennen nur 256*256 Bilder verarbeitet werden
+<A NAME="468"></A></FONT>        <FONT ID="If">if</FONT> ((bi.getWidth() != <FONT ID="IntegerLiteral">256</FONT>) || (bi.getHeight() != <FONT ID="IntegerLiteral">256</FONT>)) {
+<A NAME="469"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="470"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="471"></A>        }
+<A NAME="472"></A>        
+<A NAME="473"></A>        <FONT ID="SingleLineComment">// Fuellen der Rohdatenmatrize(n)
+<A NAME="474"></A></FONT>        <FONT ID="Switch">switch</FONT> (type) {
+<A NAME="475"></A>            
+<A NAME="476"></A>            <FONT ID="Case">case</FONT> MATRIX_T1:
+<A NAME="477"></A>                t1Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="478"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="479"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="480"></A>                        t1Matrix[x][y] = buf.getElem(y * <FONT ID="IntegerLiteral">256</FONT> + x);
+<A NAME="481"></A>                    }
+<A NAME="482"></A>                }
+<A NAME="483"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="484"></A>                
+<A NAME="485"></A>            <FONT ID="Case">case</FONT> MATRIX_T2:
+<A NAME="486"></A>                t2Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="487"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="488"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="489"></A>                        t2Matrix[x][y] = buf.getElem(y * <FONT ID="IntegerLiteral">256</FONT> + x);
+<A NAME="490"></A>                    }
+<A NAME="491"></A>                }
+<A NAME="492"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="493"></A>                
+<A NAME="494"></A>            <FONT ID="Case">case</FONT> MATRIX_SZ:
+<A NAME="495"></A>                szMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="496"></A>                
+<A NAME="497"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="498"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="499"></A>                        szMatrix[x][y] = buf.getElem(y * <FONT ID="IntegerLiteral">256</FONT> + x);
+<A NAME="500"></A>                    }
+<A NAME="501"></A>                }
+<A NAME="502"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="503"></A>                
+<A NAME="504"></A>            <FONT ID="Case">case</FONT> MATRIX_FL:
+<A NAME="505"></A>                flMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="506"></A>                
+<A NAME="507"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="508"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="509"></A>                        flMatrix[x][y] = buf.getElem(y * <FONT ID="IntegerLiteral">256</FONT> + x);
+<A NAME="510"></A>                    }
+<A NAME="511"></A>                }
+<A NAME="512"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="513"></A>                
+<A NAME="514"></A>            <FONT ID="Case">case</FONT> MATRIX_PD:
+<A NAME="515"></A>                pdMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="516"></A>                
+<A NAME="517"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="518"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="519"></A>                        pdMatrix[x][y] = (<FONT ID="Int">int</FONT>) buf.getElem(y * <FONT ID="IntegerLiteral">256</FONT> + x);
+<A NAME="520"></A>                    }
+<A NAME="521"></A>                }
+<A NAME="522"></A>        }
+<A NAME="523"></A>        
+<A NAME="524"></A>        <FONT ID="SingleLineComment">// Erzeugen eines DicomDataObjects
+<A NAME="525"></A></FONT>        SecondaryCaptureIOD scIOD = <FONT ID="New">new</FONT> SecondaryCaptureIOD();
+<A NAME="526"></A>        
+<A NAME="527"></A>        <FONT ID="SingleLineComment">// Erzeugen eines temporaeren Pixel-Arrays zur Ertzeugung eines korrekten DicomDataObjects
+<A NAME="528"></A></FONT>        <FONT ID="Short">short</FONT>[] tmpPixels = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[<FONT ID="IntegerLiteral">256</FONT> * <FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="529"></A>        
+<A NAME="530"></A>        scIOD.set16UBitGrayImage(tmpPixels, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">15</FONT>);
+<A NAME="531"></A>        DcmDataObject tmpddo = scIOD.getDDO(DcmDataObject.LITTLE_ENDIAN, DcmDataObject.EXPLICITE_VR, DcmDataObject.META_STORAGE);
+<A NAME="532"></A>        
+<A NAME="533"></A>        <FONT ID="SingleLineComment">// tmpddo.clearPixelData();
+<A NAME="534"></A></FONT>        ddo = tmpddo;
+<A NAME="535"></A>        
+<A NAME="536"></A>    }
+<A NAME="537"></A>    
+<A NAME="538"></A>    
+<A NAME="539"></A>    <FONT ID="FormalComment">/**
+<A NAME="540"></A>     * Die Methode laedt eines der Rohdatenbilder im DICOM Format.
+<A NAME="541"></A>     * Welches Bild geladen wird, wird durch einen Parameter bestimmt.
+<A NAME="542"></A>     * @param type Gibt an, welches Rohdatenbild geladen werden soll.
+<A NAME="543"></A>     * @param is Der InputStream des zu ladenden Bildes.
+<A NAME="544"></A>     */</FONT>
+<A NAME="545"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadDcmImage(<FONT ID="Int">int</FONT> type, InputStream is) {
+<A NAME="546"></A>        <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>        di = <FONT ID="Null">null</FONT>;
+<A NAME="547"></A>        DcmDataObject   sddo = <FONT ID="Null">null</FONT>;
+<A NAME="548"></A>        
+<A NAME="549"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="550"></A>            sddo = DcmInputStream.loadDDO(is);
+<A NAME="551"></A>            <FONT ID="SingleLineComment">// sddo = DcmInputStream.loadDDO(theURL);
+<A NAME="552"></A></FONT>            di = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>(sddo);
+<A NAME="553"></A>        } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="554"></A>            System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.exception.load"</FONT>));
+<A NAME="555"></A>        }
+<A NAME="556"></A>        
+<A NAME="557"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="558"></A>            is.close();
+<A NAME="559"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="560"></A>        
+<A NAME="561"></A>        <FONT ID="SingleLineComment">// Fuellen der Rohdatenmatrize(n)
+<A NAME="562"></A></FONT>        <FONT ID="Switch">switch</FONT> (type) {
+<A NAME="563"></A>            
+<A NAME="564"></A>            <FONT ID="Case">case</FONT> MATRIX_T1:
+<A NAME="565"></A>                t1Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="566"></A>                <FONT ID="If">if</FONT> (di != <FONT ID="Null">null</FONT>) {
+<A NAME="567"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="568"></A>                        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="569"></A>                            t1Matrix[x][y] = (<FONT ID="Int">int</FONT>) di.pixel16[y * <FONT ID="IntegerLiteral">256</FONT> + x];
+<A NAME="570"></A>                        }
+<A NAME="571"></A>                    }
+<A NAME="572"></A>                }
+<A NAME="573"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="574"></A>                
+<A NAME="575"></A>            <FONT ID="Case">case</FONT> MATRIX_T2:
+<A NAME="576"></A>                t2Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="577"></A>                <FONT ID="If">if</FONT> (di != <FONT ID="Null">null</FONT>) {
+<A NAME="578"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="579"></A>                        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="580"></A>                            t2Matrix[x][y] = (<FONT ID="Int">int</FONT>) di.pixel16[y * <FONT ID="IntegerLiteral">256</FONT> + x];
+<A NAME="581"></A>                        }
+<A NAME="582"></A>                    }
+<A NAME="583"></A>                }
+<A NAME="584"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="585"></A>                
+<A NAME="586"></A>            <FONT ID="Case">case</FONT> MATRIX_SZ:
+<A NAME="587"></A>                szMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="588"></A>                <FONT ID="If">if</FONT> (di != <FONT ID="Null">null</FONT>) {
+<A NAME="589"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="590"></A>                        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="591"></A>                            szMatrix[x][y] = (<FONT ID="Int">int</FONT>) di.pixel16[y * <FONT ID="IntegerLiteral">256</FONT> + x];
+<A NAME="592"></A>                        }
+<A NAME="593"></A>                    }
+<A NAME="594"></A>                }
+<A NAME="595"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="596"></A>                
+<A NAME="597"></A>            <FONT ID="Case">case</FONT> MATRIX_FL:
+<A NAME="598"></A>                flMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="599"></A>                <FONT ID="If">if</FONT> (di != <FONT ID="Null">null</FONT>) {
+<A NAME="600"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="601"></A>                        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="602"></A>                            flMatrix[x][y] = (<FONT ID="Int">int</FONT>) di.pixel16[y * <FONT ID="IntegerLiteral">256</FONT> + x];
+<A NAME="603"></A>                        }
+<A NAME="604"></A>                    }
+<A NAME="605"></A>                }
+<A NAME="606"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="607"></A>                
+<A NAME="608"></A>            <FONT ID="Case">case</FONT> MATRIX_PD:
+<A NAME="609"></A>                pdMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="610"></A>                <FONT ID="If">if</FONT> (di != <FONT ID="Null">null</FONT>) {
+<A NAME="611"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="612"></A>                        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="613"></A>                            pdMatrix[x][y] = (<FONT ID="Int">int</FONT>) di.pixel16[y * <FONT ID="IntegerLiteral">256</FONT> + x];
+<A NAME="614"></A>                        }
+<A NAME="615"></A>                    }
+<A NAME="616"></A>                    
+<A NAME="617"></A>                    <FONT ID="SingleLineComment">// Gleichzeitig mit der PD-Matrix wird auch das DicomDataObject ausgelesen
+<A NAME="618"></A></FONT>                    <FONT ID="SingleLineComment">// Zuvor werden die Pixeldaten daraus geloescht
+<A NAME="619"></A></FONT>                    ddo = sddo;
+<A NAME="620"></A>                }
+<A NAME="621"></A>                
+<A NAME="622"></A>        }
+<A NAME="623"></A>    }
+<A NAME="624"></A>    
+<A NAME="625"></A>    
+<A NAME="626"></A>    <FONT ID="FormalComment">/**
+<A NAME="627"></A>     * Die Methode belegt die Matrizen fuer die T1-, T2- und PD-Werte mit
+<A NAME="628"></A>     * dem Beispielbild.
+<A NAME="629"></A>     */</FONT>
+<A NAME="630"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> loadSampleData() {
+<A NAME="631"></A>        
+<A NAME="632"></A>        <FONT ID="SingleLineComment">// Defaultwert fuer den Title
+<A NAME="633"></A></FONT>        caseInfoTitle = frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.sampledata.title"</FONT>);
+<A NAME="634"></A>        
+<A NAME="635"></A>        <FONT ID="SingleLineComment">// Defaultwert fuer die Case-Info's
+<A NAME="636"></A></FONT>        caseInfoURL = <FONT ID="This">this</FONT>.getClass().getResource(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.sampledata.filename"</FONT>));
+<A NAME="637"></A>        
+<A NAME="638"></A>        loadImage(MATRIX_T1, <FONT ID="This">this</FONT>.getClass().getResource(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.sampledata.t1"</FONT>)));
+<A NAME="639"></A>        loadImage(MATRIX_T2, <FONT ID="This">this</FONT>.getClass().getResource(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.sampledata.t2"</FONT>)));
+<A NAME="640"></A>        loadImage(MATRIX_PD, <FONT ID="This">this</FONT>.getClass().getResource(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.sampledata.pd"</FONT>)));
+<A NAME="641"></A>    }
+<A NAME="642"></A>    
+<A NAME="643"></A>    
+<A NAME="644"></A>    <FONT ID="FormalComment">/**
+<A NAME="645"></A>     * Die Methode belegt die Matrizen fuer die T1-, T2- und PD-Werte mit
+<A NAME="646"></A>     * einigen Referenz-Werten. Anhand dieses Referenzbildes, wird die Funktionsweise
+<A NAME="647"></A>     * des virtuellen Tomographen in der schriftlichen Ausarbeitung der Diplomarbeit
+<A NAME="648"></A>     * erlaeutert.
+<A NAME="649"></A>     */</FONT>
+<A NAME="650"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> loadReferenceData() {
+<A NAME="651"></A>        
+<A NAME="652"></A>        <FONT ID="SingleLineComment">// Es ist der Referenzdatensatz
+<A NAME="653"></A></FONT>        isReferenceData = <FONT ID="True">true</FONT>;
+<A NAME="654"></A>        
+<A NAME="655"></A>        <FONT ID="SingleLineComment">// Defaultwert fuer den Title
+<A NAME="656"></A></FONT>        caseInfoTitle = frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.refdata.title"</FONT>);
+<A NAME="657"></A>        
+<A NAME="658"></A>        <FONT ID="SingleLineComment">// Defaultwert fuer die Case-Info's fuer den Referenzdatensatz
+<A NAME="659"></A></FONT>        caseInfoURL = <FONT ID="This">this</FONT>.getClass().getResource(frameRsrc.getString(<FONT ID="StringLiteral">"fileloader.refdata.filename"</FONT>));
+<A NAME="660"></A>        
+<A NAME="661"></A>        <FONT ID="SingleLineComment">// Erstellen eines zufallsgenerators
+<A NAME="662"></A></FONT>        <FONT ID="SingleLineComment">// Random myRandomizer = new Random();
+<A NAME="663"></A></FONT>        
+<A NAME="664"></A>        <FONT ID="SingleLineComment">// Erstellen und initialisieren der 3 Rohdatenmatrizen
+<A NAME="665"></A></FONT>        t1Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="666"></A>        pdMatrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="667"></A>        t2Matrix = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="668"></A>        
+<A NAME="669"></A>        <FONT ID="SingleLineComment">// Erzeugen eines temporaeren Pixel-Arrays zur Ertzeugung eines korrekten
+<A NAME="670"></A></FONT>        <FONT ID="SingleLineComment">// DicomDataObjects
+<A NAME="671"></A></FONT>        <FONT ID="Short">short</FONT>[]             tmpPixels = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[<FONT ID="IntegerLiteral">256</FONT> * <FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="672"></A>        
+<A NAME="673"></A>        <FONT ID="SingleLineComment">// Erzeugen eines DicomDataObjects
+<A NAME="674"></A></FONT>        SecondaryCaptureIOD scIOD = <FONT ID="New">new</FONT> SecondaryCaptureIOD();
+<A NAME="675"></A>        
+<A NAME="676"></A>        scIOD.set16UBitGrayImage(tmpPixels, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">15</FONT>);
+<A NAME="677"></A>        DcmDataObject tmpddo = scIOD.getDDO(DcmDataObject.LITTLE_ENDIAN, DcmDataObject.EXPLICITE_VR, DcmDataObject.META_STORAGE);
+<A NAME="678"></A>        
+<A NAME="679"></A>        <FONT ID="SingleLineComment">// tmpddo.clearPixelData();
+<A NAME="680"></A></FONT>        ddo = tmpddo;
+<A NAME="681"></A>        tmpPixels = <FONT ID="Null">null</FONT>;
+<A NAME="682"></A>        
+<A NAME="683"></A>        <FONT ID="SingleLineComment">// Testbild
+<A NAME="684"></A></FONT>        
+<A NAME="685"></A>        <FONT ID="SingleLineComment">// Rahmen mit eiweisreicher Fluessigkeit
+<A NAME="686"></A></FONT>        <FONT ID="SingleLineComment">// th 2002.10.27 azskommentoert
+<A NAME="687"></A></FONT>        <FONT ID="SingleLineComment">// drawRelaxRect(2, 2, 252, 2, 500, 250, 100);
+<A NAME="688"></A></FONT>        <FONT ID="SingleLineComment">// drawRelaxRect(2, 2, 2, 252, 500, 250, 100);
+<A NAME="689"></A></FONT>        <FONT ID="SingleLineComment">// drawRelaxRect(2, 252, 252, 2, 500, 250, 100);
+<A NAME="690"></A></FONT>        <FONT ID="SingleLineComment">// drawRelaxRect(252, 2, 2, 252, 500, 250, 100);
+<A NAME="691"></A></FONT>        
+<A NAME="692"></A>        <FONT ID="SingleLineComment">// Fett:
+<A NAME="693"></A></FONT>        <FONT ID="SingleLineComment">// Szumowski J, Simon J: Proton Chemical Shift Imaging.
+<A NAME="694"></A></FONT>        <FONT ID="SingleLineComment">// In: Stark D, Bradley W: Magnetic Resonance Imaging.
+<A NAME="695"></A></FONT>        <FONT ID="SingleLineComment">// S. 482. Second Edition, Mosby, St. Loise 1992
+<A NAME="696"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">280</FONT>, <FONT ID="IntegerLiteral">50</FONT>, <FONT ID="IntegerLiteral">80</FONT>);
+<A NAME="697"></A>        
+<A NAME="698"></A>        <FONT ID="SingleLineComment">// Methaemoglobin:
+<A NAME="699"></A></FONT>        <FONT ID="SingleLineComment">// Hendrick R, Raff U: Image Contrast and Noise.
+<A NAME="700"></A></FONT>        <FONT ID="SingleLineComment">// In: Stark D, Bradley W: Magnetic Resonance Imaging.
+<A NAME="701"></A></FONT>        <FONT ID="SingleLineComment">// S. 113. Second Edition, Mosby, St. Loise 1992
+<A NAME="702"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">460</FONT>, <FONT ID="IntegerLiteral">106</FONT>, <FONT ID="IntegerLiteral">86</FONT>);
+<A NAME="703"></A>        
+<A NAME="704"></A>        <FONT ID="SingleLineComment">// Weisse Hirnsubstanz:
+<A NAME="705"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">510</FONT>, <FONT ID="IntegerLiteral">67</FONT>, <FONT ID="IntegerLiteral">54</FONT>);
+<A NAME="706"></A>        
+<A NAME="707"></A>        <FONT ID="SingleLineComment">// Graue Hirnsubstanz:
+<A NAME="708"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">208</FONT>, <FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">760</FONT>, <FONT ID="IntegerLiteral">77</FONT>, <FONT ID="IntegerLiteral">62</FONT>);
+<A NAME="709"></A>        
+<A NAME="710"></A>        <FONT ID="SingleLineComment">// Hirnoedem:
+<A NAME="711"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">900</FONT>, <FONT ID="IntegerLiteral">126</FONT>, <FONT ID="IntegerLiteral">77</FONT>);
+<A NAME="712"></A>        
+<A NAME="713"></A>        <FONT ID="SingleLineComment">// Zyste:
+<A NAME="714"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">1080</FONT>, <FONT ID="IntegerLiteral">215</FONT>, <FONT ID="IntegerLiteral">100</FONT>);
+<A NAME="715"></A>        
+<A NAME="716"></A>        <FONT ID="SingleLineComment">// Liquor:
+<A NAME="717"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">2650</FONT>, <FONT ID="IntegerLiteral">280</FONT>, <FONT ID="IntegerLiteral">89</FONT>);
+<A NAME="718"></A>        
+<A NAME="719"></A>        <FONT ID="SingleLineComment">// Reines Wsser:
+<A NAME="720"></A></FONT>        <FONT ID="SingleLineComment">// Fullerton G: Physioloic Basis of Magnetic Relaxation.
+<A NAME="721"></A></FONT>        <FONT ID="SingleLineComment">// In: Stark D, Bradley W: Magnetic Resonance Imaging.
+<A NAME="722"></A></FONT>        <FONT ID="SingleLineComment">// S. 93. Second Edition, Mosby, St. Loise 1992
+<A NAME="723"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">208</FONT>, <FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">4000</FONT>, <FONT ID="IntegerLiteral">4000</FONT>, <FONT ID="IntegerLiteral">100</FONT>);
+<A NAME="724"></A>        
+<A NAME="725"></A>        <FONT ID="SingleLineComment">// Quadrat mit Fett und 3 Pixel Kreuz
+<A NAME="726"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">96</FONT>, <FONT ID="IntegerLiteral">96</FONT>, <FONT ID="IntegerLiteral">280</FONT>, <FONT ID="IntegerLiteral">50</FONT>, <FONT ID="IntegerLiteral">80</FONT>);
+<A NAME="727"></A>        drawRelaxRect(<FONT ID="IntegerLiteral">63</FONT>, <FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">96</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="728"></A>        drawRelaxRect(<FONT ID="IntegerLiteral">16</FONT>, <FONT ID="IntegerLiteral">191</FONT>, <FONT ID="IntegerLiteral">96</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="729"></A>        
+<A NAME="730"></A>        <FONT ID="SingleLineComment">// Quadrat mit Wasser und 3 PixelPunkt
+<A NAME="731"></A></FONT>        drawRelaxRect(<FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">144</FONT>, <FONT ID="IntegerLiteral">96</FONT>, <FONT ID="IntegerLiteral">96</FONT>, <FONT ID="IntegerLiteral">4000</FONT>, <FONT ID="IntegerLiteral">4000</FONT>, <FONT ID="IntegerLiteral">100</FONT>);
+<A NAME="732"></A>        drawRelaxRect(<FONT ID="IntegerLiteral">191</FONT>, <FONT ID="IntegerLiteral">191</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="733"></A>    }
+<A NAME="734"></A>    
+<A NAME="735"></A>    
+<A NAME="736"></A>    <FONT ID="FormalComment">/**
+<A NAME="737"></A>     * Zeichnet ein Rechteck mit T1, T2 und PD Werten in die Matritzen
+<A NAME="738"></A>     * @param x   x-Koordinate der linken oberen Ecke
+<A NAME="739"></A>     * @param y   y-Koordinate der linken oberen Ecke
+<A NAME="740"></A>     * @param b   Breite
+<A NAME="741"></A>     * @param h   Höhe
+<A NAME="742"></A>     * @param t1  T1 Relaxationszeit in ms
+<A NAME="743"></A>     * @param t2  T2 Relaxationszeit in ms
+<A NAME="744"></A>     * @param pd  Protonendichte in % bezogen auf reines Wasser
+<A NAME="745"></A>     *
+<A NAME="746"></A>     * @author Thomas Hacklaender
+<A NAME="747"></A>     * @version 2000.4.3
+<A NAME="748"></A>     */</FONT>
+<A NAME="749"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> drawRelaxRect(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> b, <FONT ID="Int">int</FONT> h, <FONT ID="Int">int</FONT> t1, <FONT ID="Int">int</FONT> t2, <FONT ID="Int">int</FONT> pd) {
+<A NAME="750"></A>        <FONT ID="If">if</FONT> (pd &gt; <FONT ID="IntegerLiteral">100</FONT>) {
+<A NAME="751"></A>            pd = <FONT ID="IntegerLiteral">100</FONT>;
+<A NAME="752"></A>        }
+<A NAME="753"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ix = x; ix &lt; x + b; ix++) {
+<A NAME="754"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> iy = y; iy &lt; y + h; iy++) {
+<A NAME="755"></A>                t1Matrix[ix][iy] = t1;
+<A NAME="756"></A>                t2Matrix[ix][iy] = t2;
+<A NAME="757"></A>                pdMatrix[ix][iy] = (<FONT ID="IntegerLiteral">65530</FONT> * pd) / <FONT ID="IntegerLiteral">100</FONT>;
+<A NAME="758"></A>            }   <FONT ID="SingleLineComment">// for
+<A NAME="759"></A></FONT>        }   <FONT ID="SingleLineComment">// for
+<A NAME="760"></A></FONT>    }
+<A NAME="761"></A>    
+<A NAME="762"></A>}
+<A NAME="763"></A>
+<A NAME="764"></A>
+<A NAME="765"></A>
+<A NAME="766"></A>
+<A NAME="767"></A>
+<A NAME="768"></A>
+<A NAME="769"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="770"></A>
+<A NAME="771"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FileLoader</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

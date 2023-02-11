@@ -1,0 +1,699 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.LabTFLabTFPanel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">LabTFLabTFPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="FormalComment">/**
+<A NAME="29"></A> * Diese Klasse stellt ein Panel mit zwei Labeln und zwei Textfeldern zur Verfügung.
+<A NAME="30"></A> * Die Labels koennen nur durch den Konstruktor gesetzt werden, die Textfelder
+<A NAME="31"></A> * auch per Methode.&lt;br&gt;
+<A NAME="32"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="33"></A> * Thomas Hacklaender 2002.10.12:
+<A NAME="34"></A> * isFocusTraversable ist set deprecated.&lt;br&gt;
+<A NAME="35"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="36"></A> * @author   Christian Schalla
+<A NAME="37"></A> * @author   Andreas Truemper
+<A NAME="38"></A> * @version  1.2, 2002.10.12
+<A NAME="39"></A> */</FONT>
+<A NAME="40"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> LabTFLabTFPanel <FONT ID="Extends">extends</FONT> JPanel {
+<A NAME="41"></A>
+<A NAME="42"></A>
+<A NAME="43"></A>  <FONT ID="FormalComment">/**
+<A NAME="44"></A>   * Einfache Ableitung der JButtonklasse, die in der Tabreihenfolge ignoriert
+<A NAME="45"></A>   * wird. Dazu muß die Methode isFocusTraversable überschrieben werden.
+<A NAME="46"></A>   */</FONT>
+<A NAME="47"></A>  <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> NoFocusButton <FONT ID="Extends">extends</FONT> JButton {
+<A NAME="48"></A>
+<A NAME="49"></A>
+<A NAME="50"></A>    <FONT ID="FormalComment">/**
+<A NAME="51"></A>     * Constructor declaration
+<A NAME="52"></A>     * 
+<A NAME="53"></A>     * 
+<A NAME="54"></A>     */</FONT>
+<A NAME="55"></A>    <FONT ID="Public">public</FONT> NoFocusButton() {
+<A NAME="56"></A>      <FONT ID="Super">super</FONT>();
+<A NAME="57"></A>    }
+<A NAME="58"></A>
+<A NAME="59"></A>    ;
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="FormalComment">/**
+<A NAME="63"></A>     * Method declaration
+<A NAME="64"></A>     * 
+<A NAME="65"></A>     * 
+<A NAME="66"></A>     * @return
+<A NAME="67"></A>     * 
+<A NAME="68"></A>     * @see
+<A NAME="69"></A>     */</FONT>
+<A NAME="70"></A>
+<A NAME="71"></A>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="72"></A></FONT>    <FONT ID="SingleLineComment">// public boolean isFocusTraversable() {
+<A NAME="73"></A></FONT>    <FONT ID="SingleLineComment">// return false;
+<A NAME="74"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="75"></A></FONT>
+<A NAME="76"></A>  }
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Erste Beschriftung.
+<A NAME="81"></A>   */</FONT>
+<A NAME="82"></A>  JLabel          lLabel1 = <FONT ID="New">new</FONT> JLabel();
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="FormalComment">/**
+<A NAME="86"></A>   * Erstes Textfeld.
+<A NAME="87"></A>   */</FONT>
+<A NAME="88"></A>  JTextField      tfText1 = <FONT ID="New">new</FONT> JTextField();
+<A NAME="89"></A>
+<A NAME="90"></A>
+<A NAME="91"></A>  <FONT ID="FormalComment">/**
+<A NAME="92"></A>   * Zweite Beschriftung.
+<A NAME="93"></A>   */</FONT>
+<A NAME="94"></A>  JLabel          lLabel2 = <FONT ID="New">new</FONT> JLabel();
+<A NAME="95"></A>
+<A NAME="96"></A>
+<A NAME="97"></A>  <FONT ID="FormalComment">/**
+<A NAME="98"></A>   * Zeites Textfeld.
+<A NAME="99"></A>   */</FONT>
+<A NAME="100"></A>  JTextField      tfText2 = <FONT ID="New">new</FONT> JTextField();
+<A NAME="101"></A>
+<A NAME="102"></A>
+<A NAME="103"></A>  <FONT ID="FormalComment">/**
+<A NAME="104"></A>   * Knopf zum Erhoehen des Wertes des ersten Textfeldes um 1.
+<A NAME="105"></A>   */</FONT>
+<A NAME="106"></A>  JButton         pbUp1 = <FONT ID="New">new</FONT> NoFocusButton();
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Knopf zum Vermindern des Wertes des ersten Textfeldes um 1.
+<A NAME="111"></A>   */</FONT>
+<A NAME="112"></A>  JButton         pbDown1 = <FONT ID="New">new</FONT> NoFocusButton();
+<A NAME="113"></A>
+<A NAME="114"></A>
+<A NAME="115"></A>  <FONT ID="FormalComment">/**
+<A NAME="116"></A>   * Knopf zum Erhoehen des Wertes des zweiten Textfeldes um 1.
+<A NAME="117"></A>   */</FONT>
+<A NAME="118"></A>  JButton         pbUp2 = <FONT ID="New">new</FONT> NoFocusButton();
+<A NAME="119"></A>
+<A NAME="120"></A>
+<A NAME="121"></A>  <FONT ID="FormalComment">/**
+<A NAME="122"></A>   * Knopf zum Vermindern des Wertes des zweiten Textfeldes um 1.
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  JButton         pbDown2 = <FONT ID="New">new</FONT> NoFocusButton();
+<A NAME="125"></A>
+<A NAME="126"></A>
+<A NAME="127"></A>  <FONT ID="FormalComment">/**
+<A NAME="128"></A>   * Symbol: Pfeil nach oben fuer die Knoepfe an den Textfeldern.
+<A NAME="129"></A>   */</FONT>
+<A NAME="130"></A>  ImageIcon       iUp = <FONT ID="New">new</FONT> ImageIcon();
+<A NAME="131"></A>
+<A NAME="132"></A>
+<A NAME="133"></A>  <FONT ID="FormalComment">/**
+<A NAME="134"></A>   * Symbol: Pfeil nach unten fuer die Knoepfe an den Textfeldern.
+<A NAME="135"></A>   */</FONT>
+<A NAME="136"></A>  ImageIcon       iDown = <FONT ID="New">new</FONT> ImageIcon();
+<A NAME="137"></A>
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Inhalt des ersten Beschriftungsfeldes.
+<A NAME="141"></A>   */</FONT>
+<A NAME="142"></A>  <FONT ID="Private">private</FONT> String  label1;
+<A NAME="143"></A>
+<A NAME="144"></A>
+<A NAME="145"></A>  <FONT ID="FormalComment">/**
+<A NAME="146"></A>   * Inhalt des zweiten Beschriftungsfeldes.
+<A NAME="147"></A>   */</FONT>
+<A NAME="148"></A>  <FONT ID="Private">private</FONT> String  label2;
+<A NAME="149"></A>
+<A NAME="150"></A>
+<A NAME="151"></A>  <FONT ID="FormalComment">/**
+<A NAME="152"></A>   * Inhalt des ersten Textfeldes.
+<A NAME="153"></A>   */</FONT>
+<A NAME="154"></A>  <FONT ID="Private">private</FONT> String  text1;
+<A NAME="155"></A>
+<A NAME="156"></A>
+<A NAME="157"></A>  <FONT ID="FormalComment">/**
+<A NAME="158"></A>   * Inhalt des zweiten Textfeldes.
+<A NAME="159"></A>   */</FONT>
+<A NAME="160"></A>  <FONT ID="Private">private</FONT> String  text2;
+<A NAME="161"></A>
+<A NAME="162"></A>
+<A NAME="163"></A>  <FONT ID="FormalComment">/**
+<A NAME="164"></A>   * Kleinster zulaessiger Wert fuer das erste Textfeld.
+<A NAME="165"></A>   */</FONT>
+<A NAME="166"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     minval1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="167"></A>
+<A NAME="168"></A>
+<A NAME="169"></A>  <FONT ID="FormalComment">/**
+<A NAME="170"></A>   * Kleinster zulaessiger Wert fuer das zweite Textfeld.
+<A NAME="171"></A>   */</FONT>
+<A NAME="172"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     minval2 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="173"></A>
+<A NAME="174"></A>
+<A NAME="175"></A>  <FONT ID="FormalComment">/**
+<A NAME="176"></A>   * Groesster zulaessiger Wert fuer das erste Textfeld.
+<A NAME="177"></A>   */</FONT>
+<A NAME="178"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     maxval1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="179"></A>
+<A NAME="180"></A>
+<A NAME="181"></A>  <FONT ID="FormalComment">/**
+<A NAME="182"></A>   * Groesster zulaessiger Wert fuer das zweite Textfeld.
+<A NAME="183"></A>   */</FONT>
+<A NAME="184"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>     maxval2 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="185"></A>
+<A NAME="186"></A>
+<A NAME="187"></A>  <FONT ID="FormalComment">/**
+<A NAME="188"></A>   * Schalter fuer eingeschraenktes Eingabeintervall fuer das erste Textfeld.
+<A NAME="189"></A>   */</FONT>
+<A NAME="190"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> range1IsSet = <FONT ID="False">false</FONT>;
+<A NAME="191"></A>
+<A NAME="192"></A>
+<A NAME="193"></A>  <FONT ID="FormalComment">/**
+<A NAME="194"></A>   * Schalter fuer eingeschraenktes Eingabeintervall fuer das zweite Textfeld.
+<A NAME="195"></A>   */</FONT>
+<A NAME="196"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> range2IsSet = <FONT ID="False">false</FONT>;
+<A NAME="197"></A>
+<A NAME="198"></A>
+<A NAME="199"></A>  <FONT ID="FormalComment">/**
+<A NAME="200"></A>   * Merkt sich, ob die GUI schon initialisiert wurde, damit Listener nicht
+<A NAME="201"></A>   * mehrmals initialisiert werden.
+<A NAME="202"></A>   */</FONT>
+<A NAME="203"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> isInitialized = <FONT ID="False">false</FONT>;
+<A NAME="204"></A>
+<A NAME="205"></A>
+<A NAME="206"></A>  <FONT ID="FormalComment">/**
+<A NAME="207"></A>   * Der Konstruktor legt Text der beiden Beschriftungsfelder sowie den
+<A NAME="208"></A>   * initialen Inhalt der beiden Textfelder fest.
+<A NAME="209"></A>   * @param lab1 Erste Beschriftung.
+<A NAME="210"></A>   * @param txt1 Initialer Inhalt des ersten Textfeldes.
+<A NAME="211"></A>   * @param lab2 Zweite Beschriftung.
+<A NAME="212"></A>   * @param txt2 Initialer Inhalt des zweiten Textfeldes.
+<A NAME="213"></A>   */</FONT>
+<A NAME="214"></A>  <FONT ID="Public">public</FONT> LabTFLabTFPanel(String lab1, String txt1, String lab2, String txt2) {
+<A NAME="215"></A>    label1 = lab1;
+<A NAME="216"></A>    label2 = lab2;
+<A NAME="217"></A>    text1 = txt1;
+<A NAME="218"></A>    text2 = txt2;
+<A NAME="219"></A>    fillPanel();
+<A NAME="220"></A>  }   <FONT ID="SingleLineComment">// Kosntruktor
+<A NAME="221"></A></FONT>
+<A NAME="222"></A>
+<A NAME="223"></A>  <FONT ID="FormalComment">/**
+<A NAME="224"></A>   * Die Methode stellt die Bedienelemente dieser Klasse dar.
+<A NAME="225"></A>   */</FONT>
+<A NAME="226"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fillPanel() {
+<A NAME="227"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="228"></A>      jbInit();
+<A NAME="229"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="230"></A>      ex.printStackTrace();
+<A NAME="231"></A>    } 
+<A NAME="232"></A>  }   <FONT ID="SingleLineComment">// Methode fillPanel
+<A NAME="233"></A></FONT> 
+<A NAME="234"></A>
+<A NAME="235"></A>  <FONT ID="FormalComment">/**
+<A NAME="236"></A>   * Die Methode erzeugt die einzelnen Bedienelemente dieser Klasse und stellt
+<A NAME="237"></A>   * diese dar.
+<A NAME="238"></A>   */</FONT>
+<A NAME="239"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="240"></A>    <FONT ID="This">this</FONT>.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="241"></A>
+<A NAME="242"></A>    iUp = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/tools/LabTFLabTFPanel.java.html">LabTFLabTFPanel</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"arrowup.gif"</FONT>));
+<A NAME="243"></A>    iDown = <FONT ID="New">new</FONT> ImageIcon(<A HREF="../../virtual/tools/LabTFLabTFPanel.java.html">LabTFLabTFPanel</A>.<FONT ID="Class">class</FONT>.getResource(<FONT ID="StringLiteral">"arrowdown.gif"</FONT>));
+<A NAME="244"></A>
+<A NAME="245"></A>    lLabel1.setText(label1);
+<A NAME="246"></A>    lLabel1.setBounds(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">70</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="247"></A>    add(lLabel1);
+<A NAME="248"></A>
+<A NAME="249"></A>    tfText1.setBounds(<FONT ID="IntegerLiteral">79</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">43</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="250"></A>    add(tfText1);
+<A NAME="251"></A>    tfText1.setDocument(<FONT ID="New">new</FONT> <A HREF="../../virtual/tools/IntegerDocument.java.html">IntegerDocument</A>());
+<A NAME="252"></A>    tfText1.setText(text1);
+<A NAME="253"></A>    tfText1.addFocusListener(<FONT ID="New">new</FONT> java.awt.event.FocusAdapter() {
+<A NAME="254"></A>
+<A NAME="255"></A>
+<A NAME="256"></A>      <FONT ID="FormalComment">/**
+<A NAME="257"></A>       * Method declaration
+<A NAME="258"></A>       * 
+<A NAME="259"></A>       * 
+<A NAME="260"></A>       * @param e
+<A NAME="261"></A>       * 
+<A NAME="262"></A>       * @see
+<A NAME="263"></A>       */</FONT>
+<A NAME="264"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> focusLost(FocusEvent e) {
+<A NAME="265"></A>        tfText1_focusLost();
+<A NAME="266"></A>      } 
+<A NAME="267"></A>
+<A NAME="268"></A>    });
+<A NAME="269"></A>
+<A NAME="270"></A>
+<A NAME="271"></A>    lLabel2.setText(label2);
+<A NAME="272"></A>    lLabel2.setBounds(<FONT ID="IntegerLiteral">145</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">45</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="273"></A>    lLabel2.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+<A NAME="274"></A>    add(lLabel2);
+<A NAME="275"></A>
+<A NAME="276"></A>    tfText2.setBounds(<FONT ID="IntegerLiteral">199</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">40</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="277"></A>    add(tfText2);
+<A NAME="278"></A>    tfText2.setDocument(<FONT ID="New">new</FONT> <A HREF="../../virtual/tools/IntegerDocument.java.html">IntegerDocument</A>());
+<A NAME="279"></A>    tfText2.setText(text2);
+<A NAME="280"></A>    tfText2.addFocusListener(<FONT ID="New">new</FONT> java.awt.event.FocusAdapter() {
+<A NAME="281"></A>
+<A NAME="282"></A>
+<A NAME="283"></A>      <FONT ID="FormalComment">/**
+<A NAME="284"></A>       * Method declaration
+<A NAME="285"></A>       * 
+<A NAME="286"></A>       * 
+<A NAME="287"></A>       * @param e
+<A NAME="288"></A>       * 
+<A NAME="289"></A>       * @see
+<A NAME="290"></A>       */</FONT>
+<A NAME="291"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> focusLost(FocusEvent e) {
+<A NAME="292"></A>        tfText2_focusLost();
+<A NAME="293"></A>      } 
+<A NAME="294"></A>
+<A NAME="295"></A>    });
+<A NAME="296"></A>
+<A NAME="297"></A>
+<A NAME="298"></A>    pbUp1.setBounds(<FONT ID="IntegerLiteral">123</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">15</FONT>, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="299"></A>    pbUp1.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="300"></A>    pbUp1.setIcon(iUp);
+<A NAME="301"></A>    <FONT ID="If">if</FONT> (!isInitialized) {
+<A NAME="302"></A>      pbUp1.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="303"></A>
+<A NAME="304"></A>
+<A NAME="305"></A>        <FONT ID="FormalComment">/**
+<A NAME="306"></A>         * Method declaration
+<A NAME="307"></A>         * 
+<A NAME="308"></A>         * 
+<A NAME="309"></A>         * @param e
+<A NAME="310"></A>         * 
+<A NAME="311"></A>         * @see
+<A NAME="312"></A>         */</FONT>
+<A NAME="313"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="314"></A>          pbUp1_actionPerformed();
+<A NAME="315"></A>        } 
+<A NAME="316"></A>
+<A NAME="317"></A>      });
+<A NAME="318"></A>    } 
+<A NAME="319"></A>    add(pbUp1);
+<A NAME="320"></A>
+<A NAME="321"></A>    pbDown1.setBounds(<FONT ID="IntegerLiteral">123</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">15</FONT>, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="322"></A>    pbDown1.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="323"></A>    pbDown1.setIcon(iDown);
+<A NAME="324"></A>    <FONT ID="If">if</FONT> (!isInitialized) {
+<A NAME="325"></A>      pbDown1.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="326"></A>
+<A NAME="327"></A>
+<A NAME="328"></A>        <FONT ID="FormalComment">/**
+<A NAME="329"></A>         * Method declaration
+<A NAME="330"></A>         * 
+<A NAME="331"></A>         * 
+<A NAME="332"></A>         * @param e
+<A NAME="333"></A>         * 
+<A NAME="334"></A>         * @see
+<A NAME="335"></A>         */</FONT>
+<A NAME="336"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="337"></A>          pbDown1_actionPerformed();
+<A NAME="338"></A>        } 
+<A NAME="339"></A>
+<A NAME="340"></A>      });
+<A NAME="341"></A>    } 
+<A NAME="342"></A>    add(pbDown1);
+<A NAME="343"></A>
+<A NAME="344"></A>    pbUp2.setBounds(<FONT ID="IntegerLiteral">240</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">15</FONT>, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="345"></A>    pbUp2.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="346"></A>    pbUp2.setIcon(iUp);
+<A NAME="347"></A>    <FONT ID="If">if</FONT> (!isInitialized) {
+<A NAME="348"></A>      pbUp2.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="349"></A>
+<A NAME="350"></A>
+<A NAME="351"></A>        <FONT ID="FormalComment">/**
+<A NAME="352"></A>         * Method declaration
+<A NAME="353"></A>         * 
+<A NAME="354"></A>         * 
+<A NAME="355"></A>         * @param e
+<A NAME="356"></A>         * 
+<A NAME="357"></A>         * @see
+<A NAME="358"></A>         */</FONT>
+<A NAME="359"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="360"></A>          pbUp2_actionPerformed();
+<A NAME="361"></A>        } 
+<A NAME="362"></A>
+<A NAME="363"></A>      });
+<A NAME="364"></A>    } 
+<A NAME="365"></A>    add(pbUp2);
+<A NAME="366"></A>
+<A NAME="367"></A>    pbDown2.setBounds(<FONT ID="IntegerLiteral">240</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">15</FONT>, <FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="368"></A>    pbDown2.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>));
+<A NAME="369"></A>    pbDown2.setIcon(iDown);
+<A NAME="370"></A>    <FONT ID="If">if</FONT> (!isInitialized) {
+<A NAME="371"></A>      pbDown2.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="372"></A>
+<A NAME="373"></A>
+<A NAME="374"></A>        <FONT ID="FormalComment">/**
+<A NAME="375"></A>         * Method declaration
+<A NAME="376"></A>         * 
+<A NAME="377"></A>         * 
+<A NAME="378"></A>         * @param e
+<A NAME="379"></A>         * 
+<A NAME="380"></A>         * @see
+<A NAME="381"></A>         */</FONT>
+<A NAME="382"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="383"></A>          pbDown2_actionPerformed();
+<A NAME="384"></A>        } 
+<A NAME="385"></A>
+<A NAME="386"></A>      });
+<A NAME="387"></A>    } 
+<A NAME="388"></A>    add(pbDown2);
+<A NAME="389"></A>
+<A NAME="390"></A>    isInitialized = <FONT ID="True">true</FONT>;
+<A NAME="391"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="392"></A></FONT> 
+<A NAME="393"></A>
+<A NAME="394"></A>  <FONT ID="FormalComment">/**
+<A NAME="395"></A>   * Die Methode setzt den Wert des ersten Textfeldes auf den uebergebenen Wert.
+<A NAME="396"></A>   * @param txt1 Der zu setzende Text.
+<A NAME="397"></A>   */</FONT>
+<A NAME="398"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValue1(String txt1) {
+<A NAME="399"></A>    tfText1.setText(txt1);
+<A NAME="400"></A>  }   <FONT ID="SingleLineComment">// Methode setValue1
+<A NAME="401"></A></FONT> 
+<A NAME="402"></A>
+<A NAME="403"></A>  <FONT ID="FormalComment">/**
+<A NAME="404"></A>   * Die Methode setzt den Wert des zweiten Textfeldes auf den uebergebenen Wert.
+<A NAME="405"></A>   * @param txt2 Der zu setzende Text.
+<A NAME="406"></A>   */</FONT>
+<A NAME="407"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValue2(String txt2) {
+<A NAME="408"></A>    tfText2.setText(txt2);
+<A NAME="409"></A>  }   <FONT ID="SingleLineComment">// Methode setValue2
+<A NAME="410"></A></FONT> 
+<A NAME="411"></A>
+<A NAME="412"></A>  <FONT ID="FormalComment">/**
+<A NAME="413"></A>   * Die Methode liefert den aktuellen Inhalt des ersten Textfelde zurueck.
+<A NAME="414"></A>   * @return Der Text (bzw. die Zahl) im ersten Textfeld.
+<A NAME="415"></A>   */</FONT>
+<A NAME="416"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getValue1() {
+<A NAME="417"></A>    <FONT ID="Return">return</FONT> Integer.parseInt(tfText1.getText());
+<A NAME="418"></A>  }   <FONT ID="SingleLineComment">// Methode getValue2
+<A NAME="419"></A></FONT> 
+<A NAME="420"></A>
+<A NAME="421"></A>  <FONT ID="FormalComment">/**
+<A NAME="422"></A>   * Die Methode liefert den aktuellen Inhalt des zweiten Textfelde zurueck.
+<A NAME="423"></A>   * @return Der Text (bzw. die Zahl) im zweiten Textfeld.
+<A NAME="424"></A>   */</FONT>
+<A NAME="425"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getValue2() {
+<A NAME="426"></A>    <FONT ID="Return">return</FONT> Integer.parseInt(tfText2.getText());
+<A NAME="427"></A>  }   <FONT ID="SingleLineComment">// Methode getValue2
+<A NAME="428"></A></FONT> 
+<A NAME="429"></A>
+<A NAME="430"></A>  <FONT ID="FormalComment">/**
+<A NAME="431"></A>   * Die Methode liefert eine Referenz auf das erste Textfeld zurueck. Dadurch koennen
+<A NAME="432"></A>   * von aussen EventListener hinzugefuegt werden.
+<A NAME="433"></A>   * @return Eine Referentz auf das erste Textfeld.
+<A NAME="434"></A>   */</FONT>
+<A NAME="435"></A>  <FONT ID="Public">public</FONT> JTextField getTextFieldReference1() {
+<A NAME="436"></A>    <FONT ID="Return">return</FONT> tfText1;
+<A NAME="437"></A>  }   <FONT ID="SingleLineComment">// getTextFieldReference1
+<A NAME="438"></A></FONT> 
+<A NAME="439"></A>
+<A NAME="440"></A>  <FONT ID="FormalComment">/**
+<A NAME="441"></A>   * Die Methode liefert eine Referenz auf das zweite Textfeld zurueck. Dadurch koennen
+<A NAME="442"></A>   * von aussen EventListener hinzugefuegt werden.
+<A NAME="443"></A>   * @return Eine Referentz auf das zweite Textfeld.
+<A NAME="444"></A>   */</FONT>
+<A NAME="445"></A>  <FONT ID="Public">public</FONT> JTextField getTextFieldReference2() {
+<A NAME="446"></A>    <FONT ID="Return">return</FONT> tfText2;
+<A NAME="447"></A>  }   <FONT ID="SingleLineComment">// Methode getTextFiledReference2
+<A NAME="448"></A></FONT> 
+<A NAME="449"></A>
+<A NAME="450"></A>  <FONT ID="FormalComment">/**
+<A NAME="451"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Erhoehung des Wertes des ersten
+<A NAME="452"></A>   * Textfeldes um 1 gedrueckt wurde. Wenn das Textfeld aktiviert ist, wird der
+<A NAME="453"></A>   * Wert erhoeht, soweit er noch im zulaessigen Bereich liegt.
+<A NAME="454"></A>   */</FONT>
+<A NAME="455"></A>  <FONT ID="Void">void</FONT> pbUp1_actionPerformed() {
+<A NAME="456"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="457"></A>      <FONT ID="Int">int</FONT> newvalue = Integer.parseInt(tfText1.getText()) + <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="458"></A>
+<A NAME="459"></A>      <FONT ID="If">if</FONT> (!checkValue1(newvalue)) {
+<A NAME="460"></A>        <FONT ID="Return">return</FONT>;
+<A NAME="461"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="462"></A>        <FONT ID="If">if</FONT> (tfText1.isEnabled()) {
+<A NAME="463"></A>          tfText1.setText(<FONT ID="StringLiteral">""</FONT> + newvalue);
+<A NAME="464"></A>        } 
+<A NAME="465"></A>      } 
+<A NAME="466"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="467"></A>  }   <FONT ID="SingleLineComment">// Methode pbUp1_actionPerformed
+<A NAME="468"></A></FONT> 
+<A NAME="469"></A>
+<A NAME="470"></A>  <FONT ID="FormalComment">/**
+<A NAME="471"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Verminderung des Wertes des ersten
+<A NAME="472"></A>   * Textfeldes um 1 gedrueckt wurde. Wenn das Textfeld aktiviert ist, wird der
+<A NAME="473"></A>   * Wert vermindert, soweit er noch im zulaessigen Bereich liegt.
+<A NAME="474"></A>   */</FONT>
+<A NAME="475"></A>  <FONT ID="Void">void</FONT> pbDown1_actionPerformed() {
+<A NAME="476"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="477"></A>      <FONT ID="Int">int</FONT> newvalue = Integer.parseInt(tfText1.getText()) - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="478"></A>
+<A NAME="479"></A>      <FONT ID="If">if</FONT> (!checkValue1(newvalue)) {
+<A NAME="480"></A>        <FONT ID="Return">return</FONT>;
+<A NAME="481"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="482"></A>        <FONT ID="If">if</FONT> (tfText1.isEnabled()) {
+<A NAME="483"></A>          tfText1.setText(<FONT ID="StringLiteral">""</FONT> + newvalue);
+<A NAME="484"></A>        } 
+<A NAME="485"></A>      } 
+<A NAME="486"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="487"></A>
+<A NAME="488"></A>  }   <FONT ID="SingleLineComment">// Methode pbDown1_actionPerformed
+<A NAME="489"></A></FONT> 
+<A NAME="490"></A>
+<A NAME="491"></A>  <FONT ID="FormalComment">/**
+<A NAME="492"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Erhoehung des Wertes des zweiten
+<A NAME="493"></A>   * Textfeldes um 1 gedrueckt wurde. Wenn das Textfeld aktiviert ist, wird der
+<A NAME="494"></A>   * Wert erhoeht, soweit er noch im zulaessigen Bereich liegt.
+<A NAME="495"></A>   */</FONT>
+<A NAME="496"></A>  <FONT ID="Void">void</FONT> pbUp2_actionPerformed() {
+<A NAME="497"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="498"></A>      <FONT ID="Int">int</FONT> newvalue = Integer.parseInt(tfText2.getText()) + <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="499"></A>
+<A NAME="500"></A>      <FONT ID="If">if</FONT> (!checkValue2(newvalue)) {
+<A NAME="501"></A>        <FONT ID="Return">return</FONT>;
+<A NAME="502"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="503"></A>        <FONT ID="If">if</FONT> (tfText2.isEnabled()) {
+<A NAME="504"></A>          tfText2.setText(<FONT ID="StringLiteral">""</FONT> + newvalue);
+<A NAME="505"></A>        } 
+<A NAME="506"></A>      } 
+<A NAME="507"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="508"></A>  }   <FONT ID="SingleLineComment">// Methode pbUp2_actionPerformed
+<A NAME="509"></A></FONT> 
+<A NAME="510"></A>
+<A NAME="511"></A>  <FONT ID="FormalComment">/**
+<A NAME="512"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Verminderung des Wertes des zweiten
+<A NAME="513"></A>   * Textfeldes um 1 gedrueckt wurde. Wenn das Textfeld aktiviert ist, wird der
+<A NAME="514"></A>   * Wert vermindert, soweit er noch im zulaessigen Bereich liegt.
+<A NAME="515"></A>   */</FONT>
+<A NAME="516"></A>  <FONT ID="Void">void</FONT> pbDown2_actionPerformed() {
+<A NAME="517"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="518"></A>      <FONT ID="Int">int</FONT> newvalue = Integer.parseInt(tfText2.getText()) - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="519"></A>
+<A NAME="520"></A>      <FONT ID="If">if</FONT> (!checkValue2(newvalue)) {
+<A NAME="521"></A>        <FONT ID="Return">return</FONT>;
+<A NAME="522"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="523"></A>        <FONT ID="If">if</FONT> (tfText2.isEnabled()) {
+<A NAME="524"></A>          tfText2.setText(<FONT ID="StringLiteral">""</FONT> + newvalue);
+<A NAME="525"></A>        } 
+<A NAME="526"></A>      } 
+<A NAME="527"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="528"></A>  }   <FONT ID="SingleLineComment">// Methode pbDown2_actionPerformed
+<A NAME="529"></A></FONT> 
+<A NAME="530"></A>
+<A NAME="531"></A>  <FONT ID="FormalComment">/**
+<A NAME="532"></A>   * Die Methode setzt das Intervall der zulaessigen Werte fuer das erste Textfeld.
+<A NAME="533"></A>   * @param Kleinster zulaessiger Wert fuer das erste Textfeld.
+<A NAME="534"></A>   * @param Groesster zulaessiger Wert fuer das erste Textfeld.
+<A NAME="535"></A>   */</FONT>
+<A NAME="536"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setRange1(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="537"></A>    minval1 = min;
+<A NAME="538"></A>    maxval1 = max;
+<A NAME="539"></A>    range1IsSet = <FONT ID="True">true</FONT>;
+<A NAME="540"></A>  }   <FONT ID="SingleLineComment">// Methode setRange1
+<A NAME="541"></A></FONT> 
+<A NAME="542"></A>
+<A NAME="543"></A>  <FONT ID="FormalComment">/**
+<A NAME="544"></A>   * Die Methode setzt das Intervall der zulaessigen Werte fuer das zweite Textfeld.
+<A NAME="545"></A>   * @param Kleinster zulaessiger Wert fuer das zweite Textfeld.
+<A NAME="546"></A>   * @param Groesster zulaessiger Wert fuer das zweite Textfeld.
+<A NAME="547"></A>   */</FONT>
+<A NAME="548"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setRange2(<FONT ID="Int">int</FONT> min, <FONT ID="Int">int</FONT> max) {
+<A NAME="549"></A>    minval2 = min;
+<A NAME="550"></A>    maxval2 = max;
+<A NAME="551"></A>    range2IsSet = <FONT ID="True">true</FONT>;
+<A NAME="552"></A>  }   <FONT ID="SingleLineComment">// Methode setRange2
+<A NAME="553"></A></FONT> 
+<A NAME="554"></A>
+<A NAME="555"></A>  <FONT ID="FormalComment">/**
+<A NAME="556"></A>   * die Methode ueberprueft den Inahlt des ersten Textfeldes beim Verlieren des
+<A NAME="557"></A>   * Fokus auf Korrektheit, das heisst, ob der Wert im erlaubten Intevall liegt.
+<A NAME="558"></A>   */</FONT>
+<A NAME="559"></A>  <FONT ID="Void">void</FONT> tfText1_focusLost() {
+<A NAME="560"></A>    <FONT ID="If">if</FONT> (!checkValue1()) {
+<A NAME="561"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="562"></A>        <FONT ID="Int">int</FONT> myval = Integer.parseInt(tfText1.getText());
+<A NAME="563"></A>
+<A NAME="564"></A>        <FONT ID="If">if</FONT> (myval &gt; maxval1) {
+<A NAME="565"></A>          tfText1.setText(<FONT ID="StringLiteral">""</FONT> + maxval1);
+<A NAME="566"></A>        } 
+<A NAME="567"></A>        <FONT ID="If">if</FONT> (myval &lt; minval1) {
+<A NAME="568"></A>          tfText1.setText(<FONT ID="StringLiteral">""</FONT> + minval1);
+<A NAME="569"></A>        } 
+<A NAME="570"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="571"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="572"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode tfText1_lostFocus
+<A NAME="573"></A></FONT> 
+<A NAME="574"></A>
+<A NAME="575"></A>  <FONT ID="FormalComment">/**
+<A NAME="576"></A>   * die Methode ueberprueft den Inahlt des zweiten Textfeldes beim Verlieren des
+<A NAME="577"></A>   * Fokus auf Korrektheit, das heisst, ob der Wert im erlaubten Intevall liegt.
+<A NAME="578"></A>   */</FONT>
+<A NAME="579"></A>  <FONT ID="Void">void</FONT> tfText2_focusLost() {
+<A NAME="580"></A>    <FONT ID="If">if</FONT> (!checkValue2()) {
+<A NAME="581"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="582"></A>        <FONT ID="Int">int</FONT> myval = Integer.parseInt(tfText2.getText());
+<A NAME="583"></A>
+<A NAME="584"></A>        <FONT ID="If">if</FONT> (myval &gt; maxval2) {
+<A NAME="585"></A>          tfText2.setText(<FONT ID="StringLiteral">""</FONT> + maxval2);
+<A NAME="586"></A>        } 
+<A NAME="587"></A>        <FONT ID="If">if</FONT> (myval &lt; minval2) {
+<A NAME="588"></A>          tfText2.setText(<FONT ID="StringLiteral">""</FONT> + minval2);
+<A NAME="589"></A>        } 
+<A NAME="590"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="591"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="592"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode tfText2_lostFocus
+<A NAME="593"></A></FONT> 
+<A NAME="594"></A>
+<A NAME="595"></A>  <FONT ID="FormalComment">/**
+<A NAME="596"></A>   * Die Methode ueberprueft, ob der Inhalt des ersten Textfeldes im erlaubten
+<A NAME="597"></A>   * Intervall liegt.
+<A NAME="598"></A>   * @return True, falls Inhalt des ersten Textfeldes im erlaubten Intervall, sonst False.
+<A NAME="599"></A>   */</FONT>
+<A NAME="600"></A>  <FONT ID="Boolean">boolean</FONT> checkValue1() {
+<A NAME="601"></A>    <FONT ID="Boolean">boolean</FONT> ok = <FONT ID="True">true</FONT>;
+<A NAME="602"></A>    <FONT ID="Int">int</FONT>     myval = Integer.parseInt(tfText1.getText());
+<A NAME="603"></A>
+<A NAME="604"></A>    ok = checkValue1(myval);
+<A NAME="605"></A>
+<A NAME="606"></A>    <FONT ID="Return">return</FONT> ok;
+<A NAME="607"></A>  }   <FONT ID="SingleLineComment">// Methode checkValue1
+<A NAME="608"></A></FONT> 
+<A NAME="609"></A>
+<A NAME="610"></A>  <FONT ID="FormalComment">/**
+<A NAME="611"></A>   * Die Methode ueberprueft, ob der uebergebene Wert im erlaubten
+<A NAME="612"></A>   * Intervall liegt fuer das erste Textfeld.
+<A NAME="613"></A>   * @return True, falls Inhalt der Wert im erlaubten Intervall, sonst False.
+<A NAME="614"></A>   */</FONT>
+<A NAME="615"></A>  <FONT ID="Boolean">boolean</FONT> checkValue1(<FONT ID="Int">int</FONT> myval) {
+<A NAME="616"></A>    <FONT ID="Boolean">boolean</FONT> ok = <FONT ID="True">true</FONT>;
+<A NAME="617"></A>
+<A NAME="618"></A>    <FONT ID="If">if</FONT> (range1IsSet) {
+<A NAME="619"></A>      <FONT ID="If">if</FONT> ((myval &lt; minval1) || (myval &gt; maxval1)) {
+<A NAME="620"></A>        ok = <FONT ID="False">false</FONT>;
+<A NAME="621"></A>      }   <FONT ID="SingleLineComment">// if
+<A NAME="622"></A></FONT>     }    <FONT ID="SingleLineComment">// if
+<A NAME="623"></A></FONT> 
+<A NAME="624"></A>    <FONT ID="Return">return</FONT> ok;
+<A NAME="625"></A>  }   <FONT ID="SingleLineComment">// Methode checkValue1
+<A NAME="626"></A></FONT> 
+<A NAME="627"></A>
+<A NAME="628"></A>  <FONT ID="FormalComment">/**
+<A NAME="629"></A>   * Die Methode ueberprueft, ob der Inhalt des zweiten Textfeldes im erlaubten
+<A NAME="630"></A>   * Intervall liegt.
+<A NAME="631"></A>   * @return True, falls Inhalt des zweiten Textfeldes im erlaubten Intervall, sonst False.
+<A NAME="632"></A>   */</FONT>
+<A NAME="633"></A>  <FONT ID="Boolean">boolean</FONT> checkValue2() {
+<A NAME="634"></A>    <FONT ID="Boolean">boolean</FONT> ok = <FONT ID="True">true</FONT>;
+<A NAME="635"></A>    <FONT ID="Int">int</FONT>     myval = Integer.parseInt(tfText2.getText());
+<A NAME="636"></A>
+<A NAME="637"></A>    ok = checkValue2(myval);
+<A NAME="638"></A>
+<A NAME="639"></A>    <FONT ID="Return">return</FONT> ok;
+<A NAME="640"></A>  }   <FONT ID="SingleLineComment">// Methode checkValue2
+<A NAME="641"></A></FONT> 
+<A NAME="642"></A>
+<A NAME="643"></A>  <FONT ID="FormalComment">/**
+<A NAME="644"></A>   * Die Methode ueberprueft, ob der uebergebene Wert im erlaubten
+<A NAME="645"></A>   * Intervall fuer das zweite textfeld liegt.
+<A NAME="646"></A>   * @return True, falls Inhalt der Wert im erlaubten Intervall, sonst False.
+<A NAME="647"></A>   */</FONT>
+<A NAME="648"></A>  <FONT ID="Boolean">boolean</FONT> checkValue2(<FONT ID="Int">int</FONT> myval) {
+<A NAME="649"></A>    <FONT ID="Boolean">boolean</FONT> ok = <FONT ID="True">true</FONT>;
+<A NAME="650"></A>
+<A NAME="651"></A>    <FONT ID="If">if</FONT> (range2IsSet) {
+<A NAME="652"></A>      <FONT ID="If">if</FONT> ((myval &lt; minval2) || (myval &gt; maxval2)) {
+<A NAME="653"></A>        ok = <FONT ID="False">false</FONT>;
+<A NAME="654"></A>      }   <FONT ID="SingleLineComment">// if
+<A NAME="655"></A></FONT>     }    <FONT ID="SingleLineComment">// if
+<A NAME="656"></A></FONT> 
+<A NAME="657"></A>    <FONT ID="Return">return</FONT> ok;
+<A NAME="658"></A>  }   <FONT ID="SingleLineComment">// Methode checkValue2
+<A NAME="659"></A></FONT> 
+<A NAME="660"></A>
+<A NAME="661"></A>
+<A NAME="662"></A>}
+<A NAME="663"></A>
+<A NAME="664"></A>
+<A NAME="665"></A>
+<A NAME="666"></A>
+<A NAME="667"></A>
+<A NAME="668"></A>
+<A NAME="669"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="670"></A>
+<A NAME="671"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">LabTFLabTFPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

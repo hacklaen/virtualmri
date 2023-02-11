@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.artefacts.PeriodicMotion (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PeriodicMotion</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences.*</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="24"></A>
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * Diese Klasse ist die Berechnungsklasse zur Simualation eines
+<A NAME="28"></A> * periodischen Bewegungs-Artefakts. Es kann eine x- und y-Amplidude, eine
+<A NAME="29"></A> * Frequenz und ein start- und Stopzeitpunkt der Bewegung angegeben werden.
+<A NAME="30"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="31"></A> * Thomas Hacklaender 2000.8.15:
+<A NAME="32"></A> * In motion_Std die statischen Methodenaufrufe doFFT(Image, boolean) der
+<A NAME="33"></A> * jigl-Bibliothek für forward und reverse Transformation durch forwarfFFT und
+<A NAME="34"></A> * reverseFFT in FFTTools ersetzt.&lt;br&gt;
+<A NAME="35"></A> * Thomas Hacklaender 2000.8.14:
+<A NAME="36"></A> * Debug-Output in motion_Std auskommentiert.&lt;br&gt;
+<A NAME="37"></A> * Thomas Hacklaender 2000.4.3:
+<A NAME="38"></A> * In der Methode calculate alle aktuell definierten Sequenzen eingefuegt.&lt;br&gt;
+<A NAME="39"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="40"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="41"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="42"></A> * @author   Christian Schalla
+<A NAME="43"></A> * @author   Andreas Truemper
+<A NAME="44"></A> * @version  1.2, 2002.10.13
+<A NAME="45"></A> */</FONT>
+<A NAME="46"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> PeriodicMotion <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A> {
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * x-Amplitude der periodischen Bewegung.
+<A NAME="51"></A>   */</FONT>
+<A NAME="52"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       xAmp;
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>  <FONT ID="FormalComment">/**
+<A NAME="56"></A>   * y-Amplitude der periodischen Bewegung.
+<A NAME="57"></A>   */</FONT>
+<A NAME="58"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       yAmp;
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>  <FONT ID="FormalComment">/**
+<A NAME="62"></A>   * Frequenz der periodischen Bewegung.
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       freq;
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * Startzeitpunkt der periodischen Bewegung.
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       startTime;
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * Stopzeitpunkt der periodischen Bewegung.
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       stopTime;
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Eingestellte Repititionszeit der aufrufenden Pulssequenz.
+<A NAME="81"></A>   */</FONT>
+<A NAME="82"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       trTime;
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="FormalComment">/**
+<A NAME="86"></A>   * Konstante fuer die Genauigkeit der Berechnung. Sie muss eine Zweierpotenz
+<A NAME="87"></A>   * im Interval [1;256] sein.
+<A NAME="88"></A>   */</FONT>
+<A NAME="89"></A>  <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> NUMSTEPS = <FONT ID="IntegerLiteral">16</FONT>;
+<A NAME="90"></A>
+<A NAME="91"></A>
+<A NAME="92"></A>  <FONT ID="FormalComment">/**
+<A NAME="93"></A>   * Standardkonstruktor.
+<A NAME="94"></A>   */</FONT>
+<A NAME="95"></A>  <FONT ID="Public">public</FONT> PeriodicMotion() {}  <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="96"></A></FONT>
+<A NAME="97"></A>
+<A NAME="98"></A>  <FONT ID="FormalComment">/**
+<A NAME="99"></A>   * Diese Methode wird von der aufrufenden Pulssequenz zuerst aufgerufen.
+<A NAME="100"></A>   * Der uebergebene Methodenname gibt an, welche Methode die korrekte
+<A NAME="101"></A>   * Berechnungsvorschrift enthaelt. Vor dem aufruf dieser Methode werden
+<A NAME="102"></A>   * noch die benoetigten Parameter aus der aufrufenden Pulssequenz ausgelesen.
+<A NAME="103"></A>   * @param method Der Name der Methode, die die korrekte Berechnungsvorschrift enthaelt.
+<A NAME="104"></A>   */</FONT>
+<A NAME="105"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] calculate(String method) {
+<A NAME="106"></A>
+<A NAME="107"></A>    <FONT ID="SingleLineComment">// Bestimmen des Namens des aufrufenden Pulssequenz
+<A NAME="108"></A></FONT>    String  seqName = sequence.getClass().getName();
+<A NAME="109"></A>
+<A NAME="110"></A>    seqName = seqName.substring(seqName.lastIndexOf(<FONT ID="CharacerLiteral">'.'</FONT>) + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="111"></A>
+<A NAME="112"></A>
+<A NAME="113"></A>    <FONT ID="SingleLineComment">// Casten der Sequenz und Auslesen der benoetigten Parameter
+<A NAME="114"></A></FONT>
+<A NAME="115"></A>    <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"Flash"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="116"></A>      <A HREF="../../../virtual/mrt/sequences/Flash.java.html">Flash</A> flSequence = (<A HREF="../../../virtual/mrt/sequences/Flash.java.html">Flash</A>) sequence;
+<A NAME="117"></A>
+<A NAME="118"></A>      trTime = flSequence.getTRTime();
+<A NAME="119"></A>
+<A NAME="120"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"GERefocused"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="121"></A>      <A HREF="../../../virtual/mrt/sequences/GERefocused.java.html">GERefocused</A> gereSequence = (<A HREF="../../../virtual/mrt/sequences/GERefocused.java.html">GERefocused</A>) sequence;
+<A NAME="122"></A>
+<A NAME="123"></A>      trTime = gereSequence.getTRTime();
+<A NAME="124"></A>
+<A NAME="125"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"GESpoiled"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="126"></A>      <A HREF="../../../virtual/mrt/sequences/GESpoiled.java.html">GESpoiled</A> gespSequence = (<A HREF="../../../virtual/mrt/sequences/GESpoiled.java.html">GESpoiled</A>) sequence;
+<A NAME="127"></A>
+<A NAME="128"></A>      trTime = gespSequence.getTRTime();
+<A NAME="129"></A>
+<A NAME="130"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"InversionRecovery"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="131"></A>      <A HREF="../../../virtual/mrt/sequences/InversionRecovery.java.html">InversionRecovery</A> irSequence = (<A HREF="../../../virtual/mrt/sequences/InversionRecovery.java.html">InversionRecovery</A>) sequence;
+<A NAME="132"></A>
+<A NAME="133"></A>      trTime = irSequence.getTRTime();
+<A NAME="134"></A>
+<A NAME="135"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"SaturationRecovery"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="136"></A>      <A HREF="../../../virtual/mrt/sequences/SaturationRecovery.java.html">SaturationRecovery</A>  srSequence = (<A HREF="../../../virtual/mrt/sequences/SaturationRecovery.java.html">SaturationRecovery</A>) sequence;
+<A NAME="137"></A>
+<A NAME="138"></A>      trTime = srSequence.getTRTime();
+<A NAME="139"></A>
+<A NAME="140"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"SpinEcho"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="141"></A>      <A HREF="../../../virtual/mrt/sequences/SpinEcho.java.html">SpinEcho</A>  seSequence = (<A HREF="../../../virtual/mrt/sequences/SpinEcho.java.html">SpinEcho</A>) sequence;
+<A NAME="142"></A>
+<A NAME="143"></A>      trTime = seSequence.getTRTime();
+<A NAME="144"></A>
+<A NAME="145"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (seqName.compareTo(<FONT ID="StringLiteral">"TurboSpinEcho"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="146"></A>      <A HREF="../../../virtual/mrt/sequences/TurboSpinEcho.java.html">TurboSpinEcho</A> tseSequence = (<A HREF="../../../virtual/mrt/sequences/TurboSpinEcho.java.html">TurboSpinEcho</A>) sequence;
+<A NAME="147"></A>
+<A NAME="148"></A>      trTime = tseSequence.getTRTime();
+<A NAME="149"></A>
+<A NAME="150"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="151"></A>
+<A NAME="152"></A>      <FONT ID="SingleLineComment">// Nicht definierte Sequenz
+<A NAME="153"></A></FONT>      System.out.println(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/artefacts/resources/artefacts_loc"</FONT>).getString(<FONT ID="StringLiteral">"periodicmotion.warning.sequence.notsupported"</FONT>));
+<A NAME="154"></A>    } 
+<A NAME="155"></A>
+<A NAME="156"></A>    <FONT ID="SingleLineComment">// Initialisieren des Rueckgabebildes
+<A NAME="157"></A></FONT>    <FONT ID="Int">int</FONT>[][] result = <FONT ID="Null">null</FONT>;
+<A NAME="158"></A>
+<A NAME="159"></A>    <FONT ID="SingleLineComment">// Entscheiden, welche Methode aufgerufen werden muss.
+<A NAME="160"></A></FONT>    <FONT ID="If">if</FONT> (method.compareTo(<FONT ID="StringLiteral">"Motion_Std"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="161"></A>      result = motion_Std();
+<A NAME="162"></A>    } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (method.compareTo(<FONT ID="StringLiteral">"Motion_TSE"</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="163"></A>      System.out.println(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/artefacts/resources/artefacts_loc"</FONT>).getString(<FONT ID="StringLiteral">"periodicmotion.warning.tse.notimplemented"</FONT>));
+<A NAME="164"></A>    } 
+<A NAME="165"></A>
+<A NAME="166"></A>    <FONT ID="Return">return</FONT> result;
+<A NAME="167"></A>  }   <FONT ID="SingleLineComment">// Methode calculate
+<A NAME="168"></A></FONT> 
+<A NAME="169"></A>
+<A NAME="170"></A>  <FONT ID="FormalComment">/**
+<A NAME="171"></A>   * Die Methode enthaelt die Standard-Berechnungsvorschrift zur Simulation
+<A NAME="172"></A>   * einer periodischen Bewegung.
+<A NAME="173"></A>   */</FONT>
+<A NAME="174"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT>[][] motion_Std() {
+<A NAME="175"></A>
+<A NAME="176"></A>    <FONT ID="SingleLineComment">// Initialisieren des Ergebnisbildes
+<A NAME="177"></A></FONT>    <FONT ID="Int">int</FONT>[][]                 res = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="178"></A>
+<A NAME="179"></A>    <FONT ID="SingleLineComment">// Initialisieren der Werte fuer die Verschiebung
+<A NAME="180"></A></FONT>    <FONT ID="Int">int</FONT>                     dx = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="181"></A>    <FONT ID="Int">int</FONT>                     dy = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="182"></A>
+<A NAME="183"></A>    <FONT ID="SingleLineComment">// Anlegen eines komplexen Bildes fuer die FFT
+<A NAME="184"></A></FONT>    <A HREF="../../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> kSpace = <FONT ID="New">new</FONT> <A HREF="../../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="185"></A>
+<A NAME="186"></A>    <FONT ID="SingleLineComment">// Bewegung im k-Raum simulieren
+<A NAME="187"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; NUMSTEPS; i++) {
+<A NAME="188"></A>
+<A NAME="189"></A>      <FONT ID="SingleLineComment">// Fortschrittsanzeige setzen
+<A NAME="190"></A></FONT>      progressBar.setValue(i * (<FONT ID="IntegerLiteral">256</FONT> / NUMSTEPS));
+<A NAME="191"></A>
+<A NAME="192"></A>      <FONT ID="SingleLineComment">// 10 ms warten, damit andere Aktionen durchgefuehrt werden koennen
+<A NAME="193"></A></FONT>      <FONT ID="Try">try</FONT> {
+<A NAME="194"></A>        Thread.sleep(<FONT ID="IntegerLiteral">10</FONT>);
+<A NAME="195"></A>      } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="196"></A>
+<A NAME="197"></A>      <FONT ID="SingleLineComment">// Berechnen der Position des Bildes zum aktuellen Zeitpunkt
+<A NAME="198"></A></FONT>      <FONT ID="Double">double</FONT>  t = i * (<FONT ID="IntegerLiteral">256</FONT> / NUMSTEPS) * trTime / <FONT ID="IntegerLiteral">1000</FONT>;   <FONT ID="SingleLineComment">// Zeit in sec
+<A NAME="199"></A></FONT>
+<A NAME="200"></A>      <FONT ID="SingleLineComment">// Auskommentiert: tha 2000.8.14
+<A NAME="201"></A></FONT>      <FONT ID="SingleLineComment">// System.out.println("t: " + t + " start: " + startTime + " stop: " + stopTime);
+<A NAME="202"></A></FONT>      <FONT ID="If">if</FONT> (t &gt;= stopTime) {
+<A NAME="203"></A>        t = stopTime;
+<A NAME="204"></A>      } 
+<A NAME="205"></A>      <FONT ID="If">if</FONT> (t &gt;= startTime) {
+<A NAME="206"></A>        <FONT ID="Int">int</FONT> relTime = (<FONT ID="Int">int</FONT>) (t - startTime);
+<A NAME="207"></A>        <FONT ID="Int">int</FONT> absTime = (<FONT ID="Int">int</FONT>) (<FONT ID="IntegerLiteral">60</FONT> / freq);
+<A NAME="208"></A>        <FONT ID="Int">int</FONT> absTimeDiv2 = (<FONT ID="Int">int</FONT>) (<FONT ID="IntegerLiteral">60</FONT> / freq / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="209"></A>
+<A NAME="210"></A>        <FONT ID="If">if</FONT> ((relTime % absTime) &lt; absTimeDiv2) {
+<A NAME="211"></A>
+<A NAME="212"></A>          <FONT ID="SingleLineComment">// zunehmende Periode
+<A NAME="213"></A></FONT>          dx = (relTime % absTime) * xAmp / absTimeDiv2;
+<A NAME="214"></A>          dy = (relTime % absTime) * yAmp / absTimeDiv2;
+<A NAME="215"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="216"></A>
+<A NAME="217"></A>          <FONT ID="SingleLineComment">// abnehmende periode
+<A NAME="218"></A></FONT>          dx = ((relTime % absTime) - absTimeDiv2) * xAmp / absTimeDiv2;
+<A NAME="219"></A>          dy = ((relTime % absTime) - absTimeDiv2) * yAmp / absTimeDiv2;
+<A NAME="220"></A>        } 
+<A NAME="221"></A>      } 
+<A NAME="222"></A>
+<A NAME="223"></A>      <FONT ID="SingleLineComment">// Verschieben des Bildes
+<A NAME="224"></A></FONT>      <FONT ID="Int">int</FONT>[][]                   movedImage = move(dx, dy);
+<A NAME="225"></A>
+<A NAME="226"></A>      <FONT ID="SingleLineComment">// Aus dem verschobenen Bild ein RealGrayImage machen, damit die FFT
+<A NAME="227"></A></FONT>      <FONT ID="SingleLineComment">// darauf angewendet werden kann
+<A NAME="228"></A></FONT>      <A HREF="../../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>  inComImg = <FONT ID="New">new</FONT> <A HREF="../../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="229"></A>
+<A NAME="230"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="231"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="232"></A>          inComImg.set(x, y, movedImage[x][y]);
+<A NAME="233"></A>        } 
+<A NAME="234"></A>      } 
+<A NAME="235"></A>
+<A NAME="236"></A>      <FONT ID="SingleLineComment">// Durchfuehren der FFT auf dem verschobenen Bild
+<A NAME="237"></A></FONT>
+<A NAME="238"></A>      <A HREF="../../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> transComImg = FFTTools.forwardFFT(inComImg);
+<A NAME="239"></A>
+<A NAME="240"></A>      <FONT ID="SingleLineComment">// Kopieren einiger Zeilen in den endgültigen k-Raum
+<A NAME="241"></A></FONT>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> line = i * (<FONT ID="IntegerLiteral">256</FONT> / NUMSTEPS); line &lt; (<FONT ID="IntegerLiteral">256</FONT> / NUMSTEPS) * (i + <FONT ID="IntegerLiteral">1</FONT>); line++) {
+<A NAME="242"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="243"></A>          kSpace.setImag(x, line, transComImg.getImag(x, line));
+<A NAME="244"></A>          kSpace.setReal(x, line, transComImg.getReal(x, line));
+<A NAME="245"></A>        } 
+<A NAME="246"></A>      } 
+<A NAME="247"></A>    } 
+<A NAME="248"></A>
+<A NAME="249"></A>    <FONT ID="SingleLineComment">// Ruecktransformation durchfuehren
+<A NAME="250"></A></FONT>    <A HREF="../../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A> invImg = <FONT ID="Null">null</FONT>;
+<A NAME="251"></A>
+<A NAME="252"></A>    invImg = FFTTools.reverseFFT(kSpace);
+<A NAME="253"></A>
+<A NAME="254"></A>    <FONT ID="SingleLineComment">// Magnitudenbild berechnen
+<A NAME="255"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="256"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="257"></A>        res[x][y] = (<FONT ID="Int">int</FONT>) Math.sqrt(Math.pow(invImg.getImag(x, y), <FONT ID="IntegerLiteral">2</FONT>) + Math.pow(invImg.getReal(x, y), <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="258"></A>      } 
+<A NAME="259"></A>    } 
+<A NAME="260"></A>
+<A NAME="261"></A>    <FONT ID="SingleLineComment">// Ruecktransformiertes Ergebnisbild zurueckliefern
+<A NAME="262"></A></FONT>    <FONT ID="Return">return</FONT> res;
+<A NAME="263"></A>  }   <FONT ID="SingleLineComment">// Methode motion_Std
+<A NAME="264"></A></FONT> 
+<A NAME="265"></A>
+<A NAME="266"></A>  <FONT ID="FormalComment">/**
+<A NAME="267"></A>   * Die Methode dient zum Setzen der x-Amplitude nach dem
+<A NAME="268"></A>   * Auslesen aus dem entsprechenden Bedienelement.
+<A NAME="269"></A>   * @param x x-Amplitude der Bewegung.
+<A NAME="270"></A>   */</FONT>
+<A NAME="271"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setXAmplitude(<FONT ID="Int">int</FONT> x) {
+<A NAME="272"></A>    xAmp = x;
+<A NAME="273"></A>  } 
+<A NAME="274"></A>
+<A NAME="275"></A>
+<A NAME="276"></A>  <FONT ID="FormalComment">/**
+<A NAME="277"></A>   * Die Methode dient zum Setzen der y-Amplitude nach dem
+<A NAME="278"></A>   * Auslesen aus dem entsprechenden Bedienelement.
+<A NAME="279"></A>   * @param y y-Amplitude der Bewegung.
+<A NAME="280"></A>   */</FONT>
+<A NAME="281"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setYAmplitude(<FONT ID="Int">int</FONT> y) {
+<A NAME="282"></A>    yAmp = y;
+<A NAME="283"></A>  } 
+<A NAME="284"></A>
+<A NAME="285"></A>
+<A NAME="286"></A>  <FONT ID="FormalComment">/**
+<A NAME="287"></A>   * Die Methode dient zum Setzen der Bewgungsfrequenz nach dem
+<A NAME="288"></A>   * Auslesen aus dem entsprechenden Bedienelement.
+<A NAME="289"></A>   * @param x x-Amplitude der Bewegung.
+<A NAME="290"></A>   */</FONT>
+<A NAME="291"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setFrequency(<FONT ID="Int">int</FONT> f) {
+<A NAME="292"></A>    freq = f;
+<A NAME="293"></A>  } 
+<A NAME="294"></A>
+<A NAME="295"></A>
+<A NAME="296"></A>  <FONT ID="FormalComment">/**
+<A NAME="297"></A>   * Die Methode dient zum Setzen des Startzeitpunkts der Translation nach dem
+<A NAME="298"></A>   * Auslesen aus dem entsprechenden Bedienelement.
+<A NAME="299"></A>   * @param s Startzeitpunkt der Translation.
+<A NAME="300"></A>   */</FONT>
+<A NAME="301"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setStartTime(<FONT ID="Int">int</FONT> s) {
+<A NAME="302"></A>    startTime = s;
+<A NAME="303"></A>  } 
+<A NAME="304"></A>
+<A NAME="305"></A>
+<A NAME="306"></A>  <FONT ID="FormalComment">/**
+<A NAME="307"></A>   * Die Methode dient zum Setzen des Stopzeitpunkts der Translation nach dem
+<A NAME="308"></A>   * Auslesen aus dem entsprechenden Bedienelement.
+<A NAME="309"></A>   * @param s Stopzeitpunkt der Translation.
+<A NAME="310"></A>   */</FONT>
+<A NAME="311"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setStopTime(<FONT ID="Int">int</FONT> s) {
+<A NAME="312"></A>    stopTime = s;
+<A NAME="313"></A>  } 
+<A NAME="314"></A>
+<A NAME="315"></A>
+<A NAME="316"></A>  <FONT ID="FormalComment">/**
+<A NAME="317"></A>   * Die Methode erzeugt eine Kopie des Intensitaetsbildes und verschiebt diese
+<A NAME="318"></A>   * Kopie um den angegebenen Betrag nach rechts und nach unten. Die aus dem
+<A NAME="319"></A>   * Bild geschobenen Pixel erscheinen nicht (!) wieder an der anderen Seite.
+<A NAME="320"></A>   * Darin besteht der Unterschied zur Methode shift der Klasse FFTTools.
+<A NAME="321"></A>   * @param h Anzahl der Pixel, um die das Bild horizontal verschoben werden soll.
+<A NAME="322"></A>   * @param v Anzahl der Pixel, um die das Bild vertikal verschoben werden soll.
+<A NAME="323"></A>   * @return Das verschobene Intensitaetsbild.
+<A NAME="324"></A>   */</FONT>
+<A NAME="325"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>[][] move(<FONT ID="Int">int</FONT> h, <FONT ID="Int">int</FONT> v) {
+<A NAME="326"></A>    <FONT ID="Int">int</FONT>[][] movedImg = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">256</FONT>][<FONT ID="IntegerLiteral">256</FONT>];
+<A NAME="327"></A>
+<A NAME="328"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; <FONT ID="IntegerLiteral">256</FONT>; x++) {
+<A NAME="329"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">256</FONT>; y++) {
+<A NAME="330"></A>        <FONT ID="If">if</FONT> ((x - h) &gt; <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; (y - v) &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="331"></A>          movedImg[x][y] = intensityimg[x - h][y - v];
+<A NAME="332"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="333"></A>          movedImg[x][y] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="334"></A>        }   <FONT ID="SingleLineComment">// if-else
+<A NAME="335"></A></FONT>       }    <FONT ID="SingleLineComment">// for y
+<A NAME="336"></A></FONT>     }      <FONT ID="SingleLineComment">// for x
+<A NAME="337"></A></FONT>     <FONT ID="Return">return</FONT> movedImg;
+<A NAME="338"></A>  }   <FONT ID="SingleLineComment">// Methode move
+<A NAME="339"></A></FONT> 
+<A NAME="340"></A>}     <FONT ID="SingleLineComment">// Klasse PeriodicMotion
+<A NAME="341"></A></FONT>
+<A NAME="342"></A>
+<A NAME="343"></A>
+<A NAME="344"></A>
+<A NAME="345"></A>
+<A NAME="346"></A>
+<A NAME="347"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="348"></A>
+<A NAME="349"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PeriodicMotion</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

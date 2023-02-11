@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.ThreeLabelPanel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ThreeLabelPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="FormalComment">/**
+<A NAME="29"></A> * Diese Klasse stellt ein Panel mit drei Labeln zur Verfuegung.
+<A NAME="30"></A> * Das erste Label enthaelt nur eine Beschriftung, die im Konstruktor
+<A NAME="31"></A> * festgelegt wird. Der Inhalt das zweiten Labels kann zu jedem Zeitpunkt mit
+<A NAME="32"></A> * einer entsprechenden Methode gesetzt werden. Der Inhalt des 3. Labels wird
+<A NAME="33"></A> * ebenfalls im Konstruktor festgelegt und enthaelt in der Regel ein
+<A NAME="34"></A> * Einheitensymbol.
+<A NAME="35"></A> * 
+<A NAME="36"></A> * @author   Christian Schalla
+<A NAME="37"></A> * @author   Andreas Truemper
+<A NAME="38"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="39"></A> */</FONT>
+<A NAME="40"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ThreeLabelPanel <FONT ID="Extends">extends</FONT> JPanel {
+<A NAME="41"></A>
+<A NAME="42"></A>
+<A NAME="43"></A>  <FONT ID="FormalComment">/**
+<A NAME="44"></A>   * Label zur Beschriftung des Anzeigefeldes.
+<A NAME="45"></A>   */</FONT>
+<A NAME="46"></A>  JLabel          lFix = <FONT ID="New">new</FONT> JLabel();
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * Das eigentliche, aenderbare Anzeigefeld.
+<A NAME="51"></A>   */</FONT>
+<A NAME="52"></A>  JLabel          lVariable = <FONT ID="New">new</FONT> JLabel();
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>  <FONT ID="FormalComment">/**
+<A NAME="56"></A>   * Das Label fuer ein optionales Einheitensymbol.
+<A NAME="57"></A>   */</FONT>
+<A NAME="58"></A>  JLabel          lUnit = <FONT ID="New">new</FONT> JLabel();
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>  <FONT ID="FormalComment">/**
+<A NAME="62"></A>   * Der Inhalt des Beschriftungsfeldes.
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Private">private</FONT> String  label1;
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * Der Inhalt des variablen Anzeigefeldes.
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Private">private</FONT> String  label2;
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * Der Inhalt des Einheitenfeldes.
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Private">private</FONT> String  label3;
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Der Konstruktor erzeugt die Oberflaechenelemente und
+<A NAME="81"></A>   * initialisiert den Text alle 3 Label.
+<A NAME="82"></A>   * @param lab1 Der Inhalt des Beschriftungsfeldes.
+<A NAME="83"></A>   * @param lab2 Der Inhalt des varianlen Anzeigefeldes.
+<A NAME="84"></A>   * @param lab3 Der Inhalt des Einheitenfeldes.
+<A NAME="85"></A>   */</FONT>
+<A NAME="86"></A>  <FONT ID="Public">public</FONT> ThreeLabelPanel(String lab1, String lab2, String lab3) {
+<A NAME="87"></A>    label1 = lab1;
+<A NAME="88"></A>    label2 = lab2;
+<A NAME="89"></A>    label3 = lab3;
+<A NAME="90"></A>    fillPanel();
+<A NAME="91"></A>  }   <FONT ID="SingleLineComment">// Konstruktor
+<A NAME="92"></A></FONT>
+<A NAME="93"></A>
+<A NAME="94"></A>  <FONT ID="FormalComment">/**
+<A NAME="95"></A>   * Die Methode richtet die GUI-Elemente ein und stellt diese dar.
+<A NAME="96"></A>   */</FONT>
+<A NAME="97"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fillPanel() {
+<A NAME="98"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="99"></A>      jbInit();
+<A NAME="100"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="101"></A>      ex.printStackTrace();
+<A NAME="102"></A>    } 
+<A NAME="103"></A>  }   <FONT ID="SingleLineComment">// Methode fillPanel
+<A NAME="104"></A></FONT> 
+<A NAME="105"></A>
+<A NAME="106"></A>  <FONT ID="FormalComment">/**
+<A NAME="107"></A>   * Die Methode richtet die GUI-Elemente ein und stellt diese dar.
+<A NAME="108"></A>   */</FONT>
+<A NAME="109"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="110"></A>    <FONT ID="This">this</FONT>.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="111"></A>
+<A NAME="112"></A>    <FONT ID="SingleLineComment">// erstes Label (Beschriftung) einrichten
+<A NAME="113"></A></FONT>    lFix.setText(label1);
+<A NAME="114"></A>    lFix.setBounds(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">130</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="115"></A>    add(lFix);
+<A NAME="116"></A>
+<A NAME="117"></A>    <FONT ID="SingleLineComment">// zweites Label (Anzeigefeld) einrichten
+<A NAME="118"></A></FONT>    lVariable.setText(label2);
+<A NAME="119"></A>    lVariable.setBounds(<FONT ID="IntegerLiteral">135</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">90</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="120"></A>    add(lVariable);
+<A NAME="121"></A>
+<A NAME="122"></A>    <FONT ID="SingleLineComment">// drittes Label (Einheit) einrichten
+<A NAME="123"></A></FONT>    lUnit.setText(label3);
+<A NAME="124"></A>    lUnit.setBounds(<FONT ID="IntegerLiteral">230</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">50</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="125"></A>    add(lUnit);
+<A NAME="126"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="127"></A></FONT> 
+<A NAME="128"></A>
+<A NAME="129"></A>  <FONT ID="FormalComment">/**
+<A NAME="130"></A>   * Die Methode setzt den Wert des variablen Anzeigefeldes auf den uebergenenen
+<A NAME="131"></A>   * Wert.
+<A NAME="132"></A>   * @param txt Der Test, der im variablen Anzeigefeld angezeigt werden soll.
+<A NAME="133"></A>   */</FONT>
+<A NAME="134"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValue(String txt) {
+<A NAME="135"></A>    lVariable.setText(txt);
+<A NAME="136"></A>  }   <FONT ID="SingleLineComment">// Methode setValue
+<A NAME="137"></A></FONT> 
+<A NAME="138"></A>}
+<A NAME="139"></A>
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>
+<A NAME="143"></A>
+<A NAME="144"></A>
+<A NAME="145"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="146"></A>
+<A NAME="147"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ThreeLabelPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

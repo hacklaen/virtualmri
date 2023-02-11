@@ -1,0 +1,938 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.ComplexImage (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ComplexImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="19"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="20"></A><FONT ID="Import">import</FONT> <A HREF="../../jigl.math.index.html" target="packageFrame">jigl.math.*</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="23"></A>
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="FormalComment">/**
+<A NAME="26"></A> * A complex image is a set of two real gray image planes.&lt;P&gt;
+<A NAME="27"></A> * ComplexImage implements Image
+<A NAME="28"></A> */</FONT>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ComplexImage <FONT ID="Implements">implements</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> {
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A>  <FONT ID="FormalComment">/**
+<A NAME="34"></A>   * The Real plane of the image
+<A NAME="35"></A>   */</FONT>
+<A NAME="36"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> real;
+<A NAME="37"></A>
+<A NAME="38"></A>
+<A NAME="39"></A>  <FONT ID="FormalComment">/**
+<A NAME="40"></A>   * The Imaginary part of the image
+<A NAME="41"></A>   */</FONT>
+<A NAME="42"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> imag;
+<A NAME="43"></A>
+<A NAME="44"></A>
+<A NAME="45"></A>  <FONT ID="FormalComment">/**
+<A NAME="46"></A>   * Cartesian width of the image
+<A NAME="47"></A>   */</FONT>
+<A NAME="48"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>           X;
+<A NAME="49"></A>
+<A NAME="50"></A>
+<A NAME="51"></A>  <FONT ID="FormalComment">/**
+<A NAME="52"></A>   * Cartesian height of the image
+<A NAME="53"></A>   */</FONT>
+<A NAME="54"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>           Y;
+<A NAME="55"></A>
+<A NAME="56"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="57"></A>   * constructors
+<A NAME="58"></A>   */</FONT>
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>  <FONT ID="FormalComment">/**
+<A NAME="62"></A>   * Creates a ComplexImage with height and width of zero and the real and imaginary
+<A NAME="63"></A>   * planes set to null
+<A NAME="64"></A>   */</FONT>
+<A NAME="65"></A>  <FONT ID="Public">public</FONT> ComplexImage() {
+<A NAME="66"></A>    X = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="67"></A>    Y = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="68"></A>    real = <FONT ID="Null">null</FONT>;
+<A NAME="69"></A>    imag = <FONT ID="Null">null</FONT>;
+<A NAME="70"></A>  }
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * Creates a ComplexImage with height and width of x and y repectively
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Public">public</FONT> ComplexImage(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="77"></A>    X = x;
+<A NAME="78"></A>    Y = y;
+<A NAME="79"></A>    real = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>(X, Y);
+<A NAME="80"></A>    imag = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>(X, Y);
+<A NAME="81"></A>  }
+<A NAME="82"></A>
+<A NAME="83"></A>
+<A NAME="84"></A>  <FONT ID="FormalComment">/**
+<A NAME="85"></A>   * Creates a ComplexImage as a shallow copy of a complex image
+<A NAME="86"></A>   */</FONT>
+<A NAME="87"></A>  <FONT ID="Public">public</FONT> ComplexImage(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> img) {
+<A NAME="88"></A>    X = img.X();
+<A NAME="89"></A>    Y = img.Y();
+<A NAME="90"></A>    real = img.real();
+<A NAME="91"></A>    imag = img.imag();
+<A NAME="92"></A>  }
+<A NAME="93"></A>
+<A NAME="94"></A>
+<A NAME="95"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="96"></A>   * Java image conversion
+<A NAME="97"></A>   */</FONT>
+<A NAME="98"></A>
+<A NAME="99"></A>
+<A NAME="100"></A>  <FONT ID="FormalComment">/**
+<A NAME="101"></A>   * Creates a ComplexImage from the standard java.awt.Image
+<A NAME="102"></A>   */</FONT>
+<A NAME="103"></A>  <FONT ID="Public">public</FONT> ComplexImage(java.awt.Image img) {
+<A NAME="104"></A>    real = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>(img);
+<A NAME="105"></A>    X = real.X();
+<A NAME="106"></A>    Y = imag.Y();
+<A NAME="107"></A>    imag = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>(X, Y);
+<A NAME="108"></A>  }
+<A NAME="109"></A>
+<A NAME="110"></A>
+<A NAME="111"></A>  <FONT ID="FormalComment">/**
+<A NAME="112"></A>   * Returns the Java Image from this image
+<A NAME="113"></A>   * @see ImageProducer
+<A NAME="114"></A>   */</FONT>
+<A NAME="115"></A>  <FONT ID="Public">public</FONT> ImageProducer getJavaImage() {
+<A NAME="116"></A>    <FONT ID="Return">return</FONT> real.getJavaImage();
+<A NAME="117"></A>  } 
+<A NAME="118"></A>
+<A NAME="119"></A>
+<A NAME="120"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="121"></A>   * image shape parameters
+<A NAME="122"></A>   */</FONT>
+<A NAME="123"></A>
+<A NAME="124"></A>
+<A NAME="125"></A>  <FONT ID="FormalComment">/**
+<A NAME="126"></A>   * Returns the width (maximum X value)
+<A NAME="127"></A>   * @param none
+<A NAME="128"></A>   */</FONT>
+<A NAME="129"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> X() {
+<A NAME="130"></A>    <FONT ID="Return">return</FONT> X;
+<A NAME="131"></A>  } 
+<A NAME="132"></A>
+<A NAME="133"></A>
+<A NAME="134"></A>  <FONT ID="FormalComment">/**
+<A NAME="135"></A>   * Returns the height (maximum Y value)
+<A NAME="136"></A>   * @param none
+<A NAME="137"></A>   */</FONT>
+<A NAME="138"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> Y() {
+<A NAME="139"></A>    <FONT ID="Return">return</FONT> Y;
+<A NAME="140"></A>  } 
+<A NAME="141"></A>
+<A NAME="142"></A>
+<A NAME="143"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="144"></A>   * copiers
+<A NAME="145"></A>   */</FONT>
+<A NAME="146"></A>
+<A NAME="147"></A>
+<A NAME="148"></A>  <FONT ID="FormalComment">/**
+<A NAME="149"></A>   * Makes a deep copy of this image
+<A NAME="150"></A>   * @param none
+<A NAME="151"></A>   * @return a deep copy of ComplexImage
+<A NAME="152"></A>   */</FONT>
+<A NAME="153"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy() {
+<A NAME="154"></A>    <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A>  c = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A>(X, Y);
+<A NAME="155"></A>
+<A NAME="156"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="157"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="158"></A>        c.real.set(x, y, real.get(x, y));
+<A NAME="159"></A>        c.imag.set(x, y, imag.get(x, y));
+<A NAME="160"></A>      } 
+<A NAME="161"></A>    } 
+<A NAME="162"></A>    <FONT ID="Return">return</FONT> c;
+<A NAME="163"></A>  } 
+<A NAME="164"></A>
+<A NAME="165"></A>
+<A NAME="166"></A>  <FONT ID="FormalComment">/**
+<A NAME="167"></A>   * Returns the real plane of this image
+<A NAME="168"></A>   */</FONT>
+<A NAME="169"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> real() {
+<A NAME="170"></A>    <FONT ID="Return">return</FONT> real;
+<A NAME="171"></A>  } 
+<A NAME="172"></A>
+<A NAME="173"></A>
+<A NAME="174"></A>  <FONT ID="FormalComment">/**
+<A NAME="175"></A>   * Set the real plane of this image
+<A NAME="176"></A>   * @param pl the RealGrayImage to set the real plane to
+<A NAME="177"></A>   */</FONT>
+<A NAME="178"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setReal(<A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> pl) {
+<A NAME="179"></A>    real = pl;
+<A NAME="180"></A>  } 
+<A NAME="181"></A>
+<A NAME="182"></A>
+<A NAME="183"></A>  <FONT ID="FormalComment">/**
+<A NAME="184"></A>   * Returns the imaginary plane of this image
+<A NAME="185"></A>   */</FONT>
+<A NAME="186"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> imag() {
+<A NAME="187"></A>    <FONT ID="Return">return</FONT> imag;
+<A NAME="188"></A>  } 
+<A NAME="189"></A>
+<A NAME="190"></A>
+<A NAME="191"></A>  <FONT ID="FormalComment">/**
+<A NAME="192"></A>   * Set the real plane of this image
+<A NAME="193"></A>   * @param pl the RealGrayImage to set the real plane to
+<A NAME="194"></A>   */</FONT>
+<A NAME="195"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setImag(<A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> pl) {
+<A NAME="196"></A>    imag = pl;
+<A NAME="197"></A>  } 
+<A NAME="198"></A>
+<A NAME="199"></A>
+<A NAME="200"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="201"></A>   * buffer access
+<A NAME="202"></A>   */</FONT>
+<A NAME="203"></A>
+<A NAME="204"></A>
+<A NAME="205"></A>  <FONT ID="FormalComment">/**
+<A NAME="206"></A>   * Returns the pixel value at the given x, y value of the real plane
+<A NAME="207"></A>   * @param x  the X coordinant
+<A NAME="208"></A>   * @param y  the Y coordinant
+<A NAME="209"></A>   */</FONT>
+<A NAME="210"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Float">float</FONT> getReal(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="211"></A>    <FONT ID="Return">return</FONT> real.get(x, y);
+<A NAME="212"></A>  } 
+<A NAME="213"></A>
+<A NAME="214"></A>
+<A NAME="215"></A>  <FONT ID="FormalComment">/**
+<A NAME="216"></A>   * Returns the pixel value at the given x, y value of the imaginary plane
+<A NAME="217"></A>   * @param x  the X coordinant
+<A NAME="218"></A>   * @param y  the Y coordinant
+<A NAME="219"></A>   */</FONT>
+<A NAME="220"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Float">float</FONT> getImag(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="221"></A>    <FONT ID="Return">return</FONT> imag.get(x, y);
+<A NAME="222"></A>  } 
+<A NAME="223"></A>
+<A NAME="224"></A>
+<A NAME="225"></A>  <FONT ID="FormalComment">/**
+<A NAME="226"></A>   * Sets the pixel value at x, y to a given value of the real plane
+<A NAME="227"></A>   * @param x the X coordinant
+<A NAME="228"></A>   * @param y the Y coordinant
+<A NAME="229"></A>   * @param v the value to set the pixel to
+<A NAME="230"></A>   */</FONT>
+<A NAME="231"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setReal(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> v) {
+<A NAME="232"></A>    real.set(x, y, v);
+<A NAME="233"></A>  } 
+<A NAME="234"></A>
+<A NAME="235"></A>
+<A NAME="236"></A>  <FONT ID="FormalComment">/**
+<A NAME="237"></A>   * Sets the pixel value at x, y to a given value of the imaginary
+<A NAME="238"></A>   * @param x the X coordinant
+<A NAME="239"></A>   * @param y the Y coordinant
+<A NAME="240"></A>   * @param v the value to set the pixel to
+<A NAME="241"></A>   */</FONT>
+<A NAME="242"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setImag(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> v) {
+<A NAME="243"></A>    imag.set(x, y, v);
+<A NAME="244"></A>  } 
+<A NAME="245"></A>
+<A NAME="246"></A>
+<A NAME="247"></A>  <FONT ID="FormalComment">/**
+<A NAME="248"></A>   * Sets the pixel value at x, y to a given value of this image
+<A NAME="249"></A>   * @param x the X coordinant
+<A NAME="250"></A>   * @param y the Y coordinant
+<A NAME="251"></A>   * @param r the value to set the pixel to in the real plane
+<A NAME="252"></A>   * @param i the value to set the pixel to in the imaginary plane
+<A NAME="253"></A>   */</FONT>
+<A NAME="254"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="255"></A>    real.set(x, y, r);
+<A NAME="256"></A>    imag.set(x, y, i);
+<A NAME="257"></A>  } 
+<A NAME="258"></A>
+<A NAME="259"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="260"></A>   * range functions
+<A NAME="261"></A>   */</FONT>
+<A NAME="262"></A>
+<A NAME="263"></A>
+<A NAME="264"></A>  <FONT ID="FormalComment">/**
+<A NAME="265"></A>   * Returns the minimum magnitude of the complex number in this image
+<A NAME="266"></A>   * @param none
+<A NAME="267"></A>   */</FONT>
+<A NAME="268"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> min() {
+<A NAME="269"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> p = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="270"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> min = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Double.MAX_VALUE, Double.MAX_VALUE);
+<A NAME="271"></A>
+<A NAME="272"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="273"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="274"></A>        p.real(getReal(x, y));
+<A NAME="275"></A>        p.imag(getImag(x, y));
+<A NAME="276"></A>        <FONT ID="If">if</FONT> (p.mod() &lt; min.mod()) {
+<A NAME="277"></A>          min = p;
+<A NAME="278"></A>        } 
+<A NAME="279"></A>      } 
+<A NAME="280"></A>    } 
+<A NAME="281"></A>    <FONT ID="Return">return</FONT> min;
+<A NAME="282"></A>  } 
+<A NAME="283"></A>
+<A NAME="284"></A>
+<A NAME="285"></A>  <FONT ID="FormalComment">/**
+<A NAME="286"></A>   * Returns the maximum magnitude of the complex number in this image
+<A NAME="287"></A>   * @param none
+<A NAME="288"></A>   */</FONT>
+<A NAME="289"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> max() {
+<A NAME="290"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> p = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="291"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> max = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Double.MIN_VALUE, Double.MIN_VALUE);
+<A NAME="292"></A>
+<A NAME="293"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="294"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="295"></A>        p.real(getReal(x, y));
+<A NAME="296"></A>        p.imag(getImag(x, y));
+<A NAME="297"></A>        <FONT ID="If">if</FONT> (p.mod() &gt; max.mod()) {
+<A NAME="298"></A>          ;
+<A NAME="299"></A>        } 
+<A NAME="300"></A>        max = p;
+<A NAME="301"></A>      } 
+<A NAME="302"></A>    } 
+<A NAME="303"></A>    <FONT ID="Return">return</FONT> max;
+<A NAME="304"></A>  } 
+<A NAME="305"></A>
+<A NAME="306"></A>
+<A NAME="307"></A>
+<A NAME="308"></A>
+<A NAME="309"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="310"></A>   * single-pixel arithmetic operations
+<A NAME="311"></A>   */</FONT>
+<A NAME="312"></A>
+<A NAME="313"></A>
+<A NAME="314"></A>  <FONT ID="FormalComment">/**
+<A NAME="315"></A>   * Adds a value to a single pixel
+<A NAME="316"></A>   * @param x X-coordinant
+<A NAME="317"></A>   * @param y Y-coordinant
+<A NAME="318"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="319"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="320"></A>   */</FONT>
+<A NAME="321"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="322"></A>    real.add(x, y, r);
+<A NAME="323"></A>    imag.add(x, y, i);
+<A NAME="324"></A>  } 
+<A NAME="325"></A>
+<A NAME="326"></A>
+<A NAME="327"></A>  <FONT ID="FormalComment">/**
+<A NAME="328"></A>   * Subtracts a value from a single pixel
+<A NAME="329"></A>   * @param x X-coordinant
+<A NAME="330"></A>   * @param y Y-coordinant
+<A NAME="331"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="332"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="333"></A>   */</FONT>
+<A NAME="334"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="335"></A>    real.subtract(x, y, r);
+<A NAME="336"></A>    imag.subtract(x, y, i);
+<A NAME="337"></A>  } 
+<A NAME="338"></A>
+<A NAME="339"></A>
+<A NAME="340"></A>  <FONT ID="FormalComment">/**
+<A NAME="341"></A>   * Multiply a single pixel by a value
+<A NAME="342"></A>   * @param x X-coordinant
+<A NAME="343"></A>   * @param y Y-coordinant
+<A NAME="344"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="345"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="346"></A>   */</FONT>
+<A NAME="347"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="348"></A>    <FONT ID="Float">float</FONT> a = real.get(x, y) * r - imag.get(x, y) * i;
+<A NAME="349"></A>    <FONT ID="Float">float</FONT> b = real.get(x, y) * i + imag.get(x, y) * r;
+<A NAME="350"></A>
+<A NAME="351"></A>    real.set(x, y, a);
+<A NAME="352"></A>    imag.set(x, y, b);
+<A NAME="353"></A>  } 
+<A NAME="354"></A>
+<A NAME="355"></A>
+<A NAME="356"></A>  <FONT ID="FormalComment">/**
+<A NAME="357"></A>   * Divide a single pixel by a value
+<A NAME="358"></A>   * @param x X-coordinant
+<A NAME="359"></A>   * @param y Y-coordinant
+<A NAME="360"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="361"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="362"></A>   */</FONT>
+<A NAME="363"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="364"></A>    <FONT ID="Float">float</FONT> a;
+<A NAME="365"></A>    <FONT ID="Float">float</FONT> b;
+<A NAME="366"></A>    <FONT ID="Float">float</FONT> mag2;
+<A NAME="367"></A>
+<A NAME="368"></A>    mag2 = r * r + i * i;
+<A NAME="369"></A>    a = (real.get(x, y) * r + imag.get(x, y) * i) / mag2;
+<A NAME="370"></A>    b = (imag.get(x, y) * r - real.get(x, y) * i) / mag2;
+<A NAME="371"></A>    real.set(x, y, a);
+<A NAME="372"></A>    imag.set(x, y, b);
+<A NAME="373"></A>  } 
+<A NAME="374"></A>
+<A NAME="375"></A>
+<A NAME="376"></A>  <FONT ID="FormalComment">/**
+<A NAME="377"></A>   * Adds another ComplexImage to this image
+<A NAME="378"></A>   * @param im the ComplexImage to add
+<A NAME="379"></A>   * @return this
+<A NAME="380"></A>   */</FONT>
+<A NAME="381"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im) {
+<A NAME="382"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="383"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="384"></A>        add(x, y, im.getReal(x, y), im.getImag(x, y));
+<A NAME="385"></A>      } 
+<A NAME="386"></A>    } 
+<A NAME="387"></A>  } 
+<A NAME="388"></A>
+<A NAME="389"></A>
+<A NAME="390"></A>  <FONT ID="FormalComment">/**
+<A NAME="391"></A>   * Subtracts another ComplexImage from this image
+<A NAME="392"></A>   * @param im the ComplexImage to subtract
+<A NAME="393"></A>   * @return this
+<A NAME="394"></A>   */</FONT>
+<A NAME="395"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im) {
+<A NAME="396"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="397"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="398"></A>        subtract(x, y, im.getReal(x, y), im.getImag(x, y));
+<A NAME="399"></A>      } 
+<A NAME="400"></A>    } 
+<A NAME="401"></A>  } 
+<A NAME="402"></A>
+<A NAME="403"></A>
+<A NAME="404"></A>  <FONT ID="FormalComment">/**
+<A NAME="405"></A>   * Subtracts a RealColorImage from this image and returns the absolute value
+<A NAME="406"></A>   * @param im the RealColorImage to diff
+<A NAME="407"></A>   * @return this
+<A NAME="408"></A>   */</FONT>
+<A NAME="409"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> diff(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im) {
+<A NAME="410"></A>
+<A NAME="411"></A>    real = real.diff(im.real());
+<A NAME="412"></A>    imag = imag.diff(im.imag());
+<A NAME="413"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="414"></A>  } 
+<A NAME="415"></A>
+<A NAME="416"></A>
+<A NAME="417"></A>  <FONT ID="FormalComment">/**
+<A NAME="418"></A>   * Multiplies this image by another ComplexImage
+<A NAME="419"></A>   * @param im the ComplexImage to multiply
+<A NAME="420"></A>   * @return this
+<A NAME="421"></A>   */</FONT>
+<A NAME="422"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im) {
+<A NAME="423"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="424"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="425"></A>        multiply(x, y, im.getReal(x, y), im.getImag(x, y));
+<A NAME="426"></A>      } 
+<A NAME="427"></A>    } 
+<A NAME="428"></A>  } 
+<A NAME="429"></A>
+<A NAME="430"></A>
+<A NAME="431"></A>  <FONT ID="FormalComment">/**
+<A NAME="432"></A>   * Divides this image by another ComplexImage
+<A NAME="433"></A>   * @param im the ComplexImage to divide
+<A NAME="434"></A>   * @return this
+<A NAME="435"></A>   */</FONT>
+<A NAME="436"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im) {
+<A NAME="437"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="438"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="439"></A>        divide(x, y, im.getReal(x, y), im.getImag(x, y));
+<A NAME="440"></A>      } 
+<A NAME="441"></A>    } 
+<A NAME="442"></A>  } 
+<A NAME="443"></A>
+<A NAME="444"></A>
+<A NAME="445"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="446"></A>   * image-wide arithmetic operations
+<A NAME="447"></A>   */</FONT>
+<A NAME="448"></A>
+<A NAME="449"></A>
+<A NAME="450"></A>  <FONT ID="FormalComment">/**
+<A NAME="451"></A>   * Adds a value to all the pixels in this image
+<A NAME="452"></A>   * @param r value to be added to the pixels in the real plane
+<A NAME="453"></A>   * @param i value to be added to the pixels in the imaginary plane
+<A NAME="454"></A>   * @return this
+<A NAME="455"></A>   */</FONT>
+<A NAME="456"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> add(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="457"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="458"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="459"></A>        add(x, y, r, i);
+<A NAME="460"></A>      } 
+<A NAME="461"></A>    } 
+<A NAME="462"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="463"></A>  } 
+<A NAME="464"></A>
+<A NAME="465"></A>
+<A NAME="466"></A>  <FONT ID="FormalComment">/**
+<A NAME="467"></A>   * Subtracts a value from all the pixels in this image
+<A NAME="468"></A>   * @param r value to be subtract from the pixels in the real plane
+<A NAME="469"></A>   * @param i value to be subtracted from  pixels in the imaginary plane
+<A NAME="470"></A>   * @return this
+<A NAME="471"></A>   */</FONT>
+<A NAME="472"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> subtract(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="473"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="474"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="475"></A>        subtract(x, y, r, i);
+<A NAME="476"></A>      } 
+<A NAME="477"></A>    } 
+<A NAME="478"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="479"></A>  } 
+<A NAME="480"></A>
+<A NAME="481"></A>
+<A NAME="482"></A>  <FONT ID="FormalComment">/**
+<A NAME="483"></A>   * Multiplies all the pixels in this image by a value
+<A NAME="484"></A>   * @param r value to be multiplied by the pixels in the real plane
+<A NAME="485"></A>   * @param i value to be multiplied by the pixels in the imaginary plane
+<A NAME="486"></A>   * @return this
+<A NAME="487"></A>   */</FONT>
+<A NAME="488"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> multiply(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="489"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="490"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="491"></A>        multiply(x, y, r, i);
+<A NAME="492"></A>      } 
+<A NAME="493"></A>    } 
+<A NAME="494"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="495"></A>  } 
+<A NAME="496"></A>
+<A NAME="497"></A>
+<A NAME="498"></A>  <FONT ID="FormalComment">/**
+<A NAME="499"></A>   * Divides all the pixels by a value in this image
+<A NAME="500"></A>   * @param r value to be divided into the pixels in the real plane
+<A NAME="501"></A>   * @param i value to be divided into the pixels in the imaginary plane
+<A NAME="502"></A>   * @return this
+<A NAME="503"></A>   */</FONT>
+<A NAME="504"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> divide(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i) {
+<A NAME="505"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="506"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="507"></A>        divide(x, y, r, i);
+<A NAME="508"></A>      } 
+<A NAME="509"></A>    } 
+<A NAME="510"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="511"></A>  } 
+<A NAME="512"></A>
+<A NAME="513"></A>
+<A NAME="514"></A>  <FONT ID="FormalComment">/**
+<A NAME="515"></A>   * Prints the image in integer format.
+<A NAME="516"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;-Example of output on an image with width 100 and height 120:&lt;/DT&gt;
+<A NAME="517"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="518"></A>   * &lt;DT&gt;5 23 54 7 3 23 46 253 23 53 65 34 ...&lt;/DT&gt;&lt;/DL&gt;
+<A NAME="519"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="520"></A>   * &lt;DT&gt;10 20 32 12 32 56 40 59 42 39 43 ...&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="521"></A>   */</FONT>
+<A NAME="522"></A>  <FONT ID="Public">public</FONT> String toString() {
+<A NAME="523"></A>    String  str;
+<A NAME="524"></A>
+<A NAME="525"></A>    str = real.toString();
+<A NAME="526"></A>    str += imag.toString();
+<A NAME="527"></A>    <FONT ID="Return">return</FONT> str;
+<A NAME="528"></A>  } 
+<A NAME="529"></A>
+<A NAME="530"></A>
+<A NAME="531"></A>  <FONT ID="FormalComment">/**
+<A NAME="532"></A>   * ****************************************************************************************************
+<A NAME="533"></A>   * *******************************ROI STUFF************************************************************
+<A NAME="534"></A>   * **************************************************************************************************
+<A NAME="535"></A>   */</FONT>
+<A NAME="536"></A>
+<A NAME="537"></A>
+<A NAME="538"></A>  <FONT ID="FormalComment">/**
+<A NAME="539"></A>   * Makes a deep copy of a Region of Interest
+<A NAME="540"></A>   * @param r Region of Interest
+<A NAME="541"></A>   * @return a deep copy of ComplexImage
+<A NAME="542"></A>   */</FONT>
+<A NAME="543"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="544"></A>    <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A>  c = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A>(r.X(), r.Y());
+<A NAME="545"></A>
+<A NAME="546"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="547"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.uy(); x++) {
+<A NAME="548"></A>        c.real.set(x, y, real.get(x, y));
+<A NAME="549"></A>        c.imag.set(x, y, imag.get(x, y));
+<A NAME="550"></A>      } 
+<A NAME="551"></A>    } 
+<A NAME="552"></A>    <FONT ID="Return">return</FONT> c;
+<A NAME="553"></A>  } 
+<A NAME="554"></A>
+<A NAME="555"></A>
+<A NAME="556"></A>  <FONT ID="FormalComment">/**
+<A NAME="557"></A>   * Returns the pixel value at the given x, y value of a Region of Interest in the real plane
+<A NAME="558"></A>   * @param x  the X coordinant
+<A NAME="559"></A>   * @param y  the Y coordinant
+<A NAME="560"></A>   * @param r   Region of Interest
+<A NAME="561"></A>   */</FONT>
+<A NAME="562"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Float">float</FONT> getReal(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="563"></A>    <FONT ID="Return">return</FONT> real.get(x + r.ux(), y + r.uy());
+<A NAME="564"></A>  } 
+<A NAME="565"></A>
+<A NAME="566"></A>
+<A NAME="567"></A>  <FONT ID="FormalComment">/**
+<A NAME="568"></A>   * Returns the pixel value at the given x, y value of a Region of Interest in the imaginary plane
+<A NAME="569"></A>   * @param x  the X coordinant
+<A NAME="570"></A>   * @param y  the Y coordinant
+<A NAME="571"></A>   * @param r   Region of Interest
+<A NAME="572"></A>   */</FONT>
+<A NAME="573"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Float">float</FONT> getImag(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="574"></A>    <FONT ID="Return">return</FONT> imag.get(x + r.ux(), y + r.uy());
+<A NAME="575"></A>  } 
+<A NAME="576"></A>
+<A NAME="577"></A>
+<A NAME="578"></A>  <FONT ID="FormalComment">/**
+<A NAME="579"></A>   * Sets tthe pixel value at the given x, y value of a Region of Interest in the real plane
+<A NAME="580"></A>   * @param x  the X coordinant
+<A NAME="581"></A>   * @param y  the Y coordinant
+<A NAME="582"></A>   * @param r   Region of Interest
+<A NAME="583"></A>   */</FONT>
+<A NAME="584"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setReal(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="585"></A>    real.set(x + r.ux(), y + r.uy(), v);
+<A NAME="586"></A>  } 
+<A NAME="587"></A>
+<A NAME="588"></A>
+<A NAME="589"></A>  <FONT ID="FormalComment">/**
+<A NAME="590"></A>   * Sets the pixel value at the given x, y value of a Region of Interest in the imaginary plane
+<A NAME="591"></A>   * @param x  the X coordinant
+<A NAME="592"></A>   * @param y  the Y coordinant
+<A NAME="593"></A>   * @param r   Region of Interest
+<A NAME="594"></A>   */</FONT>
+<A NAME="595"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> setImag(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> v, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="596"></A>    imag.set(x + r.ux(), y + r.uy(), v);
+<A NAME="597"></A>  } 
+<A NAME="598"></A>
+<A NAME="599"></A>
+<A NAME="600"></A>  <FONT ID="FormalComment">/**
+<A NAME="601"></A>   * Sets the pixel value at x, y to a given value in a Region of Interest
+<A NAME="602"></A>   * @param x the X coordinant
+<A NAME="603"></A>   * @param y the Y coordinant
+<A NAME="604"></A>   * @param r the value to set the pixel to in the real plane
+<A NAME="605"></A>   * @param i the value to set the pixel to in the imaginary plane
+<A NAME="606"></A>   * @param r2 Region of Interest
+<A NAME="607"></A>   */</FONT>
+<A NAME="608"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="609"></A>    real.set(x, y, r, r2);
+<A NAME="610"></A>    imag.set(x, y, i, r2);
+<A NAME="611"></A>  } 
+<A NAME="612"></A>
+<A NAME="613"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="614"></A>   * range functions
+<A NAME="615"></A>   */</FONT>
+<A NAME="616"></A>
+<A NAME="617"></A>
+<A NAME="618"></A>  <FONT ID="FormalComment">/**
+<A NAME="619"></A>   * Returns the minimum magnitude of a Region of Interest
+<A NAME="620"></A>   * @param r Region of Interest
+<A NAME="621"></A>   */</FONT>
+<A NAME="622"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> min(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="623"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> p = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="624"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> min = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Double.MAX_VALUE, Double.MAX_VALUE);
+<A NAME="625"></A>
+<A NAME="626"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="627"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.ux(); x++) {
+<A NAME="628"></A>        p.real(getReal(x, y));
+<A NAME="629"></A>        p.imag(getImag(x, y));
+<A NAME="630"></A>        <FONT ID="If">if</FONT> (p.mod() &lt; min.mod()) {
+<A NAME="631"></A>          min = p;
+<A NAME="632"></A>        } 
+<A NAME="633"></A>      } 
+<A NAME="634"></A>    } 
+<A NAME="635"></A>    <FONT ID="Return">return</FONT> min;
+<A NAME="636"></A>  } 
+<A NAME="637"></A>
+<A NAME="638"></A>
+<A NAME="639"></A>  <FONT ID="FormalComment">/**
+<A NAME="640"></A>   * Returns the maximum magnitude of a Region of Interest
+<A NAME="641"></A>   * @param r Region of Interest
+<A NAME="642"></A>   */</FONT>
+<A NAME="643"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> max(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="644"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> p = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="645"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> max = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Double.MIN_VALUE, Double.MIN_VALUE);
+<A NAME="646"></A>
+<A NAME="647"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="648"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.ux(); x &lt; r.ux(); x++) {
+<A NAME="649"></A>        p.real(getReal(x, y));
+<A NAME="650"></A>        p.imag(getImag(x, y));
+<A NAME="651"></A>        <FONT ID="If">if</FONT> (p.mod() &gt; max.mod()) {
+<A NAME="652"></A>          ;
+<A NAME="653"></A>        } 
+<A NAME="654"></A>        max = p;
+<A NAME="655"></A>      } 
+<A NAME="656"></A>    } 
+<A NAME="657"></A>    <FONT ID="Return">return</FONT> max;
+<A NAME="658"></A>  } 
+<A NAME="659"></A>
+<A NAME="660"></A>
+<A NAME="661"></A>
+<A NAME="662"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="663"></A>   * single-pixel arithmetic operations
+<A NAME="664"></A>   */</FONT>
+<A NAME="665"></A>
+<A NAME="666"></A>
+<A NAME="667"></A>  <FONT ID="FormalComment">/**
+<A NAME="668"></A>   * Adds a value to a single pixel in a Region of Interest
+<A NAME="669"></A>   * @param x X-coordinant
+<A NAME="670"></A>   * @param y Y-coordinant
+<A NAME="671"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="672"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="673"></A>   * @param r2 Region of Interest
+<A NAME="674"></A>   */</FONT>
+<A NAME="675"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="676"></A>    real.add(x, y, r, r2);
+<A NAME="677"></A>    imag.add(x, y, i, r2);
+<A NAME="678"></A>  } 
+<A NAME="679"></A>
+<A NAME="680"></A>
+<A NAME="681"></A>  <FONT ID="FormalComment">/**
+<A NAME="682"></A>   * Subtracts a value from a single pixel in a Region of Interest
+<A NAME="683"></A>   * @param x X-coordinant
+<A NAME="684"></A>   * @param y Y-coordinant
+<A NAME="685"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="686"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="687"></A>   * @param r2 Region of Interest
+<A NAME="688"></A>   */</FONT>
+<A NAME="689"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="690"></A>    real.subtract(x, y, r, r2);
+<A NAME="691"></A>    imag.subtract(x, y, i, r2);
+<A NAME="692"></A>  } 
+<A NAME="693"></A>
+<A NAME="694"></A>
+<A NAME="695"></A>  <FONT ID="FormalComment">/**
+<A NAME="696"></A>   * Multiply a single pixel by a value in a Region of Interest
+<A NAME="697"></A>   * @param x X-coordinant
+<A NAME="698"></A>   * @param y Y-coordinant
+<A NAME="699"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="700"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="701"></A>   * @param r2 Region of Interest
+<A NAME="702"></A>   */</FONT>
+<A NAME="703"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="704"></A>    <FONT ID="Float">float</FONT> a = real.get(x, y) * r - imag.get(x, y) * i;
+<A NAME="705"></A>    <FONT ID="Float">float</FONT> b = real.get(x, y) * i + imag.get(x, y) * r;
+<A NAME="706"></A>
+<A NAME="707"></A>    real.set(x, y, a, r2);
+<A NAME="708"></A>    imag.set(x, y, b, r2);
+<A NAME="709"></A>  } 
+<A NAME="710"></A>
+<A NAME="711"></A>
+<A NAME="712"></A>  <FONT ID="FormalComment">/**
+<A NAME="713"></A>   * Divide a single pixel by a value in a Region of Interest
+<A NAME="714"></A>   * @param x X-coordinant
+<A NAME="715"></A>   * @param y Y-coordinant
+<A NAME="716"></A>   * @param r the value to add to the pixel in the real plane
+<A NAME="717"></A>   * @param i the value to add to the pixel in the imaginary plane
+<A NAME="718"></A>   * @param r2 Region of Interest
+<A NAME="719"></A>   */</FONT>
+<A NAME="720"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="721"></A>    <FONT ID="Float">float</FONT> a;
+<A NAME="722"></A>    <FONT ID="Float">float</FONT> b;
+<A NAME="723"></A>    <FONT ID="Float">float</FONT> mag2;
+<A NAME="724"></A>
+<A NAME="725"></A>    mag2 = r * r + i * i;
+<A NAME="726"></A>    a = (real.get(x, y) * r + imag.get(x, y) * i) / mag2;
+<A NAME="727"></A>    b = (imag.get(x, y) * r - real.get(x, y) * i) / mag2;
+<A NAME="728"></A>    real.set(x, y, a, r2);
+<A NAME="729"></A>    imag.set(x, y, b, r2);
+<A NAME="730"></A>  } 
+<A NAME="731"></A>
+<A NAME="732"></A>
+<A NAME="733"></A>
+<A NAME="734"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="735"></A>   * image-wide arithmetic operations
+<A NAME="736"></A>   */</FONT>
+<A NAME="737"></A>
+<A NAME="738"></A>
+<A NAME="739"></A>  <FONT ID="FormalComment">/**
+<A NAME="740"></A>   * Adds a value to all the pixels in a Region of Interest
+<A NAME="741"></A>   * @param r value to be added to the pixels in the real plane
+<A NAME="742"></A>   * @param i value to be added to the pixels in the imaginary plane
+<A NAME="743"></A>   * @param r2 Region of Interest
+<A NAME="744"></A>   * @return this
+<A NAME="745"></A>   */</FONT>
+<A NAME="746"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> add(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="747"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r2.uy(); y &lt; r2.ly(); y++) {
+<A NAME="748"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r2.ux(); x &lt; r2.lx(); x++) {
+<A NAME="749"></A>        add(x, y, r, i);
+<A NAME="750"></A>      } 
+<A NAME="751"></A>    } 
+<A NAME="752"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="753"></A>  } 
+<A NAME="754"></A>
+<A NAME="755"></A>
+<A NAME="756"></A>  <FONT ID="FormalComment">/**
+<A NAME="757"></A>   * Subtracts a value from all the pixels in a Region of Interest
+<A NAME="758"></A>   * @param r value to be subtract from the pixels in the real plane
+<A NAME="759"></A>   * @param i value to be subtracted from  pixels in the imaginary plane
+<A NAME="760"></A>   * @param r2 Region of Interest
+<A NAME="761"></A>   * @return this
+<A NAME="762"></A>   */</FONT>
+<A NAME="763"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> subtract(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="764"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r2.uy(); y &lt; r2.ly(); y++) {
+<A NAME="765"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r2.ux(); x &lt; r2.lx(); x++) {
+<A NAME="766"></A>        subtract(x, y, r, i);
+<A NAME="767"></A>      } 
+<A NAME="768"></A>    } 
+<A NAME="769"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="770"></A>  } 
+<A NAME="771"></A>
+<A NAME="772"></A>
+<A NAME="773"></A>  <FONT ID="FormalComment">/**
+<A NAME="774"></A>   * Multiplies all the pixels by a value in a Region of Interest
+<A NAME="775"></A>   * @param r value to be multiplied by the pixels in the real plane
+<A NAME="776"></A>   * @param i value to be multiplied by the pixels in the imaginary plane
+<A NAME="777"></A>   * @param r2 Region of Interest
+<A NAME="778"></A>   * @return this
+<A NAME="779"></A>   */</FONT>
+<A NAME="780"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> multiply(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="781"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r2.uy(); y &lt; r2.ly(); y++) {
+<A NAME="782"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r2.ux(); x &lt; r2.lx(); x++) {
+<A NAME="783"></A>        multiply(x, y, r, i);
+<A NAME="784"></A>      } 
+<A NAME="785"></A>    } 
+<A NAME="786"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="787"></A>  } 
+<A NAME="788"></A>
+<A NAME="789"></A>
+<A NAME="790"></A>  <FONT ID="FormalComment">/**
+<A NAME="791"></A>   * Divides all the pixels by a value in a Region of Interest
+<A NAME="792"></A>   * @param r value to be divided into the pixels in the real plane
+<A NAME="793"></A>   * @param i value to be divided into the pixels in the imaginary plane
+<A NAME="794"></A>   * @param r2 Region of Interest
+<A NAME="795"></A>   * @return this
+<A NAME="796"></A>   */</FONT>
+<A NAME="797"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> divide(<FONT ID="Float">float</FONT> r, <FONT ID="Float">float</FONT> i, <A HREF="../../jigl/image/ROI.java.html">ROI</A> r2) {
+<A NAME="798"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r2.uy(); y &lt; r2.ly(); y++) {
+<A NAME="799"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r2.ux(); x &lt; r2.lx(); x++) {
+<A NAME="800"></A>        divide(x, y, r, i);
+<A NAME="801"></A>      } 
+<A NAME="802"></A>    } 
+<A NAME="803"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="804"></A>  } 
+<A NAME="805"></A>
+<A NAME="806"></A>
+<A NAME="807"></A>  <FONT ID="FormalComment">/**
+<A NAME="808"></A>   * Prints the Region of Interest in integer format.
+<A NAME="809"></A>   * &lt;DT&gt;&lt;DL&gt;&lt;DL&gt;-Example of output on an image with width 100 and height 120:&lt;/DT&gt;
+<A NAME="810"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="811"></A>   * &lt;DT&gt;5 23 54 7 3 23 46 253 23 53 65 34 ...&lt;/DT&gt;&lt;/DL&gt;
+<A NAME="812"></A>   * &lt;DL&gt;       &lt;DT&gt;100 : 120&lt;/DT&gt;
+<A NAME="813"></A>   * &lt;DT&gt;10 20 32 12 32 56 40 59 42 39 43 ...&lt;/DT&gt;&lt;/DL&gt;&lt;/DL&gt;&lt;/DL&gt;
+<A NAME="814"></A>   * @param r Region of Interest
+<A NAME="815"></A>   */</FONT>
+<A NAME="816"></A>  <FONT ID="Public">public</FONT> String toString(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="817"></A>    String  str;
+<A NAME="818"></A>
+<A NAME="819"></A>    str = real.toString(r);
+<A NAME="820"></A>    str += imag.toString(r);
+<A NAME="821"></A>    <FONT ID="Return">return</FONT> str;
+<A NAME="822"></A>  } 
+<A NAME="823"></A>
+<A NAME="824"></A>
+<A NAME="825"></A>  <FONT ID="FormalComment">/**
+<A NAME="826"></A>   * Adds a Region of Interest in another GrayImage from a Region of Interest of this image
+<A NAME="827"></A>   * @param im the ComplexImage to add
+<A NAME="828"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="829"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="830"></A>   * @return this
+<A NAME="831"></A>   */</FONT>
+<A NAME="832"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> add(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="833"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="834"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="835"></A>        add(x, y, im.getReal(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()), im.getImag(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()));
+<A NAME="836"></A>      } 
+<A NAME="837"></A>    } 
+<A NAME="838"></A>  } 
+<A NAME="839"></A>
+<A NAME="840"></A>
+<A NAME="841"></A>  <FONT ID="FormalComment">/**
+<A NAME="842"></A>   * Subtracts a Region of Interest in another GrayImage from a Region of Interest of this image
+<A NAME="843"></A>   * @param im the ComplexImage to subtract
+<A NAME="844"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="845"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="846"></A>   * @return this
+<A NAME="847"></A>   */</FONT>
+<A NAME="848"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> subtract(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="849"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="850"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="851"></A>        subtract(x, y, im.getReal(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()), im.getImag(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()));
+<A NAME="852"></A>      } 
+<A NAME="853"></A>    } 
+<A NAME="854"></A>  } 
+<A NAME="855"></A>
+<A NAME="856"></A>
+<A NAME="857"></A>  <FONT ID="FormalComment">/**
+<A NAME="858"></A>   * Multiplies a Region of Interest of another GrayImage by a Region of Interest of this image
+<A NAME="859"></A>   * @param im the ComplexImage to multiply
+<A NAME="860"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="861"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="862"></A>   * @return this
+<A NAME="863"></A>   */</FONT>
+<A NAME="864"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> multiply(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="865"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="866"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="867"></A>        multiply(x, y, im.getReal(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()), im.getImag(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()));
+<A NAME="868"></A>      } 
+<A NAME="869"></A>    } 
+<A NAME="870"></A>  } 
+<A NAME="871"></A>
+<A NAME="872"></A>
+<A NAME="873"></A>  <FONT ID="FormalComment">/**
+<A NAME="874"></A>   * Divides by a Region of Interest in this image by a Region of Interest of another ComplexImage
+<A NAME="875"></A>   * @param im the ComplexImage to divide
+<A NAME="876"></A>   * @param sourceImage Region of Interest for the Source Image
+<A NAME="877"></A>   * @param destImage Region of Interest for the Destination Image
+<A NAME="878"></A>   * @return this
+<A NAME="879"></A>   */</FONT>
+<A NAME="880"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> divide(<A HREF="../../jigl/image/ComplexImage.java.html">ComplexImage</A> im, <A HREF="../../jigl/image/ROI.java.html">ROI</A> sourceImage, <A HREF="../../jigl/image/ROI.java.html">ROI</A> destImage) {
+<A NAME="881"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = sourceImage.uy(); y &lt; sourceImage.ly(); y++) {
+<A NAME="882"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = sourceImage.ux(); x &lt; sourceImage.lx(); x++) {
+<A NAME="883"></A>        divide(x, y, im.getReal(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()), im.getImag(x - sourceImage.ux() + destImage.ux(), y - sourceImage.uy() + destImage.uy()));
+<A NAME="884"></A>      } 
+<A NAME="885"></A>    } 
+<A NAME="886"></A>  } 
+<A NAME="887"></A>
+<A NAME="888"></A>
+<A NAME="889"></A>  <FONT ID="FormalComment">/**
+<A NAME="890"></A>   * Returns the MagnitudeImage (RealGrayImage) of the this ComplexImage
+<A NAME="891"></A>   */</FONT>
+<A NAME="892"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> getMagnitudeImage() {
+<A NAME="893"></A>    <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> im = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A>(X, Y);
+<A NAME="894"></A>    <FONT ID="Float">float</FONT>         value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="895"></A>
+<A NAME="896"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="897"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="898"></A>        value = (<FONT ID="Float">float</FONT>) (Math.sqrt((Math.pow(getReal(x, y), <FONT ID="IntegerLiteral">2</FONT>) + Math.pow(getImag(x, y), <FONT ID="IntegerLiteral">2</FONT>))));
+<A NAME="899"></A>        im.set(x, y, value);
+<A NAME="900"></A>      } 
+<A NAME="901"></A>    } 
+<A NAME="902"></A>    <FONT ID="Return">return</FONT> im;
+<A NAME="903"></A>  } 
+<A NAME="904"></A>
+<A NAME="905"></A>}
+<A NAME="906"></A>
+<A NAME="907"></A>
+<A NAME="908"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="909"></A>
+<A NAME="910"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ComplexImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.ImagePanel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImagePanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A>
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="FormalComment">/**
+<A NAME="26"></A> * Die abstarkte Klasse dient als Basis fuer die scrollbaren Darstellungsebenen
+<A NAME="27"></A> * fuer ein oder vier Bilder. Alle abgeleiteten Klassen muessen mindestens eine
+<A NAME="28"></A> * Methode zum darstellen eines Bildes implementieren.
+<A NAME="29"></A> * 
+<A NAME="30"></A> * @author   Thomas Hacklaender
+<A NAME="31"></A> * @version  1.0, 2000.8.17
+<A NAME="32"></A> */</FONT>
+<A NAME="33"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> ImagePanel <FONT ID="Extends">extends</FONT> JScrollPane {
+<A NAME="34"></A>
+<A NAME="35"></A>
+<A NAME="36"></A>  <FONT ID="FormalComment">/**
+<A NAME="37"></A>   * Die Methode erzeugt aus dem uebergebenen DcmImage-Objekt ein neues ImagePlus-Objekt
+<A NAME="38"></A>   * und fuegt dieses in den Bildstapel ein.
+<A NAME="39"></A>   * @param di Das DcmImag-Objekt, aus dem ein ImagePlus-Objekt erzeugt werden soll.
+<A NAME="40"></A>   * @return Das neu erzeugte ImagePlus-Objekt.
+<A NAME="41"></A>   */</FONT>
+<A NAME="42"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> createNewImage(<A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A> di);
+<A NAME="43"></A>
+<A NAME="44"></A>
+<A NAME="45"></A>  <FONT ID="FormalComment">/**
+<A NAME="46"></A>   * Die Methode fuegt das uebergebene ImagePlus-Objekt in den Bildstapel ein.
+<A NAME="47"></A>   * @param ip Das ImagePlus-Objekt, das in den Stack eingefuegt werden soll.
+<A NAME="48"></A>   * @return Die Position, an der das ImagePlus-Objekt eingefuegt wurde.
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Int">int</FONT> createNewImage(<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip);
+<A NAME="51"></A>
+<A NAME="52"></A>}
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>
+<A NAME="56"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="57"></A>
+<A NAME="58"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImagePanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

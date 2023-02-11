@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.LabelTFLabel_1Panel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">LabelTFLabel_1Panel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="FormalComment">/**
+<A NAME="29"></A> * Erweiterung der Klasse LabelTFLabelPanel:
+<A NAME="30"></A> * Für die Rechteck-Einstellung sollen nur 4 und 8 gewählt werden dürfen.
+<A NAME="31"></A> * Zu diesem Zweck werden die Methoden pbUp_actionPerformed, pbDown_actionPerformed,
+<A NAME="32"></A> * checkValue und focusLost ueberdefiniert.
+<A NAME="33"></A> * 
+<A NAME="34"></A> * @author   Christian Schalla
+<A NAME="35"></A> * @author   Andreas Truemper
+<A NAME="36"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A>
+<A NAME="39"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> LabelTFLabel_1Panel <FONT ID="Extends">extends</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A> {
+<A NAME="40"></A>
+<A NAME="41"></A>
+<A NAME="42"></A>  <FONT ID="FormalComment">/**
+<A NAME="43"></A>   * Der Konstruktor legt den Text der beiden Beschriftungsfelder sowie den
+<A NAME="44"></A>   * initialen Inhalt des Textfeldes fest.
+<A NAME="45"></A>   * @param lab1 Erste Beschriftung.
+<A NAME="46"></A>   * @param txt Initialer Inhalt des Textfeldes.
+<A NAME="47"></A>   * @param lab2 Zweite Beschriftung.
+<A NAME="48"></A>   */</FONT>
+<A NAME="49"></A>  <FONT ID="Public">public</FONT> LabelTFLabel_1Panel(String lab1, String txt, String lab2) {
+<A NAME="50"></A>    <FONT ID="Super">super</FONT>(lab1, txt, lab2);
+<A NAME="51"></A>  }   <FONT ID="SingleLineComment">// Konstruktor LabelTFLabelETLPanel(String lab1, String txt, String lab2)
+<A NAME="52"></A></FONT>
+<A NAME="53"></A>
+<A NAME="54"></A>  <FONT ID="FormalComment">/**
+<A NAME="55"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Erhoehung des Wertes des
+<A NAME="56"></A>   * Textfeldes gedrueckt wurde. Wenn das Textfeld aktiviert ist, wird der
+<A NAME="57"></A>   * Wert erhoeht, soweit er noch im zulaessigen Bereich liegt.
+<A NAME="58"></A>   */</FONT>
+<A NAME="59"></A>  <FONT ID="Void">void</FONT> pbUp_actionPerformed() {
+<A NAME="60"></A>    <FONT ID="If">if</FONT> (Integer.parseInt(tfText.getText()) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="61"></A>      tfText.setText(<FONT ID="StringLiteral">""</FONT> + <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="62"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="63"></A>      <FONT ID="Int">int</FONT> val = Integer.parseInt(tfText.getText()) + <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="64"></A>
+<A NAME="65"></A>      <FONT ID="If">if</FONT> (checkValue(val)) {
+<A NAME="66"></A>        tfText.setText(<FONT ID="StringLiteral">""</FONT> + val);
+<A NAME="67"></A>      } 
+<A NAME="68"></A>    } 
+<A NAME="69"></A>  }   <FONT ID="SingleLineComment">// Methode pbUp_actionPerformed
+<A NAME="70"></A></FONT> 
+<A NAME="71"></A>
+<A NAME="72"></A>  <FONT ID="FormalComment">/**
+<A NAME="73"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Verminderung des Wertes des
+<A NAME="74"></A>   * Textfeldes um 1 gedrueckt wurde. Wenn das Textfeld aktiviert ist, wird der
+<A NAME="75"></A>   * Wert vermindert, soweit er noch im zulaessigen Bereich liegt.
+<A NAME="76"></A>   */</FONT>
+<A NAME="77"></A>  <FONT ID="Void">void</FONT> pbDown_actionPerformed() {
+<A NAME="78"></A>    <FONT ID="If">if</FONT> (Integer.parseInt(tfText.getText()) == <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="79"></A>      tfText.setText(<FONT ID="StringLiteral">""</FONT> + <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="80"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="81"></A>      <FONT ID="Int">int</FONT> val = Integer.parseInt(tfText.getText()) - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="82"></A>
+<A NAME="83"></A>      <FONT ID="If">if</FONT> (checkValue(val)) {
+<A NAME="84"></A>        tfText.setText(<FONT ID="StringLiteral">""</FONT> + val);
+<A NAME="85"></A>      } 
+<A NAME="86"></A>    } 
+<A NAME="87"></A>  }   <FONT ID="SingleLineComment">// Methode pbDown_actionPerformed
+<A NAME="88"></A></FONT> 
+<A NAME="89"></A>
+<A NAME="90"></A>  <FONT ID="FormalComment">/**
+<A NAME="91"></A>   * Die Methode ueberprueft den Inhalt des Textfeldes beim Verlieren des
+<A NAME="92"></A>   * Fokus auf Korrektheit, das heisst, ob der Wert im erlaubten Intevall liegt.
+<A NAME="93"></A>   */</FONT>
+<A NAME="94"></A>  <FONT ID="Void">void</FONT> tfText_focusLost() {
+<A NAME="95"></A>    <FONT ID="If">if</FONT> (!checkValue()) {
+<A NAME="96"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="97"></A>        <FONT ID="Int">int</FONT> myval = Integer.parseInt(tfText.getText());
+<A NAME="98"></A>
+<A NAME="99"></A>        <FONT ID="If">if</FONT> (myval &gt; maxval) {
+<A NAME="100"></A>          tfText.setText(<FONT ID="StringLiteral">""</FONT> + maxval);
+<A NAME="101"></A>        } 
+<A NAME="102"></A>        <FONT ID="If">if</FONT> (myval &lt; minval) {
+<A NAME="103"></A>          tfText.setText(<FONT ID="StringLiteral">""</FONT> + minval);
+<A NAME="104"></A>        } 
+<A NAME="105"></A>        <FONT ID="If">if</FONT> (!checkValue(myval)) {
+<A NAME="106"></A>          <FONT ID="If">if</FONT> (myval &lt; <FONT ID="IntegerLiteral">2</FONT>) {
+<A NAME="107"></A>            tfText.setText(<FONT ID="StringLiteral">""</FONT> + <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="108"></A>          } <FONT ID="Else">else</FONT> {
+<A NAME="109"></A>            tfText.setText(<FONT ID="StringLiteral">""</FONT> + <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="110"></A>          } 
+<A NAME="111"></A>        } 
+<A NAME="112"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="113"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="114"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode tfText_lostFocus
+<A NAME="115"></A></FONT> 
+<A NAME="116"></A>
+<A NAME="117"></A>  <FONT ID="FormalComment">/**
+<A NAME="118"></A>   * Die Methode ueberprueft, ob der ubergebene Wert im erlaubten
+<A NAME="119"></A>   * Bereich liegt.
+<A NAME="120"></A>   * @return True, falls Inhalt der Wert im erlaubten Intervall, sonst False.
+<A NAME="121"></A>   */</FONT>
+<A NAME="122"></A>  <FONT ID="Boolean">boolean</FONT> checkValue(<FONT ID="Int">int</FONT> myval) {
+<A NAME="123"></A>    <FONT ID="Boolean">boolean</FONT> ok = <FONT ID="True">true</FONT>;
+<A NAME="124"></A>
+<A NAME="125"></A>    <FONT ID="If">if</FONT> (rangeIsSet) {
+<A NAME="126"></A>      <FONT ID="If">if</FONT> ((myval &lt; minval) || (myval &gt; maxval)) {
+<A NAME="127"></A>        ok = <FONT ID="False">false</FONT>;
+<A NAME="128"></A>      }   <FONT ID="SingleLineComment">// if
+<A NAME="129"></A></FONT>     }    <FONT ID="SingleLineComment">// if
+<A NAME="130"></A></FONT> 
+<A NAME="131"></A>    <FONT ID="If">if</FONT> (myval == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="132"></A>      ok = <FONT ID="False">false</FONT>;
+<A NAME="133"></A>    } 
+<A NAME="134"></A>
+<A NAME="135"></A>    <FONT ID="Return">return</FONT> ok;
+<A NAME="136"></A>  }   <FONT ID="SingleLineComment">// Methode checkValue
+<A NAME="137"></A></FONT> 
+<A NAME="138"></A>}
+<A NAME="139"></A>
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>
+<A NAME="143"></A>
+<A NAME="144"></A>
+<A NAME="145"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="146"></A>
+<A NAME="147"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">LabelTFLabel_1Panel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

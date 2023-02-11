@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.image.BinaryImage (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">BinaryImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image</A>;
+<A NAME="18"></A><FONT ID="Import">import</FONT> jigl.*;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="FormalComment">/**
+<A NAME="23"></A> * BinaryImage is a 2-d array of byte.  All the values in a BinaryImage is always eithier a one or a zero.
+<A NAME="24"></A> */</FONT>
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> BinaryImage <FONT ID="Implements">implements</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> {
+<A NAME="27"></A>
+<A NAME="28"></A>
+<A NAME="29"></A>  <FONT ID="FormalComment">/**
+<A NAME="30"></A>   * Two dimensional integer array
+<A NAME="31"></A>   */</FONT>
+<A NAME="32"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Byte">byte</FONT>[][]  data;
+<A NAME="33"></A>
+<A NAME="34"></A>
+<A NAME="35"></A>  <FONT ID="FormalComment">/**
+<A NAME="36"></A>   * Cartesian width
+<A NAME="37"></A>   */</FONT>
+<A NAME="38"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>       X;
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Cartesian height
+<A NAME="43"></A>   */</FONT>
+<A NAME="44"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>       Y;
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="FormalComment">/**
+<A NAME="48"></A>   * Creates an empty two dimensional BinaryImage with a height and width of zero
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Public">public</FONT> BinaryImage() {
+<A NAME="51"></A>    X = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="52"></A>    Y = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="53"></A>    data = <FONT ID="Null">null</FONT>;
+<A NAME="54"></A>  }
+<A NAME="55"></A>
+<A NAME="56"></A>
+<A NAME="57"></A>  <FONT ID="FormalComment">/**
+<A NAME="58"></A>   * Creates a two dimensional BinaryImage with a height and width of x and y repectively
+<A NAME="59"></A>   */</FONT>
+<A NAME="60"></A>  <FONT ID="Public">public</FONT> BinaryImage(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="61"></A>    X = x;
+<A NAME="62"></A>    Y = y;
+<A NAME="63"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[Y][X];
+<A NAME="64"></A>  }
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * Gets the JavaImage from a JiglImage
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Public">public</FONT> ImageProducer getJavaImage() {
+<A NAME="71"></A>
+<A NAME="72"></A>    <FONT ID="SingleLineComment">// get range of this image
+<A NAME="73"></A></FONT>    <FONT ID="Int">int</FONT> min = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="74"></A>    <FONT ID="Int">int</FONT> max = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="75"></A>
+<A NAME="76"></A>    <FONT ID="SingleLineComment">// keep byte images in original range
+<A NAME="77"></A></FONT>    <FONT ID="If">if</FONT> (min &gt;= <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; max &lt;= <FONT ID="IntegerLiteral">255</FONT>) {
+<A NAME="78"></A>      min = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="79"></A>      max = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="80"></A>    } 
+<A NAME="81"></A>    <FONT ID="Int">int</FONT> range = max - min;
+<A NAME="82"></A>
+<A NAME="83"></A>    <FONT ID="SingleLineComment">// convert jigl image to java image
+<A NAME="84"></A></FONT>    <FONT ID="Int">int</FONT> pix[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[X * Y];
+<A NAME="85"></A>    <FONT ID="Int">int</FONT> index = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="86"></A>    <FONT ID="Int">int</FONT> value = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="87"></A>
+<A NAME="88"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="89"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="90"></A>
+<A NAME="91"></A>        <FONT ID="SingleLineComment">// scale image values
+<A NAME="92"></A></FONT>        value = (<FONT ID="Int">int</FONT>) ((<FONT ID="FloatPointLiteral">255.0</FONT> / range) * ((<FONT ID="Float">float</FONT>) data[y][x] - min));
+<A NAME="93"></A>
+<A NAME="94"></A>        value = <FONT ID="IntegerLiteral">0x00FF</FONT> &amp; value;   <FONT ID="SingleLineComment">// take lower 8 bits
+<A NAME="95"></A></FONT>
+<A NAME="96"></A>        <FONT ID="SingleLineComment">// put this pixel in the java image
+<A NAME="97"></A></FONT>        pix[index] = (<FONT ID="IntegerLiteral">0xFF</FONT> &lt;&lt; <FONT ID="IntegerLiteral">24</FONT>) | (value &lt;&lt; <FONT ID="IntegerLiteral">16</FONT>) | (value &lt;&lt; <FONT ID="IntegerLiteral">8</FONT>) | value;
+<A NAME="98"></A>        index++;
+<A NAME="99"></A>      } 
+<A NAME="100"></A>    } 
+<A NAME="101"></A>
+<A NAME="102"></A>    <FONT ID="SingleLineComment">// return java image
+<A NAME="103"></A></FONT>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> MemoryImageSource(X, Y, pix, <FONT ID="IntegerLiteral">0</FONT>, X);
+<A NAME="104"></A>  } 
+<A NAME="105"></A>
+<A NAME="106"></A>
+<A NAME="107"></A>  <FONT ID="FormalComment">/**
+<A NAME="108"></A>   * Creates a two dimensional BinaryImage with a height and width of x and y repectively
+<A NAME="109"></A>   * @param x width of image
+<A NAME="110"></A>   * @param y height of image
+<A NAME="111"></A>   * @param dat one dimensional array of short.  The array is length x*y.
+<A NAME="112"></A>   */</FONT>
+<A NAME="113"></A>
+<A NAME="114"></A>  <FONT ID="Public">public</FONT> BinaryImage(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Byte">byte</FONT>[] dat) {
+<A NAME="115"></A>    X = x;
+<A NAME="116"></A>    Y = y;
+<A NAME="117"></A>    <FONT ID="Int">int</FONT> count = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="118"></A>
+<A NAME="119"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[Y][X];
+<A NAME="120"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> a = <FONT ID="IntegerLiteral">0</FONT>; a &lt; Y; a++) {
+<A NAME="121"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> b = <FONT ID="IntegerLiteral">0</FONT>; b &lt; X; b++) {
+<A NAME="122"></A>
+<A NAME="123"></A>        <FONT ID="If">if</FONT> (dat[a * Y + b] &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="124"></A>          data[a][b] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="125"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="126"></A>          data[a][b] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="127"></A>        }
+<A NAME="128"></A>      } 
+<A NAME="129"></A>    }
+<A NAME="130"></A>  }
+<A NAME="131"></A>
+<A NAME="132"></A>
+<A NAME="133"></A>  <FONT ID="FormalComment">/**
+<A NAME="134"></A>   * Creates a two dimensional BinaryImage from a GrayImage.
+<A NAME="135"></A>   * Any pixel value above 0 is assigned the 1.
+<A NAME="136"></A>   */</FONT>
+<A NAME="137"></A>  <FONT ID="Public">public</FONT> BinaryImage(<A HREF="../../jigl/image/GrayImage.java.html">GrayImage</A> img) {
+<A NAME="138"></A>    X = img.X();
+<A NAME="139"></A>    Y = img.Y();
+<A NAME="140"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[Y][X];
+<A NAME="141"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> a = <FONT ID="IntegerLiteral">0</FONT>; a &lt; X; a++) {
+<A NAME="142"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> b = <FONT ID="IntegerLiteral">0</FONT>; b &lt; Y; b++) {
+<A NAME="143"></A>        <FONT ID="If">if</FONT> (img.get(a, b) &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="144"></A>          data[b][a] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="145"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="146"></A>          data[b][a] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="147"></A>        }
+<A NAME="148"></A>      }
+<A NAME="149"></A>    }
+<A NAME="150"></A>  }
+<A NAME="151"></A>
+<A NAME="152"></A>
+<A NAME="153"></A>  <FONT ID="FormalComment">/**
+<A NAME="154"></A>   * Creates a two dimensional BinaryImage from a RealGrayImage.
+<A NAME="155"></A>   * Any pixel value above 0 is assigned the 1.
+<A NAME="156"></A>   */</FONT>
+<A NAME="157"></A>  <FONT ID="Public">public</FONT> BinaryImage(<A HREF="../../jigl/image/RealGrayImage.java.html">RealGrayImage</A> img) {
+<A NAME="158"></A>    X = img.X();
+<A NAME="159"></A>    Y = img.Y();
+<A NAME="160"></A>    data = <FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[Y][X];
+<A NAME="161"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> a = <FONT ID="IntegerLiteral">0</FONT>; a &lt; X; a++) {
+<A NAME="162"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> b = <FONT ID="IntegerLiteral">0</FONT>; b &lt; Y; b++) {
+<A NAME="163"></A>        <FONT ID="If">if</FONT> (img.get(a, b) &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="164"></A>          set(a, b, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="165"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="166"></A>          set(a, b, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="167"></A>        }
+<A NAME="168"></A>      }
+<A NAME="169"></A>    }
+<A NAME="170"></A>  }
+<A NAME="171"></A>
+<A NAME="172"></A>
+<A NAME="173"></A>  <FONT ID="FormalComment">/**
+<A NAME="174"></A>   * Creates a two dimensional BinaryImage (shallow copy) from BinaryImage img
+<A NAME="175"></A>   */</FONT>
+<A NAME="176"></A>  <FONT ID="Public">public</FONT> BinaryImage(<A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> img) {
+<A NAME="177"></A>    X = img.X();
+<A NAME="178"></A>    Y = img.Y();
+<A NAME="179"></A>    data = img.data;
+<A NAME="180"></A>  }
+<A NAME="181"></A>
+<A NAME="182"></A>
+<A NAME="183"></A>  <FONT ID="FormalComment">/**
+<A NAME="184"></A>   * Makes a deep copy of this image
+<A NAME="185"></A>   * @param none
+<A NAME="186"></A>   * @return a deep copy of BinaryImage
+<A NAME="187"></A>   */</FONT>
+<A NAME="188"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy() {
+<A NAME="189"></A>    <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> g = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A>(X, Y);
+<A NAME="190"></A>
+<A NAME="191"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="192"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="193"></A>        g.data[y][x] = data[y][x];
+<A NAME="194"></A>      } 
+<A NAME="195"></A>    } 
+<A NAME="196"></A>    <FONT ID="Return">return</FONT> g;
+<A NAME="197"></A>  } 
+<A NAME="198"></A>
+<A NAME="199"></A>
+<A NAME="200"></A>  <FONT ID="FormalComment">/**
+<A NAME="201"></A>   * Makes a deep copy of this image in a Region of Interest
+<A NAME="202"></A>   * @param none
+<A NAME="203"></A>   * @return a deep copy of BinaryImage
+<A NAME="204"></A>   */</FONT>
+<A NAME="205"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/image/Image.java.html">Image</A> copy(<A HREF="../../jigl/image/ROI.java.html">ROI</A> r) {
+<A NAME="206"></A>    <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> g = <FONT ID="New">new</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A>(X, Y);
+<A NAME="207"></A>
+<A NAME="208"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = r.uy(); y &lt; r.ly(); y++) {
+<A NAME="209"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = r.lx(); x &lt; r.ux(); x++) {
+<A NAME="210"></A>        g.data[y][x] = data[y][x];
+<A NAME="211"></A>      } 
+<A NAME="212"></A>    } 
+<A NAME="213"></A>    <FONT ID="Return">return</FONT> g;
+<A NAME="214"></A>  } 
+<A NAME="215"></A>
+<A NAME="216"></A>
+<A NAME="217"></A>  <FONT ID="FormalComment">/**
+<A NAME="218"></A>   * Returns the width (maximum X value)
+<A NAME="219"></A>   * @param none
+<A NAME="220"></A>   */</FONT>
+<A NAME="221"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> X() {
+<A NAME="222"></A>    <FONT ID="Return">return</FONT> X;
+<A NAME="223"></A>  } 
+<A NAME="224"></A>
+<A NAME="225"></A>
+<A NAME="226"></A>  <FONT ID="FormalComment">/**
+<A NAME="227"></A>   * Returns the height (maximum Y value)
+<A NAME="228"></A>   * @param none
+<A NAME="229"></A>   */</FONT>
+<A NAME="230"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> Y() {
+<A NAME="231"></A>    <FONT ID="Return">return</FONT> Y;
+<A NAME="232"></A>  } 
+<A NAME="233"></A>
+<A NAME="234"></A>
+<A NAME="235"></A>  <FONT ID="FormalComment">/**
+<A NAME="236"></A>   * Returns the pixel value at the given x, y value
+<A NAME="237"></A>   * @param x  the X coordinant
+<A NAME="238"></A>   * @param y  the Y coordinant
+<A NAME="239"></A>   */</FONT>
+<A NAME="240"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Byte">byte</FONT> get(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="241"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Byte">byte</FONT>) data[y][x];
+<A NAME="242"></A>  } 
+<A NAME="243"></A>
+<A NAME="244"></A>
+<A NAME="245"></A>  <FONT ID="FormalComment">/**
+<A NAME="246"></A>   * Sets the pixel value at x, y to a given value
+<A NAME="247"></A>   * @param x the X coordinant
+<A NAME="248"></A>   * @param y the Y coordinant
+<A NAME="249"></A>   * @param value the value to set the pixel to if greater than zero, it is given a value of 1
+<A NAME="250"></A>   */</FONT>
+<A NAME="251"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Void">void</FONT> set(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> value) {
+<A NAME="252"></A>    <FONT ID="If">if</FONT> (value &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="253"></A>      data[y][x] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="254"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="255"></A>      data[y][x] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="256"></A>    }
+<A NAME="257"></A>  } 
+<A NAME="258"></A>
+<A NAME="259"></A>
+<A NAME="260"></A>  <FONT ID="FormalComment">/**
+<A NAME="261"></A>   * Finds the union between this image and another BinaryImage
+<A NAME="262"></A>   * @return this
+<A NAME="263"></A>   */</FONT>
+<A NAME="264"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> union(<A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> image) {
+<A NAME="265"></A>
+<A NAME="266"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="267"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="268"></A>        <FONT ID="If">if</FONT> (image.get(x, y) != data[y][x]) {
+<A NAME="269"></A>          data[y][x] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="270"></A>
+<A NAME="271"></A>        } 
+<A NAME="272"></A>      }
+<A NAME="273"></A>    }
+<A NAME="274"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="275"></A>  } 
+<A NAME="276"></A>
+<A NAME="277"></A>
+<A NAME="278"></A>  <FONT ID="FormalComment">/**
+<A NAME="279"></A>   * Finds the intersection between this image and another BinaryImage
+<A NAME="280"></A>   * @return this
+<A NAME="281"></A>   */</FONT>
+<A NAME="282"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> intersection(<A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> image) {
+<A NAME="283"></A>
+<A NAME="284"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="285"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="286"></A>        <FONT ID="If">if</FONT> (image.get(x, y) != data[y][x]) {
+<A NAME="287"></A>          data[y][x] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="288"></A>
+<A NAME="289"></A>        } 
+<A NAME="290"></A>      }
+<A NAME="291"></A>    }
+<A NAME="292"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="293"></A>  } 
+<A NAME="294"></A>
+<A NAME="295"></A>
+<A NAME="296"></A>  <FONT ID="FormalComment">/**
+<A NAME="297"></A>   * Returns the complement of this image
+<A NAME="298"></A>   */</FONT>
+<A NAME="299"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> compliment(<A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> image) {
+<A NAME="300"></A>
+<A NAME="301"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="302"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="303"></A>        <FONT ID="If">if</FONT> (data[y][x] == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="304"></A>          data[y][x] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="305"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="306"></A>          data[y][x] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="307"></A>        }
+<A NAME="308"></A>      }
+<A NAME="309"></A>    }
+<A NAME="310"></A>
+<A NAME="311"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="312"></A>  } 
+<A NAME="313"></A>
+<A NAME="314"></A>
+<A NAME="315"></A>  <FONT ID="FormalComment">/**
+<A NAME="316"></A>   * Counts the number of "on" pixels
+<A NAME="317"></A>   */</FONT>
+<A NAME="318"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> count() {
+<A NAME="319"></A>
+<A NAME="320"></A>    <FONT ID="Int">int</FONT> count = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="321"></A>
+<A NAME="322"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="323"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="324"></A>        <FONT ID="If">if</FONT> (data[y][x] != <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="325"></A>          count++;
+<A NAME="326"></A>
+<A NAME="327"></A>        } 
+<A NAME="328"></A>      }
+<A NAME="329"></A>    }
+<A NAME="330"></A>    <FONT ID="Return">return</FONT> count;
+<A NAME="331"></A>  } 
+<A NAME="332"></A>
+<A NAME="333"></A>
+<A NAME="334"></A>  <FONT ID="FormalComment">/**
+<A NAME="335"></A>   * Returns the difference of this image and a BinaryImage
+<A NAME="336"></A>   * @return this
+<A NAME="337"></A>   */</FONT>
+<A NAME="338"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> difference(<A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> image) {
+<A NAME="339"></A>
+<A NAME="340"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="341"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="342"></A>        <FONT ID="If">if</FONT> ((data[y][x] == <FONT ID="IntegerLiteral">1</FONT>) &amp;&amp; (image.get(x, y) == <FONT ID="IntegerLiteral">0</FONT>)) {
+<A NAME="343"></A>          data[y][x] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="344"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ((data[y][x] == <FONT ID="IntegerLiteral">1</FONT>) &amp;&amp; (image.get(x, y) == <FONT ID="IntegerLiteral">0</FONT>)) {
+<A NAME="345"></A>          data[y][x] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="346"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="347"></A>          data[y][x] = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="348"></A>        }
+<A NAME="349"></A>      }
+<A NAME="350"></A>    }
+<A NAME="351"></A>
+<A NAME="352"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="353"></A>  } 
+<A NAME="354"></A>
+<A NAME="355"></A>
+<A NAME="356"></A>  <FONT ID="FormalComment">/**
+<A NAME="357"></A>   * Performs a shift on this image
+<A NAME="358"></A>   * @param horizonal for right shift horizonal is positive for left it is negative
+<A NAME="359"></A>   * @param vertical for down shift vertical is positive for up it is negative
+<A NAME="360"></A>   * @return this
+<A NAME="361"></A>   */</FONT>
+<A NAME="362"></A>  <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> shift(<FONT ID="Int">int</FONT> horizonal, <FONT ID="Int">int</FONT> vertical) {
+<A NAME="363"></A>
+<A NAME="364"></A>    <A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A> image2 = (<A HREF="../../jigl/image/BinaryImage.java.html">BinaryImage</A>) <FONT ID="This">this</FONT>.copy();
+<A NAME="365"></A>    <FONT ID="Byte">byte</FONT>        set1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="366"></A>
+<A NAME="367"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; Y; y++) {
+<A NAME="368"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; X; x++) {
+<A NAME="369"></A>        <FONT ID="If">if</FONT> (y - vertical &lt; <FONT ID="IntegerLiteral">0</FONT> || y - vertical &gt;= Y) {
+<A NAME="370"></A>          set1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="371"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (x - horizonal &lt; <FONT ID="IntegerLiteral">0</FONT> || x - horizonal &gt;= X) {
+<A NAME="372"></A>          set1 = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="373"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="374"></A>          set1 = image2.get(x - horizonal, y - vertical);
+<A NAME="375"></A>        }
+<A NAME="376"></A>        data[y][x] = set1;
+<A NAME="377"></A>      } 
+<A NAME="378"></A>    }
+<A NAME="379"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="380"></A>  } 
+<A NAME="381"></A>
+<A NAME="382"></A>}
+<A NAME="383"></A>
+<A NAME="384"></A>
+<A NAME="385"></A>
+<A NAME="386"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="387"></A>
+<A NAME="388"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">BinaryImage</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

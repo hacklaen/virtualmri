@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.dv.DicomViewer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DicomViewer</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.dv.index.html" target="packageFrame">virtual.dv</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.applet.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="27"></A>
+<A NAME="28"></A>
+<A NAME="29"></A><FONT ID="FormalComment">/**
+<A NAME="30"></A> * Die Klasse ist die Hauptklasse des DICOM-Viewers. Sie wird nur zum
+<A NAME="31"></A> * Starten benoetigt, indem sie eine Instanz von DicomViewer erzeugt und deren
+<A NAME="32"></A> * init-Methode aufruft. Dort wird dann eine Instanz von ViewerFrame erzeugt,
+<A NAME="33"></A> * wodurch das DICOM-Viewer-Fenster dargestellt wird.
+<A NAME="34"></A> * 
+<A NAME="35"></A> * @author   Christian Schalla
+<A NAME="36"></A> * @author   Andreas Truemper
+<A NAME="37"></A> * @version  2002.8.19
+<A NAME="38"></A> * 
+<A NAME="39"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="40"></A> * Thomas Hacklaender 2000.7.2:
+<A NAME="41"></A> * Spash-Screen zeigt die AboutBox
+<A NAME="42"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="43"></A> */</FONT>
+<A NAME="44"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DicomViewer <FONT ID="Extends">extends</FONT> Applet {
+<A NAME="45"></A>
+<A NAME="46"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>     packFrame = <FONT ID="False">false</FONT>;
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * Referenz auf die Fensterklasse.
+<A NAME="51"></A>   */</FONT>
+<A NAME="52"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A> frame;
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>  <FONT ID="FormalComment">/**
+<A NAME="56"></A>   * Standardkonstruktor. Es wird eine Instanz von ViewerFrame erzeugt.
+<A NAME="57"></A>   * Dadurch wird das Hauptfenster des DICOM-Viewers dargestellt.
+<A NAME="58"></A>   */</FONT>
+<A NAME="59"></A>  <FONT ID="Public">public</FONT> DicomViewer() {}
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>  <FONT ID="FormalComment">/**
+<A NAME="63"></A>   * In dieser Methode wird das Look&amp;Feel gesetzt. Es wird das Systemtypische
+<A NAME="64"></A>   * Look&amp;Feel verwendet. Ausserdem wird eine Instanz dieser Klasse instanziiert
+<A NAME="65"></A>   * und automatisch gestartet.
+<A NAME="66"></A>   * @param args Befehlszeilenargumente. Sie werden hier einfach ignoriert.
+<A NAME="67"></A>   */</FONT>
+<A NAME="68"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<A NAME="69"></A>    <A HREF="../../virtual/dv/DicomViewer.java.html">DicomViewer</A> dv = <FONT ID="New">new</FONT> <A HREF="../../virtual/dv/DicomViewer.java.html">DicomViewer</A>();
+<A NAME="70"></A>
+<A NAME="71"></A>    dv.runAppletApplication(<FONT ID="True">true</FONT>);
+<A NAME="72"></A>  } 
+<A NAME="73"></A>
+<A NAME="74"></A>
+<A NAME="75"></A>  <FONT ID="FormalComment">/**
+<A NAME="76"></A>   * Method declaration
+<A NAME="77"></A>   * 
+<A NAME="78"></A>   * 
+<A NAME="79"></A>   * @see
+<A NAME="80"></A>   */</FONT>
+<A NAME="81"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> init() {
+<A NAME="82"></A>    runAppletApplication(<FONT ID="False">false</FONT>);
+<A NAME="83"></A>  } 
+<A NAME="84"></A>
+<A NAME="85"></A>
+<A NAME="86"></A>  <FONT ID="FormalComment">/**
+<A NAME="87"></A>   * Method declaration
+<A NAME="88"></A>   * 
+<A NAME="89"></A>   * 
+<A NAME="90"></A>   * @param isApplication
+<A NAME="91"></A>   * 
+<A NAME="92"></A>   * @see
+<A NAME="93"></A>   */</FONT>
+<A NAME="94"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runAppletApplication(<FONT ID="Boolean">boolean</FONT> isApplication) {
+<A NAME="95"></A>    System.out.println(<FONT ID="StringLiteral">"Version 2.2"</FONT>);
+<A NAME="96"></A>    System.out.println(<FONT ID="StringLiteral">"(c) 2000-2002 T. Hacklaender, C. Schalla, A. Truemper"</FONT>);
+<A NAME="97"></A>    System.out.println(<FONT ID="StringLiteral">"Das Programm unterliegt der GPL Lizenz"</FONT>);
+<A NAME="98"></A>
+<A NAME="99"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="100"></A>      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+<A NAME="101"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="102"></A>
+<A NAME="103"></A>    Dimension scrRes = <FONT ID="This">this</FONT>.getToolkit().getScreenSize();
+<A NAME="104"></A>
+<A NAME="105"></A>    <A HREF="../../virtual/tools/AboutBox.java.html">AboutBox</A>  abox = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/AboutBox.java.html">AboutBox</A>();
+<A NAME="106"></A>
+<A NAME="107"></A>    <FONT ID="SingleLineComment">// th 2002.10.29
+<A NAME="108"></A></FONT>    <FONT ID="SingleLineComment">// abox.setImage(this.getClass().getResource("resources/dv.jpg"));
+<A NAME="109"></A></FONT>    abox.setFileURL(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/splash_de.htm"</FONT>));
+<A NAME="110"></A>    abox.show();
+<A NAME="111"></A>
+<A NAME="112"></A>    <FONT ID="SingleLineComment">// Instanz des Hauptfensters erzeugen
+<A NAME="113"></A></FONT>    frame = <FONT ID="New">new</FONT> <A HREF="../../virtual/dv/ViewerFrame.java.html">ViewerFrame</A>();
+<A NAME="114"></A>
+<A NAME="115"></A>    frame.setAppType(isApplication);
+<A NAME="116"></A>
+<A NAME="117"></A>    <FONT ID="SingleLineComment">// Frames validieren, die eine voreingestellte Groesse besitzen
+<A NAME="118"></A></FONT>    <FONT ID="SingleLineComment">// Frames packen, die nuetzliche bevorzugte Infos ueber die Groesse besitzen,
+<A NAME="119"></A></FONT>    <FONT ID="SingleLineComment">// z.B. aus ihrem Layout
+<A NAME="120"></A></FONT>    <FONT ID="If">if</FONT> (packFrame) {
+<A NAME="121"></A>      frame.pack();
+<A NAME="122"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="123"></A>      frame.validate();
+<A NAME="124"></A>    } 
+<A NAME="125"></A>    Dimension fs = frame.getSize();
+<A NAME="126"></A>
+<A NAME="127"></A>    frame.setLocation((scrRes.width - fs.width) / <FONT ID="IntegerLiteral">2</FONT>, (scrRes.height - fs.height) / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="128"></A>    frame.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="129"></A>
+<A NAME="130"></A>    abox.dispose();
+<A NAME="131"></A>  } 
+<A NAME="132"></A>
+<A NAME="133"></A>
+<A NAME="134"></A>}
+<A NAME="135"></A>
+<A NAME="136"></A>
+<A NAME="137"></A>
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>
+<A NAME="141"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="142"></A>
+<A NAME="143"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DicomViewer</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

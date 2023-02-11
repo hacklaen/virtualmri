@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.artefacts.ArtefactUI_Template (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ArtefactUI_Template</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Die Klasse dient als Vorlage zur Erzeugung neuer Oberflaechenklassen fuer
+<A NAME="32"></A> * Artefakt-Simulatoren.
+<A NAME="33"></A> * 
+<A NAME="34"></A> * @author   Christian Schalla
+<A NAME="35"></A> * @author   Andreas Truemper
+<A NAME="36"></A> * @version  1.0, 15. Oktober 1999
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ArtefactUI_Template <FONT ID="Extends">extends</FONT> <A HREF="../../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A> {
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>  <FONT ID="FormalComment">/**
+<A NAME="42"></A>   * Referenz auf die Berechnungsklasse des Artefakt-Simulators.
+<A NAME="43"></A>   * Der Klassenname "Artefact_Template" muss angepasst werden.
+<A NAME="44"></A>   */</FONT>
+<A NAME="45"></A>  <A HREF="../../../virtual/mrt/artefacts/Artefact_Template.java.html">Artefact_Template</A> myManipulator;
+<A NAME="46"></A>
+<A NAME="47"></A>  <FONT ID="SingleLineComment">// Hier folgt die Erzeugung der Oberflaechenelmente des Artefakt-Simulators, z.B:
+<A NAME="48"></A></FONT>  <FONT ID="SingleLineComment">// private tools.LabelTFLabelPanel pXSpeed    = new tools.LabelTFLabelPanel("x-Geschwindigkeit:","1","Pix/min");
+<A NAME="49"></A></FONT>
+<A NAME="50"></A>
+<A NAME="51"></A>  <FONT ID="FormalComment">/**
+<A NAME="52"></A>   * Stadardkonstrukor. Nicht loeschen oder aendern.
+<A NAME="53"></A>   */</FONT>
+<A NAME="54"></A>  <FONT ID="Public">public</FONT> ArtefactUI_Template() {}   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="55"></A></FONT>
+<A NAME="56"></A>
+<A NAME="57"></A>  <FONT ID="FormalComment">/**
+<A NAME="58"></A>   * Die Methode richtet die Oberflächenelemente ein und fuegt sie dem
+<A NAME="59"></A>   * Darstellungsbereich (myPanel) hinzu. Hier muessen entsprechende Ergaenzungen
+<A NAME="60"></A>   * vogenommen werden.
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> jbInit() {
+<A NAME="63"></A>
+<A NAME="64"></A>    <FONT ID="SingleLineComment">// GUI-Elemente der Artefakt-Karteikarte einrichten, z.B.:
+<A NAME="65"></A></FONT>    <FONT ID="SingleLineComment">// pXSpeed.setBounds(5, 0, 255, 20);
+<A NAME="66"></A></FONT>    <FONT ID="SingleLineComment">// myPanel.add(pXSpeed);
+<A NAME="67"></A></FONT>
+<A NAME="68"></A>  }                                 <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="69"></A></FONT> 
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="FormalComment">/**
+<A NAME="72"></A>   * Die Methode wird beim Umschalten auf einen anderen Artefakt-Simulator
+<A NAME="73"></A>   * aufgerufen. An dieser Stelle koennen die Einstellungen der Oberflaechenelmente
+<A NAME="74"></A>   * gespeichert werden.
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setValues() {}        <FONT ID="SingleLineComment">// Methode setValues
+<A NAME="77"></A></FONT>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Die Methode wird aufgerufen, wenn dieser Artefakt-Simulator aus der Auswahlbox
+<A NAME="81"></A>   * ausgewählt wird. Zuvor gespeicherte Einstellungen des Simulators werden dann
+<A NAME="82"></A>   * wiederhergestellt.
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getValues() {}        <FONT ID="SingleLineComment">// Methode getValue
+<A NAME="85"></A></FONT>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Die Methode erzeugt eine neue Instanz der Berechnungsklasse dieses
+<A NAME="89"></A>   * Artefakt-Simulators und liefert diese an die aufrufende Pulssequenz zurück.
+<A NAME="90"></A>   * Nach der Erzeugung der Berechnungsklasse werden dieser die aktuell
+<A NAME="91"></A>   * eingestellten Parameter mitgeteilt. Die Methode muss vorhanden sein und
+<A NAME="92"></A>   * entsprechend angepasst werden.
+<A NAME="93"></A>   */</FONT>
+<A NAME="94"></A>  <FONT ID="Public">public</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A> createManipulator() {
+<A NAME="95"></A>    myManipulator = <FONT ID="New">new</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact_Template.java.html">Artefact_Template</A>();
+<A NAME="96"></A>
+<A NAME="97"></A>    myManipulator.setProgressBar(mainFrame.getProgressBar());
+<A NAME="98"></A>
+<A NAME="99"></A>    <FONT ID="SingleLineComment">// myManipulator.setXSpeed(pXSpeed.getValue());
+<A NAME="100"></A></FONT>
+<A NAME="101"></A>    <FONT ID="Return">return</FONT> myManipulator;
+<A NAME="102"></A>  }   <FONT ID="SingleLineComment">// Methode createManipulator()
+<A NAME="103"></A></FONT> 
+<A NAME="104"></A>}     <FONT ID="SingleLineComment">// Klasse MotionUI
+<A NAME="105"></A></FONT>
+<A NAME="106"></A>
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>
+<A NAME="110"></A>
+<A NAME="111"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="112"></A>
+<A NAME="113"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ArtefactUI_Template</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

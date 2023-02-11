@@ -1,0 +1,914 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.sequences.PulsesequenceUI (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PulsesequenceUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> java.text.DecimalFormat;
+<A NAME="27"></A><FONT ID="Import">import</FONT> java.util.Properties;
+<A NAME="28"></A>
+<A NAME="29"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.index.html" target="packageFrame">virtual.mrt.*</A>;
+<A NAME="30"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts.*</A>;
+<A NAME="31"></A><FONT ID="Import">import</FONT> <A HREF="../../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="32"></A>
+<A NAME="33"></A>
+<A NAME="34"></A><FONT ID="FormalComment">/**
+<A NAME="35"></A> * Diese Klasse ist eine abstrakte Oberklasse fuer alle Pulssequenz-Oberflaechenklassen.
+<A NAME="36"></A> * Die Klasse stellt einige Standardmethoden zur Verfuegung, die jede Unterklasse
+<A NAME="37"></A> * ueberschreiben muss. Das stellt sicher, das Erweiterungen dieser Klasse auf
+<A NAME="38"></A> * jeden Fall im  Hauptfenster dargestellt werden koennen.
+<A NAME="39"></A> * 
+<A NAME="40"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="41"></A> * tha 2000.05.14: tbSettings, tbPhOS und tbFreqOS von JToggleButton in
+<A NAME="42"></A> * JCheckBox geaendert &lt;br&gt;
+<A NAME="43"></A> * tha 2000.05.14: Neue Listener Methoden fuer tbPhOS, tbFreqOS und pRect
+<A NAME="44"></A> * implementiert. &lt;br&gt;
+<A NAME="45"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="46"></A> * Defaultwert von tbPhOS und tbFreqOS ist false. &lt;br&gt;
+<A NAME="47"></A> * Thomas Hacklaender 2000.05.14:
+<A NAME="48"></A> * getSNRatio neu definiert. &lt;br&gt;
+<A NAME="49"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="50"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="51"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="52"></A> * @author   Christian Schalla
+<A NAME="53"></A> * @author   Andreas Truemper
+<A NAME="54"></A> * @version  1.2, 2002.10.13
+<A NAME="55"></A> */</FONT>
+<A NAME="56"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> PulsesequenceUI {
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>  <FONT ID="FormalComment">/**
+<A NAME="60"></A>   * Einheit fuer Minutenangaben.
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Static">static</FONT> <FONT ID="Private">private</FONT> String   MINUTE_UNIT = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.minute.unit"</FONT>);
+<A NAME="63"></A>
+<A NAME="64"></A>
+<A NAME="65"></A>  <FONT ID="FormalComment">/**
+<A NAME="66"></A>   * Einheit fuer Sekundenangaben.
+<A NAME="67"></A>   */</FONT>
+<A NAME="68"></A>  <FONT ID="Static">static</FONT> <FONT ID="Private">private</FONT> String   SECOND_UNIT = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.second.unit"</FONT>);
+<A NAME="69"></A>
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="FormalComment">/**
+<A NAME="72"></A>   * Einheit fuer Pixelgroesse.
+<A NAME="73"></A>   */</FONT>
+<A NAME="74"></A>  <FONT ID="Static">static</FONT> <FONT ID="Private">private</FONT> String   PIXEL_UNIT = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.pixelsize.unit"</FONT>);
+<A NAME="75"></A>
+<A NAME="76"></A>
+<A NAME="77"></A>  <FONT ID="FormalComment">/**
+<A NAME="78"></A>   * Knopf, um die Berechnung des Intensitsetsbildes zu Starten.
+<A NAME="79"></A>   */</FONT>
+<A NAME="80"></A>  JButton                 pbStart = <FONT ID="New">new</FONT> JButton();
+<A NAME="81"></A>
+<A NAME="82"></A>
+<A NAME="83"></A>  <FONT ID="FormalComment">/**
+<A NAME="84"></A>   * Knopf, um die Berechnung des Intensitaetsbildes zu Stoppen.
+<A NAME="85"></A>   */</FONT>
+<A NAME="86"></A>  JButton                 pbStop = <FONT ID="New">new</FONT> JButton();
+<A NAME="87"></A>
+<A NAME="88"></A>
+<A NAME="89"></A>  <FONT ID="SingleLineComment">// tha 2000.05.14: JToggleButton in JCheckBox geaendert
+<A NAME="90"></A></FONT>
+<A NAME="91"></A>
+<A NAME="92"></A>  <FONT ID="FormalComment">/**
+<A NAME="93"></A>   * Knopf zum Einblenden der Parametereinstellungen.
+<A NAME="94"></A>   */</FONT>
+<A NAME="95"></A>  JCheckBox               tbSettings = <FONT ID="New">new</FONT> JCheckBox();
+<A NAME="96"></A>
+<A NAME="97"></A>
+<A NAME="98"></A>  <FONT ID="FormalComment">/**
+<A NAME="99"></A>   * Beschriftung zur Auswahl der Spule.
+<A NAME="100"></A>   */</FONT>
+<A NAME="101"></A>  JLabel                  lCoil = <FONT ID="New">new</FONT> JLabel();
+<A NAME="102"></A>
+<A NAME="103"></A>
+<A NAME="104"></A>  <FONT ID="FormalComment">/**
+<A NAME="105"></A>   * Auswahlbox zur Auswahl der Spule.
+<A NAME="106"></A>   */</FONT>
+<A NAME="107"></A>  JComboBox               cbCoil = <FONT ID="New">new</FONT> JComboBox();
+<A NAME="108"></A>
+<A NAME="109"></A>
+<A NAME="110"></A>  <FONT ID="FormalComment">/**
+<A NAME="111"></A>   * Elemente zur Einstellung der Bildmatrixgroesse.
+<A NAME="112"></A>   */</FONT>
+<A NAME="113"></A>  <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>       pMatrix = <FONT ID="New">new</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.matrix.title"</FONT>), <FONT ID="StringLiteral">"256"</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.matrix.unit"</FONT>));
+<A NAME="114"></A>
+<A NAME="115"></A>
+<A NAME="116"></A>  <FONT ID="FormalComment">/**
+<A NAME="117"></A>   * Elemente zur Einstellung des Field of View (FOV).
+<A NAME="118"></A>   */</FONT>
+<A NAME="119"></A>  <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>       pFOV = <FONT ID="New">new</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.fov.title"</FONT>), <FONT ID="StringLiteral">"256"</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.fov.unit"</FONT>));
+<A NAME="120"></A>
+<A NAME="121"></A>
+<A NAME="122"></A>  <FONT ID="FormalComment">/**
+<A NAME="123"></A>   * Elemente zur Einstellung der Bildproportionen.
+<A NAME="124"></A>   */</FONT>
+<A NAME="125"></A>  <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>       pRect = <FONT ID="New">new</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.rectfov.title"</FONT>), <FONT ID="StringLiteral">"8"</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.rectfov.unit"</FONT>));
+<A NAME="126"></A>
+<A NAME="127"></A>
+<A NAME="128"></A>  <FONT ID="FormalComment">/**
+<A NAME="129"></A>   * Elemente zur Einstellung der Schichtdicke.
+<A NAME="130"></A>   */</FONT>
+<A NAME="131"></A>  <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>       pThickness = <FONT ID="New">new</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.thickness.title"</FONT>), <FONT ID="StringLiteral">"6"</FONT>, java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.thickness.unit"</FONT>));
+<A NAME="132"></A>
+<A NAME="133"></A>
+<A NAME="134"></A>  <FONT ID="FormalComment">/**
+<A NAME="135"></A>   * Elemente zur Einstellung der Anzahl der Anregungen.
+<A NAME="136"></A>   */</FONT>
+<A NAME="137"></A>  <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>       pNEX = <FONT ID="New">new</FONT> <A HREF="file:///D|/EigeneDateien/Java Projekte/vmri_3.2.14/doc/api/virtual/tools/LabelTFLabelPanel.html">LabelTFLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.nex.title"</FONT>), <FONT ID="StringLiteral">"1"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>  <FONT ID="FormalComment">/**
+<A NAME="141"></A>   * Beschriftung des Knopfes zum Ein- und Ausschalten des Phasenoversamplings.
+<A NAME="142"></A>   */</FONT>
+<A NAME="143"></A>  JLabel                  lPhOS = <FONT ID="New">new</FONT> JLabel();
+<A NAME="144"></A>
+<A NAME="145"></A>
+<A NAME="146"></A>  <FONT ID="FormalComment">/**
+<A NAME="147"></A>   * Beschriftung des Knopfes zum Ein- und Ausschalten des Frequenzoversamplings.
+<A NAME="148"></A>   */</FONT>
+<A NAME="149"></A>  JLabel                  lFreqOS = <FONT ID="New">new</FONT> JLabel();
+<A NAME="150"></A>
+<A NAME="151"></A>
+<A NAME="152"></A>  <FONT ID="SingleLineComment">// tha 2000.05.14: JToggleButton in JCheckBox geaendert
+<A NAME="153"></A></FONT>
+<A NAME="154"></A>
+<A NAME="155"></A>  <FONT ID="FormalComment">/**
+<A NAME="156"></A>   * Knopf zur Ein- und Ausschalten des Phasenoversamplings.
+<A NAME="157"></A>   */</FONT>
+<A NAME="158"></A>  JCheckBox               tbPhOS = <FONT ID="New">new</FONT> JCheckBox();
+<A NAME="159"></A>
+<A NAME="160"></A>
+<A NAME="161"></A>  <FONT ID="SingleLineComment">// tha 2000.05.14: JToggleButton in JCheckBox geaendert
+<A NAME="162"></A></FONT>
+<A NAME="163"></A>
+<A NAME="164"></A>  <FONT ID="FormalComment">/**
+<A NAME="165"></A>   * Knopf zur Ein- und Ausschalten des Frequenzoversamplings.
+<A NAME="166"></A>   */</FONT>
+<A NAME="167"></A>  JCheckBox               tbFreqOS = <FONT ID="New">new</FONT> JCheckBox();
+<A NAME="168"></A>
+<A NAME="169"></A>
+<A NAME="170"></A>  <FONT ID="FormalComment">/**
+<A NAME="171"></A>   * Elemente zur Anzeige der Gesamtberechnungzeit.
+<A NAME="172"></A>   */</FONT>
+<A NAME="173"></A>
+<A NAME="174"></A>  <FONT ID="SingleLineComment">// ThreeLabelPanel    pTotalTime = new ThreeLabelPanel(java.util.ResourceBundle.getBundle("virtual/mrt/sequences/resources/sequences_loc").getString("pulssequenceui.label.measurementtime.title"), " 0 " + MINUTE_UNIT + " 0 " + SECOND_UNIT, "");
+<A NAME="175"></A></FONT>  <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>         pTotalTime = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.measurementtime.title"</FONT>), <FONT ID="StringLiteral">"--"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="176"></A>
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Elemente zur Anzeige der Restberechnungzeit.
+<A NAME="180"></A>   */</FONT>
+<A NAME="181"></A>
+<A NAME="182"></A>  <FONT ID="SingleLineComment">// ThreeLabelPanel    pRemainingTime = new ThreeLabelPanel(java.util.ResourceBundle.getBundle("virtual/mrt/sequences/resources/sequences_loc").getString("pulssequenceui.label.resttime.title"), " 0 " + MINUTE_UNIT + " 0 " + SECOND_UNIT, "");
+<A NAME="183"></A></FONT>  <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>         pRemainingTime = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.resttime.title"</FONT>), <FONT ID="StringLiteral">"--"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="184"></A>
+<A NAME="185"></A>
+<A NAME="186"></A>  <FONT ID="FormalComment">/**
+<A NAME="187"></A>   * Elemente zur Anzeige der Pixelgroesse.
+<A NAME="188"></A>   */</FONT>
+<A NAME="189"></A>
+<A NAME="190"></A>  <FONT ID="SingleLineComment">// ThreeLabelPanel    pPixelSize = new ThreeLabelPanel(java.util.ResourceBundle.getBundle("virtual/mrt/sequences/resources/sequences_loc").getString("pulssequenceui.label.pixelsize.title"), "--", java.util.ResourceBundle.getBundle("virtual/mrt/sequences/resources/sequences_loc").getString("pulssequenceui.label.pixelsize.unit"));
+<A NAME="191"></A></FONT>  <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>         pPixelSize = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.pixelsize.title"</FONT>), <FONT ID="StringLiteral">"--"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="192"></A>
+<A NAME="193"></A>
+<A NAME="194"></A>  <FONT ID="FormalComment">/**
+<A NAME="195"></A>   * Elemente zur Anzeige des Signal-zu-Rausch-Verhaeltnisses.
+<A NAME="196"></A>   */</FONT>
+<A NAME="197"></A>
+<A NAME="198"></A>  <FONT ID="SingleLineComment">// ThreeLabelPanel    pSNRatio = new ThreeLabelPanel(java.util.ResourceBundle.getBundle("virtual/mrt/sequences/resources/sequences_loc").getString("pulssequenceui.label.sn.title"), "--", "");
+<A NAME="199"></A></FONT>  <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>         pSNRatio = <FONT ID="New">new</FONT> <A HREF="../../../virtual/tools/ThreeLabelPanel.java.html">ThreeLabelPanel</A>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.sn.title"</FONT>), <FONT ID="StringLiteral">"--"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="200"></A>
+<A NAME="201"></A>
+<A NAME="202"></A>  <FONT ID="FormalComment">/**
+<A NAME="203"></A>   * Referenz auf den Bereich, in dem die Oberflaechenelemente der Pulssequenz
+<A NAME="204"></A>   * dargestellt werden koennen.
+<A NAME="205"></A>   */</FONT>
+<A NAME="206"></A>  <FONT ID="Protected">protected</FONT> JPanel        myPanel;
+<A NAME="207"></A>
+<A NAME="208"></A>
+<A NAME="209"></A>  <FONT ID="FormalComment">/**
+<A NAME="210"></A>   * Referenz auf den Bereich, in dem die Informationselemente der Pulssequenz
+<A NAME="211"></A>   * dargestellt werden koennen.
+<A NAME="212"></A>   */</FONT>
+<A NAME="213"></A>  <FONT ID="Protected">protected</FONT> JPanel        myInfoPanel;
+<A NAME="214"></A>
+<A NAME="215"></A>
+<A NAME="216"></A>  <FONT ID="FormalComment">/**
+<A NAME="217"></A>   * Referenz auf einen Artefakt-Simulator.
+<A NAME="218"></A>   */</FONT>
+<A NAME="219"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A>      artefact;
+<A NAME="220"></A>
+<A NAME="221"></A>
+<A NAME="222"></A>  <FONT ID="FormalComment">/**
+<A NAME="223"></A>   * Referenz auf das Hauptfenster.
+<A NAME="224"></A>   */</FONT>
+<A NAME="225"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A>     mainFrame;
+<A NAME="226"></A>
+<A NAME="227"></A>
+<A NAME="228"></A>  <FONT ID="FormalComment">/**
+<A NAME="229"></A>   * Eigenschaftsfeld für Methodenaufrufe für k-Raummanipulationen.
+<A NAME="230"></A>   * Beispiel: Bewegungsartefakte werden durch die Klasse "Motion" implementiert,
+<A NAME="231"></A>   * abhängig von der Pulssequenz werden jedoch verschieden Methoden aufgerufen.
+<A NAME="232"></A>   * Über das Hauptfenster wird der Klassenname des gewählten Manipulators bestimmt,
+<A NAME="233"></A>   * dann wird aus dieser Tabelle die aufzurufende Methode ausgelesen.
+<A NAME="234"></A>   * Ein Eintrag wäre dann "Motion_1=Motion_Std". Damit wird in Motion die Methode
+<A NAME="235"></A>   * Motion_Std aufgerufen.
+<A NAME="236"></A>   */</FONT>
+<A NAME="237"></A>  <FONT ID="Protected">protected</FONT> Properties    kSpaceManipulator = <FONT ID="New">new</FONT> Properties();
+<A NAME="238"></A>
+<A NAME="239"></A>
+<A NAME="240"></A>  <FONT ID="FormalComment">/**
+<A NAME="241"></A>   * Die Variable merkt sich, ob die Listener der Bedienelemente schon initialisiert
+<A NAME="242"></A>   * wurden. Das verhindert eine doppelte Initialisierung und somit ein doppeltes
+<A NAME="243"></A>   * Ausfuehren der Ereignisroutinen, wenn die entsprechenden Ereignisse eintreten.
+<A NAME="244"></A>   */</FONT>
+<A NAME="245"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>         isInitialized = <FONT ID="False">false</FONT>;
+<A NAME="246"></A>
+<A NAME="247"></A>
+<A NAME="248"></A>  <FONT ID="FormalComment">/**
+<A NAME="249"></A>   * Referenz auf die Pulssequenz-Berechnungsklasse.
+<A NAME="250"></A>   */</FONT>
+<A NAME="251"></A>  <FONT ID="Protected">protected</FONT> <A HREF="../../../virtual/mrt/sequences/Pulsesequence.java.html">Pulsesequence</A> sequence;
+<A NAME="252"></A>
+<A NAME="253"></A>
+<A NAME="254"></A>  <FONT ID="FormalComment">/**
+<A NAME="255"></A>   * Standardkonstruktor.
+<A NAME="256"></A>   */</FONT>
+<A NAME="257"></A>  <FONT ID="Public">public</FONT> PulsesequenceUI() {}   <FONT ID="SingleLineComment">// Standardkonstruktor
+<A NAME="258"></A></FONT>
+<A NAME="259"></A>
+<A NAME="260"></A>  <FONT ID="FormalComment">/**
+<A NAME="261"></A>   * Die Methode setzt die Referenz auf den Bereich, in dem die Oberflaechenelemente
+<A NAME="262"></A>   * der Pulssequenz dargestellt werden koennen.
+<A NAME="263"></A>   * @param sequencePanel Referenz auf den Bereich zur Darstellung der Einstellungselemente.
+<A NAME="264"></A>   */</FONT>
+<A NAME="265"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSettingPanel(JPanel sequencePanel) {
+<A NAME="266"></A>    myPanel = sequencePanel;
+<A NAME="267"></A>    myPanel.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="268"></A>  }   <FONT ID="SingleLineComment">// Methode set SettingPanel
+<A NAME="269"></A></FONT> 
+<A NAME="270"></A>
+<A NAME="271"></A>  <FONT ID="FormalComment">/**
+<A NAME="272"></A>   * Die Methode setzt die Referenz auf den Bereich, in dem die Informations-
+<A NAME="273"></A>   * elemente der Pulssequenz dargestellt werden koennen.
+<A NAME="274"></A>   * @param sequencePanel Referenz auf den Bereich zur Darstellung der Informationselemente.
+<A NAME="275"></A>   */</FONT>
+<A NAME="276"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setInfoPanel(JPanel sequenceInfoPanel) {
+<A NAME="277"></A>    myInfoPanel = sequenceInfoPanel;
+<A NAME="278"></A>  }   <FONT ID="SingleLineComment">// Methode setInfoPanel
+<A NAME="279"></A></FONT> 
+<A NAME="280"></A>
+<A NAME="281"></A>  <FONT ID="FormalComment">/**
+<A NAME="282"></A>   * Die Methode setzt die Referenz auf das Hauptfenster.
+<A NAME="283"></A>   * @param vmrt Die Referenz auf das Hauptfenster.
+<A NAME="284"></A>   */</FONT>
+<A NAME="285"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setMainFrame(<A HREF="../../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> vmrt) {
+<A NAME="286"></A>    mainFrame = vmrt;
+<A NAME="287"></A>  }   <FONT ID="SingleLineComment">// Methode setMainFrame
+<A NAME="288"></A></FONT> 
+<A NAME="289"></A>
+<A NAME="290"></A>  <FONT ID="FormalComment">/**
+<A NAME="291"></A>   * Die Methode setzt die Einstellungen der Bedienelemente der Sequenz auf die in
+<A NAME="292"></A>   * den entsprecheden Klassenvariablen gespeicherten Werte. Die Methode wird beim
+<A NAME="293"></A>   * Umschalten zwischen den verschiedenen Pulssequenzen verwendet, um zuvor
+<A NAME="294"></A>   * gemachte Einstellungen wiederherzustellen. In dieser Oberklasse
+<A NAME="295"></A>   * weist die Methode allerdings keine Funktionalitaet auf.
+<A NAME="296"></A>   */</FONT>
+<A NAME="297"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Void">void</FONT> getValues();
+<A NAME="298"></A>
+<A NAME="299"></A>
+<A NAME="300"></A>  <FONT ID="FormalComment">/**
+<A NAME="301"></A>   * Die Methode liest die aktuellen Sequenzparameterwerte aus den
+<A NAME="302"></A>   * Bedienelementen aus und speichert sie in den entsprechenden Instanzvariablen.
+<A NAME="303"></A>   * Die Methode wird beim Umschalten zwischen den verschiedenen Pulssequenzen
+<A NAME="304"></A>   * verwendet, um die Einstellungen der Bedienelemente zu sichern und sie bei
+<A NAME="305"></A>   * erneuter Auswahl der Pulssequenz ggf. wieder herstellen zu koennen.
+<A NAME="306"></A>   * In dieser Oberklasse weist die Methode allerdings keine Funktionalitaet auf.
+<A NAME="307"></A>   */</FONT>
+<A NAME="308"></A>  <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Void">void</FONT> setValues();
+<A NAME="309"></A>
+<A NAME="310"></A>
+<A NAME="311"></A>  <FONT ID="FormalComment">/**
+<A NAME="312"></A>   * Die Methode fuegt einige Bedien- und Informationselemente in die Einstellungs- und
+<A NAME="313"></A>   * Informationsbereiche, die fuer alle Pulssequenzen sinnvoll sind.
+<A NAME="314"></A>   */</FONT>
+<A NAME="315"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fillPanel() {
+<A NAME="316"></A>
+<A NAME="317"></A>    <FONT ID="SingleLineComment">// Elemente zur Spulenauswahl einrichten
+<A NAME="318"></A></FONT>    lCoil.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.coil.title"</FONT>));
+<A NAME="319"></A>    lCoil.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="320"></A>    myPanel.add(lCoil);
+<A NAME="321"></A>    cbCoil.setBounds(<FONT ID="IntegerLiteral">390</FONT>, <FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">115</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="322"></A>    <FONT ID="If">if</FONT> (isInitialized == <FONT ID="False">false</FONT>) {
+<A NAME="323"></A>      cbCoil.addItem(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.coil.organ"</FONT>));
+<A NAME="324"></A>      cbCoil.addItem(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.coil.body"</FONT>));
+<A NAME="325"></A>    } 
+<A NAME="326"></A>    myPanel.add(cbCoil);
+<A NAME="327"></A>
+<A NAME="328"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung der Matrixgroesse einrichten
+<A NAME="329"></A></FONT>    pMatrix.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">31</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="330"></A>    pMatrix.setRange(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="331"></A>    pMatrix.getTextFieldReference().setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="332"></A>    myPanel.add(pMatrix);
+<A NAME="333"></A>
+<A NAME="334"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung des FOV einrichten
+<A NAME="335"></A></FONT>    pFOV.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="336"></A>    pFOV.setRange(<FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="337"></A>    myPanel.add(pFOV);
+<A NAME="338"></A>
+<A NAME="339"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung der Bildproportionen einrichten
+<A NAME="340"></A></FONT>    pRect.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">79</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="341"></A>    pRect.setRange(<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">8</FONT>);
+<A NAME="342"></A>    myPanel.add(pRect);
+<A NAME="343"></A>
+<A NAME="344"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung der Schichtdicke einrichten
+<A NAME="345"></A></FONT>    pThickness.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">103</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="346"></A>    pThickness.setRange(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="347"></A>    myPanel.add(pThickness);
+<A NAME="348"></A>
+<A NAME="349"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung der Anzahl der Anregungen einrichten
+<A NAME="350"></A></FONT>    pNEX.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">127</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="351"></A>    pNEX.setRange(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">16</FONT>);
+<A NAME="352"></A>    myPanel.add(pNEX);
+<A NAME="353"></A>
+<A NAME="354"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung des Phasenoversamplings einrichten
+<A NAME="355"></A></FONT>    lPhOS.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">151</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="356"></A>    lPhOS.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.oversampling.phase.title"</FONT>));
+<A NAME="357"></A>    myPanel.add(lPhOS);
+<A NAME="358"></A>
+<A NAME="359"></A>    tbPhOS.setBounds(<FONT ID="IntegerLiteral">390</FONT>, <FONT ID="IntegerLiteral">151</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="360"></A>    tbPhOS.setSelected(<FONT ID="False">false</FONT>);
+<A NAME="361"></A>    myPanel.add(tbPhOS);
+<A NAME="362"></A>
+<A NAME="363"></A>    <FONT ID="SingleLineComment">// Elemente zur Einstellung des Frequenzoversamplings einrichten
+<A NAME="364"></A></FONT>    lFreqOS.setBounds(<FONT ID="IntegerLiteral">270</FONT>, <FONT ID="IntegerLiteral">175</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="365"></A>    lFreqOS.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.label.oversampling.frequency.title"</FONT>));
+<A NAME="366"></A>    myPanel.add(lFreqOS);
+<A NAME="367"></A>
+<A NAME="368"></A>    tbFreqOS.setBounds(<FONT ID="IntegerLiteral">390</FONT>, <FONT ID="IntegerLiteral">175</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="369"></A>    tbFreqOS.setSelected(<FONT ID="False">false</FONT>);
+<A NAME="370"></A>    myPanel.add(tbFreqOS);
+<A NAME="371"></A>
+<A NAME="372"></A>    <FONT ID="SingleLineComment">// Checkbox fuer die Settings der Pulssequenz
+<A NAME="373"></A></FONT>    tbSettings.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.checkbox.parametert.title"</FONT>));
+<A NAME="374"></A>    tbSettings.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>));
+<A NAME="375"></A>    <FONT ID="If">if</FONT> (myPanel.isShowing()) {
+<A NAME="376"></A>      tbSettings.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="377"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="378"></A>      tbSettings.setSelected(<FONT ID="False">false</FONT>);
+<A NAME="379"></A>    } 
+<A NAME="380"></A>
+<A NAME="381"></A>    <FONT ID="SingleLineComment">// Elemente zur Anzeige der Gesamtzeit einrichten
+<A NAME="382"></A></FONT>    pTotalTime.setBounds(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">55</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="383"></A>    myInfoPanel.add(pTotalTime);
+<A NAME="384"></A>
+<A NAME="385"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="386"></A></FONT>    pTotalTime.setValue(<FONT ID="StringLiteral">"?? "</FONT> + MINUTE_UNIT + <FONT ID="StringLiteral">" ?? "</FONT> + SECOND_UNIT);
+<A NAME="387"></A>
+<A NAME="388"></A>    <FONT ID="SingleLineComment">// Elemente zur Anzeige der Restzeit einrichten
+<A NAME="389"></A></FONT>    pRemainingTime.setBounds(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">79</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="390"></A>    myInfoPanel.add(pRemainingTime);
+<A NAME="391"></A>
+<A NAME="392"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="393"></A></FONT>    displayRemainingTime(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="394"></A>
+<A NAME="395"></A>    <FONT ID="SingleLineComment">// Elemente zur Anzeige der Pixelgroesse einrichten
+<A NAME="396"></A></FONT>    pPixelSize.setBounds(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">103</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="397"></A>    myInfoPanel.add(pPixelSize);
+<A NAME="398"></A>
+<A NAME="399"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="400"></A></FONT>    displayPixelSize();
+<A NAME="401"></A>
+<A NAME="402"></A>    <FONT ID="SingleLineComment">// Elemente zur Anzeige des SNR einrichten
+<A NAME="403"></A></FONT>    pSNRatio.setBounds(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">127</FONT>, <FONT ID="IntegerLiteral">220</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="404"></A>    myInfoPanel.add(pSNRatio);
+<A NAME="405"></A>
+<A NAME="406"></A>    <FONT ID="SingleLineComment">// Start- und Stopknopf einrichten
+<A NAME="407"></A></FONT>    pbStart.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.btn.start.title"</FONT>));
+<A NAME="408"></A>    pbStart.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">185</FONT>, <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="409"></A>    pbStop.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.btn.stop.title"</FONT>));
+<A NAME="410"></A>    pbStop.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">125</FONT>, <FONT ID="IntegerLiteral">185</FONT>, <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="411"></A>    pbStop.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="412"></A>
+<A NAME="413"></A>    <FONT ID="SingleLineComment">// ActionListener nur initialisieren, wenn noetig
+<A NAME="414"></A></FONT>    <FONT ID="SingleLineComment">// Sonst werden u.a. bei mehrfacher Selektion der Sequenz auch
+<A NAME="415"></A></FONT>    <FONT ID="SingleLineComment">// mehrere ActionListener fuer die Buttons eingefuegt.
+<A NAME="416"></A></FONT>    <FONT ID="If">if</FONT> (isInitialized == <FONT ID="False">false</FONT>) {
+<A NAME="417"></A>
+<A NAME="418"></A>      pbStart.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="419"></A>
+<A NAME="420"></A>
+<A NAME="421"></A>        <FONT ID="FormalComment">/**
+<A NAME="422"></A>         * Method declaration
+<A NAME="423"></A>         * 
+<A NAME="424"></A>         * 
+<A NAME="425"></A>         * @param e
+<A NAME="426"></A>         * 
+<A NAME="427"></A>         * @see
+<A NAME="428"></A>         */</FONT>
+<A NAME="429"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="430"></A>          pbStart_actionPerformed(e);
+<A NAME="431"></A>        } 
+<A NAME="432"></A>
+<A NAME="433"></A>      });
+<A NAME="434"></A>
+<A NAME="435"></A>      pbStop.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="436"></A>
+<A NAME="437"></A>
+<A NAME="438"></A>        <FONT ID="FormalComment">/**
+<A NAME="439"></A>         * Method declaration
+<A NAME="440"></A>         * 
+<A NAME="441"></A>         * 
+<A NAME="442"></A>         * @param e
+<A NAME="443"></A>         * 
+<A NAME="444"></A>         * @see
+<A NAME="445"></A>         */</FONT>
+<A NAME="446"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="447"></A>          pbStop_actionPerformed(e);
+<A NAME="448"></A>        } 
+<A NAME="449"></A>
+<A NAME="450"></A>      });
+<A NAME="451"></A>
+<A NAME="452"></A>      tbSettings.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="453"></A>
+<A NAME="454"></A>
+<A NAME="455"></A>        <FONT ID="FormalComment">/**
+<A NAME="456"></A>         * Method declaration
+<A NAME="457"></A>         * 
+<A NAME="458"></A>         * 
+<A NAME="459"></A>         * @param e
+<A NAME="460"></A>         * 
+<A NAME="461"></A>         * @see
+<A NAME="462"></A>         */</FONT>
+<A NAME="463"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="464"></A>          tbSettings_actionPerformed(e);
+<A NAME="465"></A>        } 
+<A NAME="466"></A>
+<A NAME="467"></A>      });
+<A NAME="468"></A>
+<A NAME="469"></A>      tbPhOS.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="470"></A>
+<A NAME="471"></A>
+<A NAME="472"></A>        <FONT ID="FormalComment">/**
+<A NAME="473"></A>         * Method declaration
+<A NAME="474"></A>         * 
+<A NAME="475"></A>         * 
+<A NAME="476"></A>         * @param e
+<A NAME="477"></A>         * 
+<A NAME="478"></A>         * @see
+<A NAME="479"></A>         */</FONT>
+<A NAME="480"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="481"></A>          updateTotalTime();
+<A NAME="482"></A>          displaySNRatio();
+<A NAME="483"></A>        } 
+<A NAME="484"></A>
+<A NAME="485"></A>      });
+<A NAME="486"></A>
+<A NAME="487"></A>      tbFreqOS.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="488"></A>
+<A NAME="489"></A>
+<A NAME="490"></A>        <FONT ID="FormalComment">/**
+<A NAME="491"></A>         * Method declaration
+<A NAME="492"></A>         * 
+<A NAME="493"></A>         * 
+<A NAME="494"></A>         * @param e
+<A NAME="495"></A>         * 
+<A NAME="496"></A>         * @see
+<A NAME="497"></A>         */</FONT>
+<A NAME="498"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="499"></A>          displaySNRatio();
+<A NAME="500"></A>        } 
+<A NAME="501"></A>
+<A NAME="502"></A>      });
+<A NAME="503"></A>
+<A NAME="504"></A>      pFOV.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="505"></A>
+<A NAME="506"></A>
+<A NAME="507"></A>        <FONT ID="FormalComment">/**
+<A NAME="508"></A>         * Method declaration
+<A NAME="509"></A>         * 
+<A NAME="510"></A>         * 
+<A NAME="511"></A>         * @param e
+<A NAME="512"></A>         * 
+<A NAME="513"></A>         * @see
+<A NAME="514"></A>         */</FONT>
+<A NAME="515"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="516"></A>          displayPixelSize();
+<A NAME="517"></A>        } 
+<A NAME="518"></A>
+<A NAME="519"></A>      });
+<A NAME="520"></A>
+<A NAME="521"></A>      pRect.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="522"></A>
+<A NAME="523"></A>
+<A NAME="524"></A>        <FONT ID="FormalComment">/**
+<A NAME="525"></A>         * Method declaration
+<A NAME="526"></A>         * 
+<A NAME="527"></A>         * 
+<A NAME="528"></A>         * @param e
+<A NAME="529"></A>         * 
+<A NAME="530"></A>         * @see
+<A NAME="531"></A>         */</FONT>
+<A NAME="532"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="533"></A>          updateTotalTime();
+<A NAME="534"></A>        } 
+<A NAME="535"></A>
+<A NAME="536"></A>      });
+<A NAME="537"></A>
+<A NAME="538"></A>      pThickness.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="539"></A>
+<A NAME="540"></A>
+<A NAME="541"></A>        <FONT ID="FormalComment">/**
+<A NAME="542"></A>         * Method declaration
+<A NAME="543"></A>         * 
+<A NAME="544"></A>         * 
+<A NAME="545"></A>         * @param e
+<A NAME="546"></A>         * 
+<A NAME="547"></A>         * @see
+<A NAME="548"></A>         */</FONT>
+<A NAME="549"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="550"></A>          displayPixelSize();
+<A NAME="551"></A>        } 
+<A NAME="552"></A>
+<A NAME="553"></A>      });
+<A NAME="554"></A>
+<A NAME="555"></A>      pNEX.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="556"></A>
+<A NAME="557"></A>
+<A NAME="558"></A>        <FONT ID="FormalComment">/**
+<A NAME="559"></A>         * Method declaration
+<A NAME="560"></A>         * 
+<A NAME="561"></A>         * 
+<A NAME="562"></A>         * @param e
+<A NAME="563"></A>         * 
+<A NAME="564"></A>         * @see
+<A NAME="565"></A>         */</FONT>
+<A NAME="566"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="567"></A>          updateTotalTime();
+<A NAME="568"></A>          displaySNRatio();
+<A NAME="569"></A>        } 
+<A NAME="570"></A>
+<A NAME="571"></A>      });
+<A NAME="572"></A>
+<A NAME="573"></A>      isInitialized = <FONT ID="True">true</FONT>;
+<A NAME="574"></A>
+<A NAME="575"></A>    }   <FONT ID="SingleLineComment">// end if (isInitialized = false);
+<A NAME="576"></A></FONT> 
+<A NAME="577"></A>    myInfoPanel.add(tbSettings, <FONT ID="Null">null</FONT>);
+<A NAME="578"></A>    myInfoPanel.add(pbStart, <FONT ID="Null">null</FONT>);
+<A NAME="579"></A>    myInfoPanel.add(pbStop, <FONT ID="Null">null</FONT>);
+<A NAME="580"></A>    displayPixelSize();
+<A NAME="581"></A>
+<A NAME="582"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="583"></A>      jbInit();
+<A NAME="584"></A>    } <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="585"></A>      ex.printStackTrace();
+<A NAME="586"></A>    } 
+<A NAME="587"></A>  }   <FONT ID="SingleLineComment">// Methode fillPanel
+<A NAME="588"></A></FONT> 
+<A NAME="589"></A>
+<A NAME="590"></A>  <FONT ID="FormalComment">/**
+<A NAME="591"></A>   * Die Methode ist in dieser abstrakten Oberklasse leer. Sie wird in den
+<A NAME="592"></A>   * abgeleiteten Klassen dazu verwendet, um weitere Bedien- und Informationselemente
+<A NAME="593"></A>   * einzurichten.
+<A NAME="594"></A>   */</FONT>
+<A NAME="595"></A>  <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {}
+<A NAME="596"></A>
+<A NAME="597"></A>
+<A NAME="598"></A>  <FONT ID="FormalComment">/**
+<A NAME="599"></A>   * Die Methode aktiviert oder deaktiviert den Startknopf. D.h. sie ermoeglicht
+<A NAME="600"></A>   * das Betaetigen des Knopfes oder verhindert dies.
+<A NAME="601"></A>   * @param flag True, wenn der Knopf aktiviert werden soll, sonst False.
+<A NAME="602"></A>   */</FONT>
+<A NAME="603"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> enableStartButton(<FONT ID="Boolean">boolean</FONT> flag) {
+<A NAME="604"></A>    pbStart.setEnabled(flag);
+<A NAME="605"></A>  }   <FONT ID="SingleLineComment">// Methode enableStartButton(boolean flag)
+<A NAME="606"></A></FONT> 
+<A NAME="607"></A>
+<A NAME="608"></A>  <FONT ID="FormalComment">/**
+<A NAME="609"></A>   * Die Methode aktiviert oder deaktiviert den Stopknopf. D.h. die ermoeglicht
+<A NAME="610"></A>   * das Betaetigen des Knopfes oder verhindert dies.
+<A NAME="611"></A>   * @param flag True, wenn der Knopf aktiviert werden soll, sonst False.
+<A NAME="612"></A>   */</FONT>
+<A NAME="613"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> enableStopButton(<FONT ID="Boolean">boolean</FONT> flag) {
+<A NAME="614"></A>    pbStop.setEnabled(flag);
+<A NAME="615"></A>  }   <FONT ID="SingleLineComment">// Methode enableStopButton(boolean flag)
+<A NAME="616"></A></FONT> 
+<A NAME="617"></A>
+<A NAME="618"></A>  <FONT ID="FormalComment">/**
+<A NAME="619"></A>   * Die Methode wird aufgerufen, wenn der Startknopf gedrueckt wurde. In diesem
+<A NAME="620"></A>   * Fall wird der Startknopf deaktiviert und der Stoppknopf aktiviert. Darueber
+<A NAME="621"></A>   * hinaus wird eine Instanz eines potentiellen Artefakt-Simulators erzeugt.
+<A NAME="622"></A>   * @param e Das Ergeignis, das beim Betaetigen des Startkopfes ausgeloest wird.
+<A NAME="623"></A>   */</FONT>
+<A NAME="624"></A>  <FONT ID="Void">void</FONT> pbStart_actionPerformed(ActionEvent e) {
+<A NAME="625"></A>    pbStart.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="626"></A>    pbStop.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="627"></A>
+<A NAME="628"></A>    mainFrame.setStatusBar(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.statusbar.note.calculation"</FONT>));
+<A NAME="629"></A>
+<A NAME="630"></A>    <FONT ID="SingleLineComment">// Erzeugen einer neuen Instanz eines potentiellen Artefakt-Simulators.
+<A NAME="631"></A></FONT>    <A HREF="../../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>  aftUI = mainFrame.getSelectedArtefactUI();
+<A NAME="632"></A>
+<A NAME="633"></A>    <FONT ID="If">if</FONT> (aftUI != <FONT ID="Null">null</FONT>) {
+<A NAME="634"></A>      artefact = aftUI.createManipulator();
+<A NAME="635"></A>    } 
+<A NAME="636"></A>  }   <FONT ID="SingleLineComment">// Methode  pbStart_actionPerformed(ActionEvent e)
+<A NAME="637"></A></FONT> 
+<A NAME="638"></A>
+<A NAME="639"></A>  <FONT ID="FormalComment">/**
+<A NAME="640"></A>   * Die Methode wird aufgerufen, wenn der Stoppknopf gedrueckt wurde. In diesem
+<A NAME="641"></A>   * Fall wird der Stoppknopf deaktiviert und der Startknopf aktiviert.
+<A NAME="642"></A>   * Ausserdem wird die Fortschrittsanzeige und die Restzeit auf Null zurueckgesetzt.
+<A NAME="643"></A>   * @param e Das Ergeignis, das beim Betaetigen des Stoppknopfes ausgeloest wird.
+<A NAME="644"></A>   */</FONT>
+<A NAME="645"></A>  <FONT ID="Void">void</FONT> pbStop_actionPerformed(ActionEvent e) {
+<A NAME="646"></A>    pbStart.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="647"></A>    pbStop.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="648"></A>
+<A NAME="649"></A>    pRemainingTime.setValue(<FONT ID="StringLiteral">"0 "</FONT> + MINUTE_UNIT + <FONT ID="StringLiteral">" 0 "</FONT> + SECOND_UNIT);
+<A NAME="650"></A>
+<A NAME="651"></A>    mainFrame.getProgressBar().setValue(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="652"></A>    mainFrame.setStatusBar(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/sequences/resources/sequences_loc"</FONT>).getString(<FONT ID="StringLiteral">"pulssequenceui.statusbar.note.aborted"</FONT>));
+<A NAME="653"></A>  }   <FONT ID="SingleLineComment">// Ende pbStop_actionPerformed
+<A NAME="654"></A></FONT> 
+<A NAME="655"></A>
+<A NAME="656"></A>  <FONT ID="FormalComment">/**
+<A NAME="657"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Anzeige des Einstellungsbereichs
+<A NAME="658"></A>   * gedrueckt wurde. Der Einstellungbereich wird dann entweder ein-  oder
+<A NAME="659"></A>   * ausgeblendet.
+<A NAME="660"></A>   * @param e Das Ergeignis, das beim Betaetigen des Knopfes ausgeloest wird.
+<A NAME="661"></A>   */</FONT>
+<A NAME="662"></A>  <FONT ID="Void">void</FONT> tbSettings_actionPerformed(ActionEvent e) {
+<A NAME="663"></A>    <FONT ID="If">if</FONT> (tbSettings.isSelected()) {
+<A NAME="664"></A>      myPanel.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="665"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="666"></A>      myPanel.setVisible(<FONT ID="False">false</FONT>);
+<A NAME="667"></A>    } 
+<A NAME="668"></A>    mainFrame.repaint();
+<A NAME="669"></A>  }   <FONT ID="SingleLineComment">// Methode tbSettings_actionPerformed(ActionEvent e)
+<A NAME="670"></A></FONT> 
+<A NAME="671"></A>
+<A NAME="672"></A>  <FONT ID="FormalComment">/**
+<A NAME="673"></A>   * Die Methode zeigt die uebergebene Gesamtberechnungszeit im Informationsbereich
+<A NAME="674"></A>   * der Pulssequenz an. Dazu wird die uebergebene Zeit zunaecht in Minuten und
+<A NAME="675"></A>   * Sekunden umgerechnet.
+<A NAME="676"></A>   * @param totaltime Die Gesamtberechnungzeit in ms.
+<A NAME="677"></A>   */</FONT>
+<A NAME="678"></A>  <FONT ID="Void">void</FONT> displayTotalTime(<FONT ID="Long">long</FONT> totaltime) {
+<A NAME="679"></A>
+<A NAME="680"></A>    <FONT ID="Long">long</FONT>  ttimeS = (totaltime / <FONT ID="IntegerLiteral">1000</FONT>) % <FONT ID="IntegerLiteral">60</FONT>;
+<A NAME="681"></A>    <FONT ID="Long">long</FONT>  ttimeM = ((totaltime / <FONT ID="IntegerLiteral">1000</FONT>) / <FONT ID="IntegerLiteral">60</FONT>);
+<A NAME="682"></A>
+<A NAME="683"></A>    pTotalTime.setValue(ttimeM + <FONT ID="StringLiteral">" "</FONT> + MINUTE_UNIT + <FONT ID="StringLiteral">" "</FONT> + ttimeS + <FONT ID="StringLiteral">" "</FONT> + SECOND_UNIT);
+<A NAME="684"></A>  } 
+<A NAME="685"></A>
+<A NAME="686"></A>
+<A NAME="687"></A>  <FONT ID="FormalComment">/**
+<A NAME="688"></A>   * Die Methode ist in dieser abstrakten Oberklasse leer. In den abgeleiteten
+<A NAME="689"></A>   * Klassen wird in ihr die Gesamtzeit der Berechnung berechnet.
+<A NAME="690"></A>   * Die Methode muss in dieser Klasse nur vorhanden sein, damit der Entwickler
+<A NAME="691"></A>   * sich nicht mehr um die automatische Aktualisierung der Darstellung der
+<A NAME="692"></A>   * Gesamtzeit kuemmern muss.
+<A NAME="693"></A>   */</FONT>
+<A NAME="694"></A>  <FONT ID="Void">void</FONT> updateTotalTime() {}   <FONT ID="SingleLineComment">// Methode updateTotalTime
+<A NAME="695"></A></FONT>
+<A NAME="696"></A>
+<A NAME="697"></A>  <FONT ID="FormalComment">/**
+<A NAME="698"></A>   * Die Methode zeigt die uebergebene Restberechnungszeit im Informationsbereich
+<A NAME="699"></A>   * der Pulssequenz an. Dazu wird die uebergebene Zeit zunaecht in Minuten und
+<A NAME="700"></A>   * Sekunden umgerechnet.
+<A NAME="701"></A>   * @param remainingtime Die Restberechnungzeit in ms.
+<A NAME="702"></A>   */</FONT>
+<A NAME="703"></A>  <FONT ID="Void">void</FONT> displayRemainingTime(<FONT ID="Long">long</FONT> remainingtime) {
+<A NAME="704"></A>    <FONT ID="Long">long</FONT>  ttimeS = (remainingtime / <FONT ID="IntegerLiteral">1000</FONT>) % <FONT ID="IntegerLiteral">60</FONT>;
+<A NAME="705"></A>    <FONT ID="Long">long</FONT>  ttimeM = ((remainingtime / <FONT ID="IntegerLiteral">1000</FONT>) / <FONT ID="IntegerLiteral">60</FONT>) % <FONT ID="IntegerLiteral">60</FONT>;
+<A NAME="706"></A>
+<A NAME="707"></A>    pRemainingTime.setValue(ttimeM + <FONT ID="StringLiteral">" "</FONT> + MINUTE_UNIT + <FONT ID="StringLiteral">" "</FONT> + ttimeS + <FONT ID="StringLiteral">" "</FONT> + SECOND_UNIT);
+<A NAME="708"></A>  }   <FONT ID="SingleLineComment">// Methode displayRemainingTime
+<A NAME="709"></A></FONT> 
+<A NAME="710"></A>
+<A NAME="711"></A>  <FONT ID="FormalComment">/**
+<A NAME="712"></A>   * Die Methode liefert den Index der selektierten Aufnahmespule zurueck.
+<A NAME="713"></A>   * @return Der Index der selektierten Spule in der Auswahlbox.
+<A NAME="714"></A>   */</FONT>
+<A NAME="715"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getCoil() {
+<A NAME="716"></A>    <FONT ID="Return">return</FONT> cbCoil.getSelectedIndex();
+<A NAME="717"></A>  }   <FONT ID="SingleLineComment">// getCoil
+<A NAME="718"></A></FONT> 
+<A NAME="719"></A>
+<A NAME="720"></A>  <FONT ID="FormalComment">/**
+<A NAME="721"></A>   * Die Methode berechnet die aktuelle Pixelgroesse aufgrund der Einstellungen
+<A NAME="722"></A>   * von Matrixgroesse und Field of View. Die Pixelgroesse wird dann im
+<A NAME="723"></A>   * Informationsbereich angezeigt.
+<A NAME="724"></A>   */</FONT>
+<A NAME="725"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> displayPixelSize() {
+<A NAME="726"></A>    String        ps = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="727"></A>    DecimalFormat form = <FONT ID="New">new</FONT> DecimalFormat(<FONT ID="StringLiteral">"0.00"</FONT>);
+<A NAME="728"></A>
+<A NAME="729"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="730"></A>      <FONT ID="Double">double</FONT>  size = (<FONT ID="Double">double</FONT>) pFOV.getValue() / (<FONT ID="Double">double</FONT>) pMatrix.getValue();
+<A NAME="731"></A>
+<A NAME="732"></A>      ps = (String) form.format(size);
+<A NAME="733"></A>      pPixelSize.setValue(ps + <FONT ID="StringLiteral">" "</FONT> + PIXEL_UNIT);
+<A NAME="734"></A>      displaySNRatio();
+<A NAME="735"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="736"></A>    ;
+<A NAME="737"></A>  } 
+<A NAME="738"></A>
+<A NAME="739"></A>
+<A NAME="740"></A>  <FONT ID="FormalComment">/**
+<A NAME="741"></A>   * Die Methode berechnet das aktuelle Signal-zu-Rausch-Verhaeltnis und zeigt
+<A NAME="742"></A>   * dieses im Informationsbereich an.
+<A NAME="743"></A>   */</FONT>
+<A NAME="744"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> displaySNRatio() {
+<A NAME="745"></A>    <FONT ID="Double">double</FONT>        sn = getSNRatio();
+<A NAME="746"></A>    String        snr = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="747"></A>
+<A NAME="748"></A>    DecimalFormat form = <FONT ID="New">new</FONT> DecimalFormat(<FONT ID="StringLiteral">"0.000"</FONT>);
+<A NAME="749"></A>
+<A NAME="750"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="751"></A>      snr = (String) form.format(sn);
+<A NAME="752"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {}
+<A NAME="753"></A>
+<A NAME="754"></A>    <FONT ID="SingleLineComment">// th 2002.10.30
+<A NAME="755"></A></FONT>    <FONT ID="SingleLineComment">// pSNRatio.setValue("" + snr);
+<A NAME="756"></A></FONT>    pSNRatio.setValue(snr);
+<A NAME="757"></A>  } 
+<A NAME="758"></A>
+<A NAME="759"></A>
+<A NAME="760"></A>  <FONT ID="SingleLineComment">// tha 2000.05.14: Neu definiert
+<A NAME="761"></A></FONT>
+<A NAME="762"></A>
+<A NAME="763"></A>  <FONT ID="FormalComment">/**
+<A NAME="764"></A>   * Die Methode berechnet das aktuelle Signal-zu-Rausch-Verhaeltnis
+<A NAME="765"></A>   * aufgrund der eingestellten Sequenzparameter. &lt;br&gt;
+<A NAME="766"></A>   * Hashemi R: MRI the basics. Williams, Baltimore, 1997. Kapitel 17, S. 167.
+<A NAME="767"></A>   * Definition des Bandbreite:
+<A NAME="768"></A>   * Hashemi R: MRI the basics. Williams, Baltimore, 1997. Kapitel 15, S. 161.
+<A NAME="769"></A>   */</FONT>
+<A NAME="770"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> getSNRatio() {
+<A NAME="771"></A>    <FONT ID="Int">int</FONT>           nex;            <FONT ID="SingleLineComment">// Anzahl der Messungen
+<A NAME="772"></A></FONT>    <FONT ID="Int">int</FONT>           ny = <FONT ID="IntegerLiteral">256</FONT>;       <FONT ID="SingleLineComment">// Anzahl Phasenkodierschritte
+<A NAME="773"></A></FONT>    <FONT ID="Double">double</FONT>        GYRO = <FONT ID="FloatPointLiteral">42.6</FONT>;    <FONT ID="SingleLineComment">// Gyromagnetisches Verhaeltnis fuer H [MHz/T]
+<A NAME="774"></A></FONT>    <FONT ID="Double">double</FONT>        GRAD = <FONT ID="FloatPointLiteral">10.0</FONT>;    <FONT ID="SingleLineComment">// Gradientenfeldstaerke [mT/m]
+<A NAME="775"></A></FONT>    <FONT ID="Double">double</FONT>        bw;             <FONT ID="SingleLineComment">// Bandbreite [Hz]
+<A NAME="776"></A></FONT>    <FONT ID="Double">double</FONT>        sn = <FONT ID="FloatPointLiteral">0.0</FONT>;       <FONT ID="SingleLineComment">// Signal zu Rausch Verhaeltnis
+<A NAME="777"></A></FONT>    <FONT ID="Double">double</FONT>        fov;            <FONT ID="SingleLineComment">// Field of View [mm]
+<A NAME="778"></A></FONT>    <FONT ID="Double">double</FONT>        pixsize;        <FONT ID="SingleLineComment">// Pixelflaeche [mm^2]
+<A NAME="779"></A></FONT>    <FONT ID="Double">double</FONT>        vol;            <FONT ID="SingleLineComment">// Voxelvolumen [mm^3]
+<A NAME="780"></A></FONT>
+<A NAME="781"></A>    <FONT ID="SingleLineComment">// Der Korrekturfaktor wird so gewaelt, dass fuer folgende Parameter
+<A NAME="782"></A></FONT>    <FONT ID="SingleLineComment">// Messungen = 1
+<A NAME="783"></A></FONT>    <FONT ID="SingleLineComment">// FOV = 256
+<A NAME="784"></A></FONT>    <FONT ID="SingleLineComment">// Schichtdicke = 6
+<A NAME="785"></A></FONT>    <FONT ID="SingleLineComment">// Phasen-OV = nein
+<A NAME="786"></A></FONT>    <FONT ID="SingleLineComment">// Das S/N Verhaeltnis gerade 1.000 betraegt.
+<A NAME="787"></A></FONT>    <FONT ID="Final">final</FONT> <FONT ID="Double">double</FONT>  factor = <FONT ID="FloatPointLiteral">3.44</FONT>;  <FONT ID="SingleLineComment">// Korrekturfaktor
+<A NAME="788"></A></FONT>
+<A NAME="789"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="790"></A>      nex = pNEX.getValue();
+<A NAME="791"></A>
+<A NAME="792"></A>      <FONT ID="SingleLineComment">// Berechnung der tatsaechlich zu messenden Phasenkodierschritte
+<A NAME="793"></A></FONT>      <FONT ID="If">if</FONT> (tbPhOS.isSelected()) {
+<A NAME="794"></A>        ny *= <FONT ID="IntegerLiteral">2</FONT>;                <FONT ID="SingleLineComment">// Anzahl der Phasenkodierschritte wird verdoppelt
+<A NAME="795"></A></FONT>        <FONT ID="If">if</FONT> (nex &gt; <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="796"></A>          nex /= <FONT ID="IntegerLiteral">2</FONT>;             <FONT ID="SingleLineComment">// Anzahl der Messungen wird halbiert (wenn moeglich)
+<A NAME="797"></A></FONT>        } 
+<A NAME="798"></A>      } 
+<A NAME="799"></A>
+<A NAME="800"></A>      <FONT ID="SingleLineComment">// Berechnen des Probenvolumens
+<A NAME="801"></A></FONT>      fov = pFOV.getValue();
+<A NAME="802"></A>      pixsize = fov / (<FONT ID="Double">double</FONT>) pMatrix.getValue();
+<A NAME="803"></A>      vol = Math.pow(pixsize, <FONT ID="IntegerLiteral">2</FONT>) * (<FONT ID="Double">double</FONT>) pThickness.getValue();
+<A NAME="804"></A>
+<A NAME="805"></A>      <FONT ID="SingleLineComment">// Berechnung der tatsaechlich zu messenden Field of View
+<A NAME="806"></A></FONT>      <FONT ID="If">if</FONT> (tbFreqOS.isSelected()) {
+<A NAME="807"></A>        fov *= <FONT ID="IntegerLiteral">2</FONT>;               <FONT ID="SingleLineComment">// FOV wird in Frequenzrichtung verdoppelt
+<A NAME="808"></A></FONT>      } 
+<A NAME="809"></A>
+<A NAME="810"></A>      <FONT ID="SingleLineComment">// Berechnung der Bandbreite
+<A NAME="811"></A></FONT>      bw = GYRO * GRAD * fov;   <FONT ID="SingleLineComment">// [MHz/T * mT/m * mm] = [Hz]
+<A NAME="812"></A></FONT>
+<A NAME="813"></A>      <FONT ID="SingleLineComment">// Berechnen des Signal-Rausch-Verhaeltnisses
+<A NAME="814"></A></FONT>      sn = factor * vol * Math.sqrt(ny * nex / bw);
+<A NAME="815"></A>
+<A NAME="816"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="817"></A>
+<A NAME="818"></A>    <FONT ID="Return">return</FONT> sn;
+<A NAME="819"></A>  } 
+<A NAME="820"></A>
+<A NAME="821"></A>
+<A NAME="822"></A>  <FONT ID="FormalComment">/**
+<A NAME="823"></A>   * Diese Methode fügt ein Element in die Eigenschaftsliste kSpaceManipulator
+<A NAME="824"></A>   * ein.
+<A NAME="825"></A>   * @param className Name der Berechnungsklasse des Artefakt-Simulators.
+<A NAME="826"></A>   * @param methodName Name der Methode, die die korrekte Berechnungsfunktion enthaelt.
+<A NAME="827"></A>   */</FONT>
+<A NAME="828"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addProperty(String className, String methodName) {
+<A NAME="829"></A>    kSpaceManipulator.put(className, methodName);
+<A NAME="830"></A>  } 
+<A NAME="831"></A>
+<A NAME="832"></A>
+<A NAME="833"></A>  <FONT ID="FormalComment">/**
+<A NAME="834"></A>   * Method declaration
+<A NAME="835"></A>   * 
+<A NAME="836"></A>   * 
+<A NAME="837"></A>   * @param className
+<A NAME="838"></A>   * 
+<A NAME="839"></A>   * @return
+<A NAME="840"></A>   * 
+<A NAME="841"></A>   * @see
+<A NAME="842"></A>   */</FONT>
+<A NAME="843"></A>  <FONT ID="Public">public</FONT> String getProperty(String className) {
+<A NAME="844"></A>    <FONT ID="Return">return</FONT> (String) kSpaceManipulator.get(className);
+<A NAME="845"></A>  } 
+<A NAME="846"></A>
+<A NAME="847"></A>
+<A NAME="848"></A>  <FONT ID="FormalComment">/**
+<A NAME="849"></A>   * Die Methode liefert den Namen der Methode der ausgeaehlten Artefakt-Klasse
+<A NAME="850"></A>   * zurueck, die die fuer diese Pulssequenz korrekte Berechnungsvorschrift
+<A NAME="851"></A>   * enthaelt.
+<A NAME="852"></A>   * @return Der Name der Methode der Artefakt-Klasse, die die korrekte
+<A NAME="853"></A>   * Berechnungsvorschrift enthaelt.
+<A NAME="854"></A>   */</FONT>
+<A NAME="855"></A>  <FONT ID="Public">public</FONT> String getArtefactMethod() {
+<A NAME="856"></A>    <FONT ID="If">if</FONT> (artefact != <FONT ID="Null">null</FONT>) {
+<A NAME="857"></A>      String  artName = artefact.getClass().getName();
+<A NAME="858"></A>
+<A NAME="859"></A>      artName = artName.substring(artName.lastIndexOf(<FONT ID="CharacerLiteral">'.'</FONT>) + <FONT ID="IntegerLiteral">1</FONT>, artName.length());
+<A NAME="860"></A>      <FONT ID="Return">return</FONT> getProperty(artName);
+<A NAME="861"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="862"></A>      <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="863"></A>    } 
+<A NAME="864"></A>  } 
+<A NAME="865"></A>
+<A NAME="866"></A>
+<A NAME="867"></A>  <FONT ID="FormalComment">/**
+<A NAME="868"></A>   * Die Methode liefert eine Referenz auf einen ggf. ausgewählten Artefakt-Simulator
+<A NAME="869"></A>   * zurueck.
+<A NAME="870"></A>   * @return Eine Referenz auf die Berechnungsklasse des ausgewaehlten
+<A NAME="871"></A>   * Artefakt-Simulators.
+<A NAME="872"></A>   */</FONT>
+<A NAME="873"></A>  <FONT ID="Public">public</FONT> <A HREF="../../../virtual/mrt/artefacts/Artefact.java.html">Artefact</A> getArtefact() {
+<A NAME="874"></A>    <FONT ID="Return">return</FONT> artefact;
+<A NAME="875"></A>  }   <FONT ID="SingleLineComment">// Methode getArtefact
+<A NAME="876"></A></FONT> 
+<A NAME="877"></A>}
+<A NAME="878"></A>
+<A NAME="879"></A>
+<A NAME="880"></A>
+<A NAME="881"></A>
+<A NAME="882"></A>
+<A NAME="883"></A>
+<A NAME="884"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="885"></A>
+<A NAME="886"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PulsesequenceUI</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

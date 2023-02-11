@@ -1,0 +1,1022 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.ImagePlus (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImagePlus</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.util.Date;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.text.SimpleDateFormat;
+<A NAME="26"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="Import">import</FONT> rad.dicom.dcm.*;
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A><FONT ID="FormalComment">/**
+<A NAME="32"></A> * Die Klasse ImagePlus kapselt ein DcmImage-Objekt, welches ein 12-Bit
+<A NAME="33"></A> * DICOM-Bild repraesentiert, inklusive des gefensterten AWT-Bildes, des
+<A NAME="34"></A> * DcmDataObjects, welches alle Bildparameter enthaelt, und einiger anderer
+<A NAME="35"></A> * Informationen.
+<A NAME="36"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="37"></A> * Thomas Hacklaender 2000.8.15:
+<A NAME="38"></A> * In calcFFT den statischen Methodenaufruf doFFT(Image, boolean) der
+<A NAME="39"></A> * jigl-Bibliothek durch FFTTools.forwardFFT ersetzt.&lt;br&gt;
+<A NAME="40"></A> * Thomas Hacklaender 2000.8.13:
+<A NAME="41"></A> * In der jigl-Bibliothek Version 1.3 und 1.4 ist die Methode
+<A NAME="42"></A> * RealGrayImage(float[][] dat) fehlerhat implementtiert. Um die Bibliothek
+<A NAME="43"></A> * trotzdem als Ganzes uebernehmen zu koennen, sind hier und in FFTTools
+<A NAME="44"></A> * einige Anpassungen notwendig:&lt;br&gt;
+<A NAME="45"></A> * In der Methode calcFFT den Aufruf RealGrayImage(float[][]) durch
+<A NAME="46"></A> * FFTTools.makeRealGrayImage(int, int, short[][]) ersetzt.&lt;br&gt;
+<A NAME="47"></A> * Thomas Hacklaender 2000.4.2:&lt;br&gt;
+<A NAME="48"></A> * Row und Column Pixelspacing koennen unterschiedlich sein. Es wurden deshalb
+<A NAME="49"></A> * zwei neue Methoden, getPixelSpacingRow und getPixelSpacingColumn definiert.&lt;br&gt;
+<A NAME="50"></A> * Thomas Hacklaender 2000.4.3:&lt;br&gt;
+<A NAME="51"></A> * Umstellung auf die aktuelle Version 2.1 des dcm-Package.
+<A NAME="52"></A> * Thomas Hacklaender 2002.10.12:&lt;br&gt;
+<A NAME="53"></A> * Datumsformatierung geaendert, da ab Java 1.1 deprecated
+<A NAME="54"></A> * (Aenderungen mit th 2002.10.12 markiert).
+<A NAME="55"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="56"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="57"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="58"></A> * @author   Christian Schalla
+<A NAME="59"></A> * @author   Andreas Truemper
+<A NAME="60"></A> * @version  1.2, 2002.10.16
+<A NAME="61"></A> */</FONT>
+<A NAME="62"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ImagePlus {
+<A NAME="63"></A>
+<A NAME="64"></A>
+<A NAME="65"></A>  <FONT ID="FormalComment">/**
+<A NAME="66"></A>   * Das gefensterte AWT-Bild.
+<A NAME="67"></A>   */</FONT>
+<A NAME="68"></A>  <FONT ID="Private">private</FONT> Image         img;
+<A NAME="69"></A>
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="FormalComment">/**
+<A NAME="72"></A>   * Das DcmImage-Objekt. Es uebernimmt u.a. die Umrechnung des Bildes von
+<A NAME="73"></A>   * 12 auf 8 Bit.
+<A NAME="74"></A>   */</FONT>
+<A NAME="75"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>      DcmImg;
+<A NAME="76"></A>
+<A NAME="77"></A>
+<A NAME="78"></A>  <FONT ID="FormalComment">/**
+<A NAME="79"></A>   * Das DcmDataObject, welches alle Bildparameter enthaelt.
+<A NAME="80"></A>   */</FONT>
+<A NAME="81"></A>  <FONT ID="Private">private</FONT> DcmDataObject ddo;
+<A NAME="82"></A>
+<A NAME="83"></A>
+<A NAME="84"></A>  <FONT ID="FormalComment">/**
+<A NAME="85"></A>   * Der Realteil der Fourier-Transformation des Bildes.
+<A NAME="86"></A>   */</FONT>
+<A NAME="87"></A>  <FONT ID="Private">private</FONT> <FONT ID="Float">float</FONT>[][]     fftImageReal = <FONT ID="Null">null</FONT>;
+<A NAME="88"></A>
+<A NAME="89"></A>
+<A NAME="90"></A>  <FONT ID="FormalComment">/**
+<A NAME="91"></A>   * Der Imaginaerteil der Fourier-Transformation des Bildes.
+<A NAME="92"></A>   */</FONT>
+<A NAME="93"></A>  <FONT ID="Private">private</FONT> <FONT ID="Float">float</FONT>[][]     fftImageImag = <FONT ID="Null">null</FONT>;
+<A NAME="94"></A>
+<A NAME="95"></A>
+<A NAME="96"></A>  <FONT ID="FormalComment">/**
+<A NAME="97"></A>   * Markierung die angibt, ob die zur Verfuegung stehende Fourier-Transformation
+<A NAME="98"></A>   * das Bildes aktuell ist.
+<A NAME="99"></A>   */</FONT>
+<A NAME="100"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>       fftOK = <FONT ID="False">false</FONT>;
+<A NAME="101"></A>
+<A NAME="102"></A>
+<A NAME="103"></A>  <FONT ID="FormalComment">/**
+<A NAME="104"></A>   * Ein Feld von Texten, die oben links im Bild eingeblendet werden koennen.
+<A NAME="105"></A>   */</FONT>
+<A NAME="106"></A>  <FONT ID="Private">private</FONT> String[]      textNW;
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Ein Feld von Texten, die oben rechts im Bild eingeblendet werden koennen.
+<A NAME="111"></A>   */</FONT>
+<A NAME="112"></A>  <FONT ID="Private">private</FONT> String[]      textNE;
+<A NAME="113"></A>
+<A NAME="114"></A>
+<A NAME="115"></A>  <FONT ID="FormalComment">/**
+<A NAME="116"></A>   * Ein Feld von Texten, die unten links im Bild eingeblendet werden koennen.
+<A NAME="117"></A>   */</FONT>
+<A NAME="118"></A>  <FONT ID="Private">private</FONT> String[]      textSW;
+<A NAME="119"></A>
+<A NAME="120"></A>
+<A NAME="121"></A>  <FONT ID="FormalComment">/**
+<A NAME="122"></A>   * Ein Feld von Texten, die unten rechts im Bild eingeblendet werden koennen.
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  <FONT ID="Private">private</FONT> String[]      textSE;
+<A NAME="125"></A>
+<A NAME="126"></A>
+<A NAME="127"></A>  <FONT ID="FormalComment">/**
+<A NAME="128"></A>   * Die Zeilen- und Spaltenaufloesung des gespeicherten Bildes.
+<A NAME="129"></A>   */</FONT>
+<A NAME="130"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>           size;
+<A NAME="131"></A>
+<A NAME="132"></A>
+<A NAME="133"></A>  <FONT ID="FormalComment">/**
+<A NAME="134"></A>   * Standardkonstruktor
+<A NAME="135"></A>   */</FONT>
+<A NAME="136"></A>  <FONT ID="Public">public</FONT> ImagePlus() {}
+<A NAME="137"></A>
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Dieser Konstruktor erzeugt ein ImagePlus-Objekt aus einem DcmImage-Objekt.
+<A NAME="141"></A>   * Dabei wird gleichzeitig die Aufloesung des Bildes ermittelt.
+<A NAME="142"></A>   * @param di Das DcmImage-Objeckt, aus dem das ImagePlus-Objekt erzeugt wird.
+<A NAME="143"></A>   */</FONT>
+<A NAME="144"></A>  <FONT ID="Public">public</FONT> ImagePlus(<A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A> di) {
+<A NAME="145"></A>    DcmImg = di;
+<A NAME="146"></A>    size = DcmImg.rows;
+<A NAME="147"></A>  }
+<A NAME="148"></A>
+<A NAME="149"></A>
+<A NAME="150"></A>  <FONT ID="FormalComment">/**
+<A NAME="151"></A>   * Die Methode liefert ein Feld von Texten, die oben links im Bild eingeblendet
+<A NAME="152"></A>   * werden koennen. Die Auswahl der Texte, die dort erscheinen, findet an dieser
+<A NAME="153"></A>   * Stelle statt. Die Klasse myPanel, die die Hauptzeichenflaeche repraesentiert,
+<A NAME="154"></A>   * stellt diese Texte ohne weitere Beachtung des Inhalts lediglich dar.
+<A NAME="155"></A>   * @return Die Zeichenketten, die oben links im Bild dargestellt werden sollen.
+<A NAME="156"></A>   */</FONT>
+<A NAME="157"></A>  <FONT ID="Public">public</FONT> String[] getTextNW() {
+<A NAME="158"></A>    textNW = <FONT ID="New">new</FONT> String[<FONT ID="IntegerLiteral">6</FONT>];
+<A NAME="159"></A>    textNW[<FONT ID="IntegerLiteral">0</FONT>] = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"imageplus.text.nw.sequence"</FONT>) + getSequence();
+<A NAME="160"></A>    <FONT ID="If">if</FONT> (getTR() != <FONT ID="StringLiteral">""</FONT>) {
+<A NAME="161"></A>      textNW[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="StringLiteral">"TR: "</FONT> + Double.valueOf(getTR());
+<A NAME="162"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="163"></A>      textNW[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="StringLiteral">"TR: "</FONT>;
+<A NAME="164"></A>    } 
+<A NAME="165"></A>    <FONT ID="If">if</FONT> (getTI() != <FONT ID="StringLiteral">""</FONT>) {
+<A NAME="166"></A>      textNW[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="StringLiteral">"TI: "</FONT> + Double.valueOf(getTI());
+<A NAME="167"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="168"></A>      textNW[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="StringLiteral">"TI: "</FONT>;
+<A NAME="169"></A>    } 
+<A NAME="170"></A>    <FONT ID="If">if</FONT> (getTE() != <FONT ID="StringLiteral">""</FONT>) {
+<A NAME="171"></A>      textNW[<FONT ID="IntegerLiteral">3</FONT>] = <FONT ID="StringLiteral">"TE: "</FONT> + Double.valueOf(getTE());
+<A NAME="172"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="173"></A>      textNW[<FONT ID="IntegerLiteral">3</FONT>] = <FONT ID="StringLiteral">"TE: "</FONT>;
+<A NAME="174"></A>    } 
+<A NAME="175"></A>    <FONT ID="If">if</FONT> (getFA() != <FONT ID="StringLiteral">""</FONT>) {
+<A NAME="176"></A>      textNW[<FONT ID="IntegerLiteral">4</FONT>] = <FONT ID="StringLiteral">"FA: "</FONT> + Double.valueOf(getFA());
+<A NAME="177"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="178"></A>      textNW[<FONT ID="IntegerLiteral">4</FONT>] = <FONT ID="StringLiteral">"FA: "</FONT>;
+<A NAME="179"></A>    } 
+<A NAME="180"></A>    textNW[<FONT ID="IntegerLiteral">5</FONT>] = <FONT ID="StringLiteral">"ETL :"</FONT> + getETL();
+<A NAME="181"></A>    <FONT ID="Return">return</FONT> textNW;
+<A NAME="182"></A>  } 
+<A NAME="183"></A>
+<A NAME="184"></A>
+<A NAME="185"></A>  <FONT ID="FormalComment">/**
+<A NAME="186"></A>   * Die Methode liefert ein Feld von Texten, die oben rechts im Bild eingeblendet
+<A NAME="187"></A>   * werden koennen. Die Auswahl der Texte, die dort erscheinen, findet an dieser
+<A NAME="188"></A>   * Stelle statt. Die Klasse myPanel, die die Hauptzeichenflaeche repraesentiert,
+<A NAME="189"></A>   * stellt diese Texte ohne weitere Beachtung des Inhalts lediglich dar.
+<A NAME="190"></A>   * @return Die Zeichenketten, die oben rechts im Bild dargestellt werden sollen.
+<A NAME="191"></A>   */</FONT>
+<A NAME="192"></A>  <FONT ID="Public">public</FONT> String[] getTextNE() {
+<A NAME="193"></A>    textNE = <FONT ID="New">new</FONT> String[<FONT ID="IntegerLiteral">4</FONT>];
+<A NAME="194"></A>
+<A NAME="195"></A>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="196"></A></FONT>    <FONT ID="SingleLineComment">// textNE[0] = getDate().toLocaleString();
+<A NAME="197"></A></FONT>    textNE[<FONT ID="IntegerLiteral">0</FONT>] = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"imageplus.text.ne.examdate"</FONT>);
+<A NAME="198"></A>    textNE[<FONT ID="IntegerLiteral">0</FONT>] += java.text.DateFormat.getDateInstance().format(<FONT ID="This">this</FONT>.getDate());
+<A NAME="199"></A>    textNE[<FONT ID="IntegerLiteral">1</FONT>] = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"imageplus.text.ne.name"</FONT>) + getPatientName();
+<A NAME="200"></A>
+<A NAME="201"></A>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="202"></A></FONT>    <FONT ID="SingleLineComment">// textNE[2] = "Geb.Dat.: " + getPatientBirthdate().toLocaleString().substring(0, 10);
+<A NAME="203"></A></FONT>    textNE[<FONT ID="IntegerLiteral">2</FONT>] = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"imageplus.text.nw.birthdate"</FONT>);
+<A NAME="204"></A>    textNE[<FONT ID="IntegerLiteral">2</FONT>] += java.text.DateFormat.getDateInstance().format(getPatientBirthdate());
+<A NAME="205"></A>    textNE[<FONT ID="IntegerLiteral">3</FONT>] = java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"imageplus.text.nw.sex"</FONT>) + getPatientSex();
+<A NAME="206"></A>    <FONT ID="Return">return</FONT> textNE;
+<A NAME="207"></A>  } 
+<A NAME="208"></A>
+<A NAME="209"></A>
+<A NAME="210"></A>  <FONT ID="FormalComment">/**
+<A NAME="211"></A>   * Die Methode liefert ein Feld von Texten, die unten links im Bild eingeblendet
+<A NAME="212"></A>   * werden koennen. Die Auswahl der Texte, die dort erscheinen, findet an dieser
+<A NAME="213"></A>   * Stelle statt. Die Klasse myPanel, die die Hauptzeichenflaeche repraesentiert,
+<A NAME="214"></A>   * stellt diese Texte ohne weitere Beachtung des Inhalts lediglich dar.
+<A NAME="215"></A>   * @return Die Zeichenketten, die unten links im Bild dargestellt werden sollen.
+<A NAME="216"></A>   */</FONT>
+<A NAME="217"></A>  <FONT ID="Public">public</FONT> String[] getTextSW() {
+<A NAME="218"></A>    textSW = <FONT ID="New">new</FONT> String[<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="219"></A>    textSW[<FONT ID="IntegerLiteral">2</FONT>] = <FONT ID="StringLiteral">"SP: "</FONT> + getSliceLocation();
+<A NAME="220"></A>    textSW[<FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="StringLiteral">"C: "</FONT> + getCenter();
+<A NAME="221"></A>    textSW[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="StringLiteral">"W: "</FONT> + getWindow();
+<A NAME="222"></A>    <FONT ID="Return">return</FONT> textSW;
+<A NAME="223"></A>  } 
+<A NAME="224"></A>
+<A NAME="225"></A>
+<A NAME="226"></A>  <FONT ID="FormalComment">/**
+<A NAME="227"></A>   * Die Methode liefert ein Feld von Texten, die unten rechts im Bild eingeblendet
+<A NAME="228"></A>   * werden koennen. Die Auswahl der Texte, die dort erscheinen, findet an dieser
+<A NAME="229"></A>   * Stelle statt. Die Klasse myPanel, die die Hauptzeichenflaeche repraesentiert,
+<A NAME="230"></A>   * stellt diese Texte ohne weitere Beachtung des Inhalts lediglich dar.
+<A NAME="231"></A>   * @return Die Zeichenketten, die unten rechts im Bild dargestellt werden sollen.
+<A NAME="232"></A>   */</FONT>
+<A NAME="233"></A>  <FONT ID="Public">public</FONT> String[] getTextSE() {
+<A NAME="234"></A>    textSE = <FONT ID="Null">null</FONT>;
+<A NAME="235"></A>    <FONT ID="Return">return</FONT> textSE;
+<A NAME="236"></A>  } 
+<A NAME="237"></A>
+<A NAME="238"></A>
+<A NAME="239"></A>  <FONT ID="FormalComment">/**
+<A NAME="240"></A>   * Die Methode liefert den Namen der Pulssequenz zurueck, mit der das Bild
+<A NAME="241"></A>   * aufgenommen wurde.
+<A NAME="242"></A>   * @return Der Name der Pulssequenz.
+<A NAME="243"></A>   */</FONT>
+<A NAME="244"></A>  <FONT ID="Public">public</FONT> String getSequence() {
+<A NAME="245"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_SequenceName);
+<A NAME="246"></A>  } 
+<A NAME="247"></A>
+<A NAME="248"></A>
+<A NAME="249"></A>  <FONT ID="FormalComment">/**
+<A NAME="250"></A>   * Die Methode liefert die Repititionszeit zurueck, mit der das Bild
+<A NAME="251"></A>   * aufgenommen wurde.
+<A NAME="252"></A>   * @return Die Repititionszeit als Zeichenkette.
+<A NAME="253"></A>   */</FONT>
+<A NAME="254"></A>  <FONT ID="Public">public</FONT> String getTR() {
+<A NAME="255"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_RepetitionTime);
+<A NAME="256"></A>  } 
+<A NAME="257"></A>
+<A NAME="258"></A>
+<A NAME="259"></A>  <FONT ID="FormalComment">/**
+<A NAME="260"></A>   * Die Methode liefert die Inversionszeit zurueck, mit der das Bild
+<A NAME="261"></A>   * aufgenommen wurde. Wurde das Bild mit einer Sequenz aufgenommen, die diesen
+<A NAME="262"></A>   * Parameter nicht beinhaltet, ist der Rueckgabewert leer.
+<A NAME="263"></A>   * @return Die Inversionszeit als Zeichenkette oder eine leere Zeichenkette.
+<A NAME="264"></A>   */</FONT>
+<A NAME="265"></A>  <FONT ID="Public">public</FONT> String getTI() {
+<A NAME="266"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_InversionTime);
+<A NAME="267"></A>  } 
+<A NAME="268"></A>
+<A NAME="269"></A>
+<A NAME="270"></A>  <FONT ID="FormalComment">/**
+<A NAME="271"></A>   * Die Methode liefert die Echozeit zurueck, mit der das Bild
+<A NAME="272"></A>   * aufgenommen wurde. Wurde das Bild mit einer Sequenz aufgenommen, die diesen
+<A NAME="273"></A>   * Parameter nicht beinhaltet, ist der Rueckgabewert leer.
+<A NAME="274"></A>   * @return Die Echozeit als Zeichenkette oder eine leere Zeichenkette.
+<A NAME="275"></A>   */</FONT>
+<A NAME="276"></A>  <FONT ID="Public">public</FONT> String getTE() {
+<A NAME="277"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_EchoTime);
+<A NAME="278"></A>  } 
+<A NAME="279"></A>
+<A NAME="280"></A>
+<A NAME="281"></A>  <FONT ID="FormalComment">/**
+<A NAME="282"></A>   * Die Methode liefert die Anzahl der Echos pro Repititionszyklus (Echo Train Length)
+<A NAME="283"></A>   * zurueck, mit der das Bild aufgenommen wurde. Wurde das Bild mit einer Sequenz
+<A NAME="284"></A>   * aufgenommen, die diesen Parameter nicht beinhaltet, ist der Rueckgabewert leer.
+<A NAME="285"></A>   * @return Die Anzahl der Echos pro Repititionszyklus als Zeichenkette oder
+<A NAME="286"></A>   * eine leere Zeichenkette.
+<A NAME="287"></A>   */</FONT>
+<A NAME="288"></A>  <FONT ID="Public">public</FONT> String getETL() {
+<A NAME="289"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_EchoTrainLength);
+<A NAME="290"></A>  } 
+<A NAME="291"></A>
+<A NAME="292"></A>
+<A NAME="293"></A>  <FONT ID="FormalComment">/**
+<A NAME="294"></A>   * Die Methode liefert die Position des Bildes (der Schicht) im Gesamtdatensatz
+<A NAME="295"></A>   * zurueck. Die Position haengt von den Einstellungen des Koordinatensystems
+<A NAME="296"></A>   * bei der Aufnahme ab.
+<A NAME="297"></A>   * @return Die Schichtposition als Zeichenkette.
+<A NAME="298"></A>   */</FONT>
+<A NAME="299"></A>  <FONT ID="Public">public</FONT> String getSliceLocation() {
+<A NAME="300"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_SliceLocation);
+<A NAME="301"></A>  } 
+<A NAME="302"></A>
+<A NAME="303"></A>
+<A NAME="304"></A>  <FONT ID="FormalComment">/**
+<A NAME="305"></A>   * Die Methode liefert den Flipwinkel zurueck, mit dem das Bild
+<A NAME="306"></A>   * aufgenommen wurde. Wurde das Bild mit einer Sequenz aufgenommen, die diesen
+<A NAME="307"></A>   * Parameter nicht beinhaltet, ist der Rueckgabewert leer.
+<A NAME="308"></A>   * @return Der Flipwinkel als Zeichenkette oder eine leere Zeichenkette.
+<A NAME="309"></A>   */</FONT>
+<A NAME="310"></A>  <FONT ID="Public">public</FONT> String getFA() {
+<A NAME="311"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_FlipAngle);
+<A NAME="312"></A>  } 
+<A NAME="313"></A>
+<A NAME="314"></A>
+<A NAME="315"></A>  <FONT ID="FormalComment">/**
+<A NAME="316"></A>   * Die Methode liest den Namen des Patienten, der auf dem Bild
+<A NAME="317"></A>   * dargestellt ist, aus dem DcmDataObject aus und liefert ihn zurueck.
+<A NAME="318"></A>   * @return Der Patientenname als Zeichenkette.
+<A NAME="319"></A>   */</FONT>
+<A NAME="320"></A>  <FONT ID="Public">public</FONT> String getPatientName() {
+<A NAME="321"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_PatientsName);
+<A NAME="322"></A>  } 
+<A NAME="323"></A>
+<A NAME="324"></A>
+<A NAME="325"></A>  <FONT ID="FormalComment">/**
+<A NAME="326"></A>   * Die Methode liest das Geburtsdateum des Patienten, der auf dem Bild
+<A NAME="327"></A>   * dargestellt ist, aus dem DcmDataObject aus und liefert es zurueck.
+<A NAME="328"></A>   * @return Das Geburtsdatum des Patienten als Datums-Objekt.
+<A NAME="329"></A>   */</FONT>
+<A NAME="330"></A>  <FONT ID="Public">public</FONT> Date getPatientBirthdate() {
+<A NAME="331"></A>    Date  dat = <FONT ID="New">new</FONT> Date();
+<A NAME="332"></A>
+<A NAME="333"></A>    <FONT ID="If">if</FONT> (ddo != <FONT ID="Null">null</FONT>) {
+<A NAME="334"></A>      String  date = ddo.getString(DcmDDE.DD_PatientsBirthDate);
+<A NAME="335"></A>
+<A NAME="336"></A>      <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="337"></A></FONT>      <FONT ID="SingleLineComment">// dat = new Date(Integer.parseInt(date.substring(2, 4)),
+<A NAME="338"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(date.substring(4, 6)) - 1,
+<A NAME="339"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(date.substring(6)));
+<A NAME="340"></A></FONT>      java.util.Calendar.getInstance().set(Integer.parseInt(date.substring(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">4</FONT>)) - <FONT ID="IntegerLiteral">1900</FONT>, Integer.parseInt(date.substring(<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">6</FONT>)) - <FONT ID="IntegerLiteral">1</FONT>, Integer.parseInt(date.substring(<FONT ID="IntegerLiteral">6</FONT>)));
+<A NAME="341"></A>    } 
+<A NAME="342"></A>
+<A NAME="343"></A>    <FONT ID="Return">return</FONT> dat;
+<A NAME="344"></A>  } 
+<A NAME="345"></A>
+<A NAME="346"></A>
+<A NAME="347"></A>  <FONT ID="FormalComment">/**
+<A NAME="348"></A>   * Die Methode liest das Geschlecht des Patienten, der auf dem Bild
+<A NAME="349"></A>   * dargestellt ist, aus dem DcmDataObject aus und liefert es zurueck.
+<A NAME="350"></A>   * @return Das Geschlecht des Patienten als Zeichenkette.
+<A NAME="351"></A>   */</FONT>
+<A NAME="352"></A>  <FONT ID="Public">public</FONT> String getPatientSex() {
+<A NAME="353"></A>    <FONT ID="Return">return</FONT> ddo.getString(DcmDDE.DD_PatientsSex);
+<A NAME="354"></A>  } 
+<A NAME="355"></A>
+<A NAME="356"></A>
+<A NAME="357"></A>  <FONT ID="FormalComment">/**
+<A NAME="358"></A>   * Die Methode liest den Pixelabstand des Bildes aus dem DcmDataObject aus
+<A NAME="359"></A>   * und liefert ihn zurueck. Dieser wird benoetigt, um Distanzmessungen durchfuehren
+<A NAME="360"></A>   * zu koennen.
+<A NAME="361"></A>   * !! Row und Column Pixelspacing koennen unterschiedlich sein.
+<A NAME="362"></A>   * !! Es wurden deshlab zwei zusaetzliche Methoden, getPixelSpacingRow
+<A NAME="363"></A>   * !! getPixelSpacingColumn implementiert.
+<A NAME="364"></A>   * @return Der Pixelabstand.
+<A NAME="365"></A>   */</FONT>
+<A NAME="366"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> getPixelSpacing() {
+<A NAME="367"></A>    <FONT ID="Return">return</FONT> getPixelSpacingRow();
+<A NAME="368"></A>  } 
+<A NAME="369"></A>
+<A NAME="370"></A>
+<A NAME="371"></A>  <FONT ID="FormalComment">/**
+<A NAME="372"></A>   * Die Methode liest den Pixelabstand des Bildes in Zeilenrichtung aus
+<A NAME="373"></A>   * dem DcmDataObject aus und liefert ihn zurueck.
+<A NAME="374"></A>   * @return Der Pixelabstand.
+<A NAME="375"></A>   */</FONT>
+<A NAME="376"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> getPixelSpacingRow() {
+<A NAME="377"></A>
+<A NAME="378"></A>    <FONT ID="SingleLineComment">// Image Plane Module PS 3.3-C.7.6.2:
+<A NAME="379"></A></FONT>    String[]  sa = DcmValue.str2StringArray(ddo.getString(DcmDDE.DD_PixelSpacing), <FONT ID="StringLiteral">"\\"</FONT>);
+<A NAME="380"></A>    <FONT ID="Double">double</FONT>    pixelSpacingRow = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="381"></A>    <FONT ID="Double">double</FONT>    pixelSpacingColumn = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="382"></A>
+<A NAME="383"></A>    <FONT ID="If">if</FONT> (sa.length &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="384"></A>      pixelSpacingRow = DcmValue.str2Double(sa[<FONT ID="IntegerLiteral">0</FONT>], <FONT ID="FloatPointLiteral">0.0</FONT>);
+<A NAME="385"></A>    } 
+<A NAME="386"></A>    <FONT ID="If">if</FONT> (sa.length &gt; <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="387"></A>      pixelSpacingColumn = DcmValue.str2Double(sa[<FONT ID="IntegerLiteral">1</FONT>], <FONT ID="FloatPointLiteral">0.0</FONT>);
+<A NAME="388"></A>    } 
+<A NAME="389"></A>    <FONT ID="Return">return</FONT> pixelSpacingRow;
+<A NAME="390"></A>  } 
+<A NAME="391"></A>
+<A NAME="392"></A>
+<A NAME="393"></A>  <FONT ID="FormalComment">/**
+<A NAME="394"></A>   * Die Methode liest den Pixelabstand des Bildes in Zeilenrichtung aus
+<A NAME="395"></A>   * dem DcmDataObject aus und liefert ihn zurueck.
+<A NAME="396"></A>   * @return Der Pixelabstand.
+<A NAME="397"></A>   */</FONT>
+<A NAME="398"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> getPixelSpacingColumn() {
+<A NAME="399"></A>
+<A NAME="400"></A>    <FONT ID="SingleLineComment">// Image Plane Module PS 3.3-C.7.6.2:
+<A NAME="401"></A></FONT>    String[]  sa = DcmValue.str2StringArray(ddo.getString(DcmDDE.DD_PixelSpacing), <FONT ID="StringLiteral">"\\"</FONT>);
+<A NAME="402"></A>    <FONT ID="Double">double</FONT>    pixelSpacingRow = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="403"></A>    <FONT ID="Double">double</FONT>    pixelSpacingColumn = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="404"></A>
+<A NAME="405"></A>    <FONT ID="If">if</FONT> (sa.length &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="406"></A>      pixelSpacingRow = DcmValue.str2Double(sa[<FONT ID="IntegerLiteral">0</FONT>], <FONT ID="FloatPointLiteral">0.0</FONT>);
+<A NAME="407"></A>    } 
+<A NAME="408"></A>    <FONT ID="If">if</FONT> (sa.length &gt; <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="409"></A>      pixelSpacingColumn = DcmValue.str2Double(sa[<FONT ID="IntegerLiteral">1</FONT>], <FONT ID="FloatPointLiteral">0.0</FONT>);
+<A NAME="410"></A>    } 
+<A NAME="411"></A>    <FONT ID="Return">return</FONT> pixelSpacingColumn;
+<A NAME="412"></A>  } 
+<A NAME="413"></A>
+<A NAME="414"></A>
+<A NAME="415"></A>  <FONT ID="FormalComment">/**
+<A NAME="416"></A>   * Die Methode liest das Aufnahmedatum und die Aufnahmezeit des Bildes aus dem
+<A NAME="417"></A>   * DcmDataObject aus und liefert es zurueck.
+<A NAME="418"></A>   * @return Das Aufnahmedatum und die Aufnahmezeit des Bildes als Datums-Objekt.
+<A NAME="419"></A>   */</FONT>
+<A NAME="420"></A>  <FONT ID="Public">public</FONT> Date getDate() {
+<A NAME="421"></A>    Date  dat = <FONT ID="New">new</FONT> Date();
+<A NAME="422"></A>
+<A NAME="423"></A>    <FONT ID="If">if</FONT> (ddo != <FONT ID="Null">null</FONT>) {
+<A NAME="424"></A>      String  imgdate = ddo.getString(DcmDDE.DD_ImageDate);
+<A NAME="425"></A>      String  imgtime = ddo.getString(DcmDDE.DD_ImageTime);
+<A NAME="426"></A>
+<A NAME="427"></A>      <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="428"></A></FONT>      <FONT ID="SingleLineComment">// dat = new Date(Integer.parseInt(imgdate.substring(2, 4)),
+<A NAME="429"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(imgdate.substring(4, 6)) - 1,
+<A NAME="430"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(imgdate.substring(6)),
+<A NAME="431"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(imgtime.substring(0, 2)),
+<A NAME="432"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(imgtime.substring(2, 4)),
+<A NAME="433"></A></FONT>      <FONT ID="SingleLineComment">// Integer.parseInt(imgtime.substring(4, 6)));
+<A NAME="434"></A></FONT>      java.util.Calendar.getInstance().set(Integer.parseInt(imgdate.substring(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">4</FONT>)) - <FONT ID="IntegerLiteral">1900</FONT>, Integer.parseInt(imgdate.substring(<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">6</FONT>)) - <FONT ID="IntegerLiteral">1</FONT>, Integer.parseInt(imgdate.substring(<FONT ID="IntegerLiteral">6</FONT>)), Integer.parseInt(imgtime.substring(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">2</FONT>)), Integer.parseInt(imgtime.substring(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">4</FONT>)), Integer.parseInt(imgtime.substring(<FONT ID="IntegerLiteral">4</FONT>, <FONT ID="IntegerLiteral">6</FONT>)));
+<A NAME="435"></A>    } 
+<A NAME="436"></A>
+<A NAME="437"></A>    <FONT ID="Return">return</FONT> dat;
+<A NAME="438"></A>  } 
+<A NAME="439"></A>
+<A NAME="440"></A>
+<A NAME="441"></A>  <FONT ID="FormalComment">/**
+<A NAME="442"></A>   * Die Methode liest das Zentrum der Fensterung aus dem DcmDataObject aus und
+<A NAME="443"></A>   * liefert es zurueck.
+<A NAME="444"></A>   * @return Das Zentrum der Fensterung als Ganzzahlenwert.
+<A NAME="445"></A>   */</FONT>
+<A NAME="446"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getCenter() {
+<A NAME="447"></A>    <FONT ID="Return">return</FONT> DcmImg.getCenter();
+<A NAME="448"></A>  } 
+<A NAME="449"></A>
+<A NAME="450"></A>
+<A NAME="451"></A>  <FONT ID="FormalComment">/**
+<A NAME="452"></A>   * Die Methode liest die Breite des Fensterungsbereichs aus dem DcmDataObject
+<A NAME="453"></A>   * aus und liefert sie zurueck.
+<A NAME="454"></A>   * @return Die Breite des Fensterungsbereichs als Ganzzahlenwert.
+<A NAME="455"></A>   */</FONT>
+<A NAME="456"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getWindow() {
+<A NAME="457"></A>    <FONT ID="Return">return</FONT> DcmImg.getWidth();
+<A NAME="458"></A>  } 
+<A NAME="459"></A>
+<A NAME="460"></A>
+<A NAME="461"></A>  <FONT ID="FormalComment">/**
+<A NAME="462"></A>   * Die Methode setzt den Namen der Aufnahmesequenz im DcmDataObject.
+<A NAME="463"></A>   * @param s Der Name der Pulssequenz, mit der das Bild aufgenommen wurde.
+<A NAME="464"></A>   */</FONT>
+<A NAME="465"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSequence(String s) {
+<A NAME="466"></A>    ddo.setString(DcmDDE.DD_SequenceName, s);
+<A NAME="467"></A>  } 
+<A NAME="468"></A>
+<A NAME="469"></A>
+<A NAME="470"></A>  <FONT ID="FormalComment">/**
+<A NAME="471"></A>   * Die Methode setzt die Repititionszeit im DcmDataObject.
+<A NAME="472"></A>   * @param tr Die Repititionszeit [ms], mit der das Bild aufgenommen wurde.
+<A NAME="473"></A>   */</FONT>
+<A NAME="474"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTR(<FONT ID="Double">double</FONT> tr) {
+<A NAME="475"></A>    ddo.setString(DcmDDE.DD_RepetitionTime, (<FONT ID="New">new</FONT> Double(tr)).toString());
+<A NAME="476"></A>  } 
+<A NAME="477"></A>
+<A NAME="478"></A>
+<A NAME="479"></A>  <FONT ID="FormalComment">/**
+<A NAME="480"></A>   * Die Methode setzt die Inversionszeit im DcmDataObject.
+<A NAME="481"></A>   * @param ti Die Inversionszeit [ms], mit der das Bild aufgenommen wurde.
+<A NAME="482"></A>   */</FONT>
+<A NAME="483"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTI(<FONT ID="Double">double</FONT> ti) {
+<A NAME="484"></A>    ddo.setString(DcmDDE.DD_InversionTime, (<FONT ID="New">new</FONT> Double(ti)).toString());
+<A NAME="485"></A>  } 
+<A NAME="486"></A>
+<A NAME="487"></A>
+<A NAME="488"></A>  <FONT ID="FormalComment">/**
+<A NAME="489"></A>   * Die Methode setzt die Echozeit im DcmDataObject.
+<A NAME="490"></A>   * @param te Die Echozeit [ms], mit der das Bild aufgenommen wurde.
+<A NAME="491"></A>   */</FONT>
+<A NAME="492"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setTE(<FONT ID="Double">double</FONT> te) {
+<A NAME="493"></A>    ddo.setString(DcmDDE.DD_EchoTime, (<FONT ID="New">new</FONT> Double(te)).toString());
+<A NAME="494"></A>  } 
+<A NAME="495"></A>
+<A NAME="496"></A>
+<A NAME="497"></A>  <FONT ID="FormalComment">/**
+<A NAME="498"></A>   * Die Methode setzt die Anzahl der Echos pro Repititionszyklus (Echo Train Length)
+<A NAME="499"></A>   * im DcmDataObject.
+<A NAME="500"></A>   * @param etl Die Anzahl der Echos pro Repititionszyklus, mit der das Bild
+<A NAME="501"></A>   * aufgenommen wurde.
+<A NAME="502"></A>   */</FONT>
+<A NAME="503"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setETL(<FONT ID="Int">int</FONT> etl) {
+<A NAME="504"></A>    ddo.setString(DcmDDE.DD_EchoTrainLength, (<FONT ID="New">new</FONT> Integer(etl)).toString());
+<A NAME="505"></A>  } 
+<A NAME="506"></A>
+<A NAME="507"></A>
+<A NAME="508"></A>  <FONT ID="FormalComment">/**
+<A NAME="509"></A>   * Die Methode setzt den zeitlichen Abstand der Echos im DcmDataObject.
+<A NAME="510"></A>   * @param esp Der zeitliche Abstand [ms] der Echos.
+<A NAME="511"></A>   */</FONT>
+<A NAME="512"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setESP(<FONT ID="Double">double</FONT> esp) {
+<A NAME="513"></A>
+<A NAME="514"></A>    <FONT ID="SingleLineComment">// ddo.setString(, (new Double(esp)).toString());
+<A NAME="515"></A></FONT>  } 
+<A NAME="516"></A>
+<A NAME="517"></A>
+<A NAME="518"></A>  <FONT ID="FormalComment">/**
+<A NAME="519"></A>   * Die Methodes setzt die Schichtposition im DcmDataObject. Die Position haengt
+<A NAME="520"></A>   * von der Wahl des Koordinatensystems bei der Aufnahme ab.
+<A NAME="521"></A>   * @param sl Die Schichtposition des aktuellen Bildes.
+<A NAME="522"></A>   */</FONT>
+<A NAME="523"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSliceLocation(<FONT ID="Double">double</FONT> sl) {
+<A NAME="524"></A>    ddo.setString(DcmDDE.DD_SliceLocation, (<FONT ID="New">new</FONT> Double(sl)).toString());
+<A NAME="525"></A>  } 
+<A NAME="526"></A>
+<A NAME="527"></A>
+<A NAME="528"></A>  <FONT ID="FormalComment">/**
+<A NAME="529"></A>   * Die Methode setzt den Flipwinkel im DcmDataObject.
+<A NAME="530"></A>   * @param fa Der Flipwinkel, mit dem das Bild aufgenommen wurde.
+<A NAME="531"></A>   */</FONT>
+<A NAME="532"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setFA(<FONT ID="Double">double</FONT> fa) {
+<A NAME="533"></A>    ddo.setString(DcmDDE.DD_FlipAngle, (<FONT ID="New">new</FONT> Double(fa)).toString());
+<A NAME="534"></A>  } 
+<A NAME="535"></A>
+<A NAME="536"></A>
+<A NAME="537"></A>  <FONT ID="FormalComment">/**
+<A NAME="538"></A>   * Die Methode setzt den Patiemtennamen im DcmDataObject.
+<A NAME="539"></A>   * @param name Der Name des Patienten, der auf dem Bild dargestellt ist.
+<A NAME="540"></A>   */</FONT>
+<A NAME="541"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setPatientName(String name) {
+<A NAME="542"></A>    ddo.setString(DcmDDE.DD_PatientsName, name);
+<A NAME="543"></A>  } 
+<A NAME="544"></A>
+<A NAME="545"></A>
+<A NAME="546"></A>  <FONT ID="FormalComment">/**
+<A NAME="547"></A>   * Die Methode setzt das Geschlecht des Patienten im DcmDataObject.
+<A NAME="548"></A>   * @param s Das Geschlecht des Patienten, der auf dem Bild dargestellt ist.
+<A NAME="549"></A>   */</FONT>
+<A NAME="550"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setPatientSex(String s) {
+<A NAME="551"></A>    ddo.setString(DcmDDE.DD_PatientsSex, s);
+<A NAME="552"></A>  } 
+<A NAME="553"></A>
+<A NAME="554"></A>
+<A NAME="555"></A>  <FONT ID="FormalComment">/**
+<A NAME="556"></A>   * Die Methode fuegt dem ImagPlus-Objekt ein DcmDataObject hinzu. Darin sind
+<A NAME="557"></A>   * alle Bild- und Patienteninformationen sowie weitere Informationen enthalten.
+<A NAME="558"></A>   * Das DcmDataObject wird benoetigt, um beim Abspeichern des Bildes all diese
+<A NAME="559"></A>   * Informationen ebenfalls abspeichern zu koennen. Wuerde man sich das Objekt
+<A NAME="560"></A>   * nicht merken, wuerden zwischen Speichern und Laden eines Bildes alle darin
+<A NAME="561"></A>   * enthaltenen Informationen verloren gehen.
+<A NAME="562"></A>   * Da das DcmDataObject urspruenglich auch die Pixeldaten enthaelt, diese jedoch
+<A NAME="563"></A>   * schon im DcmImage gespeichert werden, werden die Pixeldaten aus dem
+<A NAME="564"></A>   * DcmDataObject geloescht.
+<A NAME="565"></A>   * @param d Das DcmDataObject, das alle wichtigen Bildinformationen enthaelt.
+<A NAME="566"></A>   */</FONT>
+<A NAME="567"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setDDO(DcmDataObject d) {
+<A NAME="568"></A>
+<A NAME="569"></A>    <FONT ID="SingleLineComment">// Zunaecht loeschen der Pixeldaten aus dem DDO, da diese schon im
+<A NAME="570"></A></FONT>    <FONT ID="SingleLineComment">// DcmImage gespeichert werden
+<A NAME="571"></A></FONT>    d.removeObject(DcmDDE.DD_PixelData);
+<A NAME="572"></A>
+<A NAME="573"></A>    <FONT ID="SingleLineComment">// Dann merken der Referenz auf ds DDO
+<A NAME="574"></A></FONT>    ddo = d;
+<A NAME="575"></A>  } 
+<A NAME="576"></A>
+<A NAME="577"></A>
+<A NAME="578"></A>  <FONT ID="FormalComment">/**
+<A NAME="579"></A>   * Die Methode liefert das DcmDataObject mit allen Bildinformationen zurueck.
+<A NAME="580"></A>   * @return Das DcmDataObject zum aktuellen Bild.
+<A NAME="581"></A>   */</FONT>
+<A NAME="582"></A>  <FONT ID="Public">public</FONT> DcmDataObject getDDO() {
+<A NAME="583"></A>    <FONT ID="Return">return</FONT> ddo;
+<A NAME="584"></A>  } 
+<A NAME="585"></A>
+<A NAME="586"></A>
+<A NAME="587"></A>  <FONT ID="FormalComment">/**
+<A NAME="588"></A>   * Die Methode liefert das gefensterte Bild als Java-AWT-Bild zurueck.
+<A NAME="589"></A>   * @return Das gefensterte Java-Bild.
+<A NAME="590"></A>   */</FONT>
+<A NAME="591"></A>  <FONT ID="Public">public</FONT> Image getAWTImage() {
+<A NAME="592"></A>    <FONT ID="If">if</FONT> (img == <FONT ID="Null">null</FONT>) {
+<A NAME="593"></A>
+<A NAME="594"></A>      <FONT ID="SingleLineComment">// Erzeugen eines AWT-Images aus der ImageSource im DcmImage
+<A NAME="595"></A></FONT>      JFrame  dummy = <FONT ID="New">new</FONT> JFrame();
+<A NAME="596"></A>
+<A NAME="597"></A>      img = dummy.getToolkit().getDefaultToolkit().createImage(DcmImg.imgSource);
+<A NAME="598"></A>    } 
+<A NAME="599"></A>    <FONT ID="Return">return</FONT> img;
+<A NAME="600"></A>  } 
+<A NAME="601"></A>
+<A NAME="602"></A>
+<A NAME="603"></A>  <FONT ID="FormalComment">/**
+<A NAME="604"></A>   * Die Methode liefert den Grauwert des 12-Bit Bildes an der angegebenen
+<A NAME="605"></A>   * Position zurueck.
+<A NAME="606"></A>   * @param x x-Koordinate des zu ermittelnden Grauwerts.
+<A NAME="607"></A>   * @param y y-Koordinate des zu ermittelnden Grauwerts.
+<A NAME="608"></A>   * @return Der Grauwert an der Position (x,y).
+<A NAME="609"></A>   */</FONT>
+<A NAME="610"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getGrayValue(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="611"></A>    <FONT ID="Int">int</FONT> gw = DcmImg.pixel16[size * y + x];
+<A NAME="612"></A>
+<A NAME="613"></A>    <FONT ID="Return">return</FONT> gw;
+<A NAME="614"></A>  } 
+<A NAME="615"></A>
+<A NAME="616"></A>
+<A NAME="617"></A>  <FONT ID="FormalComment">/**
+<A NAME="618"></A>   * Die Methode liefert das gefensterte AWT-Bild als zweidimensionales Feld
+<A NAME="619"></A>   * von 16-Bit-Zahlen zurueck. Benoetigt wird diese Methode zur Berechnung eines
+<A NAME="620"></A>   * Histogramms.
+<A NAME="621"></A>   * return Das gefensterte AWT-Bild als zweidimensionales Feld von 16-Bit-Zahlen.
+<A NAME="622"></A>   */</FONT>
+<A NAME="623"></A>  <FONT ID="Public">public</FONT> <FONT ID="Short">short</FONT>[][] get8BitImageShort() {
+<A NAME="624"></A>
+<A NAME="625"></A>    <FONT ID="SingleLineComment">// Erzeugen eines Arrays von Integer-Werten, in das die Pixel hineinkopiert
+<A NAME="626"></A></FONT>    <FONT ID="SingleLineComment">// werden solle. Das ist noch nicht das zurueckgegebene Objekt.
+<A NAME="627"></A></FONT>    <FONT ID="Int">int</FONT>           pixels[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[size * size];
+<A NAME="628"></A>
+<A NAME="629"></A>    <FONT ID="SingleLineComment">// Erzeugen eines PixelGrabbers. Dieser liest die Puixel aus einem Image ein
+<A NAME="630"></A></FONT>    <FONT ID="SingleLineComment">// und schreibt sie in das uebergebene Array von Ganzzahlen
+<A NAME="631"></A></FONT>    PixelGrabber  grabber = <FONT ID="New">new</FONT> PixelGrabber(img, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, size, size, pixels, <FONT ID="IntegerLiteral">0</FONT>, size);
+<A NAME="632"></A>
+<A NAME="633"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="634"></A>      grabber.grabPixels();
+<A NAME="635"></A>    } <FONT ID="Catch">catch</FONT> (InterruptedException e) {
+<A NAME="636"></A>      e.printStackTrace();
+<A NAME="637"></A>    } 
+<A NAME="638"></A>
+<A NAME="639"></A>    <FONT ID="Short">short</FONT>[][] shortImage = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[size][size];
+<A NAME="640"></A>
+<A NAME="641"></A>    <FONT ID="SingleLineComment">// Umkopieren der Pixel aus dem eindimensionalen Feld in das zweidimensionale.
+<A NAME="642"></A></FONT>    <FONT ID="SingleLineComment">// Dabei umwandlung in short.
+<A NAME="643"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="644"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="645"></A>        shortImage[x][y] = (<FONT ID="Short">short</FONT>) ((pixels[y * size + x]) &amp; <FONT ID="IntegerLiteral">0xff</FONT>);
+<A NAME="646"></A>      } 
+<A NAME="647"></A>    } 
+<A NAME="648"></A>
+<A NAME="649"></A>    <FONT ID="Return">return</FONT> shortImage;
+<A NAME="650"></A>  } 
+<A NAME="651"></A>
+<A NAME="652"></A>
+<A NAME="653"></A>  <FONT ID="FormalComment">/**
+<A NAME="654"></A>   * Die Methode liefert den angegebenen  Teil des gefensterten (8-Bit) Bildes
+<A NAME="655"></A>   * zurueck. Das Ergebnis wird benoetigt, um einen Ausschnitt des Bildes
+<A NAME="656"></A>   * vergroessern zu koennen (Lupe).
+<A NAME="657"></A>   * @param x Die linke x-Koordinate des Ausschnitts.
+<A NAME="658"></A>   * @param y Die obere y-Koordinate des Ausschnitts.
+<A NAME="659"></A>   * @param w Die Breite des Ausschnitts.
+<A NAME="660"></A>   * @param h Die Hoehe des Ausschnitts.
+<A NAME="661"></A>   */</FONT>
+<A NAME="662"></A>  <FONT ID="Public">public</FONT> Image getImagePart(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y, <FONT ID="Int">int</FONT> w, <FONT ID="Int">int</FONT> h) {
+<A NAME="663"></A>
+<A NAME="664"></A>    <FONT ID="SingleLineComment">// Erzeugen eines Arrays von Integer-Werten, in das die Pixel hineinkopiert
+<A NAME="665"></A></FONT>    <FONT ID="SingleLineComment">// werden solle. Das ist noch nicht das zurueckgegebene Objekt.
+<A NAME="666"></A></FONT>    <FONT ID="Int">int</FONT>           pixels[] = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[w * h];
+<A NAME="667"></A>
+<A NAME="668"></A>    <FONT ID="SingleLineComment">// Erzeugen eines PixelGrabbers. Dieser liest die Pixel aus einem Image ein
+<A NAME="669"></A></FONT>    <FONT ID="SingleLineComment">// und schreibt sie in das uebergebene Array von Ganzzahlen
+<A NAME="670"></A></FONT>    PixelGrabber  grabber = <FONT ID="New">new</FONT> PixelGrabber(img, x, y, w, h, pixels, <FONT ID="IntegerLiteral">0</FONT>, w);
+<A NAME="671"></A>
+<A NAME="672"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="673"></A>      grabber.grabPixels();
+<A NAME="674"></A>    } <FONT ID="Catch">catch</FONT> (InterruptedException e) {
+<A NAME="675"></A>      e.printStackTrace();
+<A NAME="676"></A>    } 
+<A NAME="677"></A>
+<A NAME="678"></A>    <FONT ID="SingleLineComment">// Erzeugen eines Image-Objekts aus dem Array
+<A NAME="679"></A></FONT>    Frame dummy = <FONT ID="New">new</FONT> Frame();
+<A NAME="680"></A>    Image imagePart = dummy.getToolkit().getDefaultToolkit().createImage(<FONT ID="New">new</FONT> MemoryImageSource(w, h, pixels, <FONT ID="IntegerLiteral">0</FONT>, w));
+<A NAME="681"></A>
+<A NAME="682"></A>    <FONT ID="Return">return</FONT> imagePart;
+<A NAME="683"></A>  } 
+<A NAME="684"></A>
+<A NAME="685"></A>
+<A NAME="686"></A>  <FONT ID="FormalComment">/**
+<A NAME="687"></A>   * Die Methode spiegelt das 12-Bit Bild. Da dabei keine Bildinformationen
+<A NAME="688"></A>   * verloren gehen, wird die Operation direkt auf dem 12-Bit-Bild im
+<A NAME="689"></A>   * DcmImage-Objekt durchgefuehrt. Nach dem Spiegeln wird auch das 8-Bit
+<A NAME="690"></A>   * Java-AWT-Bild neu berechnet.
+<A NAME="691"></A>   */</FONT>
+<A NAME="692"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mirrorHor() {
+<A NAME="693"></A>
+<A NAME="694"></A>    <FONT ID="SingleLineComment">// Anlegen einer temporaeren Kopie fuer das gespiegelte Bild
+<A NAME="695"></A></FONT>    <FONT ID="Short">short</FONT>[] mirrorImage = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[size * size];
+<A NAME="696"></A>
+<A NAME="697"></A>    <FONT ID="SingleLineComment">// Spiegeln an der y-Achse
+<A NAME="698"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="699"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="700"></A>        mirrorImage[(size * y) + x] = DcmImg.pixel16[(size * y) + (size - <FONT ID="IntegerLiteral">1</FONT> - x)];
+<A NAME="701"></A>      } 
+<A NAME="702"></A>    } 
+<A NAME="703"></A>    DcmImg.pixel16 = mirrorImage;
+<A NAME="704"></A>
+<A NAME="705"></A>    <FONT ID="SingleLineComment">// 8-Bit-Bild aktualisieren
+<A NAME="706"></A></FONT>    updateAWTImage();
+<A NAME="707"></A>    fftOK = <FONT ID="False">false</FONT>;
+<A NAME="708"></A>  } 
+<A NAME="709"></A>
+<A NAME="710"></A>
+<A NAME="711"></A>  <FONT ID="FormalComment">/**
+<A NAME="712"></A>   * Die Methode berechnet das 8-Bit Java-AWT-Bild auf Grundlage des 12-Bit Bildes
+<A NAME="713"></A>   * (im DcmImage-Objekt) und den aktuellen Fensterungseinstellungen neu.
+<A NAME="714"></A>   */</FONT>
+<A NAME="715"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateAWTImage() {
+<A NAME="716"></A>    DcmImg.updateImageSource();
+<A NAME="717"></A>    Frame dummy = <FONT ID="New">new</FONT> Frame();
+<A NAME="718"></A>
+<A NAME="719"></A>    img = dummy.getToolkit().getDefaultToolkit().createImage(DcmImg.imgSource);
+<A NAME="720"></A>  } 
+<A NAME="721"></A>
+<A NAME="722"></A>
+<A NAME="723"></A>  <FONT ID="FormalComment">/**
+<A NAME="724"></A>   * Die Methode rotiert das 12-Bit Bild um 90 Grad im Uhrzeigersinn.
+<A NAME="725"></A>   * Da dabei keine Bildinformationen verloren gehen, wird die Operation direkt
+<A NAME="726"></A>   * auf dem 12-Bit-Bild im DcmImage-Objekt durchgefuehrt. Nach dem Rotieren
+<A NAME="727"></A>   * wird auch das 8-Bit Java-AWT-Bild neu berechnet.
+<A NAME="728"></A>   */</FONT>
+<A NAME="729"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rotate90CW() {
+<A NAME="730"></A>
+<A NAME="731"></A>    <FONT ID="SingleLineComment">// Anlegen einer temporaeren Kopie fuer das rotierte Bild
+<A NAME="732"></A></FONT>    <FONT ID="Short">short</FONT>[] rotateImage = <FONT ID="New">new</FONT> <FONT ID="Short">short</FONT>[DcmImg.pixel16.length];
+<A NAME="733"></A>
+<A NAME="734"></A>    <FONT ID="SingleLineComment">// Rotieren
+<A NAME="735"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="736"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="737"></A>        rotateImage[(size * y) + x] = DcmImg.pixel16[(size * (size - <FONT ID="IntegerLiteral">1</FONT> - x)) + y];
+<A NAME="738"></A>      } 
+<A NAME="739"></A>    } 
+<A NAME="740"></A>    DcmImg.pixel16 = rotateImage;
+<A NAME="741"></A>
+<A NAME="742"></A>    <FONT ID="SingleLineComment">// 8-Bit-Bild aktualisieren
+<A NAME="743"></A></FONT>    updateAWTImage();
+<A NAME="744"></A>    fftOK = <FONT ID="False">false</FONT>;
+<A NAME="745"></A>  } 
+<A NAME="746"></A>
+<A NAME="747"></A>
+<A NAME="748"></A>  <FONT ID="FormalComment">/**
+<A NAME="749"></A>   * Die Methode liefert die Zeilen- bzw. Spaltenaufloesung des Bildes zurueck.
+<A NAME="750"></A>   * @return Die Aufloesung des Bildes.
+<A NAME="751"></A>   */</FONT>
+<A NAME="752"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getSize() {
+<A NAME="753"></A>    <FONT ID="Return">return</FONT> size;
+<A NAME="754"></A>  } 
+<A NAME="755"></A>
+<A NAME="756"></A>
+<A NAME="757"></A>  <FONT ID="FormalComment">/**
+<A NAME="758"></A>   * Die Methode invertiert das 12-Bit Bild. Da dabei keine Bildinformationen
+<A NAME="759"></A>   * verloren gehen, wird die Operation direkt auf dem 12-Bit-Bild im
+<A NAME="760"></A>   * DcmImage-Objekt durchgefuehrt. Nach dem Invertieren wird auch das 8-Bit
+<A NAME="761"></A>   * Java-AWT-Bild neu berechnet.
+<A NAME="762"></A>   */</FONT>
+<A NAME="763"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> invert() {
+<A NAME="764"></A>
+<A NAME="765"></A>    <FONT ID="SingleLineComment">// Invertieren
+<A NAME="766"></A></FONT>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; size * size; i++) {
+<A NAME="767"></A>      DcmImg.pixel16[i] = (<FONT ID="Short">short</FONT>) (<FONT ID="IntegerLiteral">4095</FONT> - DcmImg.pixel16[i]);
+<A NAME="768"></A>    } 
+<A NAME="769"></A>
+<A NAME="770"></A>    <FONT ID="SingleLineComment">// 8-Bit-Bild aktualisieren
+<A NAME="771"></A></FONT>    updateAWTImage();
+<A NAME="772"></A>    fftOK = <FONT ID="False">false</FONT>;
+<A NAME="773"></A>  }   <FONT ID="SingleLineComment">// Methode invert
+<A NAME="774"></A></FONT> 
+<A NAME="775"></A>
+<A NAME="776"></A>  <FONT ID="FormalComment">/**
+<A NAME="777"></A>   * Die Methode liefert das 12-Bit-Bild als Feld von 16-Bit-Zahlen zurueck.
+<A NAME="778"></A>   * @return Das Bild als Feld von 16-Bit-Zahlen.
+<A NAME="779"></A>   */</FONT>
+<A NAME="780"></A>  <FONT ID="Public">public</FONT> <FONT ID="Short">short</FONT>[] getImage12BitShort() {
+<A NAME="781"></A>    <FONT ID="Return">return</FONT> DcmImg.pixel16;
+<A NAME="782"></A>  } 
+<A NAME="783"></A>
+<A NAME="784"></A>
+<A NAME="785"></A>  <FONT ID="FormalComment">/**
+<A NAME="786"></A>   * Die Methode setzt das Datum des Aufrufs dieser Methode im DcmDataObject.
+<A NAME="787"></A>   */</FONT>
+<A NAME="788"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setCurrentDate() {
+<A NAME="789"></A>    SimpleDateFormat  fd = <FONT ID="New">new</FONT> SimpleDateFormat(<FONT ID="StringLiteral">"yyyyMMdd"</FONT>);
+<A NAME="790"></A>    SimpleDateFormat  ft = <FONT ID="New">new</FONT> SimpleDateFormat(<FONT ID="StringLiteral">"HHmmss.SSS"</FONT>);
+<A NAME="791"></A>    SimpleDateFormat  fs = <FONT ID="New">new</FONT> SimpleDateFormat(<FONT ID="StringLiteral">"yyyyMMddHHmmssSSS"</FONT>);
+<A NAME="792"></A>    Date              cdt = <FONT ID="New">new</FONT> Date();
+<A NAME="793"></A>
+<A NAME="794"></A>    String            dateAndTimeSuffix = fs.format(cdt);
+<A NAME="795"></A>
+<A NAME="796"></A>    String            studyDate = fd.format(cdt);
+<A NAME="797"></A>    String            studyTime = ft.format(cdt);
+<A NAME="798"></A>    String            dateOfSecondaryCapture = fd.format(cdt);
+<A NAME="799"></A>    String            timeOfSecondaryCapture = ft.format(cdt);
+<A NAME="800"></A>    String            imageDate = fd.format(cdt);
+<A NAME="801"></A>    String            imageTime = ft.format(cdt);
+<A NAME="802"></A>
+<A NAME="803"></A>    <FONT ID="SingleLineComment">// Setzen der Datums- und Zeitinformationen im DDO
+<A NAME="804"></A></FONT>    ddo.setString(DcmDDE.DD_ImageDate, imageDate);
+<A NAME="805"></A>    ddo.setString(DcmDDE.DD_ImageTime, imageTime);
+<A NAME="806"></A>    ddo.setString(DcmDDE.DD_StudyDate, studyDate);
+<A NAME="807"></A>    ddo.setString(DcmDDE.DD_StudyTime, studyDate);
+<A NAME="808"></A>  } 
+<A NAME="809"></A>
+<A NAME="810"></A>
+<A NAME="811"></A>  <FONT ID="FormalComment">/**
+<A NAME="812"></A>   * Die Methode aktualiert die Einstellungen fuer die Fensterung im DcmDataObject.
+<A NAME="813"></A>   * Nach der Aktualisierung wird auch das 8-Bit-Bild neu berechnet.
+<A NAME="814"></A>   * @param c Das Zentrum des darzustellenden Fensters.
+<A NAME="815"></A>   * @param w Die Breite des darzustellenden Fensters.
+<A NAME="816"></A>   */</FONT>
+<A NAME="817"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setCW(<FONT ID="Int">int</FONT> c, <FONT ID="Int">int</FONT> w) {
+<A NAME="818"></A>
+<A NAME="819"></A>    <FONT ID="SingleLineComment">// Zunaechst Fensterung im DDO setzen. Dadurch wird sie mit abgespeichert
+<A NAME="820"></A></FONT>    ddo.setString(DcmDDE.DD_WindowCenter, Integer.toString(c));
+<A NAME="821"></A>    ddo.setString(DcmDDE.DD_WindowWidth, Integer.toString(w));
+<A NAME="822"></A>
+<A NAME="823"></A>    <FONT ID="SingleLineComment">// Fensterung im DcmImage setzen und dann neue MemoryImageSource berechnen
+<A NAME="824"></A></FONT>    DcmImg.setCW(c, w);
+<A NAME="825"></A>
+<A NAME="826"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("c: " + c + " w: " + w);
+<A NAME="827"></A></FONT>    updateAWTImage();
+<A NAME="828"></A>  } 
+<A NAME="829"></A>
+<A NAME="830"></A>
+<A NAME="831"></A>  <FONT ID="FormalComment">/**
+<A NAME="832"></A>   * Die Methode aktualiert die Einstellungen fuer die Fensterung im DcmDataObject.
+<A NAME="833"></A>   * Nach der Aktualisierung wird auch das 8-Bit-Bild neu berechnet.
+<A NAME="834"></A>   * @param c Das Zentrum des darzustellenden Fensters.
+<A NAME="835"></A>   */</FONT>
+<A NAME="836"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setCenter(<FONT ID="Int">int</FONT> c) {
+<A NAME="837"></A>
+<A NAME="838"></A>    <FONT ID="SingleLineComment">// Zunaechst Fensterung im DDO setzen. Dadurch wird sie mit abgespeichert
+<A NAME="839"></A></FONT>    ddo.setString(DcmDDE.DD_WindowCenter, Integer.toString(c));
+<A NAME="840"></A>
+<A NAME="841"></A>    <FONT ID="SingleLineComment">// Fensterung im DcmImage setzen und dann neue MemoryImageSource berechnen
+<A NAME="842"></A></FONT>    DcmImg.setCenter(c);
+<A NAME="843"></A>    updateAWTImage();
+<A NAME="844"></A>  } 
+<A NAME="845"></A>
+<A NAME="846"></A>
+<A NAME="847"></A>  <FONT ID="FormalComment">/**
+<A NAME="848"></A>   * Die Methode aktualiert die Einstellungen fuer die Fensterung im DcmDataObject.
+<A NAME="849"></A>   * Nach der Aktualisierung wird auch das 8-Bit-Bild neu berechnet.
+<A NAME="850"></A>   * @param w Die Breite des darzustellenden Fensters.
+<A NAME="851"></A>   */</FONT>
+<A NAME="852"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setWindow(<FONT ID="Int">int</FONT> w) {
+<A NAME="853"></A>
+<A NAME="854"></A>    <FONT ID="SingleLineComment">// Zunaechst Fensterung im DDO setzen. Dadurch wird sie mit abgespeichert
+<A NAME="855"></A></FONT>    ddo.setString(DcmDDE.DD_WindowWidth, Integer.toString(w));
+<A NAME="856"></A>
+<A NAME="857"></A>    <FONT ID="SingleLineComment">// Fensterung im DcmImage setzen und dann neue MemoryImageSource berechnen
+<A NAME="858"></A></FONT>    DcmImg.setWindow(w);
+<A NAME="859"></A>    updateAWTImage();
+<A NAME="860"></A>  } 
+<A NAME="861"></A>
+<A NAME="862"></A>
+<A NAME="863"></A>
+<A NAME="864"></A>  <FONT ID="FormalComment">/**
+<A NAME="865"></A>   * Die Methode liefert den minimalen Grauwert des 12-Bit-Bildes zurueck.
+<A NAME="866"></A>   * @return Der minimale Grauwert im 12-Bit Bild.
+<A NAME="867"></A>   */</FONT>
+<A NAME="868"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getMinGrayValue12Bit() {
+<A NAME="869"></A>    <FONT ID="Int">int</FONT> ming = <FONT ID="IntegerLiteral">999999</FONT>;
+<A NAME="870"></A>
+<A NAME="871"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; DcmImg.pixel16.length; x++) {
+<A NAME="872"></A>      <FONT ID="If">if</FONT> (DcmImg.pixel16[x] &lt; ming) {
+<A NAME="873"></A>        ming = DcmImg.pixel16[x];
+<A NAME="874"></A>      } 
+<A NAME="875"></A>    } 
+<A NAME="876"></A>    <FONT ID="Return">return</FONT> ming;
+<A NAME="877"></A>  } 
+<A NAME="878"></A>
+<A NAME="879"></A>
+<A NAME="880"></A>  <FONT ID="FormalComment">/**
+<A NAME="881"></A>   * Die Methode liefert den maximalen Grauwert des 12-Bit-Bildes zurueck.
+<A NAME="882"></A>   * @return Der maximale Grauwert im 12-Bit Bild.
+<A NAME="883"></A>   */</FONT>
+<A NAME="884"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getMaxGrayValue12Bit() {
+<A NAME="885"></A>    <FONT ID="Int">int</FONT> maxg = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="886"></A>
+<A NAME="887"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; DcmImg.pixel16.length; x++) {
+<A NAME="888"></A>      <FONT ID="If">if</FONT> (DcmImg.pixel16[x] &gt; maxg) {
+<A NAME="889"></A>        maxg = DcmImg.pixel16[x];
+<A NAME="890"></A>      } 
+<A NAME="891"></A>    } 
+<A NAME="892"></A>    <FONT ID="Return">return</FONT> maxg;
+<A NAME="893"></A>  } 
+<A NAME="894"></A>
+<A NAME="895"></A>
+<A NAME="896"></A>  <FONT ID="FormalComment">/**
+<A NAME="897"></A>   * Die Methode fenstert das aktuelle Bild optimal, d.h. es werden alle
+<A NAME="898"></A>   * Grauwerte, die groesser sind als Null, auf einen Bereich von 256 Grauwerten
+<A NAME="899"></A>   * abgebildet.
+<A NAME="900"></A>   */</FONT>
+<A NAME="901"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> optimalWindowing() {
+<A NAME="902"></A>
+<A NAME="903"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("optimalWindowing");
+<A NAME="904"></A></FONT>    <FONT ID="Int">int</FONT> min = getMinGrayValue12Bit();
+<A NAME="905"></A>    <FONT ID="Int">int</FONT> max = getMaxGrayValue12Bit();
+<A NAME="906"></A>
+<A NAME="907"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("min: " + min + " max: " + max);
+<A NAME="908"></A></FONT>    <FONT ID="Int">int</FONT> width = max - min;
+<A NAME="909"></A>    <FONT ID="Int">int</FONT> center = min + (width / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="910"></A>
+<A NAME="911"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("center: " + center + " width: " + width);
+<A NAME="912"></A></FONT>    setCW(center, width);
+<A NAME="913"></A>  } 
+<A NAME="914"></A>
+<A NAME="915"></A>
+<A NAME="916"></A>  <FONT ID="FormalComment">/**
+<A NAME="917"></A>   * Die Methode berechnet die Fast-Fourier-Transformation des 12-Bit-Bildes.
+<A NAME="918"></A>   * Real- und Imaginarteil werden in Instanzvariablen abgespeichert und stehen
+<A NAME="919"></A>   * damit in Zukunft zur Verfuegung, ohne neu berechnet werden zu muessen.
+<A NAME="920"></A>   * Daneben wird allerdings noch eine Markierung fuer die Aktualitaet der
+<A NAME="921"></A>   * Fourier-Transformation mitgefuehrt. Eine Spiegelung oder Invertierung des
+<A NAME="922"></A>   * Bildes macht diese naemlich ungueltig. Da die Berechnung der FFT jedoch
+<A NAME="923"></A>   * einige Zeit benoetigt, ist es nicht sinnvoll, diese staendig neu
+<A NAME="924"></A>   * zu berechnen, obwohl sie garnicht benoetigt wird.
+<A NAME="925"></A>   */</FONT>
+<A NAME="926"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> calcFFT() {
+<A NAME="927"></A>
+<A NAME="928"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="929"></A>     * Ersetzt: tha 2000.8.13
+<A NAME="930"></A>     * // Konvertieren des 12-Bit Bildes nach float
+<A NAME="931"></A>     * float[][] myFloatImage = new float[size][size];
+<A NAME="932"></A>     * for (int x = 0; x &lt; size; x++) {
+<A NAME="933"></A>     * for (int y = 0; y &lt; size; y++) {
+<A NAME="934"></A>     * myFloatImage[x][y] = (float) (DcmImg.pixel16[(size * y) + x]);
+<A NAME="935"></A>     * }
+<A NAME="936"></A>     * }
+<A NAME="937"></A>     * // Erzeugen eines REalGrayImage-Objektes, mit dem die FFT durchgefuehrt wird
+<A NAME="938"></A>     * jigl.image.RealGrayImage rgImg = new jigl.image.RealGrayImage(myFloatImage);
+<A NAME="939"></A>     */</FONT>
+<A NAME="940"></A>    <A HREF="../../jigl/image/RealGrayImage.java.html">jigl.image.RealGrayImage</A>  rgImg = FFTTools.makeRealGrayImage(size, size, DcmImg.pixel16);
+<A NAME="941"></A>
+<A NAME="942"></A>    <FONT ID="SingleLineComment">// Durchfuehren der FFT
+<A NAME="943"></A></FONT>    <A HREF="../../jigl/image/ComplexImage.java.html">jigl.image.ComplexImage</A>   cImg = FFTTools.forwardFFT(rgImg);
+<A NAME="944"></A>
+<A NAME="945"></A>    <FONT ID="SingleLineComment">// Extrahieren des Real- und Imaginaerteils aus dem komplexen Bild
+<A NAME="946"></A></FONT>    fftImageReal = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="947"></A>    fftImageImag = <FONT ID="New">new</FONT> <FONT ID="Float">float</FONT>[size][size];
+<A NAME="948"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x &lt; size; x++) {
+<A NAME="949"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; size; y++) {
+<A NAME="950"></A>        fftImageReal[x][y] = cImg.getReal(x, y);
+<A NAME="951"></A>        fftImageImag[x][y] = cImg.getImag(x, y);
+<A NAME="952"></A>      }   <FONT ID="SingleLineComment">// for
+<A NAME="953"></A></FONT>     }    <FONT ID="SingleLineComment">// for
+<A NAME="954"></A></FONT> 
+<A NAME="955"></A>    <FONT ID="SingleLineComment">// Markieren der FFT als aktuell
+<A NAME="956"></A></FONT>    fftOK = <FONT ID="True">true</FONT>;
+<A NAME="957"></A>  }   <FONT ID="SingleLineComment">// Methode calcFFT
+<A NAME="958"></A></FONT> 
+<A NAME="959"></A>
+<A NAME="960"></A>  <FONT ID="FormalComment">/**
+<A NAME="961"></A>   * Die Methode liefert den Realteil der Fourier-Transformation des 12-Bit Bildes
+<A NAME="962"></A>   * zurueck.
+<A NAME="963"></A>   * @return Der Realteil der Fourier-Transformation.
+<A NAME="964"></A>   */</FONT>
+<A NAME="965"></A>  <FONT ID="Public">public</FONT> <FONT ID="Float">float</FONT>[][] getFFTImageReal() {
+<A NAME="966"></A>    <FONT ID="If">if</FONT> ((fftImageReal == <FONT ID="Null">null</FONT>) || (fftOK == <FONT ID="False">false</FONT>)) {
+<A NAME="967"></A>      calcFFT();
+<A NAME="968"></A>    } 
+<A NAME="969"></A>    <FONT ID="Return">return</FONT> fftImageReal;
+<A NAME="970"></A>  } 
+<A NAME="971"></A>
+<A NAME="972"></A>
+<A NAME="973"></A>  <FONT ID="FormalComment">/**
+<A NAME="974"></A>   * Die Methode liefert den Imaginaerteil der Fourier-Transformation des 12-Bit Bildes
+<A NAME="975"></A>   * zurueck.
+<A NAME="976"></A>   * @return Der Imaginaerteil der Fourier-Transformation.
+<A NAME="977"></A>   */</FONT>
+<A NAME="978"></A>  <FONT ID="Public">public</FONT> <FONT ID="Float">float</FONT>[][] getFFTImageImag() {
+<A NAME="979"></A>    <FONT ID="If">if</FONT> ((fftImageImag == <FONT ID="Null">null</FONT>) || (fftOK == <FONT ID="False">false</FONT>)) {
+<A NAME="980"></A>      calcFFT();
+<A NAME="981"></A>    } 
+<A NAME="982"></A>    <FONT ID="Return">return</FONT> fftImageImag;
+<A NAME="983"></A>  } 
+<A NAME="984"></A>
+<A NAME="985"></A>}
+<A NAME="986"></A>
+<A NAME="987"></A>
+<A NAME="988"></A>
+<A NAME="989"></A>
+<A NAME="990"></A>
+<A NAME="991"></A>
+<A NAME="992"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="993"></A>
+<A NAME="994"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ImagePlus</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

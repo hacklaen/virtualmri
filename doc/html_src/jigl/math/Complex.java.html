@@ -1,0 +1,532 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>jigl.math.Complex (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Complex</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * JIGL--Java Imaging and Graphics Library
+<A NAME="5"></A> * Copyright (C)1999 Brigham Young University
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or
+<A NAME="7"></A> * modify it under the terms of the GNU Library General Public
+<A NAME="8"></A> * License as published by the Free Software Foundation; either
+<A NAME="9"></A> * version 2 of the License, or (at your option) any later version.
+<A NAME="10"></A> * This library is distributed in the hope that it will be useful,
+<A NAME="11"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="12"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="13"></A> * Library General Public License for more details.
+<A NAME="14"></A> * A copy of the GNU Library General Public Licence is contained in
+<A NAME="15"></A> * /jigl/licence.txt
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Package">package</FONT> <A HREF="../../jigl.math.index.html" target="packageFrame">jigl.math</A>;
+<A NAME="19"></A>
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="FormalComment">/**
+<A NAME="22"></A> * Complex Number Operation
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Complex <FONT ID="Extends">extends</FONT> Number {
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A>  <FONT ID="FormalComment">/**
+<A NAME="28"></A>   * the real part of the Complex number
+<A NAME="29"></A>   */</FONT>
+<A NAME="30"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Float">float</FONT> x;
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A>  <FONT ID="FormalComment">/**
+<A NAME="34"></A>   * imaginary part of the Complex number
+<A NAME="35"></A>   */</FONT>
+<A NAME="36"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Float">float</FONT> y;
+<A NAME="37"></A>
+<A NAME="38"></A>
+<A NAME="39"></A>  <FONT ID="FormalComment">/**
+<A NAME="40"></A>   * Sets the real and imaginary part of the complex number to zero
+<A NAME="41"></A>   */</FONT>
+<A NAME="42"></A>  <FONT ID="Public">public</FONT> Complex() {
+<A NAME="43"></A>    x = (<FONT ID="Float">float</FONT>) <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="44"></A>    y = (<FONT ID="Float">float</FONT>) <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="45"></A>  }
+<A NAME="46"></A>
+<A NAME="47"></A>
+<A NAME="48"></A>  <FONT ID="FormalComment">/**
+<A NAME="49"></A>   * Initilizes the real and imaginary part to a and b repectively
+<A NAME="50"></A>   * @param a Real part of the complex number
+<A NAME="51"></A>   * @param b the imaginary part of the complex number
+<A NAME="52"></A>   */</FONT>
+<A NAME="53"></A>  <FONT ID="Public">public</FONT> Complex(<FONT ID="Double">double</FONT> a, <FONT ID="Double">double</FONT> b) {
+<A NAME="54"></A>    x = (<FONT ID="Float">float</FONT>) a;
+<A NAME="55"></A>    y = (<FONT ID="Float">float</FONT>) b;
+<A NAME="56"></A>  }
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>  <FONT ID="FormalComment">/**
+<A NAME="60"></A>   * Initilizes the complex number to z
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Public">public</FONT> Complex(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z) {
+<A NAME="63"></A>    x = (<FONT ID="Float">float</FONT>) z.real();
+<A NAME="64"></A>    y = (<FONT ID="Float">float</FONT>) z.imag();
+<A NAME="65"></A>  }
+<A NAME="66"></A>
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="FormalComment">/**
+<A NAME="69"></A>   * Returns the real part of the complex number
+<A NAME="70"></A>   */</FONT>
+<A NAME="71"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> real() {
+<A NAME="72"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Double">double</FONT>) x;
+<A NAME="73"></A>  } 
+<A NAME="74"></A>
+<A NAME="75"></A>
+<A NAME="76"></A>  <FONT ID="FormalComment">/**
+<A NAME="77"></A>   * Set the real part of the complex number and returns old value
+<A NAME="78"></A>   */</FONT>
+<A NAME="79"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> real(<FONT ID="Double">double</FONT> a) {
+<A NAME="80"></A>    <FONT ID="Double">double</FONT>  retval = x;
+<A NAME="81"></A>
+<A NAME="82"></A>    x = (<FONT ID="Float">float</FONT>) a;
+<A NAME="83"></A>    <FONT ID="Return">return</FONT> retval;
+<A NAME="84"></A>  } 
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Return the imaginary part of the imaginary number
+<A NAME="89"></A>   */</FONT>
+<A NAME="90"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> imag() {
+<A NAME="91"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Double">double</FONT>) y;
+<A NAME="92"></A>  } 
+<A NAME="93"></A>
+<A NAME="94"></A>
+<A NAME="95"></A>  <FONT ID="FormalComment">/**
+<A NAME="96"></A>   * Set the imaginary part of the complex number and returns old value
+<A NAME="97"></A>   */</FONT>
+<A NAME="98"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> imag(<FONT ID="Double">double</FONT> a) {
+<A NAME="99"></A>    <FONT ID="Double">double</FONT>  retval = y;
+<A NAME="100"></A>
+<A NAME="101"></A>    y = (<FONT ID="Float">float</FONT>) a;
+<A NAME="102"></A>    <FONT ID="Return">return</FONT> retval;
+<A NAME="103"></A>  } 
+<A NAME="104"></A>
+<A NAME="105"></A>
+<A NAME="106"></A>  <FONT ID="FormalComment">/**
+<A NAME="107"></A>   * Performs the mod function on the complex number
+<A NAME="108"></A>   */</FONT>
+<A NAME="109"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> mod() {
+<A NAME="110"></A>    <FONT ID="Return">return</FONT> Math.sqrt(x * x + y * y);
+<A NAME="111"></A>  } 
+<A NAME="112"></A>
+<A NAME="113"></A>
+<A NAME="114"></A>  <FONT ID="FormalComment">/**
+<A NAME="115"></A>   * Performs the function on the complex number
+<A NAME="116"></A>   */</FONT>
+<A NAME="117"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> arg() {
+<A NAME="118"></A>    <FONT ID="Return">return</FONT> (Math.atan2(x, y));
+<A NAME="119"></A>  } 
+<A NAME="120"></A>
+<A NAME="121"></A>
+<A NAME="122"></A>  <FONT ID="FormalComment">/**
+<A NAME="123"></A>   * Performs the function on the complex number
+<A NAME="124"></A>   */</FONT>
+<A NAME="125"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sign() {
+<A NAME="126"></A>    <FONT ID="Double">double</FONT>  r = mod();
+<A NAME="127"></A>
+<A NAME="128"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(x / r, y / r);
+<A NAME="129"></A>  } 
+<A NAME="130"></A>
+<A NAME="131"></A>
+<A NAME="132"></A>  <FONT ID="FormalComment">/**
+<A NAME="133"></A>   * Performs the conjuction function on the complex number
+<A NAME="134"></A>   */</FONT>
+<A NAME="135"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> conj() {
+<A NAME="136"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(x, -y);
+<A NAME="137"></A>  } 
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>  <FONT ID="FormalComment">/**
+<A NAME="141"></A>   * Performs the polar function on the complex number
+<A NAME="142"></A>   */</FONT>
+<A NAME="143"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> polar(<FONT ID="Double">double</FONT> r, <FONT ID="Double">double</FONT> t) {
+<A NAME="144"></A>    x = (<FONT ID="Float">float</FONT>) (r * Math.cos(t));
+<A NAME="145"></A>    y = (<FONT ID="Float">float</FONT>) (r * Math.sin(t));
+<A NAME="146"></A>  } 
+<A NAME="147"></A>
+<A NAME="148"></A>
+<A NAME="149"></A>  <FONT ID="FormalComment">/**
+<A NAME="150"></A>   * Compares this complex number to another Complex number
+<A NAME="151"></A>   */</FONT>
+<A NAME="152"></A>  <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> equals(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z) {
+<A NAME="153"></A>    <FONT ID="Return">return</FONT> ((x == z.x) &amp;&amp; (y == z.y));
+<A NAME="154"></A>  } 
+<A NAME="155"></A>
+<A NAME="156"></A>
+<A NAME="157"></A>  <FONT ID="FormalComment">/**
+<A NAME="158"></A>   * Return the string representation of this complex number
+<A NAME="159"></A>   */</FONT>
+<A NAME="160"></A>  <FONT ID="Public">public</FONT> String toString() {
+<A NAME="161"></A>    <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"("</FONT> + x + <FONT ID="StringLiteral">", "</FONT> + y + <FONT ID="StringLiteral">")"</FONT>;
+<A NAME="162"></A>  } 
+<A NAME="163"></A>
+<A NAME="164"></A>
+<A NAME="165"></A>  <FONT ID="FormalComment">/**
+<A NAME="166"></A>   * Adds this complex number to another complex number
+<A NAME="167"></A>   */</FONT>
+<A NAME="168"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> add(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z) {
+<A NAME="169"></A>    x += z.x;
+<A NAME="170"></A>    y += z.y;
+<A NAME="171"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="172"></A>  } 
+<A NAME="173"></A>
+<A NAME="174"></A>
+<A NAME="175"></A>  <FONT ID="FormalComment">/**
+<A NAME="176"></A>   * Subtracts another complex number from this complex number
+<A NAME="177"></A>   */</FONT>
+<A NAME="178"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sub(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z) {
+<A NAME="179"></A>    x -= z.x;
+<A NAME="180"></A>    y -= z.y;
+<A NAME="181"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="182"></A>  } 
+<A NAME="183"></A>
+<A NAME="184"></A>
+<A NAME="185"></A>  <FONT ID="FormalComment">/**
+<A NAME="186"></A>   * Multiplies this complex number by another complex number
+<A NAME="187"></A>   */</FONT>
+<A NAME="188"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> mult(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z) {
+<A NAME="189"></A>    <FONT ID="Float">float</FONT> a = x * z.x - y * z.y;
+<A NAME="190"></A>    <FONT ID="Float">float</FONT> b = x * z.y + y * z.x;
+<A NAME="191"></A>
+<A NAME="192"></A>    x = a;
+<A NAME="193"></A>    y = b;
+<A NAME="194"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="195"></A>  } 
+<A NAME="196"></A>
+<A NAME="197"></A>
+<A NAME="198"></A>  <FONT ID="FormalComment">/**
+<A NAME="199"></A>   * Divides this complex number by another complex number
+<A NAME="200"></A>   */</FONT>
+<A NAME="201"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> div(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z) {
+<A NAME="202"></A>    <FONT ID="Float">float</FONT> r = z.x * z.x + z.y * z.y;
+<A NAME="203"></A>    <FONT ID="Float">float</FONT> a = (x * z.x + y * z.y) / r;
+<A NAME="204"></A>    <FONT ID="Float">float</FONT> b = (y * z.x - x * z.y) / r;
+<A NAME="205"></A>
+<A NAME="206"></A>    x = a;
+<A NAME="207"></A>    y = b;
+<A NAME="208"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="209"></A>  } 
+<A NAME="210"></A>
+<A NAME="211"></A>
+<A NAME="212"></A>  <FONT ID="FormalComment">/**
+<A NAME="213"></A>   * Adds a constant to the real part of this complex number
+<A NAME="214"></A>   * @param a constant to add
+<A NAME="215"></A>   */</FONT>
+<A NAME="216"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> add(<FONT ID="Double">double</FONT> a) {
+<A NAME="217"></A>    x += (<FONT ID="Float">float</FONT>) a;
+<A NAME="218"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="219"></A>  } 
+<A NAME="220"></A>
+<A NAME="221"></A>
+<A NAME="222"></A>  <FONT ID="FormalComment">/**
+<A NAME="223"></A>   * Subtracts a constant from the real part of this complex number
+<A NAME="224"></A>   * @param a constant to add
+<A NAME="225"></A>   */</FONT>
+<A NAME="226"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sub(<FONT ID="Double">double</FONT> a) {
+<A NAME="227"></A>    x -= (<FONT ID="Float">float</FONT>) a;
+<A NAME="228"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="229"></A>  } 
+<A NAME="230"></A>
+<A NAME="231"></A>
+<A NAME="232"></A>  <FONT ID="FormalComment">/**
+<A NAME="233"></A>   * Multiplies this complex number by a constant
+<A NAME="234"></A>   * @param a constant to add
+<A NAME="235"></A>   */</FONT>
+<A NAME="236"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> mult(<FONT ID="Double">double</FONT> a) {
+<A NAME="237"></A>    x *= (<FONT ID="Float">float</FONT>) a;
+<A NAME="238"></A>    y *= (<FONT ID="Float">float</FONT>) a;
+<A NAME="239"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="240"></A>  } 
+<A NAME="241"></A>
+<A NAME="242"></A>
+<A NAME="243"></A>  <FONT ID="FormalComment">/**
+<A NAME="244"></A>   * Divides this complex number by a constant
+<A NAME="245"></A>   * @param a constant to divide by
+<A NAME="246"></A>   */</FONT>
+<A NAME="247"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> div(<FONT ID="Double">double</FONT> a) {
+<A NAME="248"></A>    x /= (<FONT ID="Float">float</FONT>) a;
+<A NAME="249"></A>    y /= (<FONT ID="Float">float</FONT>) a;
+<A NAME="250"></A>    <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="251"></A>  } 
+<A NAME="252"></A>
+<A NAME="253"></A>
+<A NAME="254"></A>  <FONT ID="FormalComment">/**
+<A NAME="255"></A>   * Returns the square root of this complex number
+<A NAME="256"></A>   */</FONT>
+<A NAME="257"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sqrt() {
+<A NAME="258"></A>    <FONT ID="Double">double</FONT>  r = mod();
+<A NAME="259"></A>    <FONT ID="Double">double</FONT>  t = Math.atan2(x, y);
+<A NAME="260"></A>
+<A NAME="261"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Math.sqrt(r) * Math.cos(t / <FONT ID="FloatPointLiteral">2.0</FONT>), Math.sqrt(r) * Math.sin(t / <FONT ID="FloatPointLiteral">2.0</FONT>));
+<A NAME="262"></A>  } 
+<A NAME="263"></A>
+<A NAME="264"></A>
+<A NAME="265"></A>  <FONT ID="FormalComment">/**
+<A NAME="266"></A>   * Returns the exponential function of this complex number
+<A NAME="267"></A>   */</FONT>
+<A NAME="268"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> exp() {
+<A NAME="269"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Math.exp(x) * Math.cos(y), Math.exp(x) * Math.sin(y));
+<A NAME="270"></A>  } 
+<A NAME="271"></A>
+<A NAME="272"></A>
+<A NAME="273"></A>  <FONT ID="FormalComment">/**
+<A NAME="274"></A>   * Returns the logarithmic function of this complex number
+<A NAME="275"></A>   */</FONT>
+<A NAME="276"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> log() {
+<A NAME="277"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Math.log(mod()), Math.atan2(x, y));
+<A NAME="278"></A>  } 
+<A NAME="279"></A>
+<A NAME="280"></A>
+<A NAME="281"></A>  <FONT ID="FormalComment">/**
+<A NAME="282"></A>   * Returns this complex number raised to the &lt;i&gt;a&lt;/i&gt; complex number
+<A NAME="283"></A>   */</FONT>
+<A NAME="284"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> pow(<FONT ID="Double">double</FONT> a) {
+<A NAME="285"></A>    <FONT ID="Double">double</FONT>  r = mod();
+<A NAME="286"></A>    <FONT ID="Double">double</FONT>  t = Math.atan2(x, y);
+<A NAME="287"></A>
+<A NAME="288"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(Math.pow(r, a) * Math.cos(a * t), Math.pow(r, a) * Math.sin(a * t));
+<A NAME="289"></A>  } 
+<A NAME="290"></A>
+<A NAME="291"></A>
+<A NAME="292"></A>  <FONT ID="FormalComment">/**
+<A NAME="293"></A>   * Returns the hyperbolic cosine of this complex number
+<A NAME="294"></A>   */</FONT>
+<A NAME="295"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> cosh() {
+<A NAME="296"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z1 = <FONT ID="This">this</FONT>.exp();
+<A NAME="297"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2 = <FONT ID="This">this</FONT>.mult(-<FONT ID="FloatPointLiteral">1.0</FONT>).exp();
+<A NAME="298"></A>
+<A NAME="299"></A>    z1.add(z2);
+<A NAME="300"></A>    z1.div(<FONT ID="FloatPointLiteral">2.0</FONT>);
+<A NAME="301"></A>    <FONT ID="Return">return</FONT> z1;
+<A NAME="302"></A>  } 
+<A NAME="303"></A>
+<A NAME="304"></A>
+<A NAME="305"></A>  <FONT ID="FormalComment">/**
+<A NAME="306"></A>   * Returns the hyperbolic sine of this complex number
+<A NAME="307"></A>   */</FONT>
+<A NAME="308"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sinh() {
+<A NAME="309"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z1 = <FONT ID="This">this</FONT>.exp();
+<A NAME="310"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2 = <FONT ID="This">this</FONT>.mult(-<FONT ID="FloatPointLiteral">1.0</FONT>).exp();
+<A NAME="311"></A>
+<A NAME="312"></A>    z1.sub(z2);
+<A NAME="313"></A>    z1.div(<FONT ID="FloatPointLiteral">2.0</FONT>);
+<A NAME="314"></A>    <FONT ID="Return">return</FONT> z1;
+<A NAME="315"></A>  } 
+<A NAME="316"></A>
+<A NAME="317"></A>
+<A NAME="318"></A>  <FONT ID="FormalComment">/**
+<A NAME="319"></A>   * Returns a complex number with the negative of this complex number's real part
+<A NAME="320"></A>   */</FONT>
+<A NAME="321"></A>  <A HREF="../../jigl/math/Complex.java.html">Complex</A> j1mult() {
+<A NAME="322"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(-y, x);
+<A NAME="323"></A>  } 
+<A NAME="324"></A>
+<A NAME="325"></A>
+<A NAME="326"></A>  <FONT ID="FormalComment">/**
+<A NAME="327"></A>   * Returns a complex number with the negative of this complex number's real and imaginary part
+<A NAME="328"></A>   */</FONT>
+<A NAME="329"></A>  <A HREF="../../jigl/math/Complex.java.html">Complex</A> j2mult() {
+<A NAME="330"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(-x, -y);
+<A NAME="331"></A>  } 
+<A NAME="332"></A>
+<A NAME="333"></A>
+<A NAME="334"></A>  <FONT ID="FormalComment">/**
+<A NAME="335"></A>   * Returns a complex number with the negative of this complex number's imaginary part
+<A NAME="336"></A>   */</FONT>
+<A NAME="337"></A>  <A HREF="../../jigl/math/Complex.java.html">Complex</A> j3mult() {
+<A NAME="338"></A>    <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>(y, -x);
+<A NAME="339"></A>  } 
+<A NAME="340"></A>
+<A NAME="341"></A>
+<A NAME="342"></A>  <FONT ID="FormalComment">/**
+<A NAME="343"></A>   * Returns the cosine of this complex number
+<A NAME="344"></A>   */</FONT>
+<A NAME="345"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> cos() {
+<A NAME="346"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z1 = <FONT ID="This">this</FONT>.j1mult().exp();
+<A NAME="347"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2 = <FONT ID="This">this</FONT>.j3mult().exp();
+<A NAME="348"></A>
+<A NAME="349"></A>    z1.add(z2);
+<A NAME="350"></A>    z1.div(<FONT ID="FloatPointLiteral">2.0</FONT>);
+<A NAME="351"></A>    <FONT ID="Return">return</FONT> z1;
+<A NAME="352"></A>  } 
+<A NAME="353"></A>
+<A NAME="354"></A>
+<A NAME="355"></A>  <FONT ID="FormalComment">/**
+<A NAME="356"></A>   * Returns the sine of this complex number
+<A NAME="357"></A>   */</FONT>
+<A NAME="358"></A>  <FONT ID="Public">public</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sin() {
+<A NAME="359"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z1 = <FONT ID="This">this</FONT>.j1mult().exp();
+<A NAME="360"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2 = <FONT ID="This">this</FONT>.j3mult().exp();
+<A NAME="361"></A>
+<A NAME="362"></A>    z1.sub(z2);
+<A NAME="363"></A>    z1.j3mult();
+<A NAME="364"></A>    z1.div(<FONT ID="FloatPointLiteral">2.0</FONT>);
+<A NAME="365"></A>    <FONT ID="Return">return</FONT> z1;
+<A NAME="366"></A>  } 
+<A NAME="367"></A>
+<A NAME="368"></A>
+<A NAME="369"></A>  <FONT ID="FormalComment">/**
+<A NAME="370"></A>   * Returns the double value of this complex number
+<A NAME="371"></A>   */</FONT>
+<A NAME="372"></A>  <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT> doubleValue() {
+<A NAME="373"></A>    <FONT ID="Return">return</FONT> mod();
+<A NAME="374"></A>  } 
+<A NAME="375"></A>
+<A NAME="376"></A>
+<A NAME="377"></A>  <FONT ID="FormalComment">/**
+<A NAME="378"></A>   * Returns the float value of this complex number
+<A NAME="379"></A>   */</FONT>
+<A NAME="380"></A>  <FONT ID="Public">public</FONT> <FONT ID="Float">float</FONT> floatValue() {
+<A NAME="381"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Float">float</FONT>) mod();
+<A NAME="382"></A>  } 
+<A NAME="383"></A>
+<A NAME="384"></A>
+<A NAME="385"></A>  <FONT ID="FormalComment">/**
+<A NAME="386"></A>   * Returns the integer value of this complex number
+<A NAME="387"></A>   */</FONT>
+<A NAME="388"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> intValue() {
+<A NAME="389"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Int">int</FONT>) mod();
+<A NAME="390"></A>  } 
+<A NAME="391"></A>
+<A NAME="392"></A>
+<A NAME="393"></A>  <FONT ID="FormalComment">/**
+<A NAME="394"></A>   * Returns the long value of this complex number
+<A NAME="395"></A>   */</FONT>
+<A NAME="396"></A>  <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> longValue() {
+<A NAME="397"></A>    <FONT ID="Return">return</FONT> (<FONT ID="Long">long</FONT>) mod();
+<A NAME="398"></A>  } 
+<A NAME="399"></A>
+<A NAME="400"></A>
+<A NAME="401"></A>  <FONT ID="FormalComment">/**
+<A NAME="402"></A>   * Adds two complex numbers
+<A NAME="403"></A>   * @param z1 first complex number
+<A NAME="404"></A>   * @param z2 second complex number
+<A NAME="405"></A>   */</FONT>
+<A NAME="406"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> add(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z1, <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2) {
+<A NAME="407"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="408"></A>
+<A NAME="409"></A>    z.x = z1.x + z2.x;
+<A NAME="410"></A>    z.y = z1.y + z2.y;
+<A NAME="411"></A>    <FONT ID="Return">return</FONT> z;
+<A NAME="412"></A>  } 
+<A NAME="413"></A>
+<A NAME="414"></A>
+<A NAME="415"></A>  <FONT ID="FormalComment">/**
+<A NAME="416"></A>   * Subtracts two complex numbers
+<A NAME="417"></A>   * @param z1 first complex number
+<A NAME="418"></A>   * @param z2 second complex number (subtracted from the first)
+<A NAME="419"></A>   */</FONT>
+<A NAME="420"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> sub(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z1, <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2) {
+<A NAME="421"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="422"></A>
+<A NAME="423"></A>    z.x = z1.x - z2.x;
+<A NAME="424"></A>    z.y = z1.y - z2.y;
+<A NAME="425"></A>    <FONT ID="Return">return</FONT> z;
+<A NAME="426"></A>  } 
+<A NAME="427"></A>
+<A NAME="428"></A>
+<A NAME="429"></A>  <FONT ID="FormalComment">/**
+<A NAME="430"></A>   * Multiplies two complex numbers
+<A NAME="431"></A>   * @param z1 first complex number
+<A NAME="432"></A>   * @param z2 second complex number
+<A NAME="433"></A>   */</FONT>
+<A NAME="434"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> mult(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z1, <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2) {
+<A NAME="435"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="436"></A>
+<A NAME="437"></A>    z.x = z1.x * z2.x - z1.y * z2.y;
+<A NAME="438"></A>    z.y = z1.x * z2.y + z1.y * z2.x;
+<A NAME="439"></A>    <FONT ID="Return">return</FONT> z;
+<A NAME="440"></A>  } 
+<A NAME="441"></A>
+<A NAME="442"></A>
+<A NAME="443"></A>  <FONT ID="FormalComment">/**
+<A NAME="444"></A>   * Divides two complex numbers
+<A NAME="445"></A>   * @param z1 first complex number
+<A NAME="446"></A>   * @param z2 second complex number
+<A NAME="447"></A>   */</FONT>
+<A NAME="448"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A> div(<A HREF="../../jigl/math/Complex.java.html">Complex</A> z1, <A HREF="../../jigl/math/Complex.java.html">Complex</A> z2) {
+<A NAME="449"></A>    <FONT ID="Float">float</FONT>   r = z2.x * z2.x + z2.y * z2.y;
+<A NAME="450"></A>    <A HREF="../../jigl/math/Complex.java.html">Complex</A> z = <FONT ID="New">new</FONT> <A HREF="../../jigl/math/Complex.java.html">Complex</A>();
+<A NAME="451"></A>
+<A NAME="452"></A>    z.x = (z1.x * z2.x + z1.y * z2.y) / r;
+<A NAME="453"></A>    z.y = (z1.y * z2.x - z1.x * z2.y) / r;
+<A NAME="454"></A>    <FONT ID="Return">return</FONT> z;
+<A NAME="455"></A>  } 
+<A NAME="456"></A>
+<A NAME="457"></A>
+<A NAME="458"></A>  <FONT ID="FormalComment">/**
+<A NAME="459"></A>   * test the Complex class
+<A NAME="460"></A>   */</FONT>
+<A NAME="461"></A>
+<A NAME="462"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="463"></A>   * public static void main(String[] args) {
+<A NAME="464"></A>   * Complex z = new Complex(1.11111111, 1.152525);
+<A NAME="465"></A>   * ComplexImage c = new ComplexImage(5,5);
+<A NAME="466"></A>   * ComplexImage c2 = new ComplexImage(5,5);
+<A NAME="467"></A>   * 
+<A NAME="468"></A>   * c.add(z);
+<A NAME="469"></A>   * c2.add(z);
+<A NAME="470"></A>   * 
+<A NAME="471"></A>   * z.add(new Complex(2.3, 3.2));
+<A NAME="472"></A>   * 
+<A NAME="473"></A>   * c.divide(z);
+<A NAME="474"></A>   * 
+<A NAME="475"></A>   * c.set(4, 4, new Complex(1.0,1.0));
+<A NAME="476"></A>   * 
+<A NAME="477"></A>   * //c2.add(c);
+<A NAME="478"></A>   * 
+<A NAME="479"></A>   * System.out.println(c.toString());
+<A NAME="480"></A>   * System.out.println(c2.toString());
+<A NAME="481"></A>   * 
+<A NAME="482"></A>   * System.out.println(z);
+<A NAME="483"></A>   * System.out.println("Real Part:         " + z.real());
+<A NAME="484"></A>   * System.out.println("Imaginary Part:    " + z.imag());
+<A NAME="485"></A>   * System.out.println("Modulus:           " + z.mod());
+<A NAME="486"></A>   * System.out.println("Argument:          " + z.arg());
+<A NAME="487"></A>   * System.out.println("Sign:              " + z.sign());
+<A NAME="488"></A>   * System.out.println("Conjugate:         " + z.conj());
+<A NAME="489"></A>   * 
+<A NAME="490"></A>   * System.out.println("Square Root:       " + z.sqrt());
+<A NAME="491"></A>   * System.out.println("Exponent:          " + z.exp());
+<A NAME="492"></A>   * System.out.println("Logarithm:         " + z.log());
+<A NAME="493"></A>   * System.out.println("Sine:              " + z.sin());
+<A NAME="494"></A>   * System.out.println("Cosine:            " + z.cos());
+<A NAME="495"></A>   * System.out.println("Hyperbolic Sine:   " + z.sinh());
+<A NAME="496"></A>   * System.out.println("Hyperbolic Cosine: " + z.cosh());
+<A NAME="497"></A>   * }
+<A NAME="498"></A>   */</FONT>
+<A NAME="499"></A>}
+<A NAME="500"></A>
+<A NAME="501"></A>
+<A NAME="502"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="503"></A>
+<A NAME="504"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Complex</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

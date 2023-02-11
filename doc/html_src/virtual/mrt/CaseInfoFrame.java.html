@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.CaseInfoFrame (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CaseInfoFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.net.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A><FONT ID="FormalComment">/**
+<A NAME="32"></A> * Diese Klasse stellt einen Frame mit Fall-Informationen zu den Rohdaten dar.
+<A NAME="33"></A> * 
+<A NAME="34"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="35"></A> * Thomas Hacklaender 2000.8.14:
+<A NAME="36"></A> * setInfo(File, String) geloescht, da es nicht mehr gebraucht wird.&lt;br&gt;
+<A NAME="37"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="38"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="39"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="40"></A> * @author   Thomas Hacklaender
+<A NAME="41"></A> * @version  1.3, 2002.10.27
+<A NAME="42"></A> */</FONT>
+<A NAME="43"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CaseInfoFrame <FONT ID="Extends">extends</FONT> JFrame {
+<A NAME="44"></A>
+<A NAME="45"></A>  <FONT ID="SingleLineComment">// th 2005.11.11, added
+<A NAME="46"></A></FONT>  ResourceBundle  frameRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_frame"</FONT>);
+<A NAME="47"></A>
+<A NAME="48"></A>  <FONT ID="SingleLineComment">// th 2002.10.27
+<A NAME="49"></A></FONT>  <FONT ID="Final">final</FONT> Dimension defaultSize = <FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">500</FONT>, <FONT ID="IntegerLiteral">560</FONT>);
+<A NAME="50"></A>
+<A NAME="51"></A>  JScrollPane     textScrollPane = <FONT ID="New">new</FONT> JScrollPane();
+<A NAME="52"></A>  JEditorPane     textEditorPane = <FONT ID="New">new</FONT> JEditorPane();
+<A NAME="53"></A>  BorderLayout    borderLayout1 = <FONT ID="New">new</FONT> BorderLayout();
+<A NAME="54"></A>
+<A NAME="55"></A>
+<A NAME="56"></A>  <FONT ID="FormalComment">/**
+<A NAME="57"></A>   * Standardkonstruktor. Er initialisiert das Fenster.
+<A NAME="58"></A>   */</FONT>
+<A NAME="59"></A>  <FONT ID="Public">public</FONT> CaseInfoFrame() {
+<A NAME="60"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="61"></A>      jbInit();
+<A NAME="62"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="63"></A>      e.printStackTrace();
+<A NAME="64"></A>    } 
+<A NAME="65"></A>  }
+<A NAME="66"></A>
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="FormalComment">/**
+<A NAME="69"></A>   * Die Methode richtet die Bedienelemente ein und stellt diese dar.
+<A NAME="70"></A>   */</FONT>
+<A NAME="71"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="72"></A>
+<A NAME="73"></A>    <FONT ID="SingleLineComment">// Groesse des Fensters festlegen.
+<A NAME="74"></A></FONT>    <FONT ID="This">this</FONT>.setSize(defaultSize);
+<A NAME="75"></A>    Dimension si = getSize();
+<A NAME="76"></A>    Dimension scrRes = <FONT ID="This">this</FONT>.getToolkit().getScreenSize();
+<A NAME="77"></A>
+<A NAME="78"></A>    setLocation((scrRes.width - si.width) / <FONT ID="IntegerLiteral">2</FONT>, (scrRes.height - si.height) / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="79"></A>
+<A NAME="80"></A>    <FONT ID="This">this</FONT>.getContentPane().setLayout(borderLayout1);
+<A NAME="81"></A>
+<A NAME="82"></A>    textScrollPane.setPreferredSize(defaultSize);
+<A NAME="83"></A>    textEditorPane.setPreferredSize(defaultSize);
+<A NAME="84"></A>    textEditorPane.setMinimumSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>));
+<A NAME="85"></A>    textEditorPane.setEditable(<FONT ID="False">false</FONT>);
+<A NAME="86"></A>
+<A NAME="87"></A>    <FONT ID="This">this</FONT>.getContentPane().add(textScrollPane, BorderLayout.CENTER);
+<A NAME="88"></A>    textScrollPane.getViewport().add(textEditorPane, <FONT ID="Null">null</FONT>);
+<A NAME="89"></A>  } 
+<A NAME="90"></A>
+<A NAME="91"></A>
+<A NAME="92"></A>  <FONT ID="FormalComment">/**
+<A NAME="93"></A>   * Fuellt die EditorPane mit dem Inhalt einer Datei.
+<A NAME="94"></A>   * 
+<A NAME="95"></A>   * @param infoFile  Verweis auf die Datei.
+<A NAME="96"></A>   * @param title     Neuer Titel des Fensters.
+<A NAME="97"></A>   */</FONT>
+<A NAME="98"></A>
+<A NAME="99"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="100"></A>   * public void setInfo(File infoFile, String title) {
+<A NAME="101"></A>   * setInfo(Tools.file2URL(infoFile), title);
+<A NAME="102"></A>   * }
+<A NAME="103"></A>   */</FONT>
+<A NAME="104"></A>
+<A NAME="105"></A>
+<A NAME="106"></A>  <FONT ID="FormalComment">/**
+<A NAME="107"></A>   * Fuellt die EditorPane mit dem Inhalt einer URL.
+<A NAME="108"></A>   * @param infoFileURL Verweis auf die URL
+<A NAME="109"></A>   * @param title       Neuer Titel des Fensters.
+<A NAME="110"></A>   */</FONT>
+<A NAME="111"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setInfo(URL infoFileURL, String title) {
+<A NAME="112"></A>    <FONT ID="This">this</FONT>.setTitle(frameRsrc.getString(<FONT ID="StringLiteral">"caseinfoframe.dialog.info.title"</FONT>) + <FONT ID="StringLiteral">" "</FONT> + title);
+<A NAME="113"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="114"></A>      textEditorPane = <FONT ID="New">new</FONT> JEditorPane(infoFileURL);
+<A NAME="115"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="116"></A>      System.out.println(<FONT ID="StringLiteral">"URL: "</FONT> + infoFileURL + <FONT ID="StringLiteral">" not found."</FONT>);
+<A NAME="117"></A>    } 
+<A NAME="118"></A>    textScrollPane.getViewport().removeAll();
+<A NAME="119"></A>    textScrollPane.getViewport().add(textEditorPane, <FONT ID="Null">null</FONT>);
+<A NAME="120"></A>
+<A NAME="121"></A>    <FONT ID="This">this</FONT>.validate();
+<A NAME="122"></A>  } 
+<A NAME="123"></A>
+<A NAME="124"></A>}
+<A NAME="125"></A>
+<A NAME="126"></A>
+<A NAME="127"></A>
+<A NAME="128"></A>
+<A NAME="129"></A>
+<A NAME="130"></A>
+<A NAME="131"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="132"></A>
+<A NAME="133"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CaseInfoFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

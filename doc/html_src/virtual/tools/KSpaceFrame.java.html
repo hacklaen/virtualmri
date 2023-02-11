@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.tools.KSpaceFrame (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">KSpaceFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="SingleLineComment">// import virtual.mrt.*;
+<A NAME="28"></A></FONT><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A><FONT ID="FormalComment">/**
+<A NAME="32"></A> * Diese Klasse repraesentiert das Fenster zur Darstellung des k-Raums eines
+<A NAME="33"></A> * Bildes. Anstatt des k-Raums (Magnitudenbild der Fourier-Transformation) des
+<A NAME="34"></A> * selektierten Bildes kann auch das Phasenbild oder der Real- oder
+<A NAME="35"></A> * Imaginaerteil der Fourier-Transformation dargestellt werden.
+<A NAME="36"></A> * &lt;br&gt;
+<A NAME="37"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="38"></A> * Thomas Hacklaender 2002.10.12:
+<A NAME="39"></A> * setLabel seit Java 1.1 deprecated.&lt;br&gt;
+<A NAME="40"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="41"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="42"></A> * @author   Christian Schalla
+<A NAME="43"></A> * @author   Andreas Truemper
+<A NAME="44"></A> * @version  1.2, 2002.10.16
+<A NAME="45"></A> */</FONT>
+<A NAME="46"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> KSpaceFrame <FONT ID="Extends">extends</FONT> JFrame {
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>  <FONT ID="FormalComment">/**
+<A NAME="50"></A>   * Konstante fuer die Breite des k-Raum-Fensters.
+<A NAME="51"></A>   */</FONT>
+<A NAME="52"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> FRAME_WIDTH = <FONT ID="IntegerLiteral">272</FONT>;
+<A NAME="53"></A>
+<A NAME="54"></A>
+<A NAME="55"></A>  <FONT ID="FormalComment">/**
+<A NAME="56"></A>   * Konstante fuer die Hoehe des k-Raum-Fensters.
+<A NAME="57"></A>   */</FONT>
+<A NAME="58"></A>  <FONT ID="Final">final</FONT> <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> FRAME_HEIGHT = <FONT ID="IntegerLiteral">330</FONT>;
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>  <FONT ID="FormalComment">/**
+<A NAME="62"></A>   * Das Bild, dessen k-Raum dargestellt werden soll.
+<A NAME="63"></A>   */</FONT>
+<A NAME="64"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip;
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>  <FONT ID="FormalComment">/**
+<A NAME="68"></A>   * Das Magnitudenbild (k-Raum) des selektierten Bildes.
+<A NAME="69"></A>   */</FONT>
+<A NAME="70"></A>  <FONT ID="Private">private</FONT> Image     magnitudeImage = <FONT ID="Null">null</FONT>;
+<A NAME="71"></A>
+<A NAME="72"></A>
+<A NAME="73"></A>  <FONT ID="FormalComment">/**
+<A NAME="74"></A>   * Das Phasenbild des selektierten Bildes.
+<A NAME="75"></A>   */</FONT>
+<A NAME="76"></A>  <FONT ID="Private">private</FONT> Image     phaseImage = <FONT ID="Null">null</FONT>;
+<A NAME="77"></A>
+<A NAME="78"></A>
+<A NAME="79"></A>  <FONT ID="FormalComment">/**
+<A NAME="80"></A>   * Der Realteil der Fourier-Transformation des selektierten Bildes.
+<A NAME="81"></A>   */</FONT>
+<A NAME="82"></A>  <FONT ID="Private">private</FONT> Image     realImage = <FONT ID="Null">null</FONT>;
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="FormalComment">/**
+<A NAME="86"></A>   * Der Imaginaerteil der Fourier-Transformation des selektierten Bildes.
+<A NAME="87"></A>   */</FONT>
+<A NAME="88"></A>  <FONT ID="Private">private</FONT> Image     imagImage = <FONT ID="Null">null</FONT>;
+<A NAME="89"></A>
+<A NAME="90"></A>
+<A NAME="91"></A>  <FONT ID="FormalComment">/**
+<A NAME="92"></A>   * Der Knopf zur Darstellung des Magnitudenbildes der Fourier-Transformation
+<A NAME="93"></A>   * (k-Raum).
+<A NAME="94"></A>   */</FONT>
+<A NAME="95"></A>  JToggleButton     tbMagnitudeImage = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="96"></A>
+<A NAME="97"></A>
+<A NAME="98"></A>  <FONT ID="FormalComment">/**
+<A NAME="99"></A>   * Der Knopf zur Darstellung des Phasenbildes.
+<A NAME="100"></A>   */</FONT>
+<A NAME="101"></A>  JToggleButton     tbPhaseImage = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="102"></A>
+<A NAME="103"></A>
+<A NAME="104"></A>  <FONT ID="FormalComment">/**
+<A NAME="105"></A>   * Der Knopf zur Darstellung des Realteils der Fourier-Transformation.
+<A NAME="106"></A>   */</FONT>
+<A NAME="107"></A>  JToggleButton     tbFFTReal = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="108"></A>
+<A NAME="109"></A>
+<A NAME="110"></A>  <FONT ID="FormalComment">/**
+<A NAME="111"></A>   * Der Knopf zur Darstellung des Imaginaerteils der Fourier-Transformation.
+<A NAME="112"></A>   */</FONT>
+<A NAME="113"></A>  JToggleButton     tbFFTImag = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="114"></A>
+<A NAME="115"></A>
+<A NAME="116"></A>  <FONT ID="FormalComment">/**
+<A NAME="117"></A>   * Gruppe fuer die Knoepfe, die die Auswahl des darzustellenden Bildes
+<A NAME="118"></A>   * ermoeglichen.
+<A NAME="119"></A>   */</FONT>
+<A NAME="120"></A>  ButtonGroup       myButtonGroup = <FONT ID="New">new</FONT> ButtonGroup();
+<A NAME="121"></A>
+<A NAME="122"></A>
+<A NAME="123"></A>  <FONT ID="FormalComment">/**
+<A NAME="124"></A>   * Referenz auf die Zeichenflaeche, auf der das ausgewaehlte Bild dargestellt
+<A NAME="125"></A>   * werden soll.
+<A NAME="126"></A>   */</FONT>
+<A NAME="127"></A>  <A HREF="../../virtual/tools/KSpaceCanvas.java.html">KSpaceCanvas</A>      myCanvas = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/KSpaceCanvas.java.html">KSpaceCanvas</A>();
+<A NAME="128"></A>
+<A NAME="129"></A>
+<A NAME="130"></A>  <FONT ID="FormalComment">/**
+<A NAME="131"></A>   * Der Konstruktor stellt das k-Raum-Anzeigefenster dar. Gleichzeitig merkt er
+<A NAME="132"></A>   * sich das Bild, fuer den der k-Raum angezeigt werden soll und berechnet
+<A NAME="133"></A>   * zunaecht das Magnitudenbild der Fourier-Transformation und stellt dieses
+<A NAME="134"></A>   * dar.
+<A NAME="135"></A>   * @param imgp Das Bild, dessen k-Raum angezeigt werden soll.
+<A NAME="136"></A>   */</FONT>
+<A NAME="137"></A>  <FONT ID="Public">public</FONT> KSpaceFrame(<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> imgp) {
+<A NAME="138"></A>    <FONT ID="Super">super</FONT>(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspaceframe.title"</FONT>));
+<A NAME="139"></A>    ip = imgp;
+<A NAME="140"></A>
+<A NAME="141"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="142"></A>      jbInit();
+<A NAME="143"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="144"></A>      e.printStackTrace();
+<A NAME="145"></A>    };
+<A NAME="146"></A>                                
+<A NAME="147"></A>    <FONT ID="SingleLineComment">// tha 2006.1.3
+<A NAME="148"></A></FONT>    <FONT ID="SingleLineComment">// Frame zentrieren.
+<A NAME="149"></A></FONT>    Dimension scrRes = <FONT ID="This">this</FONT>.getToolkit().getScreenSize();
+<A NAME="150"></A>    Dimension fs = <FONT ID="This">this</FONT>.getSize();
+<A NAME="151"></A>
+<A NAME="152"></A>    <FONT ID="This">this</FONT>.setLocation((scrRes.width - fs.width) / <FONT ID="IntegerLiteral">2</FONT>, (scrRes.height - fs.height) / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="153"></A>
+<A NAME="154"></A>
+<A NAME="155"></A>    <FONT ID="SingleLineComment">// Magnitudenbild berechnen und darstellen
+<A NAME="156"></A></FONT>    calculateAndDisplayMagnitudeImage();
+<A NAME="157"></A>  }   <FONT ID="SingleLineComment">// Konstruktor KSpaceFrame
+<A NAME="158"></A></FONT>
+<A NAME="159"></A>
+<A NAME="160"></A>  <FONT ID="FormalComment">/**
+<A NAME="161"></A>   * Die Methode konvertiert ein zweidimensionales Feld von Ganzzahlen in
+<A NAME="162"></A>   * ein Grauwertbild (Java-Image).
+<A NAME="163"></A>   * @param source Das in ein Image zu konvertierende zweidim. Feld von Ganzzahlen.
+<A NAME="164"></A>   */</FONT>
+<A NAME="165"></A>  <FONT ID="Public">public</FONT> Image convertIntArrayToImage(<FONT ID="Int">int</FONT>[][] source) {
+<A NAME="166"></A>
+<A NAME="167"></A>    <FONT ID="SingleLineComment">// Umwandeln des 2-dim. Feldes in ein 1-dim. das als ImageSource verwendet
+<A NAME="168"></A></FONT>    <FONT ID="SingleLineComment">// werden kann
+<A NAME="169"></A></FONT>    <FONT ID="Int">int</FONT>[] intArray = FFTTools.convertIntArrayToImage(source);
+<A NAME="170"></A>
+<A NAME="171"></A>    <FONT ID="SingleLineComment">// Erzeugen eines neuen Image-Objektes
+<A NAME="172"></A></FONT>    Image dest = createImage(<FONT ID="New">new</FONT> MemoryImageSource(<FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, intArray, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>));
+<A NAME="173"></A>
+<A NAME="174"></A>    <FONT ID="Return">return</FONT> dest;
+<A NAME="175"></A>  }   <FONT ID="SingleLineComment">// Methode convertIntArrayToImage
+<A NAME="176"></A></FONT> 
+<A NAME="177"></A>
+<A NAME="178"></A>  <FONT ID="FormalComment">/**
+<A NAME="179"></A>   * Die Methode berechnet das Magnitudenbild der Fourier-Transformation des
+<A NAME="180"></A>   * selektierten Bildes. Dabei ist zu beachten, das das angezeigte Bild um
+<A NAME="181"></A>   * die halbe Bildbreite bzw. Hoehe nach rechts bzw. unten verschoben ist und
+<A NAME="182"></A>   * die Grauwerte logarithmisch skaliert wurden. Nur so ist eine kontrastreiche
+<A NAME="183"></A>   * Anzeige moeglich.
+<A NAME="184"></A>   */</FONT>
+<A NAME="185"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculateAndDisplayMagnitudeImage() {
+<A NAME="186"></A>    <FONT ID="If">if</FONT> (magnitudeImage == <FONT ID="Null">null</FONT>) {
+<A NAME="187"></A>
+<A NAME="188"></A>      <FONT ID="SingleLineComment">// Auslesen des Real- und Imaginaerteils der Fouriertransformation des
+<A NAME="189"></A></FONT>      <FONT ID="SingleLineComment">// selektierten Bildes. zusaetzlich verschieben
+<A NAME="190"></A></FONT>      <FONT ID="Float">float</FONT>[][] shiftedImgRe = FFTTools.shift(ip.getFFTImageReal(), <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="191"></A>      <FONT ID="Float">float</FONT>[][] shiftedImgIm = FFTTools.shift(ip.getFFTImageImag(), <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="192"></A>
+<A NAME="193"></A>      <FONT ID="SingleLineComment">// Magnitudenbild berechnen
+<A NAME="194"></A></FONT>      <FONT ID="Float">float</FONT>[][] magImage = FFTTools.magnitude(shiftedImgRe, shiftedImgIm);
+<A NAME="195"></A>
+<A NAME="196"></A>      <FONT ID="SingleLineComment">// Magnitudenbild logarithmisch skalieren
+<A NAME="197"></A></FONT>      <FONT ID="Float">float</FONT>[][] magscaleImage = FFTTools.scaleMagnitude(magImage);
+<A NAME="198"></A>
+<A NAME="199"></A>      <FONT ID="SingleLineComment">// Magnitudenbild Fenstern
+<A NAME="200"></A></FONT>      <FONT ID="Int">int</FONT>[][]   windowedImg = FFTTools.autoWindow(magscaleImage);
+<A NAME="201"></A>
+<A NAME="202"></A>      <FONT ID="SingleLineComment">// gefenstertes Magnitudenbild in ein Image-Objekt umwandeln
+<A NAME="203"></A></FONT>      magnitudeImage = convertIntArrayToImage(windowedImg);
+<A NAME="204"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="205"></A></FONT> 
+<A NAME="206"></A>    <FONT ID="SingleLineComment">// Der Canvas-Klasse das neue Bild uebergeben und neu zeichnen
+<A NAME="207"></A></FONT>    myCanvas.setImage(magnitudeImage);
+<A NAME="208"></A>    myCanvas.repaint();
+<A NAME="209"></A>  }   <FONT ID="SingleLineComment">// calculateAndDisplayMagnitudeImage
+<A NAME="210"></A></FONT> 
+<A NAME="211"></A>
+<A NAME="212"></A>  <FONT ID="FormalComment">/**
+<A NAME="213"></A>   * Die Methode berechnet das Phasenbild der Fourier-Transformation des
+<A NAME="214"></A>   * selektierten Bildes. Dabei ist zu beachten, das das angezeigte Bild um
+<A NAME="215"></A>   * die halbe Bildbreite bzw. Hoehe nach rechts bzw. unten verschoben ist und
+<A NAME="216"></A>   * die Grauwerte logarithmisch skaliert wurden. Nur so ist eine kontrastreiche
+<A NAME="217"></A>   * Anzeige moeglich.
+<A NAME="218"></A>   */</FONT>
+<A NAME="219"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculateAndDisplayPhaseImage() {
+<A NAME="220"></A>    <FONT ID="If">if</FONT> (phaseImage == <FONT ID="Null">null</FONT>) {
+<A NAME="221"></A>
+<A NAME="222"></A>      <FONT ID="SingleLineComment">// Auslesen des Real- und Imaginaerteils der Fouriertransformation des
+<A NAME="223"></A></FONT>      <FONT ID="SingleLineComment">// selektierten Bildes. zusaetzlich verschieben
+<A NAME="224"></A></FONT>      <FONT ID="Float">float</FONT>[][] shiftedImgRe = FFTTools.shift(ip.getFFTImageReal(), <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="225"></A>      <FONT ID="Float">float</FONT>[][] shiftedImgIm = FFTTools.shift(ip.getFFTImageImag(), <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="226"></A>
+<A NAME="227"></A>      <FONT ID="SingleLineComment">// Phasenbild berechnen
+<A NAME="228"></A></FONT>      <FONT ID="Float">float</FONT>[][] phImage = FFTTools.calcPhase(shiftedImgRe, shiftedImgIm);
+<A NAME="229"></A>
+<A NAME="230"></A>      <FONT ID="SingleLineComment">// Phasenbild logarithmisch skalieren
+<A NAME="231"></A></FONT>      <FONT ID="Float">float</FONT>[][] phscaleImage = phImage;   <FONT ID="SingleLineComment">// FFTTools.scaleMagnitude(phImage);
+<A NAME="232"></A></FONT>
+<A NAME="233"></A>      <FONT ID="SingleLineComment">// Phasenbild Fenstern
+<A NAME="234"></A></FONT>      <FONT ID="Int">int</FONT>[][]   windowedImg = FFTTools.autoWindow(phscaleImage);
+<A NAME="235"></A>
+<A NAME="236"></A>      <FONT ID="SingleLineComment">// gefenstertes Phasenbild in ein Image-Objekt umwandeln
+<A NAME="237"></A></FONT>      phaseImage = convertIntArrayToImage(windowedImg);
+<A NAME="238"></A>    }                                     <FONT ID="SingleLineComment">// if
+<A NAME="239"></A></FONT> 
+<A NAME="240"></A>    <FONT ID="SingleLineComment">// Der Canvas-Klasse das neue Bild uebergeben und neu zeichnen
+<A NAME="241"></A></FONT>    myCanvas.setImage(phaseImage);
+<A NAME="242"></A>    myCanvas.repaint();
+<A NAME="243"></A>  }   <FONT ID="SingleLineComment">// calculateAndDisplayPhaseImage
+<A NAME="244"></A></FONT> 
+<A NAME="245"></A>
+<A NAME="246"></A>  <FONT ID="FormalComment">/**
+<A NAME="247"></A>   * Die Methode berechnet den Realteil der Fourier-Transformation des
+<A NAME="248"></A>   * selektierten Bildes. Dabei ist zu beachten, das das angezeigte Bild um
+<A NAME="249"></A>   * die halbe Bildbreite bzw. Hoehe nach rechts bzw. unten verschoben ist und
+<A NAME="250"></A>   * die Grauwerte logarithmisch skaliert wurden. Nur so ist eine kontrastreiche
+<A NAME="251"></A>   * Anzeige moeglich.
+<A NAME="252"></A>   */</FONT>
+<A NAME="253"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculateAndDisplayRealImage() {
+<A NAME="254"></A>    <FONT ID="If">if</FONT> (realImage == <FONT ID="Null">null</FONT>) {
+<A NAME="255"></A>
+<A NAME="256"></A>      <FONT ID="SingleLineComment">// Auslesen des Realteils der Fouriertransformation des
+<A NAME="257"></A></FONT>      <FONT ID="SingleLineComment">// selektierten Bildes. Zusaetzlich verschieben
+<A NAME="258"></A></FONT>      <FONT ID="Float">float</FONT>[][] shiftedImgRe = FFTTools.shift(ip.getFFTImageReal(), <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="259"></A>
+<A NAME="260"></A>      <FONT ID="SingleLineComment">// Logarithmisch skalieren
+<A NAME="261"></A></FONT>      <FONT ID="Float">float</FONT>[][] magscaleImage = FFTTools.scaleMagnitude(shiftedImgRe);
+<A NAME="262"></A>
+<A NAME="263"></A>      <FONT ID="SingleLineComment">// Fenstern
+<A NAME="264"></A></FONT>      <FONT ID="Int">int</FONT>[][]   windowedImg = FFTTools.autoWindow(magscaleImage);
+<A NAME="265"></A>
+<A NAME="266"></A>      <FONT ID="SingleLineComment">// Umwandeln in ein Java-Image
+<A NAME="267"></A></FONT>      realImage = convertIntArrayToImage(windowedImg);
+<A NAME="268"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="269"></A></FONT> 
+<A NAME="270"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="271"></A>     * Experiment
+<A NAME="272"></A>     * float[][][] fftOfReal = FFTTools.getFFT(ip.getFFTImageReal());
+<A NAME="273"></A>     * int[][] realfftOfReal = FFTTools.autoWindow(fftOfReal[1]);
+<A NAME="274"></A>     * Image myimg = convertIntArrayToImage(realfftOfReal);
+<A NAME="275"></A>     * myCanvas.setImage(myimg);
+<A NAME="276"></A>     */</FONT>
+<A NAME="277"></A>
+<A NAME="278"></A>    <FONT ID="SingleLineComment">// Der Canvas-Klasse das neue Bild uebergeben und neu zeichnen
+<A NAME="279"></A></FONT>    myCanvas.setImage(realImage);
+<A NAME="280"></A>    myCanvas.repaint();
+<A NAME="281"></A>  }   <FONT ID="SingleLineComment">// Methode calculateAndDisplayRealImage()
+<A NAME="282"></A></FONT> 
+<A NAME="283"></A>
+<A NAME="284"></A>  <FONT ID="FormalComment">/**
+<A NAME="285"></A>   * Die Methode berechnet den Imaginaerteil der Fourier-Transformation des
+<A NAME="286"></A>   * selektierten Bildes. Dabei ist zu beachten, das das angezeigte Bild um
+<A NAME="287"></A>   * die halbe Bildbreite bzw. Hoehe nach rechts bzw. unten verschoben ist und
+<A NAME="288"></A>   * die Grauwerte logarithmisch skaliert wurden. Nur so ist eine kontrastreiche
+<A NAME="289"></A>   * Anzeige moeglich.
+<A NAME="290"></A>   */</FONT>
+<A NAME="291"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculateAndDisplayImagImage() {
+<A NAME="292"></A>    <FONT ID="If">if</FONT> (imagImage == <FONT ID="Null">null</FONT>) {
+<A NAME="293"></A>
+<A NAME="294"></A>      <FONT ID="SingleLineComment">// Auslesen des Imaginaerteils der Fouriertransformation des
+<A NAME="295"></A></FONT>      <FONT ID="SingleLineComment">// selektierten Bildes. Zusaetzlich verschieben
+<A NAME="296"></A></FONT>      <FONT ID="Float">float</FONT>[][] shiftedImgIm = FFTTools.shift(ip.getFFTImageImag(), <FONT ID="IntegerLiteral">128</FONT>, <FONT ID="IntegerLiteral">128</FONT>);
+<A NAME="297"></A>
+<A NAME="298"></A>      <FONT ID="SingleLineComment">// Logarithmisch skalieren
+<A NAME="299"></A></FONT>      <FONT ID="Float">float</FONT>[][] magscaleImage = FFTTools.scaleMagnitude(shiftedImgIm);
+<A NAME="300"></A>
+<A NAME="301"></A>      <FONT ID="SingleLineComment">// Fenstern
+<A NAME="302"></A></FONT>      <FONT ID="Int">int</FONT>[][]   windowedImg = FFTTools.autoWindow(magscaleImage);
+<A NAME="303"></A>
+<A NAME="304"></A>      <FONT ID="SingleLineComment">// Konvertieren in ein java-Image
+<A NAME="305"></A></FONT>      imagImage = convertIntArrayToImage(windowedImg);
+<A NAME="306"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="307"></A></FONT> 
+<A NAME="308"></A>    <FONT ID="SingleLineComment">// Der Canvas-Klasse das neue Bild uebergeben und neu zeichnen
+<A NAME="309"></A></FONT>    myCanvas.setImage(imagImage);
+<A NAME="310"></A>    myCanvas.repaint();
+<A NAME="311"></A>  }   <FONT ID="SingleLineComment">// Methode calculateAndDisplayRealImage()
+<A NAME="312"></A></FONT> 
+<A NAME="313"></A>
+<A NAME="314"></A>  <FONT ID="FormalComment">/**
+<A NAME="315"></A>   * Die Methode baut das k-Raum-Anzeigefenster und seine Elemente auf und stellt
+<A NAME="316"></A>   * sie dar. Zusaetzlich werden ActionListener fuer die Knoepfe angelegt.
+<A NAME="317"></A>   */</FONT>
+<A NAME="318"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="319"></A>
+<A NAME="320"></A>    <FONT ID="SingleLineComment">// Setzen einiger Fenstereigenschaften
+<A NAME="321"></A></FONT>    <FONT ID="SingleLineComment">// this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+<A NAME="322"></A></FONT>                <FONT ID="SingleLineComment">// this.setLocation(150, 150);
+<A NAME="323"></A></FONT>            
+<A NAME="324"></A>    <FONT ID="SingleLineComment">// tha 2006.1.3
+<A NAME="325"></A></FONT>                <FONT ID="If">if</FONT> (System.getSecurityManager() == <FONT ID="Null">null</FONT>) {
+<A NAME="326"></A>                    <FONT ID="This">this</FONT>.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+<A NAME="327"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="328"></A>                    <FONT ID="SingleLineComment">// Wenn das Programm innerhalb eines Security Managers läuft,
+<A NAME="329"></A></FONT>                    <FONT ID="SingleLineComment">// wird die Warnung "" von 18 Pt am unteren Bildrand eingeblendet.
+<A NAME="330"></A></FONT>                    <FONT ID="SingleLineComment">// Sie überdeckt den Bildinhalt.
+<A NAME="331"></A></FONT>                    <FONT ID="This">this</FONT>.setSize(FRAME_WIDTH, FRAME_HEIGHT + <FONT ID="IntegerLiteral">18</FONT>);
+<A NAME="332"></A>                }
+<A NAME="333"></A>                
+<A NAME="334"></A>    <FONT ID="This">this</FONT>.setResizable(<FONT ID="False">false</FONT>);
+<A NAME="335"></A>
+<A NAME="336"></A>    <FONT ID="SingleLineComment">// Knopf zur Darstellung des Magnitudenbildes einrichten
+<A NAME="337"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="338"></A></FONT>    <FONT ID="SingleLineComment">// tbMagnitudeImage.setText("jToggleButton1");
+<A NAME="339"></A></FONT>    <FONT ID="SingleLineComment">// tbMagnitudeImage.setLabel("Mag");
+<A NAME="340"></A></FONT>    tbMagnitudeImage.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspaceframe.btn.magnitude.title"</FONT>));
+<A NAME="341"></A>    tbMagnitudeImage.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="342"></A>    tbMagnitudeImage.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">275</FONT>, <FONT ID="IntegerLiteral">59</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="343"></A>    tbMagnitudeImage.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="344"></A>
+<A NAME="345"></A>
+<A NAME="346"></A>      <FONT ID="FormalComment">/**
+<A NAME="347"></A>       * Method declaration
+<A NAME="348"></A>       * 
+<A NAME="349"></A>       * 
+<A NAME="350"></A>       * @param e
+<A NAME="351"></A>       * 
+<A NAME="352"></A>       * @see
+<A NAME="353"></A>       */</FONT>
+<A NAME="354"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="355"></A>        calculateAndDisplayMagnitudeImage();
+<A NAME="356"></A>
+<A NAME="357"></A>        <FONT ID="SingleLineComment">// tbMagnitudeImage_actionPerformed(e);
+<A NAME="358"></A></FONT>      } 
+<A NAME="359"></A>
+<A NAME="360"></A>    });
+<A NAME="361"></A>
+<A NAME="362"></A>    <FONT ID="SingleLineComment">// Knopf zur Darstellung des Phasenbildes einrichten
+<A NAME="363"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="364"></A></FONT>    <FONT ID="SingleLineComment">// tbPhaseImage.setText("jToggleButton2");
+<A NAME="365"></A></FONT>    <FONT ID="SingleLineComment">// tbPhaseImage.setLabel("Pha");
+<A NAME="366"></A></FONT>    tbPhaseImage.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspaceframe.btn.phase.title"</FONT>));
+<A NAME="367"></A>    tbPhaseImage.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">71</FONT>, <FONT ID="IntegerLiteral">275</FONT>, <FONT ID="IntegerLiteral">59</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="368"></A>    tbPhaseImage.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="369"></A>
+<A NAME="370"></A>
+<A NAME="371"></A>      <FONT ID="FormalComment">/**
+<A NAME="372"></A>       * Method declaration
+<A NAME="373"></A>       * 
+<A NAME="374"></A>       * 
+<A NAME="375"></A>       * @param e
+<A NAME="376"></A>       * 
+<A NAME="377"></A>       * @see
+<A NAME="378"></A>       */</FONT>
+<A NAME="379"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="380"></A>        calculateAndDisplayPhaseImage();
+<A NAME="381"></A>
+<A NAME="382"></A>        <FONT ID="SingleLineComment">// tbPhaseImage_actionPerformed(e);
+<A NAME="383"></A></FONT>      } 
+<A NAME="384"></A>
+<A NAME="385"></A>    });
+<A NAME="386"></A>
+<A NAME="387"></A>    <FONT ID="SingleLineComment">// Knopf zur Darstellung des Realteils der FFT einrichten
+<A NAME="388"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="389"></A></FONT>    <FONT ID="SingleLineComment">// tbFFTReal.setText("jToggleButton3");
+<A NAME="390"></A></FONT>    <FONT ID="SingleLineComment">// tbFFTReal.setLabel("Real");
+<A NAME="391"></A></FONT>    tbFFTReal.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspaceframe.btn.real.title"</FONT>));
+<A NAME="392"></A>    tbFFTReal.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">136</FONT>, <FONT ID="IntegerLiteral">275</FONT>, <FONT ID="IntegerLiteral">59</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="393"></A>    tbFFTReal.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="394"></A>
+<A NAME="395"></A>
+<A NAME="396"></A>      <FONT ID="FormalComment">/**
+<A NAME="397"></A>       * Method declaration
+<A NAME="398"></A>       * 
+<A NAME="399"></A>       * 
+<A NAME="400"></A>       * @param e
+<A NAME="401"></A>       * 
+<A NAME="402"></A>       * @see
+<A NAME="403"></A>       */</FONT>
+<A NAME="404"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="405"></A>        calculateAndDisplayRealImage();
+<A NAME="406"></A>
+<A NAME="407"></A>        <FONT ID="SingleLineComment">// tbFFTReal_actionPerformed(e);
+<A NAME="408"></A></FONT>      } 
+<A NAME="409"></A>
+<A NAME="410"></A>    });
+<A NAME="411"></A>
+<A NAME="412"></A>    <FONT ID="SingleLineComment">// Knopf zur Darstellung des Imaginaerteils der FFT einrichten
+<A NAME="413"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="414"></A></FONT>    <FONT ID="SingleLineComment">// tbFFTImag.setText("jToggleButton4");
+<A NAME="415"></A></FONT>    <FONT ID="SingleLineComment">// tbFFTImag.setLabel("Imag");
+<A NAME="416"></A></FONT>    tbFFTImag.setText(java.util.ResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/tools/resources/tools_loc"</FONT>).getString(<FONT ID="StringLiteral">"kspaceframe.btn.imag.title"</FONT>));
+<A NAME="417"></A>    tbFFTImag.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="418"></A>    tbFFTImag.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">203</FONT>, <FONT ID="IntegerLiteral">275</FONT>, <FONT ID="IntegerLiteral">59</FONT>, <FONT ID="IntegerLiteral">25</FONT>));
+<A NAME="419"></A>    tbFFTImag.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="420"></A>
+<A NAME="421"></A>
+<A NAME="422"></A>      <FONT ID="FormalComment">/**
+<A NAME="423"></A>       * Method declaration
+<A NAME="424"></A>       * 
+<A NAME="425"></A>       * 
+<A NAME="426"></A>       * @param e
+<A NAME="427"></A>       * 
+<A NAME="428"></A>       * @see
+<A NAME="429"></A>       */</FONT>
+<A NAME="430"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="431"></A>        calculateAndDisplayImagImage();
+<A NAME="432"></A>
+<A NAME="433"></A>        <FONT ID="SingleLineComment">// tbFFTImag_actionPerformed(e);
+<A NAME="434"></A></FONT>      } 
+<A NAME="435"></A>
+<A NAME="436"></A>    });
+<A NAME="437"></A>
+<A NAME="438"></A>    <FONT ID="SingleLineComment">// Knoepfe gruppieren
+<A NAME="439"></A></FONT>    myButtonGroup.add(tbMagnitudeImage);
+<A NAME="440"></A>    myButtonGroup.add(tbPhaseImage);
+<A NAME="441"></A>    myButtonGroup.add(tbFFTReal);
+<A NAME="442"></A>    myButtonGroup.add(tbFFTImag);
+<A NAME="443"></A>
+<A NAME="444"></A>    <FONT ID="SingleLineComment">// Einrichten der Zeichenflaeche
+<A NAME="445"></A></FONT>    myCanvas.setBackground(<FONT ID="New">new</FONT> Color(<FONT ID="IntegerLiteral">204</FONT>, <FONT ID="IntegerLiteral">204</FONT>, <FONT ID="IntegerLiteral">204</FONT>));
+<A NAME="446"></A>    myCanvas.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>));
+<A NAME="447"></A>
+<A NAME="448"></A>    <FONT ID="SingleLineComment">// Hinzufuegen der einzelnen Elemente zum Fenster
+<A NAME="449"></A></FONT>    <FONT ID="This">this</FONT>.getContentPane().setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="450"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbMagnitudeImage, <FONT ID="Null">null</FONT>);
+<A NAME="451"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbPhaseImage, <FONT ID="Null">null</FONT>);
+<A NAME="452"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbFFTReal, <FONT ID="Null">null</FONT>);
+<A NAME="453"></A>    <FONT ID="This">this</FONT>.getContentPane().add(tbFFTImag, <FONT ID="Null">null</FONT>);
+<A NAME="454"></A>    <FONT ID="This">this</FONT>.getContentPane().add(myCanvas, <FONT ID="Null">null</FONT>);
+<A NAME="455"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="456"></A></FONT> 
+<A NAME="457"></A>}
+<A NAME="458"></A>
+<A NAME="459"></A>
+<A NAME="460"></A>
+<A NAME="461"></A>
+<A NAME="462"></A>
+<A NAME="463"></A>
+<A NAME="464"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="465"></A>
+<A NAME="466"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">KSpaceFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

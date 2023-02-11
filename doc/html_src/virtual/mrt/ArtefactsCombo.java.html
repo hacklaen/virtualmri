@@ -1,0 +1,322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.ArtefactsCombo (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ArtefactsCombo</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts.*</A>;
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A><FONT ID="FormalComment">/**
+<A NAME="32"></A> * Die Klasse verwaltet die Auswahlbox, zur Auswahl der Artefakt-Simulatoren.
+<A NAME="33"></A> * Die Methode getArtefacts liest die Artefaktklassen und Artefaktnamen aus der Property-Datei
+<A NAME="34"></A> * aus und erzeugt ueber Reflections Instanzen der ArtefactUI-Klassen.
+<A NAME="35"></A> * Auch die Ereignisbehandlung der Auswahlbox findet in dieser Klasse statt. Beim
+<A NAME="36"></A> * Wehcseln des artefakt-Simulators werden die eingestellten Werte ueber "setValue"
+<A NAME="37"></A> * in der ArtefactUI-Klasse gespeichert und ueber "getValue" wiederhergestellt.
+<A NAME="38"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="39"></A> * Thomas Hacklaender 2000.8.20:
+<A NAME="40"></A> * Einen Fehler korrigiert: Nachdem man einen Artefakt ausgewaehlt hatte,
+<A NAME="41"></A> * war die Auswahl 'Kein Artefakt' wirkungslos. Lösung: Fuer 'Kein Artefakt'
+<A NAME="42"></A> * wurde die neue Klasse NoArtefact erstellt. Sie wurde auch als gueltiger Artefakt
+<A NAME="43"></A> * in die Property Datei vmrt_artefacts.properties aufgenommen. Damit fallen
+<A NAME="44"></A> * die Korrekturen der Indizes in getArtefacts, getSelectedArtefactUI weg.
+<A NAME="45"></A> * Der neue "Artefakt" wurde auch in die Property Datei der Pulssequenzen
+<A NAME="46"></A> * vmrt_sequences.properties aufgenommen.&lt;br&gt;
+<A NAME="47"></A> * Thomas Hacklaender 2000.8.17:
+<A NAME="48"></A> * In der Methode getArtefacts den String strArtefactUI auf die neue Packagestruktur
+<A NAME="49"></A> * geaendert.&lt;br&gt;
+<A NAME="50"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="51"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="52"></A> * Thomas Hacklaender 2002.10.14:
+<A NAME="53"></A> * Resource Bundles fuer die Property-Dateien benoetigen nicht die Angabe einer Locale.&lt;br&gt;
+<A NAME="54"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="55"></A> * @author   Christian Schalla
+<A NAME="56"></A> * @author   Andreas Truemper
+<A NAME="57"></A> * @version  1.2, 2002.10.14
+<A NAME="58"></A> */</FONT>
+<A NAME="59"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ArtefactsCombo <FONT ID="Extends">extends</FONT> JComboBox {
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>  <FONT ID="SingleLineComment">// Artefakte aus der Resourcedatei einlesen
+<A NAME="63"></A></FONT>  <FONT ID="SingleLineComment">// th 2002.10.14
+<A NAME="64"></A></FONT>  <FONT ID="SingleLineComment">// Locale         myLoc = new Locale("", "");
+<A NAME="65"></A></FONT>  <FONT ID="SingleLineComment">// ResourceBundle artefactsRsrc = PropertyResourceBundle.getBundle("vmrt_artefacts", myLoc);
+<A NAME="66"></A></FONT>  <FONT ID="SingleLineComment">// ResourceBundle artefactsRsrc = PropertyResourceBundle.getBundle("vmrt_artefacts");
+<A NAME="67"></A></FONT>  <FONT ID="SingleLineComment">// th 2005.11.11
+<A NAME="68"></A></FONT>  <FONT ID="SingleLineComment">// Resourcebundle moved to virtual/mrt/resources
+<A NAME="69"></A></FONT>  ResourceBundle    artefactsRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_artefacts"</FONT>);
+<A NAME="70"></A>
+<A NAME="71"></A>  <FONT ID="SingleLineComment">// th 2005.11.11, added
+<A NAME="72"></A></FONT>  ResourceBundle    frameRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_frame"</FONT>);
+<A NAME="73"></A>
+<A NAME="74"></A>
+<A NAME="75"></A>  <FONT ID="FormalComment">/**
+<A NAME="76"></A>   * Vektor zur Aufnahme der Artefakt-Klassen.
+<A NAME="77"></A>   */</FONT>
+<A NAME="78"></A>  <FONT ID="Private">private</FONT> Vector    artefactClasses;
+<A NAME="79"></A>
+<A NAME="80"></A>
+<A NAME="81"></A>  <FONT ID="FormalComment">/**
+<A NAME="82"></A>   * Referenz auf das Hauptfenster.
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> mainFrame;
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Referenz auf den Bereich, in dem die GUI-Elemente fuer die Artefaktsimulation
+<A NAME="89"></A>   * dargestellt werden koennen.
+<A NAME="90"></A>   */</FONT>
+<A NAME="91"></A>  <FONT ID="Private">private</FONT> JPanel    pArtefactUIPanel;
+<A NAME="92"></A>
+<A NAME="93"></A>
+<A NAME="94"></A>  <FONT ID="FormalComment">/**
+<A NAME="95"></A>   */</FONT>
+<A NAME="96"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>       oldindex;
+<A NAME="97"></A>
+<A NAME="98"></A>
+<A NAME="99"></A>  <FONT ID="FormalComment">/**
+<A NAME="100"></A>   * Der Konstruktor setzt die Referenzen zum Hauptfenster und zum Panel, in dem
+<A NAME="101"></A>   * die GUI-Elemente der Artefaktsimulation dargestellt werden koennen.
+<A NAME="102"></A>   * Ausserdem wird ein leerer Vektor zur Aufnahme der Artefaktsimulatoren angelegt.
+<A NAME="103"></A>   * @param frame Rueckreferenz zum Hauptfenster.
+<A NAME="104"></A>   * @param seqSetpanel Referenz auf den Darstellungsbereich fuer die Bedienelemente
+<A NAME="105"></A>   * der Artefakt-Simulatoren.
+<A NAME="106"></A>   */</FONT>
+<A NAME="107"></A>  <FONT ID="Public">public</FONT> ArtefactsCombo(<A HREF="../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> frame, JPanel seqSetPanel) {
+<A NAME="108"></A>    mainFrame = frame;
+<A NAME="109"></A>    pArtefactUIPanel = seqSetPanel;
+<A NAME="110"></A>    artefactClasses = <FONT ID="New">new</FONT> Vector(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">5</FONT>);
+<A NAME="111"></A>  }   <FONT ID="SingleLineComment">// Konstruktor
+<A NAME="112"></A></FONT>
+<A NAME="113"></A>
+<A NAME="114"></A>  <FONT ID="FormalComment">/**
+<A NAME="115"></A>   * Die Methode laedt die Artefaktklassenamen und die Artefaktnamen aus der
+<A NAME="116"></A>   * Property-Datei. Eine Instanz des Artefakts und dessen GUI-Klasse
+<A NAME="117"></A>   * wird ueber den Namen des Artefakts in der Auswahlliste erzeugt. Eine Referenz
+<A NAME="118"></A>   * auf die ArtefactUI-Klasse wird im Vektor artefactClasses gespeichert. Dieses Konzept
+<A NAME="119"></A>   * ermoeglicht es, dem Programm ganz einfach neue Artefakt-Simulatoren hinzuzufuegen.
+<A NAME="120"></A>   * Fuer jedes Artefakt muessen zwei Klassen implementiert werden, eine UI-Klasse und
+<A NAME="121"></A>   * eine Berechnungsklasse, anschliessend muessen Name des Artefakts und Klassenname
+<A NAME="122"></A>   * der Berechnungsklasse in die Property-Datei eingetragen werden.
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getArtefacts() {
+<A NAME="125"></A>
+<A NAME="126"></A>    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i &lt;= <FONT ID="IntegerLiteral">20</FONT>; i++) {
+<A NAME="127"></A>      String      s = <FONT ID="StringLiteral">"Manipulator_Class_"</FONT> + i;
+<A NAME="128"></A>      String      w = <FONT ID="Null">null</FONT>;
+<A NAME="129"></A>      String      artName = <FONT ID="Null">null</FONT>;
+<A NAME="130"></A>      <A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>  artefact;
+<A NAME="131"></A>
+<A NAME="132"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="133"></A>        w = artefactsRsrc.getString(s);
+<A NAME="134"></A>
+<A NAME="135"></A>        <FONT ID="SingleLineComment">// Anfuehrungszeichen entfernen
+<A NAME="136"></A></FONT>        w = w.replace(<FONT ID="CharacerLiteral">'"'</FONT>, <FONT ID="CharacerLiteral">' '</FONT>);
+<A NAME="137"></A>        w = w.trim();
+<A NAME="138"></A>
+<A NAME="139"></A>        <FONT ID="SingleLineComment">// Wenn der Name nicht gefunden wird, dann benutze den Klassennamen
+<A NAME="140"></A></FONT>        <FONT ID="SingleLineComment">// zur Anzeige in der Combobox.
+<A NAME="141"></A></FONT>        <FONT ID="Try">try</FONT> {
+<A NAME="142"></A>          artName = artefactsRsrc.getString(<FONT ID="StringLiteral">"Manipulator_Name_"</FONT> + i);
+<A NAME="143"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="144"></A>          artName = w;
+<A NAME="145"></A>        } 
+<A NAME="146"></A>
+<A NAME="147"></A>        <FONT ID="SingleLineComment">// Anfuehrungszeichen entfernen
+<A NAME="148"></A></FONT>        artName = artName.replace(<FONT ID="CharacerLiteral">'"'</FONT>, <FONT ID="CharacerLiteral">' '</FONT>);
+<A NAME="149"></A>        artName = artName.trim();
+<A NAME="150"></A>
+<A NAME="151"></A>        <FONT ID="SingleLineComment">// Geaendert: tha 2000.8.17
+<A NAME="152"></A></FONT>        <FONT ID="SingleLineComment">// String strArtefactUI = "artefactsRsrc." + w + "UI";
+<A NAME="153"></A></FONT>        String  strArtefactUI = <FONT ID="StringLiteral">"virtual.mrt.artefacts."</FONT> + w + <FONT ID="StringLiteral">"UI"</FONT>;
+<A NAME="154"></A>
+<A NAME="155"></A>        Object  myArtefact = <FONT ID="Null">null</FONT>;
+<A NAME="156"></A>        Class   art = <FONT ID="Null">null</FONT>;
+<A NAME="157"></A>
+<A NAME="158"></A>        <FONT ID="SingleLineComment">// Die Klasse ueber den Namen sequenceUIName ermitteln, mit Reflectionpaket.
+<A NAME="159"></A></FONT>        <FONT ID="Try">try</FONT> {
+<A NAME="160"></A>          art = Class.forName(strArtefactUI);
+<A NAME="161"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="162"></A>          e.printStackTrace();
+<A NAME="163"></A>        } 
+<A NAME="164"></A>
+<A NAME="165"></A>        <FONT ID="SingleLineComment">// Neue Instanz dieser Klasse ableiten
+<A NAME="166"></A></FONT>        <FONT ID="Try">try</FONT> {
+<A NAME="167"></A>          myArtefact = art.newInstance();
+<A NAME="168"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="169"></A>          e.printStackTrace();
+<A NAME="170"></A>        } 
+<A NAME="171"></A>
+<A NAME="172"></A>        <FONT ID="SingleLineComment">// Frame und Sequenzpanel setzen
+<A NAME="173"></A></FONT>        artefact = (<A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>) myArtefact;
+<A NAME="174"></A>        artefact.setMainFrame(mainFrame);
+<A NAME="175"></A>        artefact.setUIPanel(pArtefactUIPanel);
+<A NAME="176"></A>        mainFrame.repaint();
+<A NAME="177"></A>
+<A NAME="178"></A>        <FONT ID="SingleLineComment">// in Vektor eintragen
+<A NAME="179"></A></FONT>        artefactClasses.addElement(artefact);
+<A NAME="180"></A>      } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="181"></A>
+<A NAME="182"></A>        <FONT ID="SingleLineComment">// Resource nicht gefunden, Schleife beenden
+<A NAME="183"></A></FONT>        <FONT ID="Break">break</FONT>;
+<A NAME="184"></A>      } 
+<A NAME="185"></A>
+<A NAME="186"></A>      <FONT ID="SingleLineComment">// String einfuegen (Namen des Sequenz, nicht die Klasse)
+<A NAME="187"></A></FONT>      <FONT ID="This">this</FONT>.addItem(artName);
+<A NAME="188"></A>    } 
+<A NAME="189"></A>    addItemListener(<FONT ID="New">new</FONT> java.awt.event.ItemListener() {
+<A NAME="190"></A>
+<A NAME="191"></A>
+<A NAME="192"></A>      <FONT ID="FormalComment">/**
+<A NAME="193"></A>       * Method declaration
+<A NAME="194"></A>       * 
+<A NAME="195"></A>       * 
+<A NAME="196"></A>       * @param e
+<A NAME="197"></A>       * 
+<A NAME="198"></A>       * @see
+<A NAME="199"></A>       */</FONT>
+<A NAME="200"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> itemStateChanged(ItemEvent e) {
+<A NAME="201"></A>        cb_itemStateChanged(e);
+<A NAME="202"></A>      } 
+<A NAME="203"></A>
+<A NAME="204"></A>    });
+<A NAME="205"></A>    oldindex = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="206"></A>  }   <FONT ID="SingleLineComment">// Methode getSequences
+<A NAME="207"></A></FONT> 
+<A NAME="208"></A>
+<A NAME="209"></A>  <FONT ID="FormalComment">/**
+<A NAME="210"></A>   * Die Methode wird aufgerufen, wenn ein neuer Artefakt-Simulator aus der Auswahlbox
+<A NAME="211"></A>   * ausgewaehlt wird. Der Bereich zur Darstellung der Oberflaechenelemente des
+<A NAME="212"></A>   * Artefakt-Simulators wird dann geloescht und anschliessend mit den Elementen des
+<A NAME="213"></A>   * neuen Simulators neu gefuellt.
+<A NAME="214"></A>   * @param e Das Ereignis beim Auswaehlen eines anderen Artefakt-Simulators aus der Auswahlbox.
+<A NAME="215"></A>   */</FONT>
+<A NAME="216"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> cb_itemStateChanged(ItemEvent e) {
+<A NAME="217"></A>
+<A NAME="218"></A>    pArtefactUIPanel.removeAll();
+<A NAME="219"></A>    pArtefactUIPanel.repaint();
+<A NAME="220"></A>
+<A NAME="221"></A>    <A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>  art;
+<A NAME="222"></A>
+<A NAME="223"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="224"></A>
+<A NAME="225"></A>      <FONT ID="SingleLineComment">// Geaendert: tha 2000.8.20
+<A NAME="226"></A></FONT>      <FONT ID="SingleLineComment">// 'NoArtefact' ist als Artefakt in die Proüperty Datei aufgenommen.
+<A NAME="227"></A></FONT>      <FONT ID="SingleLineComment">// Der Index muss dehalb nicht mehr korrigiert werden.
+<A NAME="228"></A></FONT>      <FONT ID="SingleLineComment">// art = (ArtefactUI) artefactClasses.elementAt(oldindex - 1);
+<A NAME="229"></A></FONT>      art = (<A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>) artefactClasses.elementAt(oldindex);
+<A NAME="230"></A>
+<A NAME="231"></A>      <FONT ID="SingleLineComment">// Werte abspeichern
+<A NAME="232"></A></FONT>      art.setValues();
+<A NAME="233"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="234"></A>
+<A NAME="235"></A>
+<A NAME="236"></A>    <FONT ID="Int">int</FONT> index = getSelectedIndex();
+<A NAME="237"></A>
+<A NAME="238"></A>    oldindex = index;
+<A NAME="239"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="240"></A>
+<A NAME="241"></A>      <FONT ID="SingleLineComment">// Geaendert: tha 2000.8.20
+<A NAME="242"></A></FONT>      <FONT ID="SingleLineComment">// 'NoArtefact' ist als Artefakt in die Proüperty Datei aufgenommen.
+<A NAME="243"></A></FONT>      <FONT ID="SingleLineComment">// Der Index muss dehalb nicht mehr korrigiert werden.
+<A NAME="244"></A></FONT>      <FONT ID="SingleLineComment">// art = (ArtefactUI) artefactClasses.elementAt(index - 1);
+<A NAME="245"></A></FONT>      art = (<A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>) artefactClasses.elementAt(index);
+<A NAME="246"></A>
+<A NAME="247"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="248"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="249"></A>    } 
+<A NAME="250"></A>
+<A NAME="251"></A>    art.fillPanel();
+<A NAME="252"></A>    art.getValues();
+<A NAME="253"></A>
+<A NAME="254"></A>    <FONT ID="SingleLineComment">// Der folgende Text in der Statusleiste wird eigentlich nur gesetzt, damit
+<A NAME="255"></A></FONT>    <FONT ID="SingleLineComment">// ein repaint stattfindet, so dass die neuen Bedienelemente wirklich dargestellt
+<A NAME="256"></A></FONT>    <FONT ID="SingleLineComment">// werden. Aufgrund eines Bugs im GridBagLayout wuerde dies sonst naemlich nicht
+<A NAME="257"></A></FONT>    <FONT ID="SingleLineComment">// passieren. DAs repaint findet auch nur statt, wenn sich tatsaechlich etwas
+<A NAME="258"></A></FONT>    <FONT ID="SingleLineComment">// geaendert hat. Daher die zweite komische Zeile ...
+<A NAME="259"></A></FONT>    mainFrame.setStatusBar(frameRsrc.getString(<FONT ID="StringLiteral">"statusbar.note.start"</FONT>));
+<A NAME="260"></A>    mainFrame.setStatusBar(mainFrame.getStatusText() + <FONT ID="StringLiteral">" "</FONT>);
+<A NAME="261"></A>  }   <FONT ID="SingleLineComment">// Methode cb_itemStateChanged(ItemEvent e)
+<A NAME="262"></A></FONT> 
+<A NAME="263"></A>
+<A NAME="264"></A>  <FONT ID="FormalComment">/**
+<A NAME="265"></A>   * Die Methode liefert eine Referenz auf die UI-Klasse des in der Auswahlbox
+<A NAME="266"></A>   * selektierten Artefakt-Simulators.
+<A NAME="267"></A>   * @return Referenz auf die UI-Klasse des ausgewählten Artefakts.
+<A NAME="268"></A>   */</FONT>
+<A NAME="269"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A> getSelectedArtefactUI() {
+<A NAME="270"></A>    <FONT ID="Int">int</FONT> index = getSelectedIndex();
+<A NAME="271"></A>
+<A NAME="272"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="273"></A>
+<A NAME="274"></A>      <FONT ID="SingleLineComment">// Geaendert: tha 2000.8.20
+<A NAME="275"></A></FONT>      <FONT ID="SingleLineComment">// 'NoArtefact' ist als Artefakt in die Proüperty Datei aufgenommen.
+<A NAME="276"></A></FONT>      <FONT ID="SingleLineComment">// Der Index muss dehalb nicht mehr korrigiert werden.
+<A NAME="277"></A></FONT>      <FONT ID="SingleLineComment">// return (ArtefactUI) artefactClasses.elementAt(index - 1);
+<A NAME="278"></A></FONT>      <FONT ID="Return">return</FONT> (<A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A>) artefactClasses.elementAt(index);
+<A NAME="279"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="280"></A>      <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="281"></A>    } 
+<A NAME="282"></A>
+<A NAME="283"></A>  }   <FONT ID="SingleLineComment">// Methode getSelectedArtefact()
+<A NAME="284"></A></FONT> 
+<A NAME="285"></A>}
+<A NAME="286"></A>
+<A NAME="287"></A>
+<A NAME="288"></A>
+<A NAME="289"></A>
+<A NAME="290"></A>
+<A NAME="291"></A>
+<A NAME="292"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="293"></A>
+<A NAME="294"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ArtefactsCombo</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

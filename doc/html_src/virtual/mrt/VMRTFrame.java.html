@@ -1,0 +1,2770 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.VMRTFrame (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">VMRTFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> java.lang.reflect.*;
+<A NAME="27"></A><FONT ID="Import">import</FONT> java.beans.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="29"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="30"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="31"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="32"></A>
+<A NAME="33"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.mrt.sequences.index.html" target="packageFrame">virtual.mrt.sequences.*</A>;
+<A NAME="34"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.mrt.artefacts.index.html" target="packageFrame">virtual.mrt.artefacts.*</A>;
+<A NAME="35"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="36"></A>
+<A NAME="37"></A><FONT ID="Import">import</FONT> rad.dicom.dcm.*;
+<A NAME="38"></A><FONT ID="Import">import</FONT> rad.dicom.ima.*;
+<A NAME="39"></A>
+<A NAME="40"></A><FONT ID="SingleLineComment">// import jigl.*;
+<A NAME="41"></A></FONT><FONT ID="Import">import</FONT> <A HREF="../../jigl.image.index.html" target="packageFrame">jigl.image.*</A>;
+<A NAME="42"></A>
+<A NAME="43"></A>
+<A NAME="44"></A><FONT ID="FormalComment">/**
+<A NAME="45"></A> * Diese Klasse stellt die Oberflaeche fuer das Messwerkzeug des virtuellen Tomographen dar.
+<A NAME="46"></A> * Es werden alle graphischen Elemente erzeugt, eingerichtet und dargestellt.
+<A NAME="47"></A> * Ausserdem findet hier die Ereignissteuerung der Bedienelmente statt.
+<A NAME="48"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="49"></A> * Thomas Hacklaender 2000.8.19:
+<A NAME="50"></A> * Programmfehler beseitigt, der erst ab Java 1.3 auftritt: pCanvas und pSequence
+<A NAME="51"></A> * waren gleichberechtigte Komponenten. Mouse-Events durften aber bei  sichtbarer
+<A NAME="52"></A> * pSequence nur an diese gelangen. Loesung: Es muss eine z-Ordnung definiert werden.
+<A NAME="53"></A> * Auf die gesamte ContentPane des Frames wird eine JLayeredPane gelegt. Alle Komponenten
+<A NAME="54"></A> * werden auf die JLayeredPane gezeichnet. pSequence wird in die "sichtbarste" Ebene
+<A NAME="55"></A> * gezeichnet.&lt;br&gt;
+<A NAME="56"></A> * Thomas Hacklaender 2006.1.2:
+<A NAME="57"></A> * Überdeckung durch Meldung des Security Managers am unteren Bildrand berücksichtigt.&lt;br&gt;
+<A NAME="58"></A> * Thomas Hacklaender 2006.1.2:
+<A NAME="59"></A> * Applet/Application als Startklassen getrennt.&lt;br&gt;
+<A NAME="60"></A> * Thomas Hacklaender 2000.4.3:
+<A NAME="61"></A> * Umstellung auf die aktuelle Version 2.1 des dcm-Package.&lt;br&gt;
+<A NAME="62"></A> * Thomas Hacklaender 2000.4.3:
+<A NAME="63"></A> * In der Methode drawCreatedIntensityImage Optimale Windoweinstellung
+<A NAME="64"></A> * eingebaut.&lt;br&gt;
+<A NAME="65"></A> * Thomas Hacklaender 2000.7.2:
+<A NAME="66"></A> * Menuepunkt 'Hilfe/Ueber' zeigt die AboutBox.&lt;br&gt;
+<A NAME="67"></A> * Thomas Hacklaender 2000.7.13:
+<A NAME="68"></A> * Knopf 'Fall-Info' eingebaut.&lt;br&gt;
+<A NAME="69"></A> * Thomas Hacklaender 2000.7.14:
+<A NAME="70"></A> * Menues erweitert.&lt;br&gt;
+<A NAME="71"></A> * Thomas Hacklaender 2002.10.12:
+<A NAME="72"></A> * About-Menues gestrichen. Info in Tools-Menue.&lt;br&gt;
+<A NAME="73"></A> * Thomas Hacklaender 2002.10.13:
+<A NAME="74"></A> * Strings internationalisiert.&lt;br&gt;
+<A NAME="75"></A> * Thomas Hacklaender 2002.10.29:
+<A NAME="76"></A> * in jInit die Hintergrundfarbe auf Dunkelblau gesetzt.&lt;br&gt;
+<A NAME="77"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="78"></A> * @author   Christian Schalla
+<A NAME="79"></A> * @author   Andreas Truemper
+<A NAME="80"></A> * @version  1.3, 2002.10.29
+<A NAME="81"></A> */</FONT>
+<A NAME="82"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> VMRTFrame <FONT ID="Extends">extends</FONT> JFrame {
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>  <FONT ID="SingleLineComment">// th 2005.11.11, added
+<A NAME="86"></A></FONT>  ResourceBundle          frameRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_frame"</FONT>);
+<A NAME="87"></A>
+<A NAME="88"></A>
+<A NAME="89"></A>  <FONT ID="FormalComment">/**
+<A NAME="90"></A>   * Standard-Mauszeiger.
+<A NAME="91"></A>   */</FONT>
+<A NAME="92"></A>  <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Cursor    defaultCursor = <FONT ID="New">new</FONT> Cursor(Cursor.DEFAULT_CURSOR);
+<A NAME="93"></A>
+<A NAME="94"></A>
+<A NAME="95"></A>  <FONT ID="FormalComment">/**
+<A NAME="96"></A>   * Mauszeiger fuer die Fensterung.
+<A NAME="97"></A>   */</FONT>
+<A NAME="98"></A>  <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Cursor    windowCursor = <FONT ID="New">new</FONT> Cursor(Cursor.MOVE_CURSOR);
+<A NAME="99"></A>
+<A NAME="100"></A>  <FONT ID="SingleLineComment">// Menueleiste inlusive ihrer Menues und deren Menueeintraege erzeugen
+<A NAME="101"></A></FONT>
+<A NAME="102"></A>
+<A NAME="103"></A>  <FONT ID="FormalComment">/**
+<A NAME="104"></A>   * Die Menueleiste.
+<A NAME="105"></A>   */</FONT>
+<A NAME="106"></A>  <FONT ID="Private">private</FONT> JMenuBar        menuBar1 = <FONT ID="New">new</FONT> JMenuBar();
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Das Dateimenue.
+<A NAME="111"></A>   */</FONT>
+<A NAME="112"></A>  <FONT ID="Private">private</FONT> JMenu           menuFile = <FONT ID="New">new</FONT> JMenu();
+<A NAME="113"></A>
+<A NAME="114"></A>
+<A NAME="115"></A>  <FONT ID="FormalComment">/**
+<A NAME="116"></A>   * Dateimenueeintrag 'Oeffnen'.
+<A NAME="117"></A>   */</FONT>
+<A NAME="118"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuFileOpen = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="119"></A>
+<A NAME="120"></A>
+<A NAME="121"></A>  <FONT ID="FormalComment">/**
+<A NAME="122"></A>   * Dateimenueeintrag 'Speichern'.
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuFileSave = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="125"></A>
+<A NAME="126"></A>
+<A NAME="127"></A>  <FONT ID="FormalComment">/**
+<A NAME="128"></A>   * Dateimenueeintrag 'Drucken'.
+<A NAME="129"></A>   */</FONT>
+<A NAME="130"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuFilePrint = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="131"></A>
+<A NAME="132"></A>
+<A NAME="133"></A>  <FONT ID="FormalComment">/**
+<A NAME="134"></A>   * Dateimenueeintrag 'Beenden'.
+<A NAME="135"></A>   */</FONT>
+<A NAME="136"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuFileExit = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="137"></A>
+<A NAME="138"></A>
+<A NAME="139"></A>  <FONT ID="FormalComment">/**
+<A NAME="140"></A>   * Bearbeiten-Menue.
+<A NAME="141"></A>   */</FONT>
+<A NAME="142"></A>  <FONT ID="Private">private</FONT> JMenu           menuEdit = <FONT ID="New">new</FONT> JMenu();
+<A NAME="143"></A>
+<A NAME="144"></A>
+<A NAME="145"></A>  <FONT ID="FormalComment">/**
+<A NAME="146"></A>   * Bearbeiten-Menueeintrag 'Selektiertes Bild loeschen'.
+<A NAME="147"></A>   */</FONT>
+<A NAME="148"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuEditClear = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="149"></A>
+<A NAME="150"></A>
+<A NAME="151"></A>  <FONT ID="FormalComment">/**
+<A NAME="152"></A>   * Bearbeiten-Menueeintrag 'Alle Bilder loeschen'.
+<A NAME="153"></A>   */</FONT>
+<A NAME="154"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuEditClearAll = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="155"></A>
+<A NAME="156"></A>
+<A NAME="157"></A>  <FONT ID="FormalComment">/**
+<A NAME="158"></A>   * Tools-Menue.
+<A NAME="159"></A>   */</FONT>
+<A NAME="160"></A>  <FONT ID="Private">private</FONT> JMenu           menuTools = <FONT ID="New">new</FONT> JMenu();
+<A NAME="161"></A>
+<A NAME="162"></A>
+<A NAME="163"></A>  <FONT ID="FormalComment">/**
+<A NAME="164"></A>   * Tools-Menueeintrag 'About...'.
+<A NAME="165"></A>   */</FONT>
+<A NAME="166"></A>  <FONT ID="Private">private</FONT> JMenuItem       menuToolsAbout = <FONT ID="New">new</FONT> JMenuItem();
+<A NAME="167"></A>
+<A NAME="168"></A>
+<A NAME="169"></A>  <FONT ID="FormalComment">/**
+<A NAME="170"></A>   * Hilfe-Menue.
+<A NAME="171"></A>   */</FONT>
+<A NAME="172"></A>
+<A NAME="173"></A>  <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="174"></A></FONT>  <FONT ID="SingleLineComment">// private JMenu            menuHelp = new JMenu();
+<A NAME="175"></A></FONT>
+<A NAME="176"></A>
+<A NAME="177"></A>  <FONT ID="SingleLineComment">// Hier werden einige Icons fuer einige Buttons deklariert
+<A NAME="178"></A></FONT>
+<A NAME="179"></A>
+<A NAME="180"></A>  <FONT ID="FormalComment">/**
+<A NAME="181"></A>   * Icon fuer den Knopf zum Laden eines Rohdatensatzes.
+<A NAME="182"></A>   */</FONT>
+<A NAME="183"></A>  <FONT ID="Private">private</FONT> ImageIcon       iOpen;
+<A NAME="184"></A>
+<A NAME="185"></A>
+<A NAME="186"></A>  <FONT ID="FormalComment">/**
+<A NAME="187"></A>   * Icon fuer den Knopf zum Speichern eines Bildes.
+<A NAME="188"></A>   */</FONT>
+<A NAME="189"></A>  <FONT ID="Private">private</FONT> ImageIcon       iSave;
+<A NAME="190"></A>
+<A NAME="191"></A>
+<A NAME="192"></A>  <FONT ID="FormalComment">/**
+<A NAME="193"></A>   * Icon fuer den Knopf zum Drucken des Zeichenflaecheninhalts.
+<A NAME="194"></A>   */</FONT>
+<A NAME="195"></A>  <FONT ID="Private">private</FONT> ImageIcon       iPrint;
+<A NAME="196"></A>
+<A NAME="197"></A>
+<A NAME="198"></A>  <FONT ID="FormalComment">/**
+<A NAME="199"></A>   * Icon fuer den Knopf, um 1 Bild darzustellen.
+<A NAME="200"></A>   */</FONT>
+<A NAME="201"></A>  <FONT ID="Private">private</FONT> ImageIcon       i1Image;
+<A NAME="202"></A>
+<A NAME="203"></A>
+<A NAME="204"></A>  <FONT ID="FormalComment">/**
+<A NAME="205"></A>   * Icon fuer den Knopf, um 4 Bilder darzustellen.
+<A NAME="206"></A>   */</FONT>
+<A NAME="207"></A>  <FONT ID="Private">private</FONT> ImageIcon       i4Images;
+<A NAME="208"></A>
+<A NAME="209"></A>
+<A NAME="210"></A>  <FONT ID="FormalComment">/**
+<A NAME="211"></A>   * Icon fuer den Knopf zur Anzeige der Bidbeschriftung.
+<A NAME="212"></A>   */</FONT>
+<A NAME="213"></A>  <FONT ID="Private">private</FONT> ImageIcon       iInfoText;
+<A NAME="214"></A>
+<A NAME="215"></A>
+<A NAME="216"></A>  <FONT ID="FormalComment">/**
+<A NAME="217"></A>   * Icon fuer den Knopf zur Darstellung des Histogrammfensters.
+<A NAME="218"></A>   */</FONT>
+<A NAME="219"></A>  <FONT ID="Private">private</FONT> ImageIcon       iHistogram;
+<A NAME="220"></A>
+<A NAME="221"></A>
+<A NAME="222"></A>  <FONT ID="FormalComment">/**
+<A NAME="223"></A>   * Icon fuer den Knopf zur Darstellung des k-Raum-Fensters.
+<A NAME="224"></A>   */</FONT>
+<A NAME="225"></A>  <FONT ID="Private">private</FONT> ImageIcon       iKSpace;
+<A NAME="226"></A>
+<A NAME="227"></A>
+<A NAME="228"></A>  <FONT ID="FormalComment">/**
+<A NAME="229"></A>   * Icon fuer den Knopf zur Anzeige des k-Raum-Manipulator-Fensters.
+<A NAME="230"></A>   */</FONT>
+<A NAME="231"></A>  <FONT ID="Private">private</FONT> ImageIcon       iKSpaceMan;
+<A NAME="232"></A>
+<A NAME="233"></A>
+<A NAME="234"></A>  <FONT ID="FormalComment">/**
+<A NAME="235"></A>   * Icon fuer den Knopf zur Darstellung der Fall-Infos.
+<A NAME="236"></A>   */</FONT>
+<A NAME="237"></A>  <FONT ID="Private">private</FONT> ImageIcon       iCaseInfo;
+<A NAME="238"></A>
+<A NAME="239"></A>
+<A NAME="240"></A>  <FONT ID="FormalComment">/**
+<A NAME="241"></A>   * Icon fuer den Knopf zur Erzeugung eines Referenzbildes.
+<A NAME="242"></A>   */</FONT>
+<A NAME="243"></A>  <FONT ID="Private">private</FONT> ImageIcon       iRefIma;
+<A NAME="244"></A>
+<A NAME="245"></A>
+<A NAME="246"></A>  <FONT ID="FormalComment">/**
+<A NAME="247"></A>   * Icon fuer den Knopf zur Erzeugung des Beispielbildes.
+<A NAME="248"></A>   */</FONT>
+<A NAME="249"></A>  <FONT ID="Private">private</FONT> ImageIcon       iSampleIma;
+<A NAME="250"></A>
+<A NAME="251"></A>
+<A NAME="252"></A>  <FONT ID="FormalComment">/**
+<A NAME="253"></A>   * Icon fuer den Knopf zum Reset des Windows (width=max).
+<A NAME="254"></A>   */</FONT>
+<A NAME="255"></A>  <FONT ID="Private">private</FONT> ImageIcon       winReset;
+<A NAME="256"></A>
+<A NAME="257"></A>
+<A NAME="258"></A>  <FONT ID="FormalComment">/**
+<A NAME="259"></A>   * Icon fuer den Knopf zur Optimalen Einstellung des Windows.
+<A NAME="260"></A>   */</FONT>
+<A NAME="261"></A>  <FONT ID="Private">private</FONT> ImageIcon       winOpt;
+<A NAME="262"></A>
+<A NAME="263"></A>
+<A NAME="264"></A>  <FONT ID="FormalComment">/**
+<A NAME="265"></A>   * Statusleiste.
+<A NAME="266"></A>   */</FONT>
+<A NAME="267"></A>  <FONT ID="Private">private</FONT> JLabel          statusBar = <FONT ID="New">new</FONT> JLabel();
+<A NAME="268"></A>
+<A NAME="269"></A>
+<A NAME="270"></A>  <FONT ID="FormalComment">/**
+<A NAME="271"></A>   * Beschriftungsfeld fuer die Mausposition.
+<A NAME="272"></A>   */</FONT>
+<A NAME="273"></A>  <FONT ID="Private">private</FONT> JLabel          lPositionText = <FONT ID="New">new</FONT> JLabel();
+<A NAME="274"></A>
+<A NAME="275"></A>
+<A NAME="276"></A>  <FONT ID="FormalComment">/**
+<A NAME="277"></A>   * Textfeld fuer die Positionsangabe des Mauszeigers, wenn dieser sich
+<A NAME="278"></A>   * ueber dem Canvas befindet.
+<A NAME="279"></A>   */</FONT>
+<A NAME="280"></A>  <FONT ID="Private">private</FONT> JLabel          lPosition = <FONT ID="New">new</FONT> JLabel();
+<A NAME="281"></A>
+<A NAME="282"></A>
+<A NAME="283"></A>  <FONT ID="FormalComment">/**
+<A NAME="284"></A>   * Fortschrittsanzeige.
+<A NAME="285"></A>   */</FONT>
+<A NAME="286"></A>  <FONT ID="Private">private</FONT> JProgressBar    prbarProgress = <FONT ID="New">new</FONT> JProgressBar();
+<A NAME="287"></A>
+<A NAME="288"></A>
+<A NAME="289"></A>  <FONT ID="FormalComment">/**
+<A NAME="290"></A>   * Darstellungsbereich fuer den gesamten Frame. Da pSequenceSettings ueber pCanvas
+<A NAME="291"></A>   * gezeichnet werden muss, ist diese Zwischenebene notwendig
+<A NAME="292"></A>   */</FONT>
+<A NAME="293"></A>  <FONT ID="Private">private</FONT> JLayeredPane    flPane = <FONT ID="New">new</FONT> JLayeredPane();
+<A NAME="294"></A>
+<A NAME="295"></A>
+<A NAME="296"></A>  <FONT ID="FormalComment">/**
+<A NAME="297"></A>   * Zeichenflaeche (Bildflaeche / Canvas).
+<A NAME="298"></A>   */</FONT>
+<A NAME="299"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/mrt/MRTPanel.java.html">MRTPanel</A>         pCanvas = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/MRTPanel.java.html">MRTPanel</A>(<FONT ID="This">this</FONT>);
+<A NAME="300"></A>
+<A NAME="301"></A>  <FONT ID="SingleLineComment">// /** Horizontale Bildlaufleiste fuer die Zeichenflaeche. */
+<A NAME="302"></A></FONT>  <FONT ID="SingleLineComment">// public JScrollBar sbHorScrollbar = new JScrollBar();
+<A NAME="303"></A></FONT>
+<A NAME="304"></A>
+<A NAME="305"></A>  <FONT ID="FormalComment">/**
+<A NAME="306"></A>   * Vertikale Bildlaufleiste fuer die Zeichenflaeche.
+<A NAME="307"></A>   */</FONT>
+<A NAME="308"></A>  <FONT ID="Public">public</FONT> JScrollBar       sbVerScrollbar = <FONT ID="New">new</FONT> JScrollBar();
+<A NAME="309"></A>
+<A NAME="310"></A>
+<A NAME="311"></A>  <FONT ID="FormalComment">/**
+<A NAME="312"></A>   * Rahmen fuer den Werkzeugbereich am rechten Rand des Fensters.
+<A NAME="313"></A>   */</FONT>
+<A NAME="314"></A>  <FONT ID="Private">private</FONT> JPanel          pToolbar = <FONT ID="New">new</FONT> JPanel();
+<A NAME="315"></A>
+<A NAME="316"></A>  <FONT ID="SingleLineComment">// tpMain ist das Hauptpanel des Karteireiters
+<A NAME="317"></A></FONT>  <FONT ID="SingleLineComment">// Dort hinein werden weitere Panels gepackt, die die einzelnen
+<A NAME="318"></A></FONT>  <FONT ID="SingleLineComment">// Karteikarten repraesentieren
+<A NAME="319"></A></FONT>
+<A NAME="320"></A>
+<A NAME="321"></A>  <FONT ID="FormalComment">/**
+<A NAME="322"></A>   * Hauptrahmen fuer die Karteikarten .
+<A NAME="323"></A>   */</FONT>
+<A NAME="324"></A>  <FONT ID="Private">private</FONT> JTabbedPane     tpMain = <FONT ID="New">new</FONT> JTabbedPane();
+<A NAME="325"></A>
+<A NAME="326"></A>
+<A NAME="327"></A>  <FONT ID="FormalComment">/**
+<A NAME="328"></A>   * Knopf zum Laden eines neuen Rohdatensatzes.
+<A NAME="329"></A>   */</FONT>
+<A NAME="330"></A>  <FONT ID="Private">private</FONT> JButton         pbLoad = <FONT ID="New">new</FONT> JButton();
+<A NAME="331"></A>
+<A NAME="332"></A>
+<A NAME="333"></A>  <FONT ID="FormalComment">/**
+<A NAME="334"></A>   * Knopf zum Speichern eines Bildes.
+<A NAME="335"></A>   */</FONT>
+<A NAME="336"></A>  <FONT ID="Private">private</FONT> JButton         pbSave = <FONT ID="New">new</FONT> JButton();
+<A NAME="337"></A>
+<A NAME="338"></A>
+<A NAME="339"></A>  <FONT ID="FormalComment">/**
+<A NAME="340"></A>   * Knop zum Drucken des Zeichenflaecheninhalts.
+<A NAME="341"></A>   */</FONT>
+<A NAME="342"></A>  <FONT ID="Private">private</FONT> JButton         pbPrint = <FONT ID="New">new</FONT> JButton();
+<A NAME="343"></A>
+<A NAME="344"></A>
+<A NAME="345"></A>  <FONT ID="FormalComment">/**
+<A NAME="346"></A>   * Knopf zum Laden des Referenzdatensatzes.
+<A NAME="347"></A>   */</FONT>
+<A NAME="348"></A>  <FONT ID="Private">private</FONT> JButton         pbReferenceData = <FONT ID="New">new</FONT> JButton();
+<A NAME="349"></A>
+<A NAME="350"></A>
+<A NAME="351"></A>  <FONT ID="FormalComment">/**
+<A NAME="352"></A>   * Knopf zum Laden des Beispielbildes.
+<A NAME="353"></A>   */</FONT>
+<A NAME="354"></A>  <FONT ID="Private">private</FONT> JButton         pbSampleData = <FONT ID="New">new</FONT> JButton();
+<A NAME="355"></A>
+<A NAME="356"></A>
+<A NAME="357"></A>  <FONT ID="FormalComment">/**
+<A NAME="358"></A>   * Knopf zum Darstellen der Fall-Infos.
+<A NAME="359"></A>   */</FONT>
+<A NAME="360"></A>  <FONT ID="Private">private</FONT> JButton         pbCaseInfo = <FONT ID="New">new</FONT> JButton();
+<A NAME="361"></A>
+<A NAME="362"></A>
+<A NAME="363"></A>  <FONT ID="FormalComment">/**
+<A NAME="364"></A>   * Karteikarte fuer alle Layout-Funkionen.
+<A NAME="365"></A>   */</FONT>
+<A NAME="366"></A>  <FONT ID="Private">private</FONT> JPanel          tpLayout = <FONT ID="New">new</FONT> JPanel();
+<A NAME="367"></A>
+<A NAME="368"></A>
+<A NAME="369"></A>  <FONT ID="FormalComment">/**
+<A NAME="370"></A>   * Karteikarte fuer die Fensterungs-Funktionen (Helligkeit und Kontrast).
+<A NAME="371"></A>   */</FONT>
+<A NAME="372"></A>  <FONT ID="Private">private</FONT> JPanel          tpWindow = <FONT ID="New">new</FONT> JPanel();
+<A NAME="373"></A>
+<A NAME="374"></A>
+<A NAME="375"></A>  <FONT ID="FormalComment">/**
+<A NAME="376"></A>   * Karteikarte fuer die Artefaktsimulation.
+<A NAME="377"></A>   */</FONT>
+<A NAME="378"></A>  <FONT ID="Private">private</FONT> JPanel          tpArtefact = <FONT ID="New">new</FONT> JPanel();
+<A NAME="379"></A>
+<A NAME="380"></A>
+<A NAME="381"></A>  <FONT ID="FormalComment">/**
+<A NAME="382"></A>   * Karteikarte fuer die Zusatzfunktionen (Simulationszeit, u.a.).
+<A NAME="383"></A>   */</FONT>
+<A NAME="384"></A>  <FONT ID="Private">private</FONT> JPanel          tpExtras = <FONT ID="New">new</FONT> JPanel();
+<A NAME="385"></A>
+<A NAME="386"></A>  <FONT ID="SingleLineComment">// Nun folgt die Erzeugung der einzelnen Elmente der Layout-Karte
+<A NAME="387"></A></FONT>
+<A NAME="388"></A>
+<A NAME="389"></A>  <FONT ID="FormalComment">/**
+<A NAME="390"></A>   * Knopf zur Auswahl der Darstellung von nur einem Bild.
+<A NAME="391"></A>   */</FONT>
+<A NAME="392"></A>  <FONT ID="Public">public</FONT> JToggleButton    rb1Image = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="393"></A>
+<A NAME="394"></A>
+<A NAME="395"></A>  <FONT ID="FormalComment">/**
+<A NAME="396"></A>   * Knopf zur Auswahl der Darstellung von 4 Bildern gleichzeitig.
+<A NAME="397"></A>   */</FONT>
+<A NAME="398"></A>  <FONT ID="Private">private</FONT> JToggleButton   rb4Images = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="399"></A>
+<A NAME="400"></A>
+<A NAME="401"></A>  <FONT ID="FormalComment">/**
+<A NAME="402"></A>   * Knopfgruppe zur Gruppierung der Knoepfe rb1Image und rb4Images.
+<A NAME="403"></A>   */</FONT>
+<A NAME="404"></A>  <FONT ID="Private">private</FONT> ButtonGroup     bgNumOfImages = <FONT ID="New">new</FONT> ButtonGroup();
+<A NAME="405"></A>
+<A NAME="406"></A>
+<A NAME="407"></A>  <FONT ID="FormalComment">/**
+<A NAME="408"></A>   * Knopf zur Darstellung des k-Raums des selektierten Bildes.
+<A NAME="409"></A>   */</FONT>
+<A NAME="410"></A>  <FONT ID="Private">private</FONT> JButton         pbKSpace = <FONT ID="New">new</FONT> JButton();
+<A NAME="411"></A>
+<A NAME="412"></A>
+<A NAME="413"></A>  <FONT ID="FormalComment">/**
+<A NAME="414"></A>   * Knopf zum Oeffnen des k-Raum-Manipulators.
+<A NAME="415"></A>   */</FONT>
+<A NAME="416"></A>  <FONT ID="Private">private</FONT> JButton         pbKSpaceManip = <FONT ID="New">new</FONT> JButton();
+<A NAME="417"></A>
+<A NAME="418"></A>
+<A NAME="419"></A>  <FONT ID="FormalComment">/**
+<A NAME="420"></A>   * Knopf zur Darstellung des Histogramms des selektierten Bildes.
+<A NAME="421"></A>   */</FONT>
+<A NAME="422"></A>  <FONT ID="Private">private</FONT> JButton         pbHistogram = <FONT ID="New">new</FONT> JButton();
+<A NAME="423"></A>
+<A NAME="424"></A>
+<A NAME="425"></A>  <FONT ID="FormalComment">/**
+<A NAME="426"></A>   * Knopf zur Darstellung der Bildbeschriftungen (Nummern, TR, TI, u.a.).
+<A NAME="427"></A>   */</FONT>
+<A NAME="428"></A>  <FONT ID="Public">public</FONT> JToggleButton    tbImageText = <FONT ID="New">new</FONT> JToggleButton();
+<A NAME="429"></A>
+<A NAME="430"></A>  <FONT ID="SingleLineComment">// Nun folgt die Erstellung der einzelnen Elemente der Fensterung-Karteikarte
+<A NAME="431"></A></FONT>  <FONT ID="SingleLineComment">// Panel zur Gruppierung der Funktionselemente fuer die Helligkeitsveraenderung
+<A NAME="432"></A></FONT>
+<A NAME="433"></A>
+<A NAME="434"></A>  <FONT ID="FormalComment">/**
+<A NAME="435"></A>   * Schieberegler fuer die Helligkeit (Center).
+<A NAME="436"></A>   */</FONT>
+<A NAME="437"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>     pCenter;
+<A NAME="438"></A>
+<A NAME="439"></A>
+<A NAME="440"></A>  <FONT ID="FormalComment">/**
+<A NAME="441"></A>   * Schieberegler fuer den Kontrast (Window).
+<A NAME="442"></A>   */</FONT>
+<A NAME="443"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>     pWindow;
+<A NAME="444"></A>
+<A NAME="445"></A>
+<A NAME="446"></A>  <FONT ID="FormalComment">/**
+<A NAME="447"></A>   * Knopf zum  Zuruecksetzen der Fensterung auf C=2048 und W=4096.
+<A NAME="448"></A>   */</FONT>
+<A NAME="449"></A>  <FONT ID="Private">private</FONT> JButton         pbResetWindowing = <FONT ID="New">new</FONT> JButton();
+<A NAME="450"></A>
+<A NAME="451"></A>
+<A NAME="452"></A>  <FONT ID="FormalComment">/**
+<A NAME="453"></A>   * Knopf zum Berechnen der optimalen Fensterung.
+<A NAME="454"></A>   */</FONT>
+<A NAME="455"></A>  <FONT ID="Private">private</FONT> JButton         pbOptWindowing = <FONT ID="New">new</FONT> JButton();
+<A NAME="456"></A>
+<A NAME="457"></A>  <FONT ID="SingleLineComment">// Nun folgt die Erzeugung der einzelnen Elemente der Artefakt-Karteikarte
+<A NAME="458"></A></FONT>
+<A NAME="459"></A>
+<A NAME="460"></A>  <FONT ID="FormalComment">/**
+<A NAME="461"></A>   * Bereich, in dem die Artefakt-Simulatoren ihre Oberflaechenelemente
+<A NAME="462"></A>   * darstellen koennen.
+<A NAME="463"></A>   */</FONT>
+<A NAME="464"></A>  <FONT ID="Private">private</FONT> JPanel          pArtefacts = <FONT ID="New">new</FONT> JPanel();
+<A NAME="465"></A>
+<A NAME="466"></A>
+<A NAME="467"></A>  <FONT ID="FormalComment">/**
+<A NAME="468"></A>   * Auswahlbox zur Auswahl eines Artefakt-Simulators.
+<A NAME="469"></A>   */</FONT>
+<A NAME="470"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/mrt/ArtefactsCombo.java.html">ArtefactsCombo</A>  cbArtefacts = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/ArtefactsCombo.java.html">ArtefactsCombo</A>(<FONT ID="This">this</FONT>, pArtefacts);
+<A NAME="471"></A>
+<A NAME="472"></A>  <FONT ID="SingleLineComment">// Nun folgt die Erzeugung der einzelnen Elemente der Extras-Karteikarte
+<A NAME="473"></A></FONT>
+<A NAME="474"></A>
+<A NAME="475"></A>  <FONT ID="FormalComment">/**
+<A NAME="476"></A>   * Schieberegler zur Auswahl des Simulationszeitfaktors (0-100%).
+<A NAME="477"></A>   */</FONT>
+<A NAME="478"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>     pTimeFactor;
+<A NAME="479"></A>
+<A NAME="480"></A>
+<A NAME="481"></A>  <FONT ID="FormalComment">/**
+<A NAME="482"></A>   * Rahmen zur optischen Gruppierung der Elemente, die zur Einstellung der
+<A NAME="483"></A>   * Position des naechsten Bildes dienen.
+<A NAME="484"></A>   */</FONT>
+<A NAME="485"></A>  <FONT ID="Private">private</FONT> JPanel          pNextImageAt = <FONT ID="New">new</FONT> JPanel();
+<A NAME="486"></A>
+<A NAME="487"></A>
+<A NAME="488"></A>  <FONT ID="FormalComment">/**
+<A NAME="489"></A>   * Beschriftung fuer die Bedienelemente, die zur Einstellung der
+<A NAME="490"></A>   * Position des naechsten Bildes dienen.
+<A NAME="491"></A>   */</FONT>
+<A NAME="492"></A>  <FONT ID="Private">private</FONT> JLabel          lNextImageAt = <FONT ID="New">new</FONT> JLabel();
+<A NAME="493"></A>
+<A NAME="494"></A>
+<A NAME="495"></A>  <FONT ID="FormalComment">/**
+<A NAME="496"></A>   * Knopf zur Erzeugung des naechsten Bildes an der selektierten Position.
+<A NAME="497"></A>   */</FONT>
+<A NAME="498"></A>  <FONT ID="Public">public</FONT> JRadioButton     rbNextImageAtSelection = <FONT ID="New">new</FONT> JRadioButton();
+<A NAME="499"></A>
+<A NAME="500"></A>
+<A NAME="501"></A>  <FONT ID="FormalComment">/**
+<A NAME="502"></A>   * Knopf zur Erzeugung des naechsten Bildes an der naechsten freien Position.
+<A NAME="503"></A>   */</FONT>
+<A NAME="504"></A>  <FONT ID="Private">private</FONT> JRadioButton    rbNextImageAtFreePlace = <FONT ID="New">new</FONT> JRadioButton();
+<A NAME="505"></A>
+<A NAME="506"></A>
+<A NAME="507"></A>  <FONT ID="FormalComment">/**
+<A NAME="508"></A>   * Knopfgruppe fuer die beiden Knoepfe rbNextImageAtSelection und rbNextImageAtFreePlace.
+<A NAME="509"></A>   */</FONT>
+<A NAME="510"></A>  <FONT ID="Private">private</FONT> ButtonGroup     bgPlaceNextImage = <FONT ID="New">new</FONT> ButtonGroup();
+<A NAME="511"></A>
+<A NAME="512"></A>
+<A NAME="513"></A>  <FONT ID="FormalComment">/**
+<A NAME="514"></A>   * CheckBox zum Aktivieren eines neu erzeugten Bildes
+<A NAME="515"></A>   */</FONT>
+<A NAME="516"></A>  <FONT ID="Public">public</FONT> JCheckBox        chbActivateNewImg = <FONT ID="New">new</FONT> JCheckBox();
+<A NAME="517"></A>
+<A NAME="518"></A>
+<A NAME="519"></A>  <FONT ID="FormalComment">/**
+<A NAME="520"></A>   * Beschriftung ueber der Sequenzauswahlbox.
+<A NAME="521"></A>   */</FONT>
+<A NAME="522"></A>  <FONT ID="Private">private</FONT> JLabel          lSequence = <FONT ID="New">new</FONT> JLabel();
+<A NAME="523"></A>
+<A NAME="524"></A>
+<A NAME="525"></A>  <FONT ID="FormalComment">/**
+<A NAME="526"></A>   * Darstellungsbereich, in dem die Pulssequenzen ihre eigenen Info-GUI-Elemente darstellen koennen.
+<A NAME="527"></A>   */</FONT>
+<A NAME="528"></A>  <FONT ID="Private">private</FONT> JPanel          pSequence = <FONT ID="New">new</FONT> JPanel();
+<A NAME="529"></A>
+<A NAME="530"></A>
+<A NAME="531"></A>  <FONT ID="FormalComment">/**
+<A NAME="532"></A>   * Darstellungsbereich, in dem die Pulssequenzen ihre Einstellungsmoeglichkeiten darstellen koennen.
+<A NAME="533"></A>   */</FONT>
+<A NAME="534"></A>  <FONT ID="Private">private</FONT> JPanel          pSequenceSettings = <FONT ID="New">new</FONT> JPanel();
+<A NAME="535"></A>
+<A NAME="536"></A>
+<A NAME="537"></A>  <FONT ID="FormalComment">/**
+<A NAME="538"></A>   * Auswahlbox, aus der der Benutzer die zu verwendende Pulssequenz auswaehlen kann.
+<A NAME="539"></A>   */</FONT>
+<A NAME="540"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/mrt/SequenceCombo.java.html">SequenceCombo</A>   cbSequence = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/SequenceCombo.java.html">SequenceCombo</A>(<FONT ID="This">this</FONT>, pSequenceSettings, pSequence);
+<A NAME="541"></A>
+<A NAME="542"></A>
+<A NAME="543"></A>  <FONT ID="SingleLineComment">// Ab hier beginnt die Deklaration von NICHT-GUI-ELEMENTEN
+<A NAME="544"></A></FONT>
+<A NAME="545"></A>
+<A NAME="546"></A>  <FONT ID="FormalComment">/**
+<A NAME="547"></A>   * Aktuelle x-Mausposition auf der Zeichenflaeche.
+<A NAME="548"></A>   */</FONT>
+<A NAME="549"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             curr_x;
+<A NAME="550"></A>
+<A NAME="551"></A>
+<A NAME="552"></A>  <FONT ID="FormalComment">/**
+<A NAME="553"></A>   * Aktuelle y-Mausposition auf der Zeichenflaeche.
+<A NAME="554"></A>   */</FONT>
+<A NAME="555"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             curr_y;
+<A NAME="556"></A>
+<A NAME="557"></A>
+<A NAME="558"></A>  <FONT ID="FormalComment">/**
+<A NAME="559"></A>   * Letzte Mausklick-x-Koordinate.
+<A NAME="560"></A>   */</FONT>
+<A NAME="561"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             lastMouseClickX;
+<A NAME="562"></A>
+<A NAME="563"></A>
+<A NAME="564"></A>  <FONT ID="FormalComment">/**
+<A NAME="565"></A>   * Letzte Mausklick-y-Koordinate.
+<A NAME="566"></A>   */</FONT>
+<A NAME="567"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             lastMouseClickY;
+<A NAME="568"></A>
+<A NAME="569"></A>
+<A NAME="570"></A>  <FONT ID="FormalComment">/**
+<A NAME="571"></A>   * Zeitpunkt des letzten Mausklicks im Hauptfenster.
+<A NAME="572"></A>   */</FONT>
+<A NAME="573"></A>  <FONT ID="Private">private</FONT> <FONT ID="Long">long</FONT>            lastTime;
+<A NAME="574"></A>
+<A NAME="575"></A>
+<A NAME="576"></A>  <FONT ID="FormalComment">/**
+<A NAME="577"></A>   * Fensterungszentrum-Einstellungen beim letzten Mausklick.
+<A NAME="578"></A>   */</FONT>
+<A NAME="579"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             lastCenter;
+<A NAME="580"></A>
+<A NAME="581"></A>
+<A NAME="582"></A>  <FONT ID="FormalComment">/**
+<A NAME="583"></A>   * Fensterungsbreite-Einstellungen beim letzten Mausklick.
+<A NAME="584"></A>   */</FONT>
+<A NAME="585"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             lastWindow;
+<A NAME="586"></A>
+<A NAME="587"></A>
+<A NAME="588"></A>  <FONT ID="FormalComment">/**
+<A NAME="589"></A>   * Das FileLoader-Objekt laedt einen Rohdatensatz und stellt die
+<A NAME="590"></A>   * Rohdatenmatrizen zur Verfuegung.
+<A NAME="591"></A>   */</FONT>
+<A NAME="592"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/mrt/FileLoader.java.html">FileLoader</A>      myFileLoader = <FONT ID="Null">null</FONT>;
+<A NAME="593"></A>
+<A NAME="594"></A>
+<A NAME="595"></A>  <FONT ID="FormalComment">/**
+<A NAME="596"></A>   * Merker fuer nichtgespeicherte Aenderungen.
+<A NAME="597"></A>   */</FONT>
+<A NAME="598"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>         unsavedChanges = <FONT ID="False">false</FONT>;
+<A NAME="599"></A>
+<A NAME="600"></A>
+<A NAME="601"></A>  <FONT ID="FormalComment">/**
+<A NAME="602"></A>   * Hashtabelle für die Standardeinstellungen
+<A NAME="603"></A>   */</FONT>
+<A NAME="604"></A>  <FONT ID="Private">private</FONT> Properties      preferences = <FONT ID="New">new</FONT> Properties();
+<A NAME="605"></A>
+<A NAME="606"></A>
+<A NAME="607"></A>  <FONT ID="FormalComment">/**
+<A NAME="608"></A>   * Gibt an, ob von einer Applickation (true) oder einem Applet gestartet wurde.
+<A NAME="609"></A>   */</FONT>
+<A NAME="610"></A>  <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT>         isApplication = <FONT ID="True">true</FONT>;
+<A NAME="611"></A>
+<A NAME="612"></A>
+<A NAME="613"></A>  <FONT ID="FormalComment">/**
+<A NAME="614"></A>   * Standardkonstruktor. Default is "Application".
+<A NAME="615"></A>   */</FONT>
+<A NAME="616"></A>  <FONT ID="Public">public</FONT> VMRTFrame() {
+<A NAME="617"></A>            <FONT ID="This">this</FONT>(<FONT ID="True">true</FONT>);
+<A NAME="618"></A>        }
+<A NAME="619"></A>
+<A NAME="620"></A>
+<A NAME="621"></A>  <FONT ID="FormalComment">/**
+<A NAME="622"></A>   * Standardkonstruktor. Er initialisiert das Fenster, fuellt die Auswahlbox
+<A NAME="623"></A>   * mit den zur Verfuegung stehenden Pulssequenzen und stellt die Bedienelemente
+<A NAME="624"></A>   * der ersten Pulssequenz dar.
+<A NAME="625"></A>   */</FONT>
+<A NAME="626"></A>  <FONT ID="Public">public</FONT> VMRTFrame(<FONT ID="Boolean">boolean</FONT> isApplication) {
+<A NAME="627"></A>                <A HREF="../../virtual/tools/AboutBox.java.html">AboutBox</A> aBox;
+<A NAME="628"></A>            
+<A NAME="629"></A>    <FONT ID="This">this</FONT>.isApplication = isApplication;
+<A NAME="630"></A>                
+<A NAME="631"></A>                aBox = showAboutBox();
+<A NAME="632"></A>                
+<A NAME="633"></A>    enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+<A NAME="634"></A>                
+<A NAME="635"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="636"></A>
+<A NAME="637"></A>      <FONT ID="SingleLineComment">// Initialisieren der GUI-Elemente
+<A NAME="638"></A></FONT>      jbInit();
+<A NAME="639"></A>
+<A NAME="640"></A>      <FONT ID="SingleLineComment">// Standardeinstellungen:
+<A NAME="641"></A></FONT>
+<A NAME="642"></A>      <FONT ID="SingleLineComment">// Referenzdatensatz laden
+<A NAME="643"></A></FONT>      <FONT ID="SingleLineComment">// pbReferenceData_actionPerformed();
+<A NAME="644"></A></FONT>      chbActivateNewImg.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="645"></A>
+<A NAME="646"></A>      ErrorMessage.setMainFrame(<FONT ID="This">this</FONT>);
+<A NAME="647"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="648"></A>      e.printStackTrace();
+<A NAME="649"></A>    } 
+<A NAME="650"></A>
+<A NAME="651"></A>                <FONT ID="If">if</FONT> (isApplication) {
+<A NAME="652"></A>                    <FONT ID="SingleLineComment">// Application
+<A NAME="653"></A></FONT>                    loadPreferences();
+<A NAME="654"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="655"></A>                    <FONT ID="SingleLineComment">// Applet
+<A NAME="656"></A></FONT>                    pbLoad.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="657"></A>                    pbSave.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="658"></A>                    menuFileOpen.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="659"></A>                    menuFileSave.setEnabled(<FONT ID="False">false</FONT>);
+<A NAME="660"></A>                }             
+<A NAME="661"></A>                
+<A NAME="662"></A>                aBox.dispose();
+<A NAME="663"></A>  }
+<A NAME="664"></A>
+<A NAME="665"></A>  <FONT ID="FormalComment">/**
+<A NAME="666"></A>   * Setzt die Umgebung des Programms
+<A NAME="667"></A>         * tha 2005.12.18.
+<A NAME="668"></A>   */</FONT>
+<A NAME="669"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> setLookAndFeel() {
+<A NAME="670"></A>            <FONT ID="SingleLineComment">// Look and Feel
+<A NAME="671"></A></FONT>            <FONT ID="Try">try</FONT> {
+<A NAME="672"></A>                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+<A NAME="673"></A>                <FONT ID="SingleLineComment">// UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+<A NAME="674"></A></FONT>                <FONT ID="SingleLineComment">// UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+<A NAME="675"></A></FONT>            } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="676"></A>                e.printStackTrace();
+<A NAME="677"></A>            }
+<A NAME="678"></A>        }
+<A NAME="679"></A> 
+<A NAME="680"></A>
+<A NAME="681"></A>  <FONT ID="FormalComment">/**
+<A NAME="682"></A>   * Die Methode wird aufgerufen, wenn die Aktion Hilfe | Info aus dem Menue
+<A NAME="683"></A>   * aufgerufen wurde. Das Informationsfenster wird dann aufgeblendet.
+<A NAME="684"></A>   */</FONT>
+<A NAME="685"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/AboutBox.java.html">AboutBox</A> showAboutBox() {
+<A NAME="686"></A>                Dimension aboxSize;
+<A NAME="687"></A>                Dimension scrSize;
+<A NAME="688"></A>                
+<A NAME="689"></A>    <A HREF="../../virtual/tools/AboutBox.java.html">AboutBox</A>  abox = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/AboutBox.java.html">AboutBox</A>();
+<A NAME="690"></A>
+<A NAME="691"></A>    <FONT ID="SingleLineComment">// th 2002.10.29
+<A NAME="692"></A></FONT>    <FONT ID="SingleLineComment">// abox.setImage(this.getClass().getResource("resources/mrt.jpg"));
+<A NAME="693"></A></FONT>    abox.setFileURL(<FONT ID="This">this</FONT>.getClass().getResource(frameRsrc.getString(<FONT ID="StringLiteral">"vmrt.splash"</FONT>)));
+<A NAME="694"></A>    aboxSize = abox.getSize();
+<A NAME="695"></A>                scrSize = Toolkit.getDefaultToolkit().getScreenSize();
+<A NAME="696"></A>    abox.setLocation((scrSize.width - aboxSize.width) / <FONT ID="IntegerLiteral">2</FONT>, (scrSize.height - aboxSize.height) / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="697"></A>    abox.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="698"></A>                
+<A NAME="699"></A>                <FONT ID="Return">return</FONT> abox;
+<A NAME="700"></A>  } 
+<A NAME="701"></A> 
+<A NAME="702"></A>
+<A NAME="703"></A>  <FONT ID="FormalComment">/**
+<A NAME="704"></A>   * Stellt den Frame zentriert auf dem Bildschirm dar.
+<A NAME="705"></A>   */</FONT>
+<A NAME="706"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> showCentered() {
+<A NAME="707"></A>            Dimension frameSize;
+<A NAME="708"></A>            Dimension scrSize;
+<A NAME="709"></A>
+<A NAME="710"></A>            <FONT ID="SingleLineComment">// Frame validieren, die er eine voreingestellte Groeße besitzen.
+<A NAME="711"></A></FONT>            <FONT ID="This">this</FONT>.validate();
+<A NAME="712"></A>
+<A NAME="713"></A>            <FONT ID="SingleLineComment">// Frame zentriert zeigen
+<A NAME="714"></A></FONT>            frameSize = <FONT ID="This">this</FONT>.getSize();
+<A NAME="715"></A>            scrSize = Toolkit.getDefaultToolkit().getScreenSize();
+<A NAME="716"></A>            <FONT ID="This">this</FONT>.setLocation((scrSize.width - frameSize.width) / <FONT ID="IntegerLiteral">2</FONT>, (scrSize.height - frameSize.height) / <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="717"></A>            <FONT ID="This">this</FONT>.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="718"></A>            <FONT ID="This">this</FONT>.toFront();
+<A NAME="719"></A>        }
+<A NAME="720"></A> 
+<A NAME="721"></A>        
+<A NAME="722"></A>  <FONT ID="FormalComment">/**
+<A NAME="723"></A>   * Die Methode richtet die Bedienelemente ein und stellt diese dar.
+<A NAME="724"></A>   */</FONT>
+<A NAME="725"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> jbInit() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="726"></A>
+<A NAME="727"></A>    <FONT ID="SingleLineComment">// Layoutmanager des Hauptfensters auf null setzen.
+<A NAME="728"></A></FONT>    <FONT ID="This">this</FONT>.getContentPane().setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="729"></A>
+<A NAME="730"></A>    <FONT ID="SingleLineComment">// Groesse des Hauptfensters auf 800*600 Punkte festlegen. Damit ist es
+<A NAME="731"></A></FONT>    <FONT ID="SingleLineComment">// auf jedem SuperVGA-Monitor darstellbar (Minus 15 Punkte Taskleiste).
+<A NAME="732"></A></FONT>                <FONT ID="If">if</FONT> (System.getSecurityManager() == <FONT ID="Null">null</FONT>) {
+<A NAME="733"></A>                    <FONT ID="This">this</FONT>.setSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">800</FONT>, <FONT ID="IntegerLiteral">585</FONT>));
+<A NAME="734"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="735"></A>                    <FONT ID="SingleLineComment">// Wenn das Programm innerhalb eines Security Managers läuft,
+<A NAME="736"></A></FONT>                    <FONT ID="SingleLineComment">// wird die Warnung "" von 18 Pt am unteren Bildrand eingeblendet.
+<A NAME="737"></A></FONT>                    <FONT ID="SingleLineComment">// Sie überdeckt den Bildinhalt.
+<A NAME="738"></A></FONT>                    <FONT ID="This">this</FONT>.setSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">800</FONT>, <FONT ID="IntegerLiteral">600</FONT>));
+<A NAME="739"></A>                }
+<A NAME="740"></A>
+<A NAME="741"></A>    <FONT ID="SingleLineComment">// Die Groesse des Fensters soll nicht veraendert werden koennen
+<A NAME="742"></A></FONT>    <FONT ID="This">this</FONT>.setResizable(<FONT ID="False">false</FONT>);
+<A NAME="743"></A>
+<A NAME="744"></A>    <FONT ID="SingleLineComment">// Hintergrundfarbe setzen
+<A NAME="745"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.29
+<A NAME="746"></A></FONT>    <FONT ID="SingleLineComment">// this.setBackground(new Color(204, 204, 204));
+<A NAME="747"></A></FONT>    <FONT ID="SingleLineComment">// th 2005.11.12
+<A NAME="748"></A></FONT>    <FONT ID="SingleLineComment">// this.setBackground(new Color(0, 0, 51));
+<A NAME="749"></A></FONT>
+<A NAME="750"></A>    <FONT ID="SingleLineComment">// Titelzeile setzen
+<A NAME="751"></A></FONT>    <FONT ID="This">this</FONT>.setTitle(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.title"</FONT>));
+<A NAME="752"></A>
+<A NAME="753"></A>    <FONT ID="SingleLineComment">// Ergaenzt: tha 2000.8.19
+<A NAME="754"></A></FONT>    <FONT ID="SingleLineComment">// Um mehrere Lightweight Komponenten in einer geordneten z-Ordnung
+<A NAME="755"></A></FONT>    <FONT ID="SingleLineComment">// uebereinander darstellen zu koennen
+<A NAME="756"></A></FONT>    flPane.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="757"></A>    flPane.setSize(<FONT ID="This">this</FONT>.getSize());
+<A NAME="758"></A>    <FONT ID="This">this</FONT>.getContentPane().add(flPane, <FONT ID="Null">null</FONT>);
+<A NAME="759"></A>
+<A NAME="760"></A>    <FONT ID="SingleLineComment">// Laden des 'oeffnen'-Icons
+<A NAME="761"></A></FONT>    iOpen = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/openfile.gif"</FONT>));
+<A NAME="762"></A>
+<A NAME="763"></A>    <FONT ID="SingleLineComment">// Laden des 'Speichern'-Icons
+<A NAME="764"></A></FONT>    iSave = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/save.gif"</FONT>));
+<A NAME="765"></A>
+<A NAME="766"></A>    <FONT ID="SingleLineComment">// Laden des 'Drucken'-Icons
+<A NAME="767"></A></FONT>    iPrint = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/print.gif"</FONT>));
+<A NAME="768"></A>
+<A NAME="769"></A>    <FONT ID="SingleLineComment">// Laden des "1 Bild"-Icons
+<A NAME="770"></A></FONT>    i1Image = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/1image.gif"</FONT>));
+<A NAME="771"></A>
+<A NAME="772"></A>    <FONT ID="SingleLineComment">// Laden des "4 Bilder"-Icons
+<A NAME="773"></A></FONT>    i4Images = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/4images.gif"</FONT>));
+<A NAME="774"></A>
+<A NAME="775"></A>    <FONT ID="SingleLineComment">// Laden des "Bildbeschriftung"-Icons
+<A NAME="776"></A></FONT>    iInfoText = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/imageinfo.gif"</FONT>));
+<A NAME="777"></A>
+<A NAME="778"></A>    <FONT ID="SingleLineComment">// Laden des "Histogramm"-Icons
+<A NAME="779"></A></FONT>    iHistogram = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/histogramm.gif"</FONT>));
+<A NAME="780"></A>
+<A NAME="781"></A>    <FONT ID="SingleLineComment">// Laden des "k-Raum"-Icons
+<A NAME="782"></A></FONT>    iKSpace = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/k_raum.gif"</FONT>));
+<A NAME="783"></A>
+<A NAME="784"></A>    <FONT ID="SingleLineComment">// Laden des k-Raum Manipulator Icons
+<A NAME="785"></A></FONT>    iKSpaceMan = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/k_raum_man.gif"</FONT>));
+<A NAME="786"></A>
+<A NAME="787"></A>    <FONT ID="SingleLineComment">// Laden des "Fall-Info"-Icons
+<A NAME="788"></A></FONT>    iCaseInfo = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/caseinfo.gif"</FONT>));
+<A NAME="789"></A>
+<A NAME="790"></A>    <FONT ID="SingleLineComment">// Laden des "Referenzbild"-Icons
+<A NAME="791"></A></FONT>    iRefIma = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/refima.gif"</FONT>));
+<A NAME="792"></A>
+<A NAME="793"></A>    <FONT ID="SingleLineComment">// Laden des "Beispielbild"-Icons
+<A NAME="794"></A></FONT>    iSampleIma = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/sampleima.gif"</FONT>));
+<A NAME="795"></A>
+<A NAME="796"></A>    <FONT ID="SingleLineComment">// Laden des "Window Reset"-Icons
+<A NAME="797"></A></FONT>    winReset = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/winreset.gif"</FONT>));
+<A NAME="798"></A>
+<A NAME="799"></A>    <FONT ID="SingleLineComment">// Laden des "Window Optimal"-Icons
+<A NAME="800"></A></FONT>    winOpt = <FONT ID="New">new</FONT> ImageIcon(<FONT ID="This">this</FONT>.getClass().getResource(<FONT ID="StringLiteral">"resources/winopt.gif"</FONT>));
+<A NAME="801"></A>
+<A NAME="802"></A>    <FONT ID="SingleLineComment">// Menueleiste mit seinen Menues einrichten
+<A NAME="803"></A></FONT>    menuBar1.add(menuFile);
+<A NAME="804"></A>    menuBar1.add(menuEdit);
+<A NAME="805"></A>    menuBar1.add(menuTools);
+<A NAME="806"></A>
+<A NAME="807"></A>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="808"></A></FONT>    <FONT ID="SingleLineComment">// menuBar1.add(menuHelp);
+<A NAME="809"></A></FONT>    <FONT ID="This">this</FONT>.setJMenuBar(menuBar1);
+<A NAME="810"></A>
+<A NAME="811"></A>    <FONT ID="SingleLineComment">// Dateimenue mit seinen Menuepunkten einrichten
+<A NAME="812"></A></FONT>    menuFile.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.file"</FONT>));
+<A NAME="813"></A>
+<A NAME="814"></A>    <FONT ID="SingleLineComment">// Menueeintrag 'oeffnen' einrichten
+<A NAME="815"></A></FONT>    menuFileOpen.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.file.open"</FONT>));
+<A NAME="816"></A>    menuFileOpen.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="817"></A>
+<A NAME="818"></A>
+<A NAME="819"></A>      <FONT ID="FormalComment">/**
+<A NAME="820"></A>       * Method declaration
+<A NAME="821"></A>       * 
+<A NAME="822"></A>       * 
+<A NAME="823"></A>       * @param e
+<A NAME="824"></A>       * 
+<A NAME="825"></A>       * @see
+<A NAME="826"></A>       */</FONT>
+<A NAME="827"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="828"></A>        fileOpen_actionPerformed();
+<A NAME="829"></A>      } 
+<A NAME="830"></A>
+<A NAME="831"></A>    });
+<A NAME="832"></A>
+<A NAME="833"></A>    <FONT ID="SingleLineComment">// Menueeintrag 'Speichern einrichten'
+<A NAME="834"></A></FONT>    menuFileSave.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.file.saveas"</FONT>));
+<A NAME="835"></A>    menuFileSave.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="836"></A>
+<A NAME="837"></A>
+<A NAME="838"></A>      <FONT ID="FormalComment">/**
+<A NAME="839"></A>       * Method declaration
+<A NAME="840"></A>       * 
+<A NAME="841"></A>       * 
+<A NAME="842"></A>       * @param e
+<A NAME="843"></A>       * 
+<A NAME="844"></A>       * @see
+<A NAME="845"></A>       */</FONT>
+<A NAME="846"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="847"></A>        fileSave_actionPerformed();
+<A NAME="848"></A>      } 
+<A NAME="849"></A>
+<A NAME="850"></A>    });
+<A NAME="851"></A>
+<A NAME="852"></A>    <FONT ID="SingleLineComment">// Menueeintrag 'Drucken' einrichten
+<A NAME="853"></A></FONT>    menuFilePrint.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.file.print"</FONT>));
+<A NAME="854"></A>    menuFilePrint.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="855"></A>
+<A NAME="856"></A>
+<A NAME="857"></A>      <FONT ID="FormalComment">/**
+<A NAME="858"></A>       * Method declaration
+<A NAME="859"></A>       * 
+<A NAME="860"></A>       * 
+<A NAME="861"></A>       * @param e
+<A NAME="862"></A>       * 
+<A NAME="863"></A>       * @see
+<A NAME="864"></A>       */</FONT>
+<A NAME="865"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="866"></A>        filePrint_actionPerformed();
+<A NAME="867"></A>      } 
+<A NAME="868"></A>
+<A NAME="869"></A>    });
+<A NAME="870"></A>
+<A NAME="871"></A>    <FONT ID="SingleLineComment">// Menueeintrag 'Beenden' einrichten
+<A NAME="872"></A></FONT>    menuFileExit.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.file.exit"</FONT>));
+<A NAME="873"></A>    menuFileExit.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="874"></A>
+<A NAME="875"></A>
+<A NAME="876"></A>      <FONT ID="FormalComment">/**
+<A NAME="877"></A>       * Method declaration
+<A NAME="878"></A>       * 
+<A NAME="879"></A>       * 
+<A NAME="880"></A>       * @param e
+<A NAME="881"></A>       * 
+<A NAME="882"></A>       * @see
+<A NAME="883"></A>       */</FONT>
+<A NAME="884"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="885"></A>        fileExit_actionPerformed();
+<A NAME="886"></A>      } 
+<A NAME="887"></A>
+<A NAME="888"></A>    });
+<A NAME="889"></A>
+<A NAME="890"></A>    <FONT ID="SingleLineComment">// Die einzelnen Menueeintraege desm Dateimenue hinzufuegen
+<A NAME="891"></A></FONT>    menuFile.add(menuFileOpen);
+<A NAME="892"></A>    menuFile.add(menuFileSave);
+<A NAME="893"></A>    menuFile.add(menuFilePrint);
+<A NAME="894"></A>    menuFile.add(menuFileExit);
+<A NAME="895"></A>
+<A NAME="896"></A>    <FONT ID="SingleLineComment">// Bearbeiten-Menue mit seinen Menuepunkten einrichten
+<A NAME="897"></A></FONT>    menuEdit.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.edit"</FONT>));
+<A NAME="898"></A>
+<A NAME="899"></A>    menuEditClear.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.edit.delete"</FONT>));
+<A NAME="900"></A>    menuEditClear.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="901"></A>
+<A NAME="902"></A>
+<A NAME="903"></A>      <FONT ID="FormalComment">/**
+<A NAME="904"></A>       * Method declaration
+<A NAME="905"></A>       * 
+<A NAME="906"></A>       * 
+<A NAME="907"></A>       * @param e
+<A NAME="908"></A>       * 
+<A NAME="909"></A>       * @see
+<A NAME="910"></A>       */</FONT>
+<A NAME="911"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="912"></A>        editClear_actionPerformed();
+<A NAME="913"></A>      } 
+<A NAME="914"></A>
+<A NAME="915"></A>    });
+<A NAME="916"></A>
+<A NAME="917"></A>    menuEditClearAll.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.edit.deleteall"</FONT>));
+<A NAME="918"></A>    menuEditClearAll.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="919"></A>
+<A NAME="920"></A>
+<A NAME="921"></A>      <FONT ID="FormalComment">/**
+<A NAME="922"></A>       * Method declaration
+<A NAME="923"></A>       * 
+<A NAME="924"></A>       * 
+<A NAME="925"></A>       * @param e
+<A NAME="926"></A>       * 
+<A NAME="927"></A>       * @see
+<A NAME="928"></A>       */</FONT>
+<A NAME="929"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="930"></A>        editClearAll_actionPerformed();
+<A NAME="931"></A>      } 
+<A NAME="932"></A>
+<A NAME="933"></A>    });
+<A NAME="934"></A>
+<A NAME="935"></A>    <FONT ID="SingleLineComment">// Die einzelnen Menueeintraege hinzufuegen
+<A NAME="936"></A></FONT>    menuEdit.add(menuEditClear);
+<A NAME="937"></A>    menuEdit.add(menuEditClearAll);
+<A NAME="938"></A>
+<A NAME="939"></A>    <FONT ID="SingleLineComment">// Toolsmenue mit seinen Menuepunkten einrichten
+<A NAME="940"></A></FONT>
+<A NAME="941"></A>    menuTools.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.tools"</FONT>));
+<A NAME="942"></A>    menuToolsAbout.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.menu.tools.about"</FONT>));
+<A NAME="943"></A>    menuToolsAbout.addActionListener(<FONT ID="New">new</FONT> ActionListener() {
+<A NAME="944"></A>
+<A NAME="945"></A>
+<A NAME="946"></A>      <FONT ID="FormalComment">/**
+<A NAME="947"></A>       * Method declaration
+<A NAME="948"></A>       * 
+<A NAME="949"></A>       * 
+<A NAME="950"></A>       * @param e
+<A NAME="951"></A>       * 
+<A NAME="952"></A>       * @see
+<A NAME="953"></A>       */</FONT>
+<A NAME="954"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="955"></A>        helpAbout_actionPerformed();
+<A NAME="956"></A>      } 
+<A NAME="957"></A>
+<A NAME="958"></A>    });
+<A NAME="959"></A>
+<A NAME="960"></A>    <FONT ID="SingleLineComment">// Die einzelnen Menueeintraege hinzufuegen
+<A NAME="961"></A></FONT>    menuTools.add(menuToolsAbout);
+<A NAME="962"></A>
+<A NAME="963"></A>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="964"></A></FONT>    <FONT ID="SingleLineComment">// Hilfemenue mit seinen Menuepunkten einrichten
+<A NAME="965"></A></FONT>    <FONT ID="SingleLineComment">// menuHelp.setText("Hilfe");
+<A NAME="966"></A></FONT>    <FONT ID="SingleLineComment">// menuHelpAbout.setText("Info...");
+<A NAME="967"></A></FONT>
+<A NAME="968"></A>    <FONT ID="SingleLineComment">// Panel fuer die Einstellungsmoeglichkeiten der Pulssequenz formatiern
+<A NAME="969"></A></FONT>    <FONT ID="SingleLineComment">// und positionieren. Anschliessend allerdings wieder verstecken, da sonst
+<A NAME="970"></A></FONT>    <FONT ID="SingleLineComment">// das halbe Canvas ueberdeckt wird.
+<A NAME="971"></A></FONT>    pSequenceSettings.setBounds(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">513</FONT>, <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="972"></A>    pSequenceSettings.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="973"></A>    pSequenceSettings.setVisible(<FONT ID="False">false</FONT>);
+<A NAME="974"></A>
+<A NAME="975"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19: Panel ueber alle anderen Layer einfuegen
+<A NAME="976"></A></FONT>    flPane.add(pSequenceSettings, JLayeredPane.DRAG_LAYER);
+<A NAME="977"></A>
+<A NAME="978"></A>    <FONT ID="SingleLineComment">// Statusleiste formatieren und positionieren
+<A NAME="979"></A></FONT>    statusBar.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.statusbar.title"</FONT>));
+<A NAME="980"></A>    statusBar.setForeground(Color.black);
+<A NAME="981"></A>    statusBar.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Dialog"</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">12</FONT>));
+<A NAME="982"></A>    statusBar.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">516</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="983"></A>
+<A NAME="984"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="985"></A></FONT>    flPane.add(statusBar);
+<A NAME="986"></A>
+<A NAME="987"></A>    <FONT ID="SingleLineComment">// Canvas formatieren und positionieren
+<A NAME="988"></A></FONT>    pCanvas.setMaximumSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>));
+<A NAME="989"></A>    pCanvas.setPreferredSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>));
+<A NAME="990"></A>    pCanvas.setBackground(Color.black);
+<A NAME="991"></A>    pCanvas.setMinimumSize(<FONT ID="New">new</FONT> Dimension(<FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>));
+<A NAME="992"></A>    pCanvas.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>));
+<A NAME="993"></A>    pCanvas.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="994"></A>
+<A NAME="995"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="996"></A></FONT>    flPane.add(pCanvas, <FONT ID="Null">null</FONT>);
+<A NAME="997"></A>    pCanvas.addMouseListener(<FONT ID="New">new</FONT> java.awt.event.MouseAdapter() {
+<A NAME="998"></A>
+<A NAME="999"></A>
+<A NAME="1000"></A>      <FONT ID="FormalComment">/**
+<A NAME="1001"></A>       * Method declaration
+<A NAME="1002"></A>       * 
+<A NAME="1003"></A>       * 
+<A NAME="1004"></A>       * @param e
+<A NAME="1005"></A>       * 
+<A NAME="1006"></A>       * @see
+<A NAME="1007"></A>       */</FONT>
+<A NAME="1008"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mouseExited(MouseEvent e) {
+<A NAME="1009"></A>        pCanvas_mouseExited(e);
+<A NAME="1010"></A>      } 
+<A NAME="1011"></A>
+<A NAME="1012"></A>
+<A NAME="1013"></A>      <FONT ID="FormalComment">/**
+<A NAME="1014"></A>       * Method declaration
+<A NAME="1015"></A>       * 
+<A NAME="1016"></A>       * 
+<A NAME="1017"></A>       * @param e
+<A NAME="1018"></A>       * 
+<A NAME="1019"></A>       * @see
+<A NAME="1020"></A>       */</FONT>
+<A NAME="1021"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mouseClicked(MouseEvent e) {
+<A NAME="1022"></A>        pCanvas_mouseClicked(e);
+<A NAME="1023"></A>      } 
+<A NAME="1024"></A>
+<A NAME="1025"></A>
+<A NAME="1026"></A>      <FONT ID="FormalComment">/**
+<A NAME="1027"></A>       * Method declaration
+<A NAME="1028"></A>       * 
+<A NAME="1029"></A>       * 
+<A NAME="1030"></A>       * @param e
+<A NAME="1031"></A>       * 
+<A NAME="1032"></A>       * @see
+<A NAME="1033"></A>       */</FONT>
+<A NAME="1034"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mousePressed(MouseEvent e) {
+<A NAME="1035"></A>        pCanvas_mousePressed(e);
+<A NAME="1036"></A>      } 
+<A NAME="1037"></A>
+<A NAME="1038"></A>
+<A NAME="1039"></A>      <FONT ID="FormalComment">/**
+<A NAME="1040"></A>       * Method declaration
+<A NAME="1041"></A>       * 
+<A NAME="1042"></A>       * 
+<A NAME="1043"></A>       * @param e
+<A NAME="1044"></A>       * 
+<A NAME="1045"></A>       * @see
+<A NAME="1046"></A>       */</FONT>
+<A NAME="1047"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mouseReleased(MouseEvent e) {
+<A NAME="1048"></A>        pCanvas_mouseReleased(e);
+<A NAME="1049"></A>      } 
+<A NAME="1050"></A>
+<A NAME="1051"></A>    });
+<A NAME="1052"></A>    pCanvas.addMouseMotionListener(<FONT ID="New">new</FONT> java.awt.event.MouseMotionAdapter() {
+<A NAME="1053"></A>
+<A NAME="1054"></A>
+<A NAME="1055"></A>      <FONT ID="FormalComment">/**
+<A NAME="1056"></A>       * Method declaration
+<A NAME="1057"></A>       * 
+<A NAME="1058"></A>       * 
+<A NAME="1059"></A>       * @param e
+<A NAME="1060"></A>       * 
+<A NAME="1061"></A>       * @see
+<A NAME="1062"></A>       */</FONT>
+<A NAME="1063"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mouseMoved(MouseEvent e) {
+<A NAME="1064"></A>        pCanvas_mouseMoved(e);
+<A NAME="1065"></A>      } 
+<A NAME="1066"></A>
+<A NAME="1067"></A>
+<A NAME="1068"></A>      <FONT ID="FormalComment">/**
+<A NAME="1069"></A>       * Method declaration
+<A NAME="1070"></A>       * 
+<A NAME="1071"></A>       * 
+<A NAME="1072"></A>       * @param e
+<A NAME="1073"></A>       * 
+<A NAME="1074"></A>       * @see
+<A NAME="1075"></A>       */</FONT>
+<A NAME="1076"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mouseDragged(MouseEvent e) {
+<A NAME="1077"></A>        pCanvas_mouseDragged(e);
+<A NAME="1078"></A>      } 
+<A NAME="1079"></A>
+<A NAME="1080"></A>    });
+<A NAME="1081"></A>
+<A NAME="1082"></A>
+<A NAME="1083"></A>    <FONT ID="SingleLineComment">// Horizontale Bildlaufleiste zum Canvas erzeugen, Positionieren und formatieren
+<A NAME="1084"></A></FONT>
+<A NAME="1085"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="1086"></A>     * sbHorScrollbar = pCanvas.createHorizontalScrollBar();
+<A NAME="1087"></A>     * sbHorScrollbar.setBounds(new Rectangle(1,513,512,20));
+<A NAME="1088"></A>     * sbHorScrollbar.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="1089"></A>     * sbHorScrollbar.setMinimum(0);
+<A NAME="1090"></A>     * sbHorScrollbar.setMaximum(1024);
+<A NAME="1091"></A>     * sbHorScrollbar.setVisibleAmount(511);
+<A NAME="1092"></A>     * sbHorScrollbar.setBlockIncrement(512);
+<A NAME="1093"></A>     * sbHorScrollbar.setUnitIncrement(512);
+<A NAME="1094"></A>     * this.getContentPane().add(sbHorScrollbar, null);
+<A NAME="1095"></A>     * sbHorScrollbar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
+<A NAME="1096"></A>     * public void adjustmentValueChanged(AdjustmentEvent e) {
+<A NAME="1097"></A>     * sbHorScrollbar_adjustmentValueChanged();
+<A NAME="1098"></A>     * }
+<A NAME="1099"></A>     * });
+<A NAME="1100"></A>     */</FONT>
+<A NAME="1101"></A>
+<A NAME="1102"></A>    <FONT ID="SingleLineComment">// Vertikale Bildlaufleiste zum Canvas erzeugen, Positionieren und formatieren
+<A NAME="1103"></A></FONT>    sbVerScrollbar = pCanvas.createVerticalScrollBar();
+<A NAME="1104"></A>    sbVerScrollbar.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">513</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">20</FONT>, <FONT ID="IntegerLiteral">512</FONT>));
+<A NAME="1105"></A>    sbVerScrollbar.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="1106"></A>    sbVerScrollbar.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="1107"></A>    sbVerScrollbar.setMaximum(<FONT ID="IntegerLiteral">1024</FONT>);
+<A NAME="1108"></A>    sbVerScrollbar.setVisibleAmount(<FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="1109"></A>    sbVerScrollbar.setBlockIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="1110"></A>    sbVerScrollbar.setUnitIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="1111"></A>
+<A NAME="1112"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="1113"></A></FONT>    flPane.add(sbVerScrollbar, <FONT ID="Null">null</FONT>);
+<A NAME="1114"></A>    sbVerScrollbar.addAdjustmentListener(<FONT ID="New">new</FONT> java.awt.event.AdjustmentListener() {
+<A NAME="1115"></A>
+<A NAME="1116"></A>
+<A NAME="1117"></A>      <FONT ID="FormalComment">/**
+<A NAME="1118"></A>       * Method declaration
+<A NAME="1119"></A>       * 
+<A NAME="1120"></A>       * 
+<A NAME="1121"></A>       * @param e
+<A NAME="1122"></A>       * 
+<A NAME="1123"></A>       * @see
+<A NAME="1124"></A>       */</FONT>
+<A NAME="1125"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> adjustmentValueChanged(AdjustmentEvent e) {
+<A NAME="1126"></A>        sbVerScrollbar_adjustmentValueChanged();
+<A NAME="1127"></A>      } 
+<A NAME="1128"></A>
+<A NAME="1129"></A>    });
+<A NAME="1130"></A>
+<A NAME="1131"></A>
+<A NAME="1132"></A>    <FONT ID="SingleLineComment">// Toolbar-Panel positionieren und die Groesse einrichten
+<A NAME="1133"></A></FONT>    pToolbar.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">535</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">514</FONT>));
+<A NAME="1134"></A>    pToolbar.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1135"></A>    pToolbar.add(tpMain, <FONT ID="Null">null</FONT>);
+<A NAME="1136"></A>
+<A NAME="1137"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="1138"></A></FONT>    flPane.add(pToolbar, <FONT ID="Null">null</FONT>);
+<A NAME="1139"></A>
+<A NAME="1140"></A>    <FONT ID="SingleLineComment">// 'Referenzbild'-Knopf formatieren und positionieren
+<A NAME="1141"></A></FONT>    pbReferenceData.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1142"></A>    pbReferenceData.setIcon(iRefIma);
+<A NAME="1143"></A>    pbReferenceData.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">12</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">26</FONT>));
+<A NAME="1144"></A>    pbReferenceData.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.irefima.tooltip"</FONT>));
+<A NAME="1145"></A>    pbReferenceData.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="1146"></A>    pToolbar.add(pbReferenceData, <FONT ID="Null">null</FONT>);
+<A NAME="1147"></A>    pbReferenceData.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1148"></A>
+<A NAME="1149"></A>
+<A NAME="1150"></A>      <FONT ID="FormalComment">/**
+<A NAME="1151"></A>       * Method declaration
+<A NAME="1152"></A>       * 
+<A NAME="1153"></A>       * 
+<A NAME="1154"></A>       * @param e
+<A NAME="1155"></A>       * 
+<A NAME="1156"></A>       * @see
+<A NAME="1157"></A>       */</FONT>
+<A NAME="1158"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1159"></A>        pbReferenceData_actionPerformed();
+<A NAME="1160"></A>      } 
+<A NAME="1161"></A>
+<A NAME="1162"></A>    });
+<A NAME="1163"></A>
+<A NAME="1164"></A>    <FONT ID="SingleLineComment">// 'Beispielbild'-Knopf formatieren und positionieren
+<A NAME="1165"></A></FONT>    pbSampleData.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1166"></A>    pbSampleData.setIcon(iSampleIma);
+<A NAME="1167"></A>    pbSampleData.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">40</FONT>, <FONT ID="IntegerLiteral">12</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">26</FONT>));
+<A NAME="1168"></A>    pbSampleData.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.isampleima.tooltip"</FONT>));
+<A NAME="1169"></A>    pbSampleData.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="1170"></A>    pToolbar.add(pbSampleData, <FONT ID="Null">null</FONT>);
+<A NAME="1171"></A>    pbSampleData.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1172"></A>
+<A NAME="1173"></A>
+<A NAME="1174"></A>      <FONT ID="FormalComment">/**
+<A NAME="1175"></A>       * Method declaration
+<A NAME="1176"></A>       * 
+<A NAME="1177"></A>       * 
+<A NAME="1178"></A>       * @param e
+<A NAME="1179"></A>       * 
+<A NAME="1180"></A>       * @see
+<A NAME="1181"></A>       */</FONT>
+<A NAME="1182"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1183"></A>        pbSampleData_actionPerformed();
+<A NAME="1184"></A>      } 
+<A NAME="1185"></A>
+<A NAME="1186"></A>    });
+<A NAME="1187"></A>
+<A NAME="1188"></A>    <FONT ID="SingleLineComment">// 'oeffnen'-Knopf formatieren und positionieren
+<A NAME="1189"></A></FONT>    pbLoad.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1190"></A>    pbLoad.setIcon(iOpen);
+<A NAME="1191"></A>    pbLoad.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">77</FONT>, <FONT ID="IntegerLiteral">12</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">26</FONT>));
+<A NAME="1192"></A>    pbLoad.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.open.tooltip"</FONT>));
+<A NAME="1193"></A>    pToolbar.add(pbLoad, <FONT ID="Null">null</FONT>);
+<A NAME="1194"></A>    pbLoad.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1195"></A>
+<A NAME="1196"></A>
+<A NAME="1197"></A>      <FONT ID="FormalComment">/**
+<A NAME="1198"></A>       * Method declaration
+<A NAME="1199"></A>       * 
+<A NAME="1200"></A>       * 
+<A NAME="1201"></A>       * @param e
+<A NAME="1202"></A>       * 
+<A NAME="1203"></A>       * @see
+<A NAME="1204"></A>       */</FONT>
+<A NAME="1205"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1206"></A>        pbLoad_actionPerformed();
+<A NAME="1207"></A>      } 
+<A NAME="1208"></A>
+<A NAME="1209"></A>    });
+<A NAME="1210"></A>
+<A NAME="1211"></A>    <FONT ID="SingleLineComment">// 'Speichern'-Knopf formatieren und positinieren
+<A NAME="1212"></A></FONT>    pbSave.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1213"></A>    pbSave.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">114</FONT>, <FONT ID="IntegerLiteral">12</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">26</FONT>));
+<A NAME="1214"></A>    pbSave.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.save.tooltip"</FONT>));
+<A NAME="1215"></A>    pbSave.setIcon(iSave);
+<A NAME="1216"></A>    pToolbar.add(pbSave, <FONT ID="Null">null</FONT>);
+<A NAME="1217"></A>    pbSave.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1218"></A>
+<A NAME="1219"></A>
+<A NAME="1220"></A>      <FONT ID="FormalComment">/**
+<A NAME="1221"></A>       * Method declaration
+<A NAME="1222"></A>       * 
+<A NAME="1223"></A>       * 
+<A NAME="1224"></A>       * @param e
+<A NAME="1225"></A>       * 
+<A NAME="1226"></A>       * @see
+<A NAME="1227"></A>       */</FONT>
+<A NAME="1228"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1229"></A>        pbSave_actionPerformed();
+<A NAME="1230"></A>      } 
+<A NAME="1231"></A>
+<A NAME="1232"></A>    });
+<A NAME="1233"></A>
+<A NAME="1234"></A>    <FONT ID="SingleLineComment">// 'Drucken'-Knopf formatieren und poitionieren
+<A NAME="1235"></A></FONT>    pbPrint.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1236"></A>    pbPrint.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">151</FONT>, <FONT ID="IntegerLiteral">12</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">26</FONT>));
+<A NAME="1237"></A>    pbPrint.setIcon(iPrint);
+<A NAME="1238"></A>    pbPrint.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.print.tooltip"</FONT>));
+<A NAME="1239"></A>    pToolbar.add(pbPrint, <FONT ID="Null">null</FONT>);
+<A NAME="1240"></A>    pbPrint.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1241"></A>
+<A NAME="1242"></A>
+<A NAME="1243"></A>      <FONT ID="FormalComment">/**
+<A NAME="1244"></A>       * Method declaration
+<A NAME="1245"></A>       * 
+<A NAME="1246"></A>       * 
+<A NAME="1247"></A>       * @param e
+<A NAME="1248"></A>       * 
+<A NAME="1249"></A>       * @see
+<A NAME="1250"></A>       */</FONT>
+<A NAME="1251"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1252"></A>        pbPrint_actionPerformed();
+<A NAME="1253"></A>      } 
+<A NAME="1254"></A>
+<A NAME="1255"></A>    });
+<A NAME="1256"></A>
+<A NAME="1257"></A>    <FONT ID="SingleLineComment">// Karteireiter-HauptPanel positionieren
+<A NAME="1258"></A></FONT>    tpMain.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">45</FONT>, <FONT ID="IntegerLiteral">249</FONT>, <FONT ID="IntegerLiteral">185</FONT>));
+<A NAME="1259"></A>
+<A NAME="1260"></A>    <FONT ID="SingleLineComment">// Ansicht-Karteikarte einrichten (Layout)
+<A NAME="1261"></A></FONT>    tpLayout.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1262"></A>    tpMain.add(tpLayout, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.tab.layout.title"</FONT>));
+<A NAME="1263"></A>
+<A NAME="1264"></A>    <FONT ID="SingleLineComment">// Button zur Darstellung nur eines Bildes einrichten
+<A NAME="1265"></A></FONT>    rb1Image.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1266"></A>    rb1Image.setIcon(i1Image);
+<A NAME="1267"></A>    rb1Image.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="1268"></A>    rb1Image.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.1image.tooltip"</FONT>));
+<A NAME="1269"></A>    rb1Image.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1270"></A>    tpLayout.add(rb1Image, <FONT ID="Null">null</FONT>);
+<A NAME="1271"></A>    rb1Image.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1272"></A>
+<A NAME="1273"></A>
+<A NAME="1274"></A>      <FONT ID="FormalComment">/**
+<A NAME="1275"></A>       * Method declaration
+<A NAME="1276"></A>       * 
+<A NAME="1277"></A>       * 
+<A NAME="1278"></A>       * @param e
+<A NAME="1279"></A>       * 
+<A NAME="1280"></A>       * @see
+<A NAME="1281"></A>       */</FONT>
+<A NAME="1282"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1283"></A>        rb1Image_actionPerformed();
+<A NAME="1284"></A>      } 
+<A NAME="1285"></A>
+<A NAME="1286"></A>    });
+<A NAME="1287"></A>
+<A NAME="1288"></A>    <FONT ID="SingleLineComment">// Button zur gleichzeitigen Darstellung von 4 Bildern einrichten
+<A NAME="1289"></A></FONT>    rb4Images.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1290"></A>    rb4Images.setIcon(i4Images);
+<A NAME="1291"></A>    rb4Images.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.4image.tooltip"</FONT>));
+<A NAME="1292"></A>    rb4Images.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">42</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1293"></A>    tpLayout.add(rb4Images, <FONT ID="Null">null</FONT>);
+<A NAME="1294"></A>    rb4Images.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1295"></A>
+<A NAME="1296"></A>
+<A NAME="1297"></A>      <FONT ID="FormalComment">/**
+<A NAME="1298"></A>       * Method declaration
+<A NAME="1299"></A>       * 
+<A NAME="1300"></A>       * 
+<A NAME="1301"></A>       * @param e
+<A NAME="1302"></A>       * 
+<A NAME="1303"></A>       * @see
+<A NAME="1304"></A>       */</FONT>
+<A NAME="1305"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1306"></A>        rb4Images_actionPerformed();
+<A NAME="1307"></A>      } 
+<A NAME="1308"></A>
+<A NAME="1309"></A>    });
+<A NAME="1310"></A>
+<A NAME="1311"></A>    <FONT ID="SingleLineComment">// Die beiden Knoepfe zur Darstellung von 1 bzw. 4 Bildern so
+<A NAME="1312"></A></FONT>    <FONT ID="SingleLineComment">// gruppieren, dass immer nur einer gedrueclkt sein kann
+<A NAME="1313"></A></FONT>    bgNumOfImages.add(rb1Image);
+<A NAME="1314"></A>    bgNumOfImages.add(rb4Images);
+<A NAME="1315"></A>
+<A NAME="1316"></A>    <FONT ID="SingleLineComment">// Knopf zur Anzeige der Bildbeschriftungen einrichten
+<A NAME="1317"></A></FONT>    tbImageText.setIcon(iInfoText);
+<A NAME="1318"></A>    tbImageText.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.infotext.tooltip"</FONT>));
+<A NAME="1319"></A>    tbImageText.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">79</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1320"></A>    tpLayout.add(tbImageText, <FONT ID="Null">null</FONT>);
+<A NAME="1321"></A>    tbImageText.addMouseListener(<FONT ID="New">new</FONT> java.awt.event.MouseAdapter() {
+<A NAME="1322"></A>
+<A NAME="1323"></A>
+<A NAME="1324"></A>      <FONT ID="FormalComment">/**
+<A NAME="1325"></A>       * Method declaration
+<A NAME="1326"></A>       * 
+<A NAME="1327"></A>       * 
+<A NAME="1328"></A>       * @param e
+<A NAME="1329"></A>       * 
+<A NAME="1330"></A>       * @see
+<A NAME="1331"></A>       */</FONT>
+<A NAME="1332"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> mouseClicked(MouseEvent e) {
+<A NAME="1333"></A>        tbImageText_mouseClicked();
+<A NAME="1334"></A>      } 
+<A NAME="1335"></A>
+<A NAME="1336"></A>    });
+<A NAME="1337"></A>
+<A NAME="1338"></A>    <FONT ID="SingleLineComment">// Knopf zur Histogrammanzeige einrichten
+<A NAME="1339"></A></FONT>    pbHistogram.setIcon(iHistogram);
+<A NAME="1340"></A>    pbHistogram.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.histogramm.tooltip"</FONT>));
+<A NAME="1341"></A>    pbHistogram.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">116</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1342"></A>    tpLayout.add(pbHistogram, <FONT ID="Null">null</FONT>);
+<A NAME="1343"></A>    pbHistogram.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1344"></A>
+<A NAME="1345"></A>
+<A NAME="1346"></A>      <FONT ID="FormalComment">/**
+<A NAME="1347"></A>       * Method declaration
+<A NAME="1348"></A>       * 
+<A NAME="1349"></A>       * 
+<A NAME="1350"></A>       * @param e
+<A NAME="1351"></A>       * 
+<A NAME="1352"></A>       * @see
+<A NAME="1353"></A>       */</FONT>
+<A NAME="1354"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1355"></A>        pbHistogram_actionPerformed();
+<A NAME="1356"></A>      } 
+<A NAME="1357"></A>
+<A NAME="1358"></A>    });
+<A NAME="1359"></A>
+<A NAME="1360"></A>    <FONT ID="SingleLineComment">// Knopf zur Anzeige des k-Raum Manipulationstools einrichten
+<A NAME="1361"></A></FONT>    pbKSpaceManip.setIcon(iKSpaceMan);
+<A NAME="1362"></A>    pbKSpaceManip.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.kspaceman.tooltip"</FONT>));
+<A NAME="1363"></A>    pbKSpaceManip.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">190</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1364"></A>    tpLayout.add(pbKSpaceManip, <FONT ID="Null">null</FONT>);
+<A NAME="1365"></A>    pbKSpaceManip.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1366"></A>
+<A NAME="1367"></A>
+<A NAME="1368"></A>      <FONT ID="FormalComment">/**
+<A NAME="1369"></A>       * Method declaration
+<A NAME="1370"></A>       * 
+<A NAME="1371"></A>       * 
+<A NAME="1372"></A>       * @param e
+<A NAME="1373"></A>       * 
+<A NAME="1374"></A>       * @see
+<A NAME="1375"></A>       */</FONT>
+<A NAME="1376"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1377"></A>        pbKSpaceManip_actionPerformed();
+<A NAME="1378"></A>      } 
+<A NAME="1379"></A>
+<A NAME="1380"></A>    });
+<A NAME="1381"></A>
+<A NAME="1382"></A>    <FONT ID="SingleLineComment">// Knopf zur k-Raum-Anzeige einrichten
+<A NAME="1383"></A></FONT>    pbKSpace.setIcon(iKSpace);
+<A NAME="1384"></A>    pbKSpace.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.kspace.tooltip"</FONT>));
+<A NAME="1385"></A>    pbKSpace.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">153</FONT>, <FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1386"></A>    tpLayout.add(pbKSpace, <FONT ID="Null">null</FONT>);
+<A NAME="1387"></A>    pbKSpace.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1388"></A>
+<A NAME="1389"></A>
+<A NAME="1390"></A>      <FONT ID="FormalComment">/**
+<A NAME="1391"></A>       * Method declaration
+<A NAME="1392"></A>       * 
+<A NAME="1393"></A>       * 
+<A NAME="1394"></A>       * @param e
+<A NAME="1395"></A>       * 
+<A NAME="1396"></A>       * @see
+<A NAME="1397"></A>       */</FONT>
+<A NAME="1398"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1399"></A>        pbKSpace_actionPerformed();
+<A NAME="1400"></A>      } 
+<A NAME="1401"></A>
+<A NAME="1402"></A>    });
+<A NAME="1403"></A>
+<A NAME="1404"></A>    <FONT ID="SingleLineComment">// 'Fall-Info'-Knopf formatieren und positionieren
+<A NAME="1405"></A></FONT>    pbCaseInfo.setMargin(<FONT ID="New">new</FONT> Insets(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="1406"></A>    pbCaseInfo.setIcon(iCaseInfo);
+<A NAME="1407"></A>    pbCaseInfo.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">47</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1408"></A>    pbCaseInfo.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.btn.caseinfo.tooltip"</FONT>));
+<A NAME="1409"></A>    pbCaseInfo.setEnabled(<FONT ID="True">true</FONT>);
+<A NAME="1410"></A>    tpLayout.add(pbCaseInfo, <FONT ID="Null">null</FONT>);
+<A NAME="1411"></A>    pbCaseInfo.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1412"></A>
+<A NAME="1413"></A>
+<A NAME="1414"></A>      <FONT ID="FormalComment">/**
+<A NAME="1415"></A>       * Method declaration
+<A NAME="1416"></A>       * 
+<A NAME="1417"></A>       * 
+<A NAME="1418"></A>       * @param e
+<A NAME="1419"></A>       * 
+<A NAME="1420"></A>       * @see
+<A NAME="1421"></A>       */</FONT>
+<A NAME="1422"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1423"></A>        pbCaseInfo_actionPerformed();
+<A NAME="1424"></A>      } 
+<A NAME="1425"></A>
+<A NAME="1426"></A>    });
+<A NAME="1427"></A>
+<A NAME="1428"></A>
+<A NAME="1429"></A>    <FONT ID="SingleLineComment">// Fenstern-Karteikarte einrichten
+<A NAME="1430"></A></FONT>    tpWindow.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1431"></A>    tpMain.add(tpWindow, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.tab.window.title"</FONT>));
+<A NAME="1432"></A>
+<A NAME="1433"></A>    <FONT ID="SingleLineComment">// Helligkeitseingabefeld mit Slider hinzufuegen
+<A NAME="1434"></A></FONT>    pCenter = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.window.slider.center"</FONT>), <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">4096</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="1435"></A>    pCenter.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">187</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="1436"></A>    pCenter.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.window.slider.center.tooltip"</FONT>));
+<A NAME="1437"></A>    pCenter.setTextRange(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">4095</FONT>);
+<A NAME="1438"></A>    pCenter.setTickSpacing(<FONT ID="IntegerLiteral">1024</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="1439"></A>    pCenter.fillPanel();
+<A NAME="1440"></A>    pCenter.setSliderMaximum(<FONT ID="IntegerLiteral">4095</FONT>);
+<A NAME="1441"></A>    tpWindow.add(pCenter);
+<A NAME="1442"></A>    pCenter.setValue(<FONT ID="IntegerLiteral">2048</FONT>);
+<A NAME="1443"></A>    pCenter.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="1444"></A>
+<A NAME="1445"></A>
+<A NAME="1446"></A>      <FONT ID="FormalComment">/**
+<A NAME="1447"></A>       * Method declaration
+<A NAME="1448"></A>       * 
+<A NAME="1449"></A>       * 
+<A NAME="1450"></A>       * @param e
+<A NAME="1451"></A>       * 
+<A NAME="1452"></A>       * @see
+<A NAME="1453"></A>       */</FONT>
+<A NAME="1454"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="1455"></A>        updateCenter();
+<A NAME="1456"></A>        pCanvas.repaint();
+<A NAME="1457"></A>      } 
+<A NAME="1458"></A>
+<A NAME="1459"></A>    });
+<A NAME="1460"></A>
+<A NAME="1461"></A>
+<A NAME="1462"></A>    <FONT ID="SingleLineComment">// Helligkeitseingabefeld mit Slider hinzufuegen
+<A NAME="1463"></A></FONT>    pWindow = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.window.slider.width"</FONT>), <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">4096</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="1464"></A>    pWindow.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">187</FONT>, <FONT ID="IntegerLiteral">70</FONT>));
+<A NAME="1465"></A>    pWindow.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.window.slider.width.tooltip"</FONT>));
+<A NAME="1466"></A>    pWindow.setTextRange(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">4096</FONT>);
+<A NAME="1467"></A>    pWindow.setTickSpacing(<FONT ID="IntegerLiteral">1024</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="1468"></A>    pWindow.fillPanel();
+<A NAME="1469"></A>    tpWindow.add(pWindow);
+<A NAME="1470"></A>    pWindow.setValue(<FONT ID="IntegerLiteral">4096</FONT>);
+<A NAME="1471"></A>    pWindow.setSliderMinimum(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1472"></A>    pWindow.getTextFieldReference().addCaretListener(<FONT ID="New">new</FONT> CaretListener() {
+<A NAME="1473"></A>
+<A NAME="1474"></A>
+<A NAME="1475"></A>      <FONT ID="FormalComment">/**
+<A NAME="1476"></A>       * Method declaration
+<A NAME="1477"></A>       * 
+<A NAME="1478"></A>       * 
+<A NAME="1479"></A>       * @param e
+<A NAME="1480"></A>       * 
+<A NAME="1481"></A>       * @see
+<A NAME="1482"></A>       */</FONT>
+<A NAME="1483"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> caretUpdate(CaretEvent e) {
+<A NAME="1484"></A>        updateWindow();
+<A NAME="1485"></A>        pCanvas.repaint();
+<A NAME="1486"></A>      } 
+<A NAME="1487"></A>
+<A NAME="1488"></A>    });
+<A NAME="1489"></A>
+<A NAME="1490"></A>    <FONT ID="SingleLineComment">// Button fuer optimale Fensterung einrichten
+<A NAME="1491"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.27
+<A NAME="1492"></A></FONT>    <FONT ID="SingleLineComment">// pbOptWindowing.setBounds(194, 80, 45, 70);
+<A NAME="1493"></A></FONT>    <FONT ID="SingleLineComment">// pbOptWindowing.setText(frameRsrc.getString("vmrtframe.window.btn.opt.title"));
+<A NAME="1494"></A></FONT>    pbOptWindowing.setBounds(<FONT ID="IntegerLiteral">203</FONT>, <FONT ID="IntegerLiteral">81</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>);
+<A NAME="1495"></A>    pbOptWindowing.setIcon(winOpt);
+<A NAME="1496"></A>    pbOptWindowing.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.window.btn.opt.tooltip"</FONT>));
+<A NAME="1497"></A>
+<A NAME="1498"></A>    tpWindow.add(pbOptWindowing);
+<A NAME="1499"></A>    pbOptWindowing.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1500"></A>
+<A NAME="1501"></A>
+<A NAME="1502"></A>      <FONT ID="FormalComment">/**
+<A NAME="1503"></A>       * Method declaration
+<A NAME="1504"></A>       * 
+<A NAME="1505"></A>       * 
+<A NAME="1506"></A>       * @param e
+<A NAME="1507"></A>       * 
+<A NAME="1508"></A>       * @see
+<A NAME="1509"></A>       */</FONT>
+<A NAME="1510"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1511"></A>        pbOptWindowing_actionPerformed();
+<A NAME="1512"></A>      } 
+<A NAME="1513"></A>
+<A NAME="1514"></A>    });
+<A NAME="1515"></A>
+<A NAME="1516"></A>    <FONT ID="SingleLineComment">// Button fuer das Zuruecksetzen der Fensterung einrichten
+<A NAME="1517"></A></FONT>    <FONT ID="SingleLineComment">// th 2002.10.27
+<A NAME="1518"></A></FONT>    <FONT ID="SingleLineComment">// pbResetWindowing.setBounds(194, 5, 45, 70);
+<A NAME="1519"></A></FONT>    <FONT ID="SingleLineComment">// pbResetWindowing.setText(frameRsrc.getString("vmrtframe.window.btn.reset.title"));
+<A NAME="1520"></A></FONT>    pbResetWindowing.setBounds(<FONT ID="IntegerLiteral">203</FONT>, <FONT ID="IntegerLiteral">123</FONT>, <FONT ID="IntegerLiteral">27</FONT>, <FONT ID="IntegerLiteral">27</FONT>);
+<A NAME="1521"></A>    pbResetWindowing.setIcon(winReset);
+<A NAME="1522"></A>    pbResetWindowing.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.window.btn.reset.tooltip"</FONT>));
+<A NAME="1523"></A>
+<A NAME="1524"></A>    tpWindow.add(pbResetWindowing);
+<A NAME="1525"></A>    pbResetWindowing.addActionListener(<FONT ID="New">new</FONT> java.awt.event.ActionListener() {
+<A NAME="1526"></A>
+<A NAME="1527"></A>
+<A NAME="1528"></A>      <FONT ID="FormalComment">/**
+<A NAME="1529"></A>       * Method declaration
+<A NAME="1530"></A>       * 
+<A NAME="1531"></A>       * 
+<A NAME="1532"></A>       * @param e
+<A NAME="1533"></A>       * 
+<A NAME="1534"></A>       * @see
+<A NAME="1535"></A>       */</FONT>
+<A NAME="1536"></A>      <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e) {
+<A NAME="1537"></A>        pWindow.setValue(<FONT ID="IntegerLiteral">4096</FONT>);
+<A NAME="1538"></A>        pCenter.setValue(<FONT ID="IntegerLiteral">2048</FONT>);
+<A NAME="1539"></A>        updateCW();
+<A NAME="1540"></A>        pCanvas.repaint();
+<A NAME="1541"></A>
+<A NAME="1542"></A>        <FONT ID="SingleLineComment">// pbResetWindowing_actionPerformed(e);
+<A NAME="1543"></A></FONT>      } 
+<A NAME="1544"></A>
+<A NAME="1545"></A>    });
+<A NAME="1546"></A>
+<A NAME="1547"></A>    <FONT ID="SingleLineComment">// Artefakt-Karteikarte einrichten
+<A NAME="1548"></A></FONT>    tpArtefact.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1549"></A>    tpMain.add(tpArtefact, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.tab.artefact.title"</FONT>));
+<A NAME="1550"></A>
+<A NAME="1551"></A>
+<A NAME="1552"></A>    <FONT ID="SingleLineComment">// Elemente der Artefakt-Karteikarte einrichten
+<A NAME="1553"></A></FONT>    pArtefacts.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">32</FONT>, <FONT ID="IntegerLiteral">258</FONT>, <FONT ID="IntegerLiteral">122</FONT>));
+<A NAME="1554"></A>    pArtefacts.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1555"></A>    cbArtefacts.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">243</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1556"></A>
+<A NAME="1557"></A>    <FONT ID="SingleLineComment">// Geloescht: tha 2000.8.19
+<A NAME="1558"></A></FONT>    <FONT ID="SingleLineComment">// cbArtefacts.addItem("keine");
+<A NAME="1559"></A></FONT>    cbArtefacts.getArtefacts();
+<A NAME="1560"></A>
+<A NAME="1561"></A>    tpArtefact.add(cbArtefacts, <FONT ID="Null">null</FONT>);
+<A NAME="1562"></A>    tpArtefact.add(pArtefacts, <FONT ID="Null">null</FONT>);
+<A NAME="1563"></A>
+<A NAME="1564"></A>
+<A NAME="1565"></A>    <FONT ID="SingleLineComment">// Extras-Karteikarte einrichten
+<A NAME="1566"></A></FONT>    tpExtras.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1567"></A>    tpMain.add(tpExtras, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.tab.extras.title"</FONT>));
+<A NAME="1568"></A>
+<A NAME="1569"></A>    <FONT ID="SingleLineComment">// Checkbox zur Aktivierung eines neuen Bildes einrichten
+<A NAME="1570"></A></FONT>    chbActivateNewImg.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.extras.activate"</FONT>));
+<A NAME="1571"></A>    chbActivateNewImg.setBounds(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">240</FONT>, <FONT ID="IntegerLiteral">25</FONT>);
+<A NAME="1572"></A>    tpExtras.add(chbActivateNewImg, <FONT ID="Null">null</FONT>);
+<A NAME="1573"></A>
+<A NAME="1574"></A>    <FONT ID="SingleLineComment">// Elemente zur Auswahl der Position des naechsten erzeugten Bildes anlegen
+<A NAME="1575"></A></FONT>    pNextImageAt.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">30</FONT>, <FONT ID="IntegerLiteral">240</FONT>, <FONT ID="IntegerLiteral">45</FONT>);
+<A NAME="1576"></A>    pNextImageAt.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1577"></A>    pNextImageAt.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="1578"></A>    lNextImageAt.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.extras.position"</FONT>));
+<A NAME="1579"></A>    lNextImageAt.setBounds(<FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">240</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="1580"></A>    pNextImageAt.add(lNextImageAt);
+<A NAME="1581"></A>    rbNextImageAtSelection.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.extras.position.selection"</FONT>));
+<A NAME="1582"></A>    rbNextImageAtSelection.setBounds(<FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">22</FONT>, <FONT ID="IntegerLiteral">120</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="1583"></A>    pNextImageAt.add(rbNextImageAtSelection, <FONT ID="Null">null</FONT>);
+<A NAME="1584"></A>    rbNextImageAtFreePlace.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.extras.position.freeplace"</FONT>));
+<A NAME="1585"></A>    rbNextImageAtFreePlace.setBounds(<FONT ID="IntegerLiteral">130</FONT>, <FONT ID="IntegerLiteral">22</FONT>, <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">20</FONT>);
+<A NAME="1586"></A>    pNextImageAt.add(rbNextImageAtFreePlace, <FONT ID="Null">null</FONT>);
+<A NAME="1587"></A>    rbNextImageAtFreePlace.setSelected(<FONT ID="True">true</FONT>);
+<A NAME="1588"></A>    bgPlaceNextImage.add(rbNextImageAtSelection);
+<A NAME="1589"></A>    bgPlaceNextImage.add(rbNextImageAtFreePlace);
+<A NAME="1590"></A>    tpExtras.add(pNextImageAt, <FONT ID="Null">null</FONT>);
+<A NAME="1591"></A>
+<A NAME="1592"></A>    <FONT ID="SingleLineComment">// Sliderpanel fuer den Zeitfaktor einrichten
+<A NAME="1593"></A></FONT>    pTimeFactor = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/SliderPanel.java.html">SliderPanel</A>(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.extras.simulation"</FONT>), <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="StringLiteral">"%"</FONT>);
+<A NAME="1594"></A>    pTimeFactor.setBounds(<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">95</FONT>, <FONT ID="IntegerLiteral">240</FONT>, <FONT ID="IntegerLiteral">60</FONT>);
+<A NAME="1595"></A>    pTimeFactor.setTickSpacing(<FONT ID="IntegerLiteral">10</FONT>, <FONT ID="IntegerLiteral">5</FONT>);
+<A NAME="1596"></A>    pTimeFactor.setTextRange(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">100</FONT>);
+<A NAME="1597"></A>    pTimeFactor.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.extras.simulation.tooltip"</FONT>));
+<A NAME="1598"></A>    pTimeFactor.fillPanel();
+<A NAME="1599"></A>    tpExtras.add(pTimeFactor, <FONT ID="Null">null</FONT>);
+<A NAME="1600"></A>
+<A NAME="1601"></A>    <FONT ID="SingleLineComment">// Sequenzauswahlbox einrichten und positionieren (inkl. Label)
+<A NAME="1602"></A></FONT>    cbSequence.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.sequence.tooltip"</FONT>));
+<A NAME="1603"></A>    cbSequence.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">249</FONT>, <FONT ID="IntegerLiteral">27</FONT>));
+<A NAME="1604"></A>
+<A NAME="1605"></A>    pToolbar.add(cbSequence, <FONT ID="Null">null</FONT>);
+<A NAME="1606"></A>    lSequence.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.sequence"</FONT>));
+<A NAME="1607"></A>    lSequence.setForeground(Color.black);
+<A NAME="1608"></A>    lSequence.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">237</FONT>, <FONT ID="IntegerLiteral">250</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="1609"></A>    pToolbar.add(lSequence, <FONT ID="Null">null</FONT>);
+<A NAME="1610"></A>
+<A NAME="1611"></A>    <FONT ID="SingleLineComment">// Sequenzen auslesen und Combobox einrichten
+<A NAME="1612"></A></FONT>    cbSequence.getSequences();
+<A NAME="1613"></A>
+<A NAME="1614"></A>    <FONT ID="SingleLineComment">// Sequenz-Panel einrichten und positionieren
+<A NAME="1615"></A></FONT>    pSequence.setBorder(BorderFactory.createEtchedBorder());
+<A NAME="1616"></A>    pSequence.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.sequence.settings.tooltip"</FONT>));
+<A NAME="1617"></A>    pSequence.setLayout(<FONT ID="Null">null</FONT>);
+<A NAME="1618"></A>    pSequence.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">292</FONT>, <FONT ID="IntegerLiteral">249</FONT>, <FONT ID="IntegerLiteral">221</FONT>));
+<A NAME="1619"></A>    pToolbar.add(pSequence, <FONT ID="Null">null</FONT>);
+<A NAME="1620"></A>
+<A NAME="1621"></A>    <FONT ID="SingleLineComment">// Fortschrittsanzeige enrichten
+<A NAME="1622"></A></FONT>    prbarProgress.setToolTipText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.statusbar.progress"</FONT>));
+<A NAME="1623"></A>    prbarProgress.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">675</FONT>, <FONT ID="IntegerLiteral">516</FONT>, <FONT ID="IntegerLiteral">112</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="1624"></A>    prbarProgress.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="1625"></A>    prbarProgress.setMaximum(<FONT ID="IntegerLiteral">255</FONT>);
+<A NAME="1626"></A>    prbarProgress.setValue(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="1627"></A>
+<A NAME="1628"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="1629"></A></FONT>    flPane.add(prbarProgress, <FONT ID="Null">null</FONT>);
+<A NAME="1630"></A>
+<A NAME="1631"></A>    <FONT ID="SingleLineComment">// Positionsanzeige einrichten
+<A NAME="1632"></A></FONT>    lPosition.setText(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="1633"></A>    lPosition.setForeground(Color.black);
+<A NAME="1634"></A>    lPosition.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Dialog"</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">12</FONT>));
+<A NAME="1635"></A>    lPosition.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">600</FONT>, <FONT ID="IntegerLiteral">516</FONT>, <FONT ID="IntegerLiteral">95</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="1636"></A>
+<A NAME="1637"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="1638"></A></FONT>    flPane.add(lPosition, <FONT ID="Null">null</FONT>);
+<A NAME="1639"></A>
+<A NAME="1640"></A>    lPositionText.setText(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.statusbar.position"</FONT>));
+<A NAME="1641"></A>    lPositionText.setForeground(Color.black);
+<A NAME="1642"></A>    lPositionText.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Dialog"</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">12</FONT>));
+<A NAME="1643"></A>    lPositionText.setBounds(<FONT ID="New">new</FONT> Rectangle(<FONT ID="IntegerLiteral">510</FONT>, <FONT ID="IntegerLiteral">516</FONT>, <FONT ID="IntegerLiteral">100</FONT>, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="1644"></A>
+<A NAME="1645"></A>    <FONT ID="SingleLineComment">// tha 2000.8.19
+<A NAME="1646"></A></FONT>    flPane.add(lPositionText, <FONT ID="Null">null</FONT>);
+<A NAME="1647"></A>
+<A NAME="1648"></A>  }   <FONT ID="SingleLineComment">// Methode jbInit
+<A NAME="1649"></A></FONT> 
+<A NAME="1650"></A>
+<A NAME="1651"></A>  <FONT ID="SingleLineComment">// ////////////////////////////
+<A NAME="1652"></A></FONT>  <FONT ID="SingleLineComment">// Event-Methoden
+<A NAME="1653"></A></FONT>  <FONT ID="SingleLineComment">// ////////////////////////////
+<A NAME="1654"></A></FONT>
+<A NAME="1655"></A>
+<A NAME="1656"></A>  <FONT ID="FormalComment">/**
+<A NAME="1657"></A>   * Die Methode wird aufgerufen, wenn der Knopf zum Loeschen des selktierten
+<A NAME="1658"></A>   * Bildes gedrueckt wurde. Es wird zunaecht ein Dialog aufgeblendet, der eine
+<A NAME="1659"></A>   * Sicherheitsabfrage darstellt und nach dessen Bestaetigung wird das
+<A NAME="1660"></A>   * selektierte Bild geloescht.
+<A NAME="1661"></A>   */</FONT>
+<A NAME="1662"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> editClear_actionPerformed() {
+<A NAME="1663"></A>
+<A NAME="1664"></A>    <FONT ID="SingleLineComment">// Auflenden eines Bestaetigungsdialogs und Auslesen des gedrueckten Knopfes
+<A NAME="1665"></A></FONT>    <FONT ID="Int">int</FONT> response;
+<A NAME="1666"></A>
+<A NAME="1667"></A>    response = JOptionPane.showConfirmDialog(<FONT ID="Null">null</FONT>, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.dialog.delete1"</FONT>));
+<A NAME="1668"></A>
+<A NAME="1669"></A>    <FONT ID="SingleLineComment">// Wenn der Dialog bestaetigt wurde, wird das Bild aus dem Stack geloescht
+<A NAME="1670"></A></FONT>    <FONT ID="If">if</FONT> (response == <FONT ID="IntegerLiteral">0</FONT>)  <FONT ID="SingleLineComment">// Ok gedrueckt
+<A NAME="1671"></A></FONT>     {
+<A NAME="1672"></A>      pCanvas.getImageStack().deletePictureAtPos(pCanvas.getActiveImage());
+<A NAME="1673"></A>
+<A NAME="1674"></A>      <FONT ID="SingleLineComment">// Scrollbereich aktualisieren und Canvas neu zeichnen
+<A NAME="1675"></A></FONT>      pCanvas.updateScrollbar();
+<A NAME="1676"></A>      pCanvas.repaint();
+<A NAME="1677"></A>      <FONT ID="This">this</FONT>.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="1678"></A>    } 
+<A NAME="1679"></A>  } 
+<A NAME="1680"></A>
+<A NAME="1681"></A>
+<A NAME="1682"></A>  <FONT ID="FormalComment">/**
+<A NAME="1683"></A>   * Die Methode wird aufgerufen, wenn der Knopf zum Loeschen aller
+<A NAME="1684"></A>   * Bilder gedrueckt wurde. Es wird zunaecht ein Dialog aufgeblendet, der eine
+<A NAME="1685"></A>   * Sicherheitsabfrage darstellt und nach dessen Bestaetigung werden alle
+<A NAME="1686"></A>   * Bilder geloescht.
+<A NAME="1687"></A>   */</FONT>
+<A NAME="1688"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> editClearAll_actionPerformed() {
+<A NAME="1689"></A>
+<A NAME="1690"></A>    <FONT ID="SingleLineComment">// Auflenden eines Bestaetigungsdialogs und Auslesen des gedrueckten Knopfes
+<A NAME="1691"></A></FONT>    <FONT ID="Int">int</FONT> response;
+<A NAME="1692"></A>
+<A NAME="1693"></A>    response = JOptionPane.showConfirmDialog(<FONT ID="Null">null</FONT>, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.dialog.deleteall"</FONT>));
+<A NAME="1694"></A>
+<A NAME="1695"></A>    <FONT ID="SingleLineComment">// Wenn der Dialog bestaetigt wurde, werden alle Bilder geloescht
+<A NAME="1696"></A></FONT>    <FONT ID="If">if</FONT> (response == <FONT ID="IntegerLiteral">0</FONT>)  <FONT ID="SingleLineComment">// Ok gedrueckt
+<A NAME="1697"></A></FONT>     {
+<A NAME="1698"></A>      pCanvas.getImageStack().clearImageStack();
+<A NAME="1699"></A>      pCanvas.updateScrollbar();
+<A NAME="1700"></A>      pCanvas.repaint();
+<A NAME="1701"></A>      <FONT ID="This">this</FONT>.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="1702"></A>    } 
+<A NAME="1703"></A>  } 
+<A NAME="1704"></A>
+<A NAME="1705"></A>
+<A NAME="1706"></A>  <FONT ID="FormalComment">/**
+<A NAME="1707"></A>   * Die Methode implementiert die Fensterung des selektierten Bildes mittels
+<A NAME="1708"></A>   * Mausbewegung. Eine Bewegung der Maus in x-Richtung veraendert das Zentrum,
+<A NAME="1709"></A>   * eine Bewegung in y-Richtung die Breite des Fensters.
+<A NAME="1710"></A>   * @param e Das Ereignis, das beim Bewegen der Maus ausgeloest wird.
+<A NAME="1711"></A>   */</FONT>
+<A NAME="1712"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pCanvas_mouseDragged(MouseEvent e) {
+<A NAME="1713"></A>
+<A NAME="1714"></A>    <FONT ID="Int">int</FONT>   curX, curY, difX, difY, difT;
+<A NAME="1715"></A>    <FONT ID="Long">long</FONT>  curWhen;
+<A NAME="1716"></A>
+<A NAME="1717"></A>    <FONT ID="SingleLineComment">// Cursor setzen
+<A NAME="1718"></A></FONT>    pCanvas.setCursor(windowCursor);
+<A NAME="1719"></A>
+<A NAME="1720"></A>    <FONT ID="SingleLineComment">// Begrenzen der Durchgefuehrten Aktionen auf 10 pro Sekunde
+<A NAME="1721"></A></FONT>    curWhen = e.getWhen();
+<A NAME="1722"></A>    difT = (<FONT ID="Int">int</FONT>) (curWhen - lastTime);
+<A NAME="1723"></A>    <FONT ID="If">if</FONT> (difT &lt; <FONT ID="IntegerLiteral">100</FONT>) {
+<A NAME="1724"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="1725"></A>
+<A NAME="1726"></A>    } 
+<A NAME="1727"></A>    curX = e.getX();
+<A NAME="1728"></A>    curY = e.getY();
+<A NAME="1729"></A>    difX = curX - lastMouseClickX;
+<A NAME="1730"></A>    difY = lastMouseClickY - curY;
+<A NAME="1731"></A>
+<A NAME="1732"></A>    <FONT ID="SingleLineComment">// Bei schneller Mausbewegung auch eine schnellere (grobere) Fensterung
+<A NAME="1733"></A></FONT>    <FONT ID="SingleLineComment">// durchfuehren
+<A NAME="1734"></A></FONT>    <FONT ID="If">if</FONT> (Math.abs(difX) &gt; <FONT ID="IntegerLiteral">10</FONT>) {
+<A NAME="1735"></A>      difX *= <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="1736"></A>    } 
+<A NAME="1737"></A>    <FONT ID="If">if</FONT> (Math.abs(difY) &gt; <FONT ID="IntegerLiteral">10</FONT>) {
+<A NAME="1738"></A>      difY *= <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="1739"></A>    } 
+<A NAME="1740"></A>
+<A NAME="1741"></A>    <FONT ID="If">if</FONT> ((lastCenter + difY) &lt; <FONT ID="IntegerLiteral">4096</FONT>) {
+<A NAME="1742"></A>      <FONT ID="If">if</FONT> ((lastCenter + difY) &gt;= <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="1743"></A>        pCenter.setValue(lastCenter + difY);
+<A NAME="1744"></A>        lastCenter += difY;
+<A NAME="1745"></A>      } 
+<A NAME="1746"></A>    } 
+<A NAME="1747"></A>
+<A NAME="1748"></A>    <FONT ID="If">if</FONT> ((lastWindow + difX) &lt;= <FONT ID="IntegerLiteral">4096</FONT>) {
+<A NAME="1749"></A>      <FONT ID="If">if</FONT> ((lastWindow + difX) &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="1750"></A>        pWindow.setValue(lastWindow + difX);
+<A NAME="1751"></A>        lastWindow += difX;
+<A NAME="1752"></A>      } 
+<A NAME="1753"></A>    } 
+<A NAME="1754"></A>
+<A NAME="1755"></A>    lastMouseClickX = curX;
+<A NAME="1756"></A>    lastMouseClickY = curY;
+<A NAME="1757"></A>    lastTime = curWhen;
+<A NAME="1758"></A>
+<A NAME="1759"></A>    updateCW();
+<A NAME="1760"></A>    pCanvas.repaint();
+<A NAME="1761"></A>  }   <FONT ID="SingleLineComment">// Methode pCanvas_mouseDragged
+<A NAME="1762"></A></FONT> 
+<A NAME="1763"></A>
+<A NAME="1764"></A>  <FONT ID="FormalComment">/**
+<A NAME="1765"></A>   * Die Methode wird aufgerufen, wenn die Aktion Hilfe | Info aus dem Menue
+<A NAME="1766"></A>   * aufgerufen wurde. Das Informationsfenster wird dann aufgeblendet.
+<A NAME="1767"></A>   */</FONT>
+<A NAME="1768"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> helpAbout_actionPerformed() {
+<A NAME="1769"></A>            showAboutBox();
+<A NAME="1770"></A>  } 
+<A NAME="1771"></A>
+<A NAME="1772"></A>
+<A NAME="1773"></A>  <FONT ID="FormalComment">/**
+<A NAME="1774"></A>   * Die Method wird aufgerufen, wenn der Schliessen-Knopf oben rechts am Fenster
+<A NAME="1775"></A>   * betaetigt wird. Die Methode muss ueberschrieben werden, damit das Programm bei
+<A NAME="1776"></A>   * einem System-Close beendet werden kann.
+<A NAME="1777"></A>   * @param e Das Ereignis beim Betaetigen des Schliessen-Knopfes.
+<A NAME="1778"></A>   */</FONT>
+<A NAME="1779"></A>  <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> processWindowEvent(WindowEvent e) {
+<A NAME="1780"></A>    <FONT ID="If">if</FONT> (e.getID() == WindowEvent.WINDOW_CLOSING) {
+<A NAME="1781"></A>                        <FONT ID="If">if</FONT> (isApplication) {
+<A NAME="1782"></A>                            <FONT ID="SingleLineComment">// Application
+<A NAME="1783"></A></FONT>                            <FONT ID="This">this</FONT>.savePreferences();
+<A NAME="1784"></A>                        }
+<A NAME="1785"></A>
+<A NAME="1786"></A>      <FONT ID="SingleLineComment">// Aufruf der gleichen Methode wie bei Aktion Datei | Beenden
+<A NAME="1787"></A></FONT>      fileExit_actionPerformed();
+<A NAME="1788"></A>    } 
+<A NAME="1789"></A>  } 
+<A NAME="1790"></A>
+<A NAME="1791"></A>
+<A NAME="1792"></A>  <FONT ID="FormalComment">/**
+<A NAME="1793"></A>   * Die Methode aendert die Fensterungseinstellungen des selektierten Bildes
+<A NAME="1794"></A>   * gemaess den Einstellungen der Schieberegler.
+<A NAME="1795"></A>   */</FONT>
+<A NAME="1796"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> updateCW() {
+<A NAME="1797"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="1798"></A>
+<A NAME="1799"></A>    <FONT ID="SingleLineComment">// Nachschauen, welches Bild selektiert ist
+<A NAME="1800"></A></FONT>    ip = getSelectedImage();
+<A NAME="1801"></A>
+<A NAME="1802"></A>    <FONT ID="SingleLineComment">// Fenstereinstellung im Bild Speichern; dabei wird das neugefensterte
+<A NAME="1803"></A></FONT>    <FONT ID="SingleLineComment">// Intensitaetsbild berechnet und dargestellt
+<A NAME="1804"></A></FONT>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="1805"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="1806"></A>        <FONT ID="Int">int</FONT> c = pCenter.getValue();
+<A NAME="1807"></A>        <FONT ID="Int">int</FONT> w = pWindow.getValue();
+<A NAME="1808"></A>
+<A NAME="1809"></A>        ip.setCW(c, w);
+<A NAME="1810"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="1811"></A>    } 
+<A NAME="1812"></A>  }   <FONT ID="SingleLineComment">// Methode updateCW()
+<A NAME="1813"></A></FONT> 
+<A NAME="1814"></A>
+<A NAME="1815"></A>  <FONT ID="FormalComment">/**
+<A NAME="1816"></A>   * Die Methode aktualisiert die Center-Einstellung in der
+<A NAME="1817"></A>   * selektierten ImagePlus-Klasse.
+<A NAME="1818"></A>   */</FONT>
+<A NAME="1819"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> updateCenter() {
+<A NAME="1820"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="1821"></A>
+<A NAME="1822"></A>    <FONT ID="SingleLineComment">// Nachschauen, welches Bild selektiert ist
+<A NAME="1823"></A></FONT>    ip = getSelectedImage();
+<A NAME="1824"></A>
+<A NAME="1825"></A>    <FONT ID="SingleLineComment">// Fenstereinstellung im Bild Speichern; dabei wird das neugefensterte
+<A NAME="1826"></A></FONT>    <FONT ID="SingleLineComment">// Intensitaetsbild berechnet und dargestellt
+<A NAME="1827"></A></FONT>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="1828"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="1829"></A>        <FONT ID="Int">int</FONT> c = pCenter.getValue();
+<A NAME="1830"></A>
+<A NAME="1831"></A>        ip.setCenter(c);
+<A NAME="1832"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="1833"></A>    } 
+<A NAME="1834"></A>  }   <FONT ID="SingleLineComment">// Methode updateCenter()
+<A NAME="1835"></A></FONT> 
+<A NAME="1836"></A>
+<A NAME="1837"></A>  <FONT ID="FormalComment">/**
+<A NAME="1838"></A>   * Die Methode aktualisiert die Window-Einstellung in der
+<A NAME="1839"></A>   * selektierten imagePlus-Klasse.
+<A NAME="1840"></A>   */</FONT>
+<A NAME="1841"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> updateWindow() {
+<A NAME="1842"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="1843"></A>
+<A NAME="1844"></A>    <FONT ID="SingleLineComment">// Nachschauen, welches Bild selektiert ist
+<A NAME="1845"></A></FONT>    ip = getSelectedImage();
+<A NAME="1846"></A>
+<A NAME="1847"></A>    <FONT ID="SingleLineComment">// Fenstereinstellung im Bild Speichern; dabei wird das neugefensterte
+<A NAME="1848"></A></FONT>    <FONT ID="SingleLineComment">// Intensitaetsbild berechnet und dargestellt
+<A NAME="1849"></A></FONT>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="1850"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="1851"></A>        <FONT ID="Int">int</FONT> w = pWindow.getValue();
+<A NAME="1852"></A>
+<A NAME="1853"></A>        ip.setWindow(w);
+<A NAME="1854"></A>      } <FONT ID="Catch">catch</FONT> (Exception err) {}
+<A NAME="1855"></A>    } 
+<A NAME="1856"></A>  }   <FONT ID="SingleLineComment">// Methode updateWindow()
+<A NAME="1857"></A></FONT> 
+<A NAME="1858"></A>
+<A NAME="1859"></A>  <FONT ID="FormalComment">/**
+<A NAME="1860"></A>   * Die Methode setzt das aktuelle Verzeichnis auf den zuletzt gewählten Pfad.
+<A NAME="1861"></A>   * @param fd Dialog, für den der Pfad gesetzt wird.
+<A NAME="1862"></A>   */</FONT>
+<A NAME="1863"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> setStdDirectory(JFileChooser fd) {
+<A NAME="1864"></A>    File    myPath;
+<A NAME="1865"></A>    String  pathStr;
+<A NAME="1866"></A>
+<A NAME="1867"></A>    <FONT ID="SingleLineComment">// th 2002.10.13: Default path ist das user Directory
+<A NAME="1868"></A></FONT>    myPath = <FONT ID="New">new</FONT> File(System.getProperty(<FONT ID="StringLiteral">"user.dir"</FONT>));
+<A NAME="1869"></A>    fd.setCurrentDirectory(myPath);
+<A NAME="1870"></A>
+<A NAME="1871"></A>    <FONT ID="SingleLineComment">// Voreingestellten Pfad auslesen und setzen
+<A NAME="1872"></A></FONT>    pathStr = (String) <FONT ID="This">this</FONT>.preferences.get(<FONT ID="StringLiteral">"Path"</FONT>);
+<A NAME="1873"></A>
+<A NAME="1874"></A>    <FONT ID="If">if</FONT> (pathStr != <FONT ID="Null">null</FONT>) {
+<A NAME="1875"></A>      myPath = <FONT ID="New">new</FONT> File(pathStr);
+<A NAME="1876"></A>      <FONT ID="If">if</FONT> (myPath.exists()) {
+<A NAME="1877"></A>        fd.setCurrentDirectory(myPath);
+<A NAME="1878"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="1879"></A>        Exception e = <FONT ID="New">new</FONT> Exception(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.exception.path"</FONT>));
+<A NAME="1880"></A>
+<A NAME="1881"></A>        ErrorMessage.showMessage(e);
+<A NAME="1882"></A>      } 
+<A NAME="1883"></A>    } 
+<A NAME="1884"></A>  } 
+<A NAME="1885"></A> 
+<A NAME="1886"></A>
+<A NAME="1887"></A>  <FONT ID="FormalComment">/**
+<A NAME="1888"></A>   * Die Methode wird aufgerufen, wenn der 'Referenzbild'-Knopf gedrueckt wurde.
+<A NAME="1889"></A>   * Es wird ein Refenezdatensatz geladen, der die Parameterdaten von 6
+<A NAME="1890"></A>   * verschiedenen Geweben enthaelt.
+<A NAME="1891"></A>   */</FONT>
+<A NAME="1892"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbReferenceData_actionPerformed() {
+<A NAME="1893"></A>    myFileLoader = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/FileLoader.java.html">FileLoader</A>();
+<A NAME="1894"></A>    myFileLoader.loadReferenceData();
+<A NAME="1895"></A>
+<A NAME="1896"></A>    <FONT ID="This">this</FONT>.setTitle(myFileLoader.getCaseInfoTitle());
+<A NAME="1897"></A>
+<A NAME="1898"></A>    <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A> cif = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A>();
+<A NAME="1899"></A>
+<A NAME="1900"></A>    <FONT ID="SingleLineComment">// Geaendert 2002.8.18 tha
+<A NAME="1901"></A></FONT>    <FONT ID="SingleLineComment">// cif.setInfo(VMRTFrame.class.getResource(myFileLoader.getCaseInfoName()), myFileLoader.getCaseInfoTitle());
+<A NAME="1902"></A></FONT>    cif.setInfo(myFileLoader.getCaseInfoURL(), myFileLoader.getCaseInfoTitle());
+<A NAME="1903"></A>    cif.show();
+<A NAME="1904"></A>  } 
+<A NAME="1905"></A> 
+<A NAME="1906"></A>
+<A NAME="1907"></A>  <FONT ID="FormalComment">/**
+<A NAME="1908"></A>   * Die Methode wird aufgerufen, wenn der 'Beispielbild'-Knopf gedrueckt wurde.
+<A NAME="1909"></A>   * Es wird ein Refenezdatensatz geladen, der die Parameterdaten von 6
+<A NAME="1910"></A>   * verschiedenen Geweben enthaelt.
+<A NAME="1911"></A>   */</FONT>
+<A NAME="1912"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbSampleData_actionPerformed() {
+<A NAME="1913"></A>    myFileLoader = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/FileLoader.java.html">FileLoader</A>();
+<A NAME="1914"></A>    myFileLoader.loadSampleData();
+<A NAME="1915"></A>
+<A NAME="1916"></A>    <FONT ID="This">this</FONT>.setTitle(myFileLoader.getCaseInfoTitle());
+<A NAME="1917"></A>
+<A NAME="1918"></A>    <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A> cif = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A>();
+<A NAME="1919"></A>    cif.setInfo(myFileLoader.getCaseInfoURL(), myFileLoader.getCaseInfoTitle());
+<A NAME="1920"></A>    cif.show();
+<A NAME="1921"></A>  } 
+<A NAME="1922"></A>
+<A NAME="1923"></A>
+<A NAME="1924"></A>  <FONT ID="FormalComment">/**
+<A NAME="1925"></A>   * Die Methode wird aufgerufen, wenn der 'Oeffnen'-Knopf gedrueckt wurde oder
+<A NAME="1926"></A>   * die Aktion Datei | Oeffnen aufgerufen wurde.
+<A NAME="1927"></A>   */</FONT>
+<A NAME="1928"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbLoad_actionPerformed() {
+<A NAME="1929"></A>    File        theFile;
+<A NAME="1930"></A>    String        strFile;
+<A NAME="1931"></A>    String        strDirectory;
+<A NAME="1932"></A>
+<A NAME="1933"></A>    JFileChooser  fd = <FONT ID="New">new</FONT> JFileChooser();
+<A NAME="1934"></A>    <A HREF="../../virtual/mrt/IDXFile.java.html">IDXFile</A>       ff = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/IDXFile.java.html">IDXFile</A>();
+<A NAME="1935"></A>
+<A NAME="1936"></A>    fd.addChoosableFileFilter(ff);
+<A NAME="1937"></A>    fd.setFileFilter(ff);
+<A NAME="1938"></A>
+<A NAME="1939"></A>    fd.setDialogTitle(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.dialog.open.title"</FONT>));
+<A NAME="1940"></A>    <FONT ID="This">this</FONT>.setStdDirectory(fd);
+<A NAME="1941"></A>
+<A NAME="1942"></A>    fd.showOpenDialog(<FONT ID="This">this</FONT>);
+<A NAME="1943"></A>
+<A NAME="1944"></A>    <FONT ID="SingleLineComment">// th 2002.10.13
+<A NAME="1945"></A></FONT>    <FONT ID="SingleLineComment">// String strFile = fd.getSelectedFile().getName();
+<A NAME="1946"></A></FONT>    theFile = fd.getSelectedFile();
+<A NAME="1947"></A>    <FONT ID="If">if</FONT> (theFile == <FONT ID="Null">null</FONT>) {
+<A NAME="1948"></A>
+<A NAME="1949"></A>      <FONT ID="SingleLineComment">// Abbruch, wenn keine Datei gewählt wurde
+<A NAME="1950"></A></FONT>      <FONT ID="Return">return</FONT>;
+<A NAME="1951"></A>    } 
+<A NAME="1952"></A>
+<A NAME="1953"></A>    strFile = fd.getSelectedFile().getName();
+<A NAME="1954"></A>    strDirectory = fd.getSelectedFile().getParent();
+<A NAME="1955"></A>
+<A NAME="1956"></A>    preferences.put(<FONT ID="StringLiteral">"Path"</FONT>, strDirectory);
+<A NAME="1957"></A>
+<A NAME="1958"></A>    myFileLoader = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/FileLoader.java.html">FileLoader</A>();
+<A NAME="1959"></A>    myFileLoader.loadData(strDirectory, strFile);
+<A NAME="1960"></A>
+<A NAME="1961"></A>    <FONT ID="This">this</FONT>.setTitle(myFileLoader.getCaseInfoTitle());
+<A NAME="1962"></A>
+<A NAME="1963"></A>    <FONT ID="If">if</FONT> (myFileLoader.getCaseInfoTitle() != <FONT ID="Null">null</FONT>) {
+<A NAME="1964"></A>      <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A> cif = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A>();
+<A NAME="1965"></A>
+<A NAME="1966"></A>      cif.setInfo(myFileLoader.getCaseInfoURL(), myFileLoader.getCaseInfoTitle());
+<A NAME="1967"></A>      cif.show();
+<A NAME="1968"></A>    } 
+<A NAME="1969"></A>  } 
+<A NAME="1970"></A>
+<A NAME="1971"></A>
+<A NAME="1972"></A>  <FONT ID="FormalComment">/**
+<A NAME="1973"></A>   * Die Methode wird aufgerufen, wenn der 'Speichern'-Knopf gedrueckt wurde oder
+<A NAME="1974"></A>   * die Aktion Datei | Speichern aufgerufen wurde. Ein Dateidialogfenster wird
+<A NAME="1975"></A>   * aufgeblendet, wo der Benutzer den Pfad und den Namen der zu speichernden
+<A NAME="1976"></A>   * Datei angeben kann. Mit Hilfe des zurueckgelieferten Dateipfades und dem
+<A NAME="1977"></A>   * selektierten Bild wird ein DcmSecondCapt-Objekt erzeugt und dessen write-Methode
+<A NAME="1978"></A>   * aufgerufen. Dadurch wird das selektierte Bild im DICOM-Format gespeichert.
+<A NAME="1979"></A>   */</FONT>
+<A NAME="1980"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbSave_actionPerformed() {
+<A NAME="1981"></A>    File          f;
+<A NAME="1982"></A>    DcmDataObject ddo;
+<A NAME="1983"></A>
+<A NAME="1984"></A>    JFileChooser  fd = <FONT ID="New">new</FONT> JFileChooser();
+<A NAME="1985"></A>
+<A NAME="1986"></A>    fd.setDialogTitle(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.dialog.save.title"</FONT>));
+<A NAME="1987"></A>
+<A NAME="1988"></A>    setStdDirectory(fd);
+<A NAME="1989"></A>    fd.showSaveDialog(<FONT ID="This">this</FONT>);
+<A NAME="1990"></A>    String              strFile = fd.getSelectedFile().getName();
+<A NAME="1991"></A>    String              strDirectory = fd.getSelectedFile().getParent();
+<A NAME="1992"></A>
+<A NAME="1993"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>           currentImage = getSelectedImage();
+<A NAME="1994"></A>    <FONT ID="Short">short</FONT>[]             dcmPixels = currentImage.getImage12BitShort();
+<A NAME="1995"></A>    SecondaryCaptureIOD scIOD = <FONT ID="New">new</FONT> SecondaryCaptureIOD();
+<A NAME="1996"></A>
+<A NAME="1997"></A>    scIOD.setPublicFields(currentImage.getDDO());
+<A NAME="1998"></A>    scIOD.set16UBitGrayImage(dcmPixels, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">15</FONT>);
+<A NAME="1999"></A>    <FONT ID="Int">int</FONT>[] w = ImaUtil.calcAutomaticCW(dcmPixels, <FONT ID="IntegerLiteral">15</FONT>, <FONT ID="True">true</FONT>);
+<A NAME="2000"></A>
+<A NAME="2001"></A>    scIOD.setVOILUTModule(w[<FONT ID="IntegerLiteral">0</FONT>], w[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="2002"></A>
+<A NAME="2003"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="2004"></A>      f = <FONT ID="New">new</FONT> File(strDirectory + File.separator + strFile);
+<A NAME="2005"></A>      ddo = scIOD.getDDO(DcmDataObject.LITTLE_ENDIAN, DcmDataObject.EXPLICITE_VR, DcmDataObject.META_STORAGE);
+<A NAME="2006"></A>      DcmOutputStream.saveDDO(ddo, f);
+<A NAME="2007"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="2008"></A>      err.printStackTrace();
+<A NAME="2009"></A>    } 
+<A NAME="2010"></A>
+<A NAME="2011"></A>  }   <FONT ID="SingleLineComment">// Methode pbSave_actionPerformed
+<A NAME="2012"></A></FONT> 
+<A NAME="2013"></A>
+<A NAME="2014"></A>  <FONT ID="FormalComment">/**
+<A NAME="2015"></A>   * Die Methode wird aufgerufen, wenn der 'Drucken'-Knopf gedrueckt wurde oder
+<A NAME="2016"></A>   * die Aktion Datei | Drucken aufgerufen wurde. Der systemabhaengige
+<A NAME="2017"></A>   * Druckdialog wird aufgeblendet. Nach dessen Bestaetigung wird der
+<A NAME="2018"></A>   * Inhalt der Zeichenflaeche auf dem ausgewaehlten Drucker ausgegeben.
+<A NAME="2019"></A>   */</FONT>
+<A NAME="2020"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbPrint_actionPerformed() {
+<A NAME="2021"></A>
+<A NAME="2022"></A>    <FONT ID="SingleLineComment">// Erzeugen eines Printjobs
+<A NAME="2023"></A></FONT>    PrintJob  pj = <FONT ID="This">this</FONT>.getToolkit().getPrintJob(<FONT ID="This">this</FONT>, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.print.job.title"</FONT>), <FONT ID="Null">null</FONT>);
+<A NAME="2024"></A>
+<A NAME="2025"></A>    <FONT ID="If">if</FONT> (pj != <FONT ID="Null">null</FONT>) {
+<A NAME="2026"></A>
+<A NAME="2027"></A>      <FONT ID="SingleLineComment">// Den Graphikkontext des Printjobs besorgen
+<A NAME="2028"></A></FONT>      Graphics  gc = pj.getGraphics();
+<A NAME="2029"></A>
+<A NAME="2030"></A>      <FONT ID="SingleLineComment">// Der Drucker-Grafikkontext wird an die paint-Methode des Canvas
+<A NAME="2031"></A></FONT>      <FONT ID="SingleLineComment">// uebergeben. Damit druckt die Paint-Methode auf dem Drucker statt
+<A NAME="2032"></A></FONT>      <FONT ID="SingleLineComment">// auf dem Bildschirn
+<A NAME="2033"></A></FONT>      pCanvas.paint(gc);
+<A NAME="2034"></A>
+<A NAME="2035"></A>      <FONT ID="SingleLineComment">// Nach dem Drucken den Grafikkontext freigeben und den Printjob beenden
+<A NAME="2036"></A></FONT>      gc.dispose();
+<A NAME="2037"></A>      pj.end();
+<A NAME="2038"></A>    }   <FONT ID="SingleLineComment">// if
+<A NAME="2039"></A></FONT>   }    <FONT ID="SingleLineComment">// Methode pbPrint_actionPerformed
+<A NAME="2040"></A></FONT>
+<A NAME="2041"></A>
+<A NAME="2042"></A>  <FONT ID="FormalComment">/**
+<A NAME="2043"></A>   * Die Methode wird aufgerufen, wenn der 'Fall-Info'-Knopf gedrueckt wurde.
+<A NAME="2044"></A>   * Es wird ein Refenezdatensatz geladen, der die Parameterdaten von 6
+<A NAME="2045"></A>   * verschiedenen Geweben enthaelt.
+<A NAME="2046"></A>   */</FONT>
+<A NAME="2047"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbCaseInfo_actionPerformed() {
+<A NAME="2048"></A>    <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A> cif = <FONT ID="New">new</FONT> <A HREF="../../virtual/mrt/CaseInfoFrame.java.html">CaseInfoFrame</A>();
+<A NAME="2049"></A>
+<A NAME="2050"></A>    <FONT ID="SingleLineComment">// Ergaenzt 2002.8.18 tha
+<A NAME="2051"></A></FONT>    <FONT ID="SingleLineComment">// Falls noch kein Fall ausgewaehlt wurde nichts tun
+<A NAME="2052"></A></FONT>    <FONT ID="If">if</FONT> (myFileLoader == <FONT ID="Null">null</FONT>) {
+<A NAME="2053"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="2054"></A>
+<A NAME="2055"></A>    } 
+<A NAME="2056"></A>    cif.setInfo(myFileLoader.getCaseInfoURL(), myFileLoader.getCaseInfoTitle());
+<A NAME="2057"></A>    cif.show();
+<A NAME="2058"></A>  } 
+<A NAME="2059"></A>
+<A NAME="2060"></A>
+<A NAME="2061"></A>  <FONT ID="FormalComment">/**
+<A NAME="2062"></A>   * Die Methode bestimmt waehrend der Bewegung des Mauszeigers ueber der
+<A NAME="2063"></A>   * Zeichenflaeche dessen Poition und gibt sie in einem Ausgabefeld aus.
+<A NAME="2064"></A>   * Dabei muss zwischen der Darstellung von 1 und 4 Bildern unterschieden werden.
+<A NAME="2065"></A>   * @param e Das Ereignis beim Bewegen der Maus ueber die Zeichenflaeche.
+<A NAME="2066"></A>   */</FONT>
+<A NAME="2067"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pCanvas_mouseMoved(MouseEvent e) {
+<A NAME="2068"></A>    <FONT ID="Int">int</FONT> x, y, img_x, img_y;
+<A NAME="2069"></A>    <FONT ID="Int">int</FONT> small = <FONT ID="IntegerLiteral">2</FONT>;  <FONT ID="SingleLineComment">// kleines Bild ist 1, grosses 2 (weil um Faktor 2 Groesser);
+<A NAME="2070"></A></FONT>
+<A NAME="2071"></A>    <FONT ID="SingleLineComment">// th 2002.10.13
+<A NAME="2072"></A></FONT>    <FONT ID="SingleLineComment">// String bild = new String();
+<A NAME="2073"></A></FONT>
+<A NAME="2074"></A>    curr_x = x = e.getX();
+<A NAME="2075"></A>    curr_y = y = e.getY();
+<A NAME="2076"></A>    img_x = x / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="2077"></A>    img_y = y / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="2078"></A>
+<A NAME="2079"></A>    <FONT ID="SingleLineComment">// bild = "(Bild1)";
+<A NAME="2080"></A></FONT>    <FONT ID="If">if</FONT> (rb4Images.isSelected()) {
+<A NAME="2081"></A>      small = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="2082"></A>      <FONT ID="Int">int</FONT> bildnr = <FONT ID="IntegerLiteral">1</FONT> + <FONT ID="IntegerLiteral">2</FONT> * (y / <FONT ID="IntegerLiteral">256</FONT>) + (x / <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="2083"></A>
+<A NAME="2084"></A>      <FONT ID="SingleLineComment">// bild = "(Bild " + bildnr + ")";
+<A NAME="2085"></A></FONT>      <FONT ID="Switch">switch</FONT> (bildnr) {
+<A NAME="2086"></A>      <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="2087"></A>        <FONT ID="Break">break</FONT>;
+<A NAME="2088"></A>      } 
+<A NAME="2089"></A>      <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">2</FONT>: {
+<A NAME="2090"></A>        x = x - <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="2091"></A>        <FONT ID="Break">break</FONT>;
+<A NAME="2092"></A>      } 
+<A NAME="2093"></A>      <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">3</FONT>: {
+<A NAME="2094"></A>        y = y - <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="2095"></A>        <FONT ID="Break">break</FONT>;
+<A NAME="2096"></A>      } 
+<A NAME="2097"></A>      <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: {
+<A NAME="2098"></A>        x = x - <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="2099"></A>        y = y - <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="2100"></A>        <FONT ID="Break">break</FONT>;
+<A NAME="2101"></A>      } 
+<A NAME="2102"></A>      }
+<A NAME="2103"></A>      img_x = x;
+<A NAME="2104"></A>      img_y = y;
+<A NAME="2105"></A>    } 
+<A NAME="2106"></A>
+<A NAME="2107"></A>    <FONT ID="SingleLineComment">// th 2002.10.12
+<A NAME="2108"></A></FONT>    <FONT ID="SingleLineComment">// lPosition.setText("" + x + " ; " + y + " ");
+<A NAME="2109"></A></FONT>    lPosition.setText(x + <FONT ID="StringLiteral">" ; "</FONT> + y);
+<A NAME="2110"></A>  }   <FONT ID="SingleLineComment">// Methode pCanvas_mouseMoved
+<A NAME="2111"></A></FONT> 
+<A NAME="2112"></A>
+<A NAME="2113"></A>  <FONT ID="FormalComment">/**
+<A NAME="2114"></A>   * Die Methode wird aufgerufen, wenn der Mauszeiger die Zeichenflaeche
+<A NAME="2115"></A>   * verlaesst. Die Positionsanzeige wird dann geloescht.
+<A NAME="2116"></A>   * @param e Das Ereignis beim Verlassen der Zeichenflaeche mit der Maus.
+<A NAME="2117"></A>   */</FONT>
+<A NAME="2118"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pCanvas_mouseExited(MouseEvent e) {
+<A NAME="2119"></A>    lPosition.setText(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="2120"></A>    pCanvas.setCursor(defaultCursor);
+<A NAME="2121"></A>    pCanvas.repaint();
+<A NAME="2122"></A>  }   <FONT ID="SingleLineComment">// Methode pCanvas_mouseExited
+<A NAME="2123"></A></FONT> 
+<A NAME="2124"></A>
+<A NAME="2125"></A>  <FONT ID="FormalComment">/**
+<A NAME="2126"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur gleichzeitigen Anzeige von
+<A NAME="2127"></A>   * 4 Bildern gedrueckt wurde. Der Inhalt der Zeichenflaeche wird dann neu
+<A NAME="2128"></A>   * aufgebaut.
+<A NAME="2129"></A>   */</FONT>
+<A NAME="2130"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> rb4Images_actionPerformed() {
+<A NAME="2131"></A>    pCanvas.setFourImages();
+<A NAME="2132"></A>    pCanvas.repaint();
+<A NAME="2133"></A>  }   <FONT ID="SingleLineComment">// Methode rb4Images_actionPerformed
+<A NAME="2134"></A></FONT> 
+<A NAME="2135"></A>
+<A NAME="2136"></A>  <FONT ID="FormalComment">/**
+<A NAME="2137"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Anzeige von nur einem
+<A NAME="2138"></A>   * Bild gedrueckt wurde. Der Inhalt der Zeichenflaeche wird dann neu aufgebaut.
+<A NAME="2139"></A>   */</FONT>
+<A NAME="2140"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> rb1Image_actionPerformed() {
+<A NAME="2141"></A>    pCanvas.setOneImage();
+<A NAME="2142"></A>    pCanvas.repaint();
+<A NAME="2143"></A>  }   <FONT ID="SingleLineComment">// Methode  rb1Image_actionPerformed
+<A NAME="2144"></A></FONT> 
+<A NAME="2145"></A>
+<A NAME="2146"></A>  <FONT ID="FormalComment">/**
+<A NAME="2147"></A>   * Die Methode wird aufgerufen, sobald ein Mausknopf auf der Zeichenflaeche
+<A NAME="2148"></A>   * gedrueckt wird. Es werden dann die Mauskoordinaten und die aktuellen
+<A NAME="2149"></A>   * Fensterungswerte gespeichert. Dies wird benoetigt, um die Fensterung per
+<A NAME="2150"></A>   * Mausbewegung durchfuehren zu koennen.
+<A NAME="2151"></A>   * @param e Das Ereignis, das beim Druecken eines Mausknopfes ausgeloest wird.
+<A NAME="2152"></A>   */</FONT>
+<A NAME="2153"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pCanvas_mousePressed(MouseEvent e) {
+<A NAME="2154"></A>
+<A NAME="2155"></A>    <FONT ID="SingleLineComment">// Setzen der Mausklickkoordinaten in Klassenvariablen
+<A NAME="2156"></A></FONT>    lastMouseClickX = e.getX();
+<A NAME="2157"></A>    lastMouseClickY = e.getY();
+<A NAME="2158"></A>
+<A NAME="2159"></A>    <FONT ID="SingleLineComment">// Setzen der Center- und Window-Einstellungen (benoetigt fuer die Fensterung)
+<A NAME="2160"></A></FONT>    lastCenter = pCenter.getValue();
+<A NAME="2161"></A>    lastWindow = pWindow.getValue();
+<A NAME="2162"></A>    lastTime = e.getWhen();
+<A NAME="2163"></A>  }   <FONT ID="SingleLineComment">// Methode pCanvas_mousePressed
+<A NAME="2164"></A></FONT> 
+<A NAME="2165"></A>
+<A NAME="2166"></A>  <FONT ID="FormalComment">/**
+<A NAME="2167"></A>   * Die Methode wird aufgerufen, sobald eine Maustaste ueber der Zeichenflaeche
+<A NAME="2168"></A>   * wieder losgelassen wird. Der Mauszeiger wird dann auf den Standardwert
+<A NAME="2169"></A>   * zurueckgesetzt.
+<A NAME="2170"></A>   * @param e Das Ereignis, das beim Loslassen einer Maustaste ausgeloest wird.
+<A NAME="2171"></A>   */</FONT>
+<A NAME="2172"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pCanvas_mouseReleased(MouseEvent e) {
+<A NAME="2173"></A>    pCanvas.setCursor(defaultCursor);
+<A NAME="2174"></A>  }   <FONT ID="SingleLineComment">// Methode pCanvas_mouseReleased
+<A NAME="2175"></A></FONT> 
+<A NAME="2176"></A>
+<A NAME="2177"></A>  <FONT ID="FormalComment">/**
+<A NAME="2178"></A>   * Die Methode wird aufgerufen, wenn auf der Zeichenflaeche ein Mausklick
+<A NAME="2179"></A>   * durchgefuehrt wird. Es werden dann die Fenstereinstellungen des
+<A NAME="2180"></A>   * bisher selektierten Bildes gesichert. Beim neu selektierten Bild werden
+<A NAME="2181"></A>   * die alten Fenstereinstellungen ausgelesen und wieder dargestellt.
+<A NAME="2182"></A>   * Anschliessend wird der Inhalt der Zeichenflaeche aktualisiert.
+<A NAME="2183"></A>   * @param e Das Ereignis beim Druecken einer Maustaste auf der Zeichenflaeche.
+<A NAME="2184"></A>   */</FONT>
+<A NAME="2185"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pCanvas_mouseClicked(MouseEvent e) {
+<A NAME="2186"></A>
+<A NAME="2187"></A>    <FONT ID="SingleLineComment">// Nachschauen, welches Bild selektiert war
+<A NAME="2188"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="2189"></A>
+<A NAME="2190"></A>    ip = getSelectedImage();
+<A NAME="2191"></A>
+<A NAME="2192"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("FEnsterungswerte, die gespeichert werden: " + pCenter.getValue() + "  " + pWindow.getValue());
+<A NAME="2193"></A></FONT>
+<A NAME="2194"></A>    <FONT ID="SingleLineComment">// Fenstereinstellung aus zuletzt gewaehltem Bild abspeichern
+<A NAME="2195"></A></FONT>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="2196"></A>      ip.setCW(pCenter.getValue(), pWindow.getValue());
+<A NAME="2197"></A>    } 
+<A NAME="2198"></A>
+<A NAME="2199"></A>    <FONT ID="SingleLineComment">// Besorgen des Bildes, ueber dem sich gerade der Mauszeiger befindet
+<A NAME="2200"></A></FONT>    <FONT ID="Int">int</FONT> actImage = getImageMouseIsOn(e.getX(), e.getY());
+<A NAME="2201"></A>
+<A NAME="2202"></A>    <FONT ID="SingleLineComment">// ausgewaehltes Bild als selktiert markieren
+<A NAME="2203"></A></FONT>    pCanvas.setActiveImage(actImage);
+<A NAME="2204"></A>
+<A NAME="2205"></A>    <FONT ID="SingleLineComment">// Wiederherstellen der Fenstereinstellungen des neu selektierten Bildes
+<A NAME="2206"></A></FONT>    ip = pCanvas.getImageStack().getPictureAtPos(actImage);
+<A NAME="2207"></A>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="2208"></A>      pWindow.setValue(ip.getWindow());
+<A NAME="2209"></A>      pCenter.setValue(ip.getCenter());
+<A NAME="2210"></A>    } 
+<A NAME="2211"></A>
+<A NAME="2212"></A>    <FONT ID="SingleLineComment">// Aktualisierung der Zeichenflaeche
+<A NAME="2213"></A></FONT>    pCanvas.repaint();
+<A NAME="2214"></A>  }   <FONT ID="SingleLineComment">// Methode pCanvas_mouseClicked
+<A NAME="2215"></A></FONT> 
+<A NAME="2216"></A>
+<A NAME="2217"></A>  <FONT ID="FormalComment">/**
+<A NAME="2218"></A>   * Die Methode wird aufgerufen, wenn der Knopf zum Einzeichnen der
+<A NAME="2219"></A>   * Bildbeschriftung gedrueckt wird. Die Beschriftung wird dann ein- oder
+<A NAME="2220"></A>   * ausgeschaltet und der Inhalt der Zeichenflaeche wird neu aufgebaut.
+<A NAME="2221"></A>   */</FONT>
+<A NAME="2222"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> tbImageText_mouseClicked() {
+<A NAME="2223"></A>    pCanvas.repaint();
+<A NAME="2224"></A>  }   <FONT ID="SingleLineComment">// Methode tbImageText_mouseClicked
+<A NAME="2225"></A></FONT> 
+<A NAME="2226"></A>
+<A NAME="2227"></A>  <FONT ID="FormalComment">/**
+<A NAME="2228"></A>   * Die Methode wird aufgerufen, wenn die Aktion Datei | Oeffnen aus dem Menue
+<A NAME="2229"></A>   * aufgerufen wird. Diese Methode wird nur auf die entsprechende Methode des
+<A NAME="2230"></A>   * Oeffnen-Knopfes in der Werkzeugleiste umgeleitet.
+<A NAME="2231"></A>   */</FONT>
+<A NAME="2232"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> fileOpen_actionPerformed() {
+<A NAME="2233"></A>
+<A NAME="2234"></A>    <FONT ID="SingleLineComment">// Umleiten der Funktion auf den entsprechenden Button in der Toolleiste
+<A NAME="2235"></A></FONT>    pbLoad_actionPerformed();
+<A NAME="2236"></A>  }   <FONT ID="SingleLineComment">// Methode tbImageText_mouseClicked
+<A NAME="2237"></A></FONT> 
+<A NAME="2238"></A>
+<A NAME="2239"></A>  <FONT ID="FormalComment">/**
+<A NAME="2240"></A>   * Die Methode wird aufgerufen, wenn die Aktion Datei | Speichern aus dem Menue
+<A NAME="2241"></A>   * aufgerufen wird. Diese Methode wird nur auf die entsprechende Methode des
+<A NAME="2242"></A>   * Speichern-Knopfes in der Werkzeugleiste umgeleitet.
+<A NAME="2243"></A>   */</FONT>
+<A NAME="2244"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> fileSave_actionPerformed() {
+<A NAME="2245"></A>
+<A NAME="2246"></A>    <FONT ID="SingleLineComment">// Umleiten der Funktion auf den entsprechenden Button in der Toolleiste
+<A NAME="2247"></A></FONT>    pbSave_actionPerformed();
+<A NAME="2248"></A>  }   <FONT ID="SingleLineComment">// Methode fileSave_actionPerformed
+<A NAME="2249"></A></FONT> 
+<A NAME="2250"></A>
+<A NAME="2251"></A>  <FONT ID="FormalComment">/**
+<A NAME="2252"></A>   * Die Methode wird aufgerufen, wenn die Aktion Datei | Drucken aus dem Menue
+<A NAME="2253"></A>   * aufgerufen wird. Diese Methode wird nur auf die entsprechende Methode des
+<A NAME="2254"></A>   * Drucken-Knopfes in der Werkzeugleiste umgeleitet.
+<A NAME="2255"></A>   */</FONT>
+<A NAME="2256"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> filePrint_actionPerformed() {
+<A NAME="2257"></A>
+<A NAME="2258"></A>    <FONT ID="SingleLineComment">// Umleiten der Funktion auf den entsprechenden Button in der Toolleiste
+<A NAME="2259"></A></FONT>    pbPrint_actionPerformed();
+<A NAME="2260"></A>  }   <FONT ID="SingleLineComment">// Methode filePrint_actionPerformed
+<A NAME="2261"></A></FONT> 
+<A NAME="2262"></A>
+<A NAME="2263"></A>  <FONT ID="FormalComment">/**
+<A NAME="2264"></A>   * Die Methode wird aufgerufen, wenn die Aktion Datei | Beenden aus dem Menue
+<A NAME="2265"></A>   * aufgerufen wird. Die Anwendung wird beendet.
+<A NAME="2266"></A>   */</FONT>
+<A NAME="2267"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fileExit_actionPerformed() {
+<A NAME="2268"></A>    <FONT ID="If">if</FONT> (isApplication) {
+<A NAME="2269"></A>      System.exit(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="2270"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="2271"></A>      <FONT ID="This">this</FONT>.dispose();
+<A NAME="2272"></A>    } 
+<A NAME="2273"></A>  } 
+<A NAME="2274"></A>
+<A NAME="2275"></A>
+<A NAME="2276"></A>  <FONT ID="FormalComment">/**
+<A NAME="2277"></A>   * Die Methode wird aufgerufen, wenn der Knopf zum optimalen Fenstern des selektierten
+<A NAME="2278"></A>   * Bildes gedrueckt wurde. Es wird dann die entsprechende Methode fuer das
+<A NAME="2279"></A>   * selektierte Bild aufgerufen und der Zeichenflaecheninhalt neu dargestellt.
+<A NAME="2280"></A>   * Ausserdem werden die Einstellungen der Schieberegler fuer die Fensterung
+<A NAME="2281"></A>   * angepasst.
+<A NAME="2282"></A>   */</FONT>
+<A NAME="2283"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbOptWindowing_actionPerformed() {
+<A NAME="2284"></A>
+<A NAME="2285"></A>    <FONT ID="SingleLineComment">// Selektiertes Bild besorgen
+<A NAME="2286"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = getSelectedImage();
+<A NAME="2287"></A>
+<A NAME="2288"></A>    <FONT ID="SingleLineComment">// Selektiertes Bild optimal Fenstern
+<A NAME="2289"></A></FONT>    ip.optimalWindowing();
+<A NAME="2290"></A>
+<A NAME="2291"></A>    <FONT ID="SingleLineComment">// Fensterungseinstellungen der Slider aktualisieren
+<A NAME="2292"></A></FONT>    pWindow.setValue(ip.getWindow());
+<A NAME="2293"></A>    pCenter.setValue(ip.getCenter());
+<A NAME="2294"></A>
+<A NAME="2295"></A>    <FONT ID="SingleLineComment">// Neuzeichnen des Canvas
+<A NAME="2296"></A></FONT>    pCanvas.repaint();
+<A NAME="2297"></A>  }   <FONT ID="SingleLineComment">// Methode pbOptWindowing_actionPerformed()
+<A NAME="2298"></A></FONT> 
+<A NAME="2299"></A>
+<A NAME="2300"></A>  <FONT ID="FormalComment">/**
+<A NAME="2301"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Darstellung des Histogramms
+<A NAME="2302"></A>   * zum selektierten Bild gedrueckt wurde. Es wird dann ein Fenster aufgeblendet,
+<A NAME="2303"></A>   * in dem das Histogramm des selektierten Bildes zu sehen ist.
+<A NAME="2304"></A>   */</FONT>
+<A NAME="2305"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbHistogram_actionPerformed() {
+<A NAME="2306"></A>
+<A NAME="2307"></A>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip;
+<A NAME="2308"></A>    <FONT ID="Short">short</FONT>[][] myShortImage = <FONT ID="Null">null</FONT>;
+<A NAME="2309"></A>    <FONT ID="Int">int</FONT>       actImage = pCanvas.getActiveImage();
+<A NAME="2310"></A>
+<A NAME="2311"></A>    ip = getSelectedImage();
+<A NAME="2312"></A>
+<A NAME="2313"></A>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="2314"></A>
+<A NAME="2315"></A>      <FONT ID="SingleLineComment">// Besorgen des AWT-Bildes des selektierten Bildes
+<A NAME="2316"></A></FONT>      myShortImage = ip.get8BitImageShort();
+<A NAME="2317"></A>
+<A NAME="2318"></A>      <FONT ID="SingleLineComment">// Neues Histogrammfenster erzeugen und darstellen
+<A NAME="2319"></A></FONT>      <A HREF="../../virtual/tools/Histogramm.java.html">Histogramm</A>  myHist = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/Histogramm.java.html">Histogramm</A>(<FONT ID="This">this</FONT>, myShortImage, frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.dialog.histogram.title"</FONT>) + actImage);
+<A NAME="2320"></A>
+<A NAME="2321"></A>      myHist.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="2322"></A>
+<A NAME="2323"></A>    }   <FONT ID="SingleLineComment">// if ip!=null
+<A NAME="2324"></A></FONT> 
+<A NAME="2325"></A>  }     <FONT ID="SingleLineComment">// Methode pbHistogram_actionPerformed()
+<A NAME="2326"></A></FONT> 
+<A NAME="2327"></A>
+<A NAME="2328"></A>  <FONT ID="FormalComment">/**
+<A NAME="2329"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Darstellung des K-Raums
+<A NAME="2330"></A>   * des selektierten Bild gedrueckt wurde. Es wird dann ein Fenster aufgeblendet,
+<A NAME="2331"></A>   * in dem der k-Raum (Magnitudenbild) des selektierten Bildes zu sehen ist.
+<A NAME="2332"></A>   * Ausserdem kann man sich das Phasenbild sowie den Real- und Imaginaerteil
+<A NAME="2333"></A>   * anzeigen lassen.
+<A NAME="2334"></A>   */</FONT>
+<A NAME="2335"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbKSpace_actionPerformed() {
+<A NAME="2336"></A>
+<A NAME="2337"></A>    <FONT ID="SingleLineComment">// Selektiertes Bild suchen
+<A NAME="2338"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip;
+<A NAME="2339"></A>
+<A NAME="2340"></A>    ip = getSelectedImage();
+<A NAME="2341"></A>
+<A NAME="2342"></A>    <FONT ID="SingleLineComment">// K-Raum Anzeigefenster oeff´nen
+<A NAME="2343"></A></FONT>    <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="2344"></A>      <A HREF="../../virtual/tools/KSpaceFrame.java.html">KSpaceFrame</A> myOrig = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/KSpaceFrame.java.html">KSpaceFrame</A>(ip);
+<A NAME="2345"></A>
+<A NAME="2346"></A>      myOrig.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="2347"></A>    }   <FONT ID="SingleLineComment">// if ip!=null
+<A NAME="2348"></A></FONT> 
+<A NAME="2349"></A>  }     <FONT ID="SingleLineComment">// Methode pbKSpace_actionPerformed ()
+<A NAME="2350"></A></FONT> 
+<A NAME="2351"></A>
+<A NAME="2352"></A>  <FONT ID="FormalComment">/**
+<A NAME="2353"></A>   * Die Methode wird aufgerufen, wenn der Knopf zur Darstellung des
+<A NAME="2354"></A>   * k-Raums-Manipulators fuer das selektierte Bild gedrueckt wurde.
+<A NAME="2355"></A>   * Es wird dann ein Fenster aufgeblendet, in dem das Originalbild, der original
+<A NAME="2356"></A>   * k-Raum, der manipulierte k-Raum und die Ruecktransformation des
+<A NAME="2357"></A>   * manipulierten k-Raums dargestellt werden.
+<A NAME="2358"></A>   * Der Benutzer hat die Moeglichkeit, verschiedene Manipulationen am k-Raum
+<A NAME="2359"></A>   * vorzunehmen und dann die Ruecktransformationen berechnen zu lassen.
+<A NAME="2360"></A>   */</FONT>
+<A NAME="2361"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> pbKSpaceManip_actionPerformed() {
+<A NAME="2362"></A>
+<A NAME="2363"></A>    <FONT ID="SingleLineComment">// Selektiertes Bild suchen
+<A NAME="2364"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip;
+<A NAME="2365"></A>
+<A NAME="2366"></A>    ip = getSelectedImage();
+<A NAME="2367"></A>
+<A NAME="2368"></A>    <FONT ID="SingleLineComment">// K-Raum-manipulator aufblenden
+<A NAME="2369"></A></FONT>    <A HREF="../../virtual/tools/KSpaceManipulator.java.html">KSpaceManipulator</A> manipulator = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/KSpaceManipulator.java.html">KSpaceManipulator</A>(ip, pCanvas);
+<A NAME="2370"></A>
+<A NAME="2371"></A>    manipulator.show();
+<A NAME="2372"></A>
+<A NAME="2373"></A>  }   <FONT ID="SingleLineComment">// Methode pbKSpaceManip_actionPerformed()
+<A NAME="2374"></A></FONT> 
+<A NAME="2375"></A>
+<A NAME="2376"></A>  <FONT ID="FormalComment">/**
+<A NAME="2377"></A>   * Die Methode wird aufgerufen, wenn sich der Zustand des horzontalen
+<A NAME="2378"></A>   * Scrollbalkens veraendert hat. Der Scrollbalken wird dann aktualisiert.
+<A NAME="2379"></A>   */</FONT>
+<A NAME="2380"></A>
+<A NAME="2381"></A>  <FONT ID="MultiLineComment">/*
+<A NAME="2382"></A>   * private void sbHorScrollbar_adjustmentValueChanged() {
+<A NAME="2383"></A>   * pCanvas.repaint();
+<A NAME="2384"></A>   * pCanvas.updateScrollbar();
+<A NAME="2385"></A>   * } // Methode  sbHorScrollbar_adjustmentValueChanged()
+<A NAME="2386"></A>   */</FONT>
+<A NAME="2387"></A>
+<A NAME="2388"></A>
+<A NAME="2389"></A>  <FONT ID="FormalComment">/**
+<A NAME="2390"></A>   * Die Methode wird aufgerufen, wenn sich der Zustand des vertikalen
+<A NAME="2391"></A>   * Scrollbalkens veraendert hat. Der Scrollbalken wird dann aktualisiert.
+<A NAME="2392"></A>   */</FONT>
+<A NAME="2393"></A>  <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> sbVerScrollbar_adjustmentValueChanged() {
+<A NAME="2394"></A>    pCanvas.repaint();
+<A NAME="2395"></A>    pCanvas.updateScrollbar();
+<A NAME="2396"></A>  }   <FONT ID="SingleLineComment">// Methode  sbVerScrollbar_adjustmentValueChanged()
+<A NAME="2397"></A></FONT> 
+<A NAME="2398"></A>
+<A NAME="2399"></A>  <FONT ID="SingleLineComment">// ////////////////////////////
+<A NAME="2400"></A></FONT>  <FONT ID="SingleLineComment">// Sonstige Methoden
+<A NAME="2401"></A></FONT>  <FONT ID="SingleLineComment">// ////////////////////////////
+<A NAME="2402"></A></FONT>
+<A NAME="2403"></A>
+<A NAME="2404"></A>  <FONT ID="FormalComment">/**
+<A NAME="2405"></A>   * Die Methode bestimmt aufgrund der x- und y-Koordinate des Mauszeigers
+<A NAME="2406"></A>   * auf der Zeichenflaeche, ueber welchem Bild sich der Mauszeiger gerade
+<A NAME="2407"></A>   * befindet. Dabei geht die Einstellung 1 Bild / 4 Bilder und die
+<A NAME="2408"></A>   * Bildlaufleistenposition mit in die Berechnung ein.
+<A NAME="2409"></A>   * @param x x-Koordinate des Mauszeigers.
+<A NAME="2410"></A>   * @param y y-Koordinate des Mauszeigers.
+<A NAME="2411"></A>   * @return Nummer des Bildes, ueber dem sich der Mauszeiger befindet.
+<A NAME="2412"></A>   */</FONT>
+<A NAME="2413"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> getImageMouseIsOn(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="2414"></A>    <FONT ID="Int">int</FONT> bildnr;
+<A NAME="2415"></A>
+<A NAME="2416"></A>    <FONT ID="SingleLineComment">// Umgestellt auf vertikales Scrollen
+<A NAME="2417"></A></FONT>    <FONT ID="If">if</FONT> (rb4Images.isSelected()) {
+<A NAME="2418"></A>
+<A NAME="2419"></A>      <FONT ID="SingleLineComment">// int off = sbHorScrollbar.getValue() / 256;
+<A NAME="2420"></A></FONT>      <FONT ID="Int">int</FONT> off = sbVerScrollbar.getValue() / <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="2421"></A>
+<A NAME="2422"></A>      <FONT ID="SingleLineComment">// bildnr = 1 + (y/256) + 2*(x/256) + 2*off;
+<A NAME="2423"></A></FONT>      bildnr = <FONT ID="IntegerLiteral">1</FONT> + <FONT ID="IntegerLiteral">2</FONT> * (y / <FONT ID="IntegerLiteral">256</FONT>) + (x / <FONT ID="IntegerLiteral">256</FONT>) + <FONT ID="IntegerLiteral">2</FONT> * off;
+<A NAME="2424"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="2425"></A>
+<A NAME="2426"></A>      <FONT ID="SingleLineComment">// int off = sbHorScrollbar.getValue()/512;
+<A NAME="2427"></A></FONT>      <FONT ID="Int">int</FONT> off = sbVerScrollbar.getValue() / <FONT ID="IntegerLiteral">512</FONT>;
+<A NAME="2428"></A>
+<A NAME="2429"></A>      bildnr = <FONT ID="IntegerLiteral">1</FONT> + off;
+<A NAME="2430"></A>    } 
+<A NAME="2431"></A>
+<A NAME="2432"></A>    <FONT ID="If">if</FONT> ((x &lt; <FONT ID="IntegerLiteral">0</FONT>) || (x &gt; <FONT ID="IntegerLiteral">512</FONT>) || (y &lt; <FONT ID="IntegerLiteral">0</FONT>) || (y &gt; <FONT ID="IntegerLiteral">512</FONT>)) {
+<A NAME="2433"></A>      bildnr = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="2434"></A>    } 
+<A NAME="2435"></A>
+<A NAME="2436"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println(bildnr);
+<A NAME="2437"></A></FONT>    <FONT ID="Return">return</FONT> bildnr;
+<A NAME="2438"></A>  }   <FONT ID="SingleLineComment">// Methode getImageMouseIsOn(int x, int y)
+<A NAME="2439"></A></FONT> 
+<A NAME="2440"></A>
+<A NAME="2441"></A>  <FONT ID="FormalComment">/**
+<A NAME="2442"></A>   * Die Methode erzeugt ein Intensitaetsbild aus den Rohdaten mittels der
+<A NAME="2443"></A>   * ausgewaehlten Pulssequenz. Dazu werden die Rohdaten zunaechst aus dem
+<A NAME="2444"></A>   * FileLoader-Objekt ausgelesen. Die Rohdaten werden
+<A NAME="2445"></A>   * dann an die Sequenz uebergeben und diese wird gestartet. Die Sequenz meldet,
+<A NAME="2446"></A>   * wenn sie mit der Berechnung fertig ist. Sie ruft dann die Methode
+<A NAME="2447"></A>   * drawCreatedIntensityImage auf.
+<A NAME="2448"></A>   * Die Methode wird angestossen, wenn der 'Berechnen'-Knopf der Pulssequenz
+<A NAME="2449"></A>   * betaetigt wurde.
+<A NAME="2450"></A>   * @param sequence Die Pulssequenz, die zur Erzeugung des Intensitaetsbildes
+<A NAME="2451"></A>   * verwendet werden soll.
+<A NAME="2452"></A>   */</FONT>
+<A NAME="2453"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> createIntensityImage(<A HREF="../../virtual/mrt/sequences/Pulsesequence.java.html">Pulsesequence</A> sequence) {
+<A NAME="2454"></A>
+<A NAME="2455"></A>    <FONT ID="SingleLineComment">// Physikalische Rohdaten an die Sequenz uebergeben
+<A NAME="2456"></A></FONT>    <FONT ID="SingleLineComment">// und Berechnung starten.
+<A NAME="2457"></A></FONT>    <FONT ID="Try">try</FONT> {
+<A NAME="2458"></A>      sequence.setRawData(myFileLoader);
+<A NAME="2459"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="2460"></A>      ErrorMessage.showMessage(e);
+<A NAME="2461"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="2462"></A>    } 
+<A NAME="2463"></A>    sequence.setMainFrame(<FONT ID="This">this</FONT>);
+<A NAME="2464"></A>
+<A NAME="2465"></A>    <FONT ID="SingleLineComment">// Starten der Berechnung mittels der Pulssequenz. Da es sich bei den
+<A NAME="2466"></A></FONT>    <FONT ID="SingleLineComment">// Pulssequenzen um Threads handelt, muss die start-Methode aufgerufen werden.
+<A NAME="2467"></A></FONT>    sequence.start();
+<A NAME="2468"></A>  }   <FONT ID="SingleLineComment">// Methode createIntensityImage
+<A NAME="2469"></A></FONT> 
+<A NAME="2470"></A>
+<A NAME="2471"></A>  <FONT ID="FormalComment">/**
+<A NAME="2472"></A>   * Die Methode stellt ein von einer Pulssequenz erzeugtes Intensitaetsbild auf
+<A NAME="2473"></A>   * der Zeichenflaeche dar. Dazu wird das Intensitaetsbild zunaechst aus der
+<A NAME="2474"></A>   * Pulssequnz ausgelesen und dann in ein DcmImage-Objekt umgewandet. Damit
+<A NAME="2475"></A>   * enthaelt das Bild die geleichen zusaetzlichen Bildinformationen wie die
+<A NAME="2476"></A>   * Rohdatenmatrizen. Einige Werte, wie z.B. die Fensterungswerte werden
+<A NAME="2477"></A>   * natuerlich entsprechend neu gesetzt. Spaeter ist es somit moeglich, das Bild im
+<A NAME="2478"></A>   * DICOM-Format abzuspeichern. Aber zunaecht wird das DcmImage-Objekt erstmal
+<A NAME="2479"></A>   * in einem ImagePlus-Objekt gespeichert.
+<A NAME="2480"></A>   * @param sequence Die Pulssequenz, aus der die Intensitaetsmatrix ausgelesen
+<A NAME="2481"></A>   * werden soll.
+<A NAME="2482"></A>   */</FONT>
+<A NAME="2483"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> drawCreatedIntensityImage(<A HREF="../../virtual/mrt/sequences/Pulsesequence.java.html">Pulsesequence</A> sequence) {
+<A NAME="2484"></A>
+<A NAME="2485"></A>    <FONT ID="SingleLineComment">// 12Bit-Matrix aus der Pulssequenz auslesen
+<A NAME="2486"></A></FONT>    <FONT ID="Short">short</FONT>[]   shortIntensityImage = sequence.getShort12BitMatrix();
+<A NAME="2487"></A>
+<A NAME="2488"></A>    <FONT ID="SingleLineComment">// DcmImage aus der Bildmatrix und dem DicomDataObject des FileLoaders erzeugen
+<A NAME="2489"></A></FONT>    <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>  dcmimg = <FONT ID="Null">null</FONT>;
+<A NAME="2490"></A>
+<A NAME="2491"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="2492"></A>      dcmimg = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A>(myFileLoader.getDcmDataObject());
+<A NAME="2493"></A>      dcmimg.pixel16 = shortIntensityImage;
+<A NAME="2494"></A>      dcmimg.updateAWTImage();
+<A NAME="2495"></A>    } <FONT ID="Catch">catch</FONT> (Exception err) {
+<A NAME="2496"></A>      err.printStackTrace();
+<A NAME="2497"></A>    } 
+<A NAME="2498"></A>
+<A NAME="2499"></A>    <FONT ID="SingleLineComment">// ImagePlus-Objekt erzeugen. Dies geschieht in der Klasse MyPanel.
+<A NAME="2500"></A></FONT>    <FONT ID="SingleLineComment">// ImagePlus ip = pCanvas.createNewImage(intensityImage);
+<A NAME="2501"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A>     ip = pCanvas.createNewImage(dcmimg);
+<A NAME="2502"></A>
+<A NAME="2503"></A>    <FONT ID="SingleLineComment">// DDo im ImagePlus abspeichern
+<A NAME="2504"></A></FONT>    DcmDataObject mynewddo = <FONT ID="New">new</FONT> DcmDataObject();
+<A NAME="2505"></A>
+<A NAME="2506"></A>    mynewddo = myFileLoader.getDcmDataObject().getCopyOfMe();
+<A NAME="2507"></A>    ip.setDDO(mynewddo);
+<A NAME="2508"></A>
+<A NAME="2509"></A>    <FONT ID="SingleLineComment">// Nun werden einige Dicom-Parameter im neuen Bild abgespeichert
+<A NAME="2510"></A></FONT>
+<A NAME="2511"></A>    <FONT ID="SingleLineComment">// Fensterwerte in Image abspeichern. Die Werte werden beim naechsten repaint
+<A NAME="2512"></A></FONT>    <FONT ID="SingleLineComment">// mit beruecksichtigt
+<A NAME="2513"></A></FONT>
+<A NAME="2514"></A>    <FONT ID="SingleLineComment">// &gt;&gt;&gt; tha 2000.4.3: Optimale Windoweinstellung
+<A NAME="2515"></A></FONT>    <FONT ID="SingleLineComment">// ip.setCW(pCenter.getValue(), pWindow.getValue());
+<A NAME="2516"></A></FONT>    <FONT ID="SingleLineComment">// Bild optimal Fenstern
+<A NAME="2517"></A></FONT>    ip.optimalWindowing();
+<A NAME="2518"></A>
+<A NAME="2519"></A>    <FONT ID="SingleLineComment">// Fensterungseinstellungen der Slider aktualisieren
+<A NAME="2520"></A></FONT>    <FONT ID="SingleLineComment">// cschalla 00.4.20: so gehts nicht: Slider zeigen die Fensterung des
+<A NAME="2521"></A></FONT>    <FONT ID="SingleLineComment">// selektierten Bildes. Das neue ist aber nicht selektiert
+<A NAME="2522"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> selip = getSelectedImage();
+<A NAME="2523"></A>
+<A NAME="2524"></A>    pWindow.setValue(selip.getWindow());
+<A NAME="2525"></A>    pCenter.setValue(selip.getCenter());
+<A NAME="2526"></A>
+<A NAME="2527"></A>    <FONT ID="SingleLineComment">// &lt;&lt;&lt;
+<A NAME="2528"></A></FONT>
+<A NAME="2529"></A>    <FONT ID="SingleLineComment">// Erzeugungsdatum und Uhrzeit im Bild speichern
+<A NAME="2530"></A></FONT>    ip.setCurrentDate();
+<A NAME="2531"></A>
+<A NAME="2532"></A>    <FONT ID="SingleLineComment">// ip.setComments(sequence.getComments());
+<A NAME="2533"></A></FONT>
+<A NAME="2534"></A>    <FONT ID="SingleLineComment">// Neuzeichnen des Canvas
+<A NAME="2535"></A></FONT>    pCanvas.repaint();
+<A NAME="2536"></A>
+<A NAME="2537"></A>    <FONT ID="Return">return</FONT> ip;
+<A NAME="2538"></A>  }   <FONT ID="SingleLineComment">// Methode drawCreatedIntensityImage
+<A NAME="2539"></A></FONT> 
+<A NAME="2540"></A>
+<A NAME="2541"></A>  <FONT ID="FormalComment">/**
+<A NAME="2542"></A>   * Die Methode liefert eine Referenz auf die Fortschrittsanzeige zurueck.
+<A NAME="2543"></A>   * @return Eine Referenz auf die Fortschrittsanzeige.
+<A NAME="2544"></A>   */</FONT>
+<A NAME="2545"></A>  <FONT ID="Public">public</FONT> JProgressBar getProgressBar() {
+<A NAME="2546"></A>    <FONT ID="Return">return</FONT> prbarProgress;
+<A NAME="2547"></A>  }   <FONT ID="SingleLineComment">// Methode getProgressBar
+<A NAME="2548"></A></FONT> 
+<A NAME="2549"></A>
+<A NAME="2550"></A>  <FONT ID="FormalComment">/**
+<A NAME="2551"></A>   * Die Methode liefert den eingestellten Simulationszeitfaktor zurueck.
+<A NAME="2552"></A>   * @return Der vom Benutzer eingestellte Simulationszeitfaktor.
+<A NAME="2553"></A>   */</FONT>
+<A NAME="2554"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getTimeFactor() {
+<A NAME="2555"></A>    <FONT ID="Return">return</FONT> pTimeFactor.getValue();
+<A NAME="2556"></A>  }   <FONT ID="SingleLineComment">// Methode getTimeFactor
+<A NAME="2557"></A></FONT> 
+<A NAME="2558"></A>
+<A NAME="2559"></A>  <FONT ID="FormalComment">/**
+<A NAME="2560"></A>   * Die Methode liefert das ImagePlus-Objekt des zur Zeit selektierten Bildes zurueck.
+<A NAME="2561"></A>   * @return Das ImagePlus-Objekt des selektierten Bildes.
+<A NAME="2562"></A>   */</FONT>
+<A NAME="2563"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> getSelectedImage() {
+<A NAME="2564"></A>
+<A NAME="2565"></A>    <FONT ID="Int">int</FONT>       actImage = pCanvas.getActiveImage();
+<A NAME="2566"></A>
+<A NAME="2567"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("Selektiertes Bild: " + actImage);
+<A NAME="2568"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="2569"></A>
+<A NAME="2570"></A>    <FONT ID="If">if</FONT> (actImage &gt;= <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="2571"></A>      ip = pCanvas.getImageStack().getPictureAtPos(actImage);
+<A NAME="2572"></A>    } 
+<A NAME="2573"></A>    <FONT ID="Return">return</FONT> ip;
+<A NAME="2574"></A>  }   <FONT ID="SingleLineComment">// Methode getSelectedImage
+<A NAME="2575"></A></FONT> 
+<A NAME="2576"></A>
+<A NAME="2577"></A>  <FONT ID="FormalComment">/**
+<A NAME="2578"></A>   * Die Methode liefert das FileLoader-Objekt zurueck, in dem die Rohdatenmatrizen
+<A NAME="2579"></A>   * und einige zusaetzliche Informationen stehen (wie z.B. Pixelabstand).
+<A NAME="2580"></A>   * @return Das aktuelle FileLoader-Objekt.
+<A NAME="2581"></A>   */</FONT>
+<A NAME="2582"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/mrt/FileLoader.java.html">FileLoader</A> getFileLoader() {
+<A NAME="2583"></A>    <FONT ID="Return">return</FONT> myFileLoader;
+<A NAME="2584"></A>  }   <FONT ID="SingleLineComment">// Methode getFileLoader
+<A NAME="2585"></A></FONT> 
+<A NAME="2586"></A>
+<A NAME="2587"></A>  <FONT ID="FormalComment">/**
+<A NAME="2588"></A>   * Die Methode setzt den Text der Statusleiste auf den uebergebenen Text.
+<A NAME="2589"></A>   * @param txt Der Text, der in der Statusleiste angezeigt werden soll.
+<A NAME="2590"></A>   */</FONT>
+<A NAME="2591"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setStatusBar(String txt) {
+<A NAME="2592"></A>    statusBar.setText(txt);
+<A NAME="2593"></A>  }   <FONT ID="SingleLineComment">// Methode setStatusBar
+<A NAME="2594"></A></FONT> 
+<A NAME="2595"></A>
+<A NAME="2596"></A>  <FONT ID="FormalComment">/**
+<A NAME="2597"></A>   * Die Methode liefert den Text der Statusleiste zurueck.
+<A NAME="2598"></A>   * @return Der Text der Statusleiste.
+<A NAME="2599"></A>   */</FONT>
+<A NAME="2600"></A>  <FONT ID="Public">public</FONT> String getStatusText() {
+<A NAME="2601"></A>    <FONT ID="Return">return</FONT> statusBar.getText();
+<A NAME="2602"></A>  }   <FONT ID="SingleLineComment">// Methode getStatusBar
+<A NAME="2603"></A></FONT> 
+<A NAME="2604"></A>
+<A NAME="2605"></A>  <FONT ID="FormalComment">/**
+<A NAME="2606"></A>   * Die Methode setzt den Wert der Fortschrittsanzeige auf den uebergebenen Wert.
+<A NAME="2607"></A>   * @param val Der Wert, auf den die Fortschrittsanzeige gesetzt werden soll.
+<A NAME="2608"></A>   */</FONT>
+<A NAME="2609"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setProgressBar(<FONT ID="Int">int</FONT> val) {
+<A NAME="2610"></A>    prbarProgress.setValue(val);
+<A NAME="2611"></A>  }   <FONT ID="SingleLineComment">// Methode setStatusBar
+<A NAME="2612"></A></FONT> 
+<A NAME="2613"></A>
+<A NAME="2614"></A>  <FONT ID="FormalComment">/**
+<A NAME="2615"></A>   * Die Methode liefert eine Referenz auf die Oberflaechenklasse des aktuell
+<A NAME="2616"></A>   * ausgewaehlten Artefakt-Simulators zurueck.
+<A NAME="2617"></A>   * @return Die Oberflaechenklasse des selektierten Artefakt-Simulators.
+<A NAME="2618"></A>   */</FONT>
+<A NAME="2619"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/mrt/artefacts/ArtefactUI.java.html">ArtefactUI</A> getSelectedArtefactUI() {
+<A NAME="2620"></A>    <FONT ID="Return">return</FONT> cbArtefacts.getSelectedArtefactUI();
+<A NAME="2621"></A>  }   <FONT ID="SingleLineComment">// Methode getSelectedArtefactUI
+<A NAME="2622"></A></FONT> 
+<A NAME="2623"></A>
+<A NAME="2624"></A>  <FONT ID="FormalComment">/**
+<A NAME="2625"></A>   * Die Methode liest einige Voreinstellungen aus der Datei
+<A NAME="2626"></A>   * preferences.properties ein.
+<A NAME="2627"></A>   */</FONT>
+<A NAME="2628"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> loadPreferences() {
+<A NAME="2629"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="2630"></A>      preferences.load(<FONT ID="New">new</FONT> FileInputStream(<FONT ID="StringLiteral">"vmrt_preferences.properties"</FONT>));
+<A NAME="2631"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="2632"></A>      System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.exception.preferences.open"</FONT>));
+<A NAME="2633"></A>      <FONT ID="Return">return</FONT>;
+<A NAME="2634"></A>    }   <FONT ID="SingleLineComment">// try-catch
+<A NAME="2635"></A></FONT> 
+<A NAME="2636"></A>    <FONT ID="SingleLineComment">// LineNumberReader numRead = null;
+<A NAME="2637"></A></FONT>    <FONT ID="SingleLineComment">// boolean            ok = true;
+<A NAME="2638"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2639"></A></FONT>    <FONT ID="SingleLineComment">// // Versuche, den neuen Eingabestream zu oeffnen
+<A NAME="2640"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2641"></A></FONT>    <FONT ID="SingleLineComment">// FileReader streamIn = new FileReader("vmrt_preferences.properties");
+<A NAME="2642"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2643"></A></FONT>    <FONT ID="SingleLineComment">// numRead = new LineNumberReader(streamIn);
+<A NAME="2644"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception e) {
+<A NAME="2645"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.open"));
+<A NAME="2646"></A></FONT>    <FONT ID="SingleLineComment">// return;
+<A NAME="2647"></A></FONT>    <FONT ID="SingleLineComment">// }    // try-catch
+<A NAME="2648"></A></FONT>    <FONT ID="SingleLineComment">// String e = null;
+<A NAME="2649"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2650"></A></FONT>    <FONT ID="SingleLineComment">// do {
+<A NAME="2651"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2652"></A></FONT>    <FONT ID="SingleLineComment">// e = numRead.readLine();
+<A NAME="2653"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception err) {
+<A NAME="2654"></A></FONT>    <FONT ID="SingleLineComment">// return;
+<A NAME="2655"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2656"></A></FONT>    <FONT ID="SingleLineComment">// if (e == null) {
+<A NAME="2657"></A></FONT>    <FONT ID="SingleLineComment">// break;
+<A NAME="2658"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2659"></A></FONT>    <FONT ID="SingleLineComment">// StringTokenizer token = new StringTokenizer(e, "=");
+<A NAME="2660"></A></FONT>    <FONT ID="SingleLineComment">// String         key = token.nextToken();
+<A NAME="2661"></A></FONT>    <FONT ID="SingleLineComment">// String         value = token.nextToken();
+<A NAME="2662"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2663"></A></FONT>    <FONT ID="SingleLineComment">// value = value.replace('"', ' ').trim();
+<A NAME="2664"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2665"></A></FONT>    <FONT ID="SingleLineComment">// preferences.put(key, value);
+<A NAME="2666"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception err) {
+<A NAME="2667"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.read"));
+<A NAME="2668"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2669"></A></FONT>    <FONT ID="SingleLineComment">// } while (e != null);
+<A NAME="2670"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2671"></A></FONT>    <FONT ID="SingleLineComment">// numRead.close();
+<A NAME="2672"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception err) {
+<A NAME="2673"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.close"));
+<A NAME="2674"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2675"></A></FONT>  } 
+<A NAME="2676"></A>
+<A NAME="2677"></A>
+<A NAME="2678"></A>  <FONT ID="FormalComment">/**
+<A NAME="2679"></A>   * Die Methode wird beim Beenden der Anwendung aufgerufen und speichert dann
+<A NAME="2680"></A>   * einige Voreinstellungen wie z.B. den Dateipfad, aus dem zuletzt ein
+<A NAME="2681"></A>   * Rohdatensatz geladen wurde.
+<A NAME="2682"></A>   */</FONT>
+<A NAME="2683"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> savePreferences() {
+<A NAME="2684"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="2685"></A>      preferences.store(<FONT ID="New">new</FONT> FileOutputStream(<FONT ID="StringLiteral">"vmrt_preferences.properties"</FONT>), <FONT ID="StringLiteral">""</FONT>);
+<A NAME="2686"></A>    } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="2687"></A>      System.out.println(frameRsrc.getString(<FONT ID="StringLiteral">"vmrtframe.exception.preferences.write"</FONT>));
+<A NAME="2688"></A>    } 
+<A NAME="2689"></A>
+<A NAME="2690"></A>    <FONT ID="SingleLineComment">// BufferedWriter bufWriter = null;
+<A NAME="2691"></A></FONT>    <FONT ID="SingleLineComment">// FileWriter     streamOut = null;
+<A NAME="2692"></A></FONT>    <FONT ID="SingleLineComment">// boolean          ok = true;
+<A NAME="2693"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2694"></A></FONT>    <FONT ID="SingleLineComment">// // Ausgabestream zu oeffnen
+<A NAME="2695"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2696"></A></FONT>    <FONT ID="SingleLineComment">// streamOut = new FileWriter("vmrt_preferences.properties");
+<A NAME="2697"></A></FONT>    <FONT ID="SingleLineComment">// bufWriter = new BufferedWriter(streamOut);
+<A NAME="2698"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception e) {
+<A NAME="2699"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.open"));
+<A NAME="2700"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2701"></A></FONT>    <FONT ID="SingleLineComment">// Enumeration iterator = preferences.propertyNames();
+<A NAME="2702"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2703"></A></FONT>    <FONT ID="SingleLineComment">// while (iterator.hasMoreElements()) {
+<A NAME="2704"></A></FONT>    <FONT ID="SingleLineComment">// String key = (String) iterator.nextElement();
+<A NAME="2705"></A></FONT>    <FONT ID="SingleLineComment">// String value = (String) preferences.get(key);
+<A NAME="2706"></A></FONT>    <FONT ID="SingleLineComment">// 
+<A NAME="2707"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2708"></A></FONT>    <FONT ID="SingleLineComment">// streamOut.write(key);
+<A NAME="2709"></A></FONT>    <FONT ID="SingleLineComment">// streamOut.write("=\"");
+<A NAME="2710"></A></FONT>    <FONT ID="SingleLineComment">// streamOut.write(value + "\"\n");
+<A NAME="2711"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception err) {
+<A NAME="2712"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.write"));
+<A NAME="2713"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2714"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2715"></A></FONT>    <FONT ID="SingleLineComment">// streamOut.flush();
+<A NAME="2716"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception err) {
+<A NAME="2717"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.write"));
+<A NAME="2718"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2719"></A></FONT>    <FONT ID="SingleLineComment">// try {
+<A NAME="2720"></A></FONT>    <FONT ID="SingleLineComment">// streamOut.close();
+<A NAME="2721"></A></FONT>    <FONT ID="SingleLineComment">// } catch (Exception err) {
+<A NAME="2722"></A></FONT>    <FONT ID="SingleLineComment">// System.out.println(frameRsrc.getString("vmrtframe.exception.preferences.close"));
+<A NAME="2723"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2724"></A></FONT>    <FONT ID="SingleLineComment">// streamOut = null;
+<A NAME="2725"></A></FONT>    <FONT ID="SingleLineComment">// }
+<A NAME="2726"></A></FONT>  }   <FONT ID="SingleLineComment">// savePreferences()
+<A NAME="2727"></A></FONT> 
+<A NAME="2728"></A>
+<A NAME="2729"></A>}
+<A NAME="2730"></A>
+<A NAME="2731"></A>
+<A NAME="2732"></A>
+<A NAME="2733"></A>
+<A NAME="2734"></A>
+<A NAME="2735"></A>
+<A NAME="2736"></A>
+<A NAME="2737"></A>
+<A NAME="2738"></A>
+<A NAME="2739"></A>
+<A NAME="2740"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="2741"></A>
+<A NAME="2742"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">VMRTFrame</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

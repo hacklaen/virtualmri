@@ -1,0 +1,612 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>virtual.mrt.MRTPanel (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MRTPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/</FONT>
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="MultiLineComment">/*
+<A NAME="4"></A> * Copyright (C) 1999, 2000 Thomas Hacklaender, Christian Schalla,
+<A NAME="5"></A> * Andreas Truemper
+<A NAME="6"></A> * 
+<A NAME="7"></A> * This program is free software; you can redistribute it and/or
+<A NAME="8"></A> * modify it under the terms of the GNU General Public License 2
+<A NAME="9"></A> * as published by the Free Software Foundation.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * This program is distributed in the hope that it will be useful,
+<A NAME="12"></A> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<A NAME="14"></A> * GNU General Public License for more details.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software
+<A NAME="18"></A> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Package">package</FONT> <A HREF="../../virtual.mrt.index.html" target="packageFrame">virtual.mrt</A>;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.awt.image.*;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../virtual.tools.index.html" target="packageFrame">virtual.tools.*</A>;
+<A NAME="28"></A>
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * Die Klasse implementiert die Zeichenflaeche des virtuellen MRT.
+<A NAME="32"></A> * Insbesondere wird die paint-Methode der JScrollPane-Klasse ueberschrieben, um
+<A NAME="33"></A> * die Bilder und Beschriftungen einzuzeichnen. Darueber hinaus verwaltet diese
+<A NAME="34"></A> * Klasse den gesamten Bildstapel und ist für das Einfuegen von neuen Bildern
+<A NAME="35"></A> * in diesen Stapel verantwortlich.
+<A NAME="36"></A> * &lt;DL&gt;&lt;DT&gt;&lt;B&gt;Modifications: &lt;/B&gt;&lt;DD&gt;
+<A NAME="37"></A> * Thomas Hacklaender 2000.8.18:
+<A NAME="38"></A> * Um die Vorgabe der abstrakten Oberklasse zu erfuellen createNewImage(ImagePlus)
+<A NAME="39"></A> * implementiert.&lt;br&gt;
+<A NAME="40"></A> * Thomas Hacklaender 2000.8.18:
+<A NAME="41"></A> * Die Klasse von ImagePanel statt von JPanel abgeleitet.&lt;br&gt;
+<A NAME="42"></A> * Thomas Hacklaender 2002.11.1:
+<A NAME="43"></A> * Bildbeschriftung modifiziert.&lt;br&gt;
+<A NAME="44"></A> * &lt;/DD&gt;&lt;/DL&gt;
+<A NAME="45"></A> * @author   Christian Schalla
+<A NAME="46"></A> * @author   Andreas Truemper
+<A NAME="47"></A> * @version  1.2, 2002.11.1
+<A NAME="48"></A> */</FONT>
+<A NAME="49"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> MRTPanel <FONT ID="Extends">extends</FONT> <A HREF="../../virtual/tools/ImagePanel.java.html">ImagePanel</A> {
+<A NAME="50"></A>
+<A NAME="51"></A>
+<A NAME="52"></A>  <FONT ID="SingleLineComment">// th 2005.11.11, added
+<A NAME="53"></A></FONT>  ResourceBundle      frameRsrc = PropertyResourceBundle.getBundle(<FONT ID="StringLiteral">"virtual/mrt/resources/vmrt_frame"</FONT>);
+<A NAME="54"></A>
+<A NAME="55"></A>
+<A NAME="56"></A>  <FONT ID="FormalComment">/**
+<A NAME="57"></A>   * Anzahl der Bilder, die gleichzeitig dargestellt werden (1 oder 4).
+<A NAME="58"></A>   */</FONT>
+<A NAME="59"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         iNumImages = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>  <FONT ID="FormalComment">/**
+<A NAME="63"></A>   * Nummer des selektierten Bildes. Ist -1, wenn kein Bild selektiert ist.
+<A NAME="64"></A>   */</FONT>
+<A NAME="65"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>         iActiveImage = -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="66"></A>
+<A NAME="67"></A>
+<A NAME="68"></A>  <FONT ID="FormalComment">/**
+<A NAME="69"></A>   * Verweis auf den Stapel aller Bilder, die zur Zeit dargestellt werden.
+<A NAME="70"></A>   */</FONT>
+<A NAME="71"></A>  <FONT ID="Private">private</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>  is;
+<A NAME="72"></A>
+<A NAME="73"></A>
+<A NAME="74"></A>  <FONT ID="FormalComment">/**
+<A NAME="75"></A>   * Rueckreferenz zum Hauptfenster. Diese wird benoetigt, um Einstellungen
+<A NAME="76"></A>   * von einigen Bedienelementen auszulesen.
+<A NAME="77"></A>   */</FONT>
+<A NAME="78"></A>  <A HREF="../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A>           myVMRTFrame;
+<A NAME="79"></A>
+<A NAME="80"></A>
+<A NAME="81"></A>  <FONT ID="FormalComment">/**
+<A NAME="82"></A>   * Standard-Konstruktor.
+<A NAME="83"></A>   */</FONT>
+<A NAME="84"></A>  <FONT ID="Public">public</FONT> MRTPanel() {}
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>  <FONT ID="FormalComment">/**
+<A NAME="88"></A>   * Konstruktor mit einer Rueckreferenz zum Hauptfenster als Parameter.
+<A NAME="89"></A>   * @param backReference Rueckreferenz zum Haupfenster. Sie wird benoetigt, um
+<A NAME="90"></A>   * Einstellungen einiger Bedienelemente auszulesen.
+<A NAME="91"></A>   */</FONT>
+<A NAME="92"></A>  <FONT ID="Public">public</FONT> MRTPanel(<A HREF="../../virtual/mrt/VMRTFrame.java.html">VMRTFrame</A> backReference) {
+<A NAME="93"></A>    myVMRTFrame = backReference;
+<A NAME="94"></A>    is = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>();
+<A NAME="95"></A>  }   <FONT ID="SingleLineComment">// Konstruktor
+<A NAME="96"></A></FONT>
+<A NAME="97"></A>
+<A NAME="98"></A>  <FONT ID="FormalComment">/**
+<A NAME="99"></A>   * Die Methode setzt den internen Parameter, welcher angibt, wie viele Bilder
+<A NAME="100"></A>   * gleichzeitig dargestellt werden, auf 1. Ausserdem wird der Scrollbereich
+<A NAME="101"></A>   * aktualisiert.
+<A NAME="102"></A>   */</FONT>
+<A NAME="103"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setOneImage() {
+<A NAME="104"></A>    iNumImages = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="105"></A>    updateScrollbar();
+<A NAME="106"></A>  }   <FONT ID="SingleLineComment">// Methode setOneImage
+<A NAME="107"></A></FONT> 
+<A NAME="108"></A>
+<A NAME="109"></A>  <FONT ID="FormalComment">/**
+<A NAME="110"></A>   * Die Methode setzt den internen Parameter, welcher angibt, wie viele Bilder
+<A NAME="111"></A>   * gleichzeitig dargestellt werden, auf 4. Ausserdem wird der Scrollbereich
+<A NAME="112"></A>   * aktualisiert.
+<A NAME="113"></A>   */</FONT>
+<A NAME="114"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setFourImages() {
+<A NAME="115"></A>    iNumImages = <FONT ID="IntegerLiteral">4</FONT>;
+<A NAME="116"></A>    updateScrollbar();
+<A NAME="117"></A>  }   <FONT ID="SingleLineComment">// Methode setFourImages
+<A NAME="118"></A></FONT> 
+<A NAME="119"></A>
+<A NAME="120"></A>  <FONT ID="FormalComment">/**
+<A NAME="121"></A>   * Die Methode aktualisiert die Scrollbarlkeneinstellungen in Abhaengigkeit davon,
+<A NAME="122"></A>   * ob ein oder vier Bilder gleichzeitig dargestellt werden sollen.
+<A NAME="123"></A>   */</FONT>
+<A NAME="124"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateScrollbar() {
+<A NAME="125"></A>    <FONT ID="Int">int</FONT> num = is.getStackSize();
+<A NAME="126"></A>
+<A NAME="127"></A>    <FONT ID="SingleLineComment">// Ein Bild gleichzeitig darstellen
+<A NAME="128"></A></FONT>    <FONT ID="SingleLineComment">// 20.4.00 Umgestellt auf vertikales Scrollen
+<A NAME="129"></A></FONT>    <FONT ID="If">if</FONT> (myVMRTFrame.rb1Image.isSelected()) {
+<A NAME="130"></A>      myVMRTFrame.sbVerScrollbar.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="131"></A>      myVMRTFrame.sbVerScrollbar.setMaximum(num * <FONT ID="IntegerLiteral">512</FONT> + <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="132"></A>      myVMRTFrame.sbVerScrollbar.setBlockIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="133"></A>      myVMRTFrame.sbVerScrollbar.setUnitIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="134"></A>      myVMRTFrame.sbVerScrollbar.setVisibleAmount(<FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="135"></A>    } <FONT ID="Else">else</FONT> {  <FONT ID="SingleLineComment">// 4 Bilder gleichzeitig darstellen
+<A NAME="136"></A></FONT>      <FONT ID="Int">int</FONT> max = <FONT ID="IntegerLiteral">512</FONT>;
+<A NAME="137"></A>
+<A NAME="138"></A>      <FONT ID="If">if</FONT> (num &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="139"></A>        max = num / <FONT ID="IntegerLiteral">2</FONT> * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="140"></A>      } 
+<A NAME="141"></A>      myVMRTFrame.sbVerScrollbar.setMinimum(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="142"></A>      myVMRTFrame.sbVerScrollbar.setMaximum(max);
+<A NAME="143"></A>      myVMRTFrame.sbVerScrollbar.setBlockIncrement(<FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="144"></A>      myVMRTFrame.sbVerScrollbar.setUnitIncrement(<FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="145"></A>      myVMRTFrame.sbVerScrollbar.setVisibleAmount(<FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="146"></A>    }         <FONT ID="SingleLineComment">// if-else
+<A NAME="147"></A></FONT>   }          <FONT ID="SingleLineComment">// Methode updateScrollbar
+<A NAME="148"></A></FONT> 
+<A NAME="149"></A>
+<A NAME="150"></A>  <FONT ID="FormalComment">/**
+<A NAME="151"></A>   * Die Methode liefert den Offset des Scrollbalkens zurueck.
+<A NAME="152"></A>   * @return Der Offset des Scrollbalkens.
+<A NAME="153"></A>   */</FONT>
+<A NAME="154"></A>  <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> getSBOffset() {
+<A NAME="155"></A>    <FONT ID="Int">int</FONT> off = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="156"></A>
+<A NAME="157"></A>    <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="158"></A>      off = myVMRTFrame.sbVerScrollbar.getValue() / <FONT ID="IntegerLiteral">256</FONT>;
+<A NAME="159"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="160"></A>      off = myVMRTFrame.sbVerScrollbar.getValue() / <FONT ID="IntegerLiteral">512</FONT>;
+<A NAME="161"></A>    }   <FONT ID="SingleLineComment">// if-else
+<A NAME="162"></A></FONT>     <FONT ID="Return">return</FONT> off;
+<A NAME="163"></A>  }   <FONT ID="SingleLineComment">// Methode getSBOffset
+<A NAME="164"></A></FONT> 
+<A NAME="165"></A>
+<A NAME="166"></A>  <FONT ID="FormalComment">/**
+<A NAME="167"></A>   * Die Methode liefert die Anzahl der gleichzeitig dargestellten Bilder zurueck.
+<A NAME="168"></A>   * @return Die Anzahl gleichzeitig dargestellter Bilder.
+<A NAME="169"></A>   */</FONT>
+<A NAME="170"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getNumImages() {
+<A NAME="171"></A>    <FONT ID="Return">return</FONT> iNumImages;
+<A NAME="172"></A>  }   <FONT ID="SingleLineComment">// Methode hetNumImages
+<A NAME="173"></A></FONT> 
+<A NAME="174"></A>
+<A NAME="175"></A>  <FONT ID="FormalComment">/**
+<A NAME="176"></A>   * Die Methode legt die Nummer des zur Zeit selektierten Bildes fest.
+<A NAME="177"></A>   * @param activeImage Die Nummer des selektierten Bildes.
+<A NAME="178"></A>   */</FONT>
+<A NAME="179"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setActiveImage(<FONT ID="Int">int</FONT> activeImage) {
+<A NAME="180"></A>    iActiveImage = activeImage;
+<A NAME="181"></A>
+<A NAME="182"></A>    <FONT ID="SingleLineComment">// tha:2000.07.17 // System.out.println("Aktives Bild: " + iActiveImage);
+<A NAME="183"></A></FONT>  }   <FONT ID="SingleLineComment">// Methode setActiveImage
+<A NAME="184"></A></FONT> 
+<A NAME="185"></A>
+<A NAME="186"></A>  <FONT ID="FormalComment">/**
+<A NAME="187"></A>   * Die Methode liefert die Nummer des zur Zeit selektierten Bildes zurueck.
+<A NAME="188"></A>   * @return Die Nummer des selktierten Bildes.
+<A NAME="189"></A>   */</FONT>
+<A NAME="190"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getActiveImage() {
+<A NAME="191"></A>    <FONT ID="Return">return</FONT> iActiveImage;
+<A NAME="192"></A>  }   <FONT ID="SingleLineComment">// Methode getActiveImage
+<A NAME="193"></A></FONT> 
+<A NAME="194"></A>
+<A NAME="195"></A>  <FONT ID="FormalComment">/**
+<A NAME="196"></A>   * Die Methode liefert den ImageStack, also die Menge aller Bilder, die sich
+<A NAME="197"></A>   * zur Zeit im Scrollbereich befinden (auch wenn sie gerade nicht sichtbar
+<A NAME="198"></A>   * sind).
+<A NAME="199"></A>   * @return Der aktuelle Bildstapel.
+<A NAME="200"></A>   */</FONT>
+<A NAME="201"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A> getImageStack() {
+<A NAME="202"></A>    <FONT ID="Return">return</FONT> is;
+<A NAME="203"></A>  } 
+<A NAME="204"></A>
+<A NAME="205"></A>
+<A NAME="206"></A>  <FONT ID="FormalComment">/**
+<A NAME="207"></A>   * Die Methode erzeugt aus einen DcmImage (12-Bit-Bild)
+<A NAME="208"></A>   * ein ImagePlus-Objekt (ein Bild inklusive Fensterungseinstellungen
+<A NAME="209"></A>   * (Window und Center) und weiterer Informationen). Dieses neue Objekt wird dem
+<A NAME="210"></A>   * Bildstapel hinzugefuegt und an den Benutzer zurueckgeliefert.
+<A NAME="211"></A>   * @param intensityImage Das ungefensterte 12-Bit Bild.
+<A NAME="212"></A>   * @return Das neu erzeugte ImagePlus-Objekt.
+<A NAME="213"></A>   */</FONT>
+<A NAME="214"></A>  <FONT ID="Public">public</FONT> <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> createNewImage(<A HREF="../../virtual/tools/DcmImage.java.html">DcmImage</A> dcmimg) {
+<A NAME="215"></A>
+<A NAME="216"></A>    <FONT ID="SingleLineComment">// Wenn der ImageStack noch leer (nicht vorhanden) ist, muss ein neuer
+<A NAME="217"></A></FONT>    <FONT ID="SingleLineComment">// erzeugt werden
+<A NAME="218"></A></FONT>    <FONT ID="If">if</FONT> (is == <FONT ID="Null">null</FONT>) {
+<A NAME="219"></A>      is = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>();
+<A NAME="220"></A>    } 
+<A NAME="221"></A>
+<A NAME="222"></A>    <FONT ID="SingleLineComment">// Wenn noch kein Bild selektiert war (noch keins vorhanden), so wird nun
+<A NAME="223"></A></FONT>    <FONT ID="SingleLineComment">// das erste Bild das aktive, ansonsten bleibt das alte selektierte Bild
+<A NAME="224"></A></FONT>    <FONT ID="SingleLineComment">// weiterhin selektiert
+<A NAME="225"></A></FONT>    iActiveImage = iActiveImage == -<FONT ID="IntegerLiteral">1</FONT> ? <FONT ID="IntegerLiteral">1</FONT> : iActiveImage;
+<A NAME="226"></A>
+<A NAME="227"></A>    <FONT ID="SingleLineComment">// Nun wird noch entschieden, ob das neue Bild an der selektierten Position
+<A NAME="228"></A></FONT>    <FONT ID="SingleLineComment">// oder an der naechsten freien Position positioniert wird
+<A NAME="229"></A></FONT>    <FONT ID="Int">int</FONT> pos = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="230"></A>
+<A NAME="231"></A>    <FONT ID="If">if</FONT> (myVMRTFrame.rbNextImageAtSelection.isSelected()) {
+<A NAME="232"></A>      pos = iActiveImage;
+<A NAME="233"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="234"></A>      pos = is.getNextFreePosition();
+<A NAME="235"></A>      <FONT ID="If">if</FONT> (pos == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="236"></A>        pos++;
+<A NAME="237"></A>      } 
+<A NAME="238"></A>    } 
+<A NAME="239"></A>
+<A NAME="240"></A>    <FONT ID="SingleLineComment">// Erzeugen eines imagePlus-Objektes aus der 12Bit-Matrix
+<A NAME="241"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = is.createPictureAtPos(pos, dcmimg);
+<A NAME="242"></A>
+<A NAME="243"></A>    <FONT ID="SingleLineComment">// Aktualisieren des Scrollbereichs
+<A NAME="244"></A></FONT>    updateScrollbar();
+<A NAME="245"></A>
+<A NAME="246"></A>    <FONT ID="SingleLineComment">// Ggf. neues Bild aktiveren und dorthin scrollen
+<A NAME="247"></A></FONT>    <FONT ID="If">if</FONT> (myVMRTFrame.chbActivateNewImg.isSelected()) {
+<A NAME="248"></A>      setActiveImage(pos);
+<A NAME="249"></A>
+<A NAME="250"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="251"></A>        myVMRTFrame.sbVerScrollbar.setValue(((pos - <FONT ID="IntegerLiteral">1</FONT>) / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="252"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="253"></A>        myVMRTFrame.sbVerScrollbar.setValue((pos - <FONT ID="IntegerLiteral">1</FONT>) * <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="254"></A>      } 
+<A NAME="255"></A>    } 
+<A NAME="256"></A>
+<A NAME="257"></A>    <FONT ID="SingleLineComment">// Neuzeichnen des Canvas kann erst spaeter gemacht werden, da von
+<A NAME="258"></A></FONT>    <FONT ID="SingleLineComment">// VMRTFrame noch einige Parmaeter im imagePlus-Objekt gesetzt werden
+<A NAME="259"></A></FONT>
+<A NAME="260"></A>    <FONT ID="SingleLineComment">// Das neue Image-Objekt zurueckliefern
+<A NAME="261"></A></FONT>    <FONT ID="Return">return</FONT> ip;
+<A NAME="262"></A>  } 
+<A NAME="263"></A>
+<A NAME="264"></A>
+<A NAME="265"></A>  <FONT ID="FormalComment">/**
+<A NAME="266"></A>   * Die Methode fuegt das uebergebene ImagePlus-Objekt in den Bildstapel ein.
+<A NAME="267"></A>   * Zuerst wird dafuer die Position bestimmt, an der das Bild eingefuegt wird.
+<A NAME="268"></A>   * Dann wird das Bild in den stack eingefuegt und der Scrollbereich
+<A NAME="269"></A>   * aktualisiert.
+<A NAME="270"></A>   * @param myip Das ImagePlus-Objekt, das in den Stack eingefuegt werden soll.
+<A NAME="271"></A>   * @return Die Position, an der das ImagePlus-Objekt eingefuegt wurde.
+<A NAME="272"></A>   */</FONT>
+<A NAME="273"></A>  <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> createNewImage(<A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> myip) {
+<A NAME="274"></A>
+<A NAME="275"></A>    <FONT ID="SingleLineComment">// Wenn der ImageStack noch leer (nicht vorhanden) ist, muss ein neuer
+<A NAME="276"></A></FONT>    <FONT ID="SingleLineComment">// erzeugt werden
+<A NAME="277"></A></FONT>    <FONT ID="If">if</FONT> (is == <FONT ID="Null">null</FONT>) {
+<A NAME="278"></A>      is = <FONT ID="New">new</FONT> <A HREF="../../virtual/tools/ImageStack.java.html">ImageStack</A>();
+<A NAME="279"></A>    } 
+<A NAME="280"></A>
+<A NAME="281"></A>    <FONT ID="SingleLineComment">// Wenn noch kein Bild selektiert war (noch keins vorhanden), so wird nun
+<A NAME="282"></A></FONT>    <FONT ID="SingleLineComment">// das erste Bild das aktive, ansonsten bleibt das alte selektierte Bild
+<A NAME="283"></A></FONT>    <FONT ID="SingleLineComment">// weiterhin selektiert
+<A NAME="284"></A></FONT>    iActiveImage = iActiveImage == -<FONT ID="IntegerLiteral">1</FONT> ? <FONT ID="IntegerLiteral">1</FONT> : iActiveImage;
+<A NAME="285"></A>
+<A NAME="286"></A>    <FONT ID="SingleLineComment">// Nun wird noch entschieden, ob das neue Bild an der selektierten Position
+<A NAME="287"></A></FONT>    <FONT ID="SingleLineComment">// oder an der naechsten freien Position positioniert wird
+<A NAME="288"></A></FONT>    <FONT ID="Int">int</FONT> pos = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="289"></A>
+<A NAME="290"></A>    <FONT ID="If">if</FONT> (myVMRTFrame.rbNextImageAtSelection.isSelected()) {
+<A NAME="291"></A>      pos = iActiveImage;
+<A NAME="292"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="293"></A>      pos = is.getNextFreePosition();
+<A NAME="294"></A>      <FONT ID="If">if</FONT> (pos == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="295"></A>        pos++;
+<A NAME="296"></A>      } 
+<A NAME="297"></A>    } 
+<A NAME="298"></A>
+<A NAME="299"></A>    <FONT ID="SingleLineComment">// Erzeugen eines imagePlus-Objektes aus der 12Bit-Matrix
+<A NAME="300"></A></FONT>    is.setPictureAtPos(pos, myip);
+<A NAME="301"></A>
+<A NAME="302"></A>    <FONT ID="SingleLineComment">// Aktualisieren des Scrollbereichs
+<A NAME="303"></A></FONT>    updateScrollbar();
+<A NAME="304"></A>
+<A NAME="305"></A>    <FONT ID="SingleLineComment">// Ggf. neues Bild aktiveren und dorthin scrollen
+<A NAME="306"></A></FONT>    <FONT ID="If">if</FONT> (myVMRTFrame.chbActivateNewImg.isSelected()) {
+<A NAME="307"></A>      setActiveImage(pos);
+<A NAME="308"></A>
+<A NAME="309"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="310"></A>        myVMRTFrame.sbVerScrollbar.setValue(((pos - <FONT ID="IntegerLiteral">1</FONT>) / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>);
+<A NAME="311"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="312"></A>        myVMRTFrame.sbVerScrollbar.setValue((pos - <FONT ID="IntegerLiteral">1</FONT>) * <FONT ID="IntegerLiteral">512</FONT>);
+<A NAME="313"></A>      } 
+<A NAME="314"></A>    } 
+<A NAME="315"></A>
+<A NAME="316"></A>    <FONT ID="SingleLineComment">// Neuzeichnen des Canvas kann erst spaeter gemacht werden, da von
+<A NAME="317"></A></FONT>    <FONT ID="SingleLineComment">// VMRTFrame noch einige Parmaeter im imagePlus-Objekt gesetzt werden
+<A NAME="318"></A></FONT>
+<A NAME="319"></A>    <FONT ID="Return">return</FONT> pos;
+<A NAME="320"></A>  } 
+<A NAME="321"></A>
+<A NAME="322"></A>
+<A NAME="323"></A>  <FONT ID="FormalComment">/**
+<A NAME="324"></A>   * Die paint-Methode sorgt dafuer, dass alle gewuenschten Elemente auf der
+<A NAME="325"></A>   * Zeichenflaeche dargestellt werden. Dazu gehoeren die Bilder selbst,
+<A NAME="326"></A>   * sowie deren Beschriftungen. Die Methode wird immer dann aufgerufen,
+<A NAME="327"></A>   * wenn sich etwas auf der Zeichenflaeche veraendern soll.
+<A NAME="328"></A>   * @param g Der Graphikkontext.
+<A NAME="329"></A>   */</FONT>
+<A NAME="330"></A>  <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> paint(Graphics g) {
+<A NAME="331"></A>    FontMetrics myFontMetrics;
+<A NAME="332"></A>    <FONT ID="Int">int</FONT>         lHeight;
+<A NAME="333"></A>    <FONT ID="Int">int</FONT>         lSpacing;
+<A NAME="334"></A>    <FONT ID="Int">int</FONT>         margin;
+<A NAME="335"></A>    <FONT ID="Int">int</FONT>         stringWidth;
+<A NAME="336"></A>
+<A NAME="337"></A>    <FONT ID="SingleLineComment">// Zunaechst mal den Graphikontext komplett loeschen
+<A NAME="338"></A></FONT>    g.clearRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="339"></A>
+<A NAME="340"></A>    <FONT ID="SingleLineComment">// Zeichnen des Bildes bzw. der Bilder
+<A NAME="341"></A></FONT>    <A HREF="../../virtual/tools/ImagePlus.java.html">ImagePlus</A> ip = <FONT ID="Null">null</FONT>;
+<A NAME="342"></A>
+<A NAME="343"></A>    <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="344"></A>      <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="345"></A>
+<A NAME="346"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; <FONT ID="IntegerLiteral">4</FONT>; i++) {
+<A NAME="347"></A>        ip = is.getPictureAtPos(<FONT ID="IntegerLiteral">2</FONT> * off + i + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="348"></A>        <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="349"></A>
+<A NAME="350"></A>          <FONT ID="SingleLineComment">// Umstellung auf vertikales Scrollen
+<A NAME="351"></A></FONT>          g.drawImage(ip.getAWTImage(), (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="IntegerLiteral">256</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="352"></A>
+<A NAME="353"></A>          <FONT ID="SingleLineComment">// g.drawImage(ip.getAWTImage(),(i / 2) * 256,(i % 2) * 256,256,256,this);
+<A NAME="354"></A></FONT>        } 
+<A NAME="355"></A>      } 
+<A NAME="356"></A>    } <FONT ID="Else">else</FONT> {
+<A NAME="357"></A>      <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="358"></A>
+<A NAME="359"></A>      ip = is.getPictureAtPos(off + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="360"></A>      <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="361"></A>        g.drawImage(ip.getAWTImage(), <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="IntegerLiteral">512</FONT>, <FONT ID="This">this</FONT>);
+<A NAME="362"></A>      } 
+<A NAME="363"></A>    } 
+<A NAME="364"></A>
+<A NAME="365"></A>    <FONT ID="SingleLineComment">// Zeichnen der Umrandung der Bilder, dazu zunaechst Malfarbe auf
+<A NAME="366"></A></FONT>    <FONT ID="SingleLineComment">// weiss setzen. Fallunterscheidung 1/4 Bilder
+<A NAME="367"></A></FONT>
+<A NAME="368"></A>    g.setColor(Color.white);
+<A NAME="369"></A>    g.drawRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="370"></A>
+<A NAME="371"></A>    <FONT ID="Switch">switch</FONT> (iNumImages) {
+<A NAME="372"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: {
+<A NAME="373"></A>      g.drawLine(<FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="374"></A>      g.drawLine(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">255</FONT>);
+<A NAME="375"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="376"></A>    } 
+<A NAME="377"></A>    <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="378"></A>      <FONT ID="Break">break</FONT>;
+<A NAME="379"></A>    } 
+<A NAME="380"></A>    }   <FONT ID="SingleLineComment">// switch
+<A NAME="381"></A></FONT>
+<A NAME="382"></A>    <FONT ID="SingleLineComment">// Zeichnen der Umrandung des aktiven Bildes
+<A NAME="383"></A></FONT>    g.setColor(Color.red);
+<A NAME="384"></A>    <FONT ID="If">if</FONT> (iActiveImage != -<FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="385"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="386"></A>        <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="387"></A>
+<A NAME="388"></A>        <FONT ID="If">if</FONT> (iActiveImage == off + <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="389"></A>          g.drawRect(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">511</FONT>, <FONT ID="IntegerLiteral">511</FONT>);
+<A NAME="390"></A>        } 
+<A NAME="391"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="392"></A>        <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="393"></A>
+<A NAME="394"></A>        <FONT ID="SingleLineComment">// Liegt aktives Bild im sichtbaren Scrollbereich ???
+<A NAME="395"></A></FONT>        <FONT ID="If">if</FONT> ((iActiveImage &gt; off * <FONT ID="IntegerLiteral">2</FONT>) &amp;&amp; (iActiveImage &lt;= (off * <FONT ID="IntegerLiteral">2</FONT> + <FONT ID="IntegerLiteral">4</FONT>))) {
+<A NAME="396"></A>          <FONT ID="Int">int</FONT> num = iActiveImage - (off * <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="397"></A>
+<A NAME="398"></A>          <FONT ID="Int">int</FONT> startx = <FONT ID="IntegerLiteral">0</FONT>, starty = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="399"></A>
+<A NAME="400"></A>          <FONT ID="Switch">switch</FONT> (num) {
+<A NAME="401"></A>
+<A NAME="402"></A>          <FONT ID="SingleLineComment">// Umstellung auf vertikales Scrollen
+<A NAME="403"></A></FONT>          <FONT ID="SingleLineComment">// case 1: {startx=0; starty=0; break; }
+<A NAME="404"></A></FONT>          <FONT ID="SingleLineComment">// case 3: {startx=255; starty=0; break; }
+<A NAME="405"></A></FONT>          <FONT ID="SingleLineComment">// case 2: {startx=0; starty=255; break; }
+<A NAME="406"></A></FONT>          <FONT ID="SingleLineComment">// case 4: {startx=255; starty=255; break; }
+<A NAME="407"></A></FONT>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: {
+<A NAME="408"></A>            startx = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="409"></A>            starty = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="410"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="411"></A>          } 
+<A NAME="412"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">3</FONT>: {
+<A NAME="413"></A>            startx = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="414"></A>            starty = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="415"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="416"></A>          } 
+<A NAME="417"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">2</FONT>: {
+<A NAME="418"></A>            startx = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="419"></A>            starty = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="420"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="421"></A>          } 
+<A NAME="422"></A>          <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: {
+<A NAME="423"></A>            startx = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="424"></A>            starty = <FONT ID="IntegerLiteral">255</FONT>;
+<A NAME="425"></A>            <FONT ID="Break">break</FONT>;
+<A NAME="426"></A>          } 
+<A NAME="427"></A>          }   <FONT ID="SingleLineComment">// switch
+<A NAME="428"></A></FONT>          g.drawRect(startx, starty, <FONT ID="IntegerLiteral">255</FONT>, <FONT ID="IntegerLiteral">255</FONT>);
+<A NAME="429"></A>        }     <FONT ID="SingleLineComment">// if
+<A NAME="430"></A></FONT>       }      <FONT ID="SingleLineComment">// if-else
+<A NAME="431"></A></FONT>     }        <FONT ID="SingleLineComment">// if
+<A NAME="432"></A></FONT> 
+<A NAME="433"></A>    <FONT ID="SingleLineComment">// Zeichnen der Bildbeschriftungen in gruen
+<A NAME="434"></A></FONT>    g.setColor(Color.green);
+<A NAME="435"></A>    String[]  comments;
+<A NAME="436"></A>    String[]  commentsNW;
+<A NAME="437"></A>    String[]  commentsNE;
+<A NAME="438"></A>    String[]  commentsSW;
+<A NAME="439"></A>    String[]  commentsSE;
+<A NAME="440"></A>
+<A NAME="441"></A>    <FONT ID="If">if</FONT> (myVMRTFrame.tbImageText.isSelected()) {
+<A NAME="442"></A>
+<A NAME="443"></A>      <FONT ID="If">if</FONT> (iNumImages == <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="444"></A>
+<A NAME="445"></A>        <FONT ID="SingleLineComment">// ///////////////////////////////////////////////
+<A NAME="446"></A></FONT>        <FONT ID="SingleLineComment">// 
+<A NAME="447"></A></FONT>        <FONT ID="SingleLineComment">// Falls 4 Bilder gleichzeitig dargestellt werden
+<A NAME="448"></A></FONT>        <FONT ID="SingleLineComment">// 
+<A NAME="449"></A></FONT>        <FONT ID="SingleLineComment">// ///////////////////////////////////////////////
+<A NAME="450"></A></FONT>
+<A NAME="451"></A>        g.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="452"></A>
+<A NAME="453"></A>        <FONT ID="SingleLineComment">// th 2002.11.1
+<A NAME="454"></A></FONT>        myFontMetrics = g.getFontMetrics();
+<A NAME="455"></A>        lHeight = myFontMetrics.getHeight();
+<A NAME="456"></A>        lSpacing = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="457"></A>        margin = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="458"></A>
+<A NAME="459"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; <FONT ID="IntegerLiteral">4</FONT>; i++) {
+<A NAME="460"></A>          <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="461"></A>
+<A NAME="462"></A>          ip = is.getPictureAtPos(<FONT ID="IntegerLiteral">2</FONT> * off + <FONT ID="IntegerLiteral">1</FONT> + i);
+<A NAME="463"></A>
+<A NAME="464"></A>          <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="465"></A>
+<A NAME="466"></A>            <FONT ID="SingleLineComment">// Einzeichnen der Kommentare
+<A NAME="467"></A></FONT>            commentsNW = ip.getTextNW();
+<A NAME="468"></A>
+<A NAME="469"></A>            <FONT ID="SingleLineComment">// Einzeichnen der Bildnummer
+<A NAME="470"></A></FONT>            g.drawString(frameRsrc.getString(<FONT ID="StringLiteral">"mrtpanel.text.nw.image"</FONT>) + <FONT ID="StringLiteral">" "</FONT> + (off + <FONT ID="IntegerLiteral">1</FONT>), margin, lHeight + lSpacing);
+<A NAME="471"></A>            <FONT ID="If">if</FONT> (commentsNW != <FONT ID="Null">null</FONT>) {
+<A NAME="472"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsNW.length; j++) {
+<A NAME="473"></A>                g.drawString(commentsNW[j], (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + margin, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + (lHeight + lSpacing) * (j + <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="474"></A>
+<A NAME="475"></A>                <FONT ID="SingleLineComment">// g.drawString(commentsNW[j], (i/2)*256 + 5, (i%2)*256 + 22 +12*j);
+<A NAME="476"></A></FONT>              } 
+<A NAME="477"></A>            } 
+<A NAME="478"></A>
+<A NAME="479"></A>            commentsSW = ip.getTextSW();
+<A NAME="480"></A>            <FONT ID="If">if</FONT> (commentsSW != <FONT ID="Null">null</FONT>) {
+<A NAME="481"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = commentsSW.length - <FONT ID="IntegerLiteral">1</FONT>; j &gt;= <FONT ID="IntegerLiteral">0</FONT>; j--) {
+<A NAME="482"></A>                g.drawString(commentsSW[j], (i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + margin, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">256</FONT> - margin - (lHeight + lSpacing) * j);
+<A NAME="483"></A>
+<A NAME="484"></A>                <FONT ID="SingleLineComment">// g.drawString(commentsSW[j], (i/2)*256 + 5, (i%2)*256 + 256 - 8 - 10*j);
+<A NAME="485"></A></FONT>              } 
+<A NAME="486"></A>            } 
+<A NAME="487"></A>
+<A NAME="488"></A>            commentsNE = ip.getTextNE();
+<A NAME="489"></A>            <FONT ID="If">if</FONT> (commentsNE != <FONT ID="Null">null</FONT>) {
+<A NAME="490"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsNE.length; j++) {
+<A NAME="491"></A>                stringWidth = (<FONT ID="Int">int</FONT>) myFontMetrics.getStringBounds(commentsNE[j], g).getWidth();
+<A NAME="492"></A>                g.drawString(commentsNE[j], ((i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>) + <FONT ID="IntegerLiteral">256</FONT> - margin - stringWidth, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + (lHeight + lSpacing) * (j + <FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="493"></A>
+<A NAME="494"></A>                <FONT ID="SingleLineComment">// g.drawString(commentsNE[j], ((i/2)*256)+152, (i%2)*256 + +10 + 10*j);
+<A NAME="495"></A></FONT>              } 
+<A NAME="496"></A>            } 
+<A NAME="497"></A>
+<A NAME="498"></A>            commentsSE = ip.getTextSE();
+<A NAME="499"></A>            <FONT ID="If">if</FONT> (commentsSE != <FONT ID="Null">null</FONT>) {
+<A NAME="500"></A>              <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = commentsSE.length - <FONT ID="IntegerLiteral">1</FONT>; j &gt;= <FONT ID="IntegerLiteral">0</FONT>; j--) {
+<A NAME="501"></A>                stringWidth = (<FONT ID="Int">int</FONT>) myFontMetrics.getStringBounds(commentsSE[j], g).getWidth();
+<A NAME="502"></A>                g.drawString(commentsSE[j], ((i % <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT>) + <FONT ID="IntegerLiteral">256</FONT> - margin - stringWidth, (i / <FONT ID="IntegerLiteral">2</FONT>) * <FONT ID="IntegerLiteral">256</FONT> + <FONT ID="IntegerLiteral">256</FONT> - margin - (lHeight + lSpacing) * j);
+<A NAME="503"></A>
+<A NAME="504"></A>                <FONT ID="SingleLineComment">// g.drawString(commentsSE[j], ((i/2)*256)+152, (i%2)*256 + 256 - 8 - 10*j);
+<A NAME="505"></A></FONT>              } 
+<A NAME="506"></A>            } 
+<A NAME="507"></A>
+<A NAME="508"></A>
+<A NAME="509"></A>          } 
+<A NAME="510"></A>        } 
+<A NAME="511"></A>
+<A NAME="512"></A>      } <FONT ID="Else">else</FONT> {
+<A NAME="513"></A>
+<A NAME="514"></A>        <FONT ID="SingleLineComment">// ///////////////////////////////////////////////
+<A NAME="515"></A></FONT>        <FONT ID="SingleLineComment">// 
+<A NAME="516"></A></FONT>        <FONT ID="SingleLineComment">// Falls 1 Bild dargestellt wird
+<A NAME="517"></A></FONT>        <FONT ID="SingleLineComment">// 
+<A NAME="518"></A></FONT>        <FONT ID="SingleLineComment">// ///////////////////////////////////////////////
+<A NAME="519"></A></FONT>
+<A NAME="520"></A>        g.setFont(<FONT ID="New">new</FONT> Font(<FONT ID="StringLiteral">"Arial"</FONT>, Font.PLAIN, <FONT ID="IntegerLiteral">12</FONT>));
+<A NAME="521"></A>
+<A NAME="522"></A>        <FONT ID="SingleLineComment">// th 2002.11.1
+<A NAME="523"></A></FONT>        myFontMetrics = g.getFontMetrics();
+<A NAME="524"></A>        lHeight = myFontMetrics.getHeight();
+<A NAME="525"></A>        lSpacing = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="526"></A>        margin = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="527"></A>
+<A NAME="528"></A>        <FONT ID="Int">int</FONT> off = getSBOffset();
+<A NAME="529"></A>
+<A NAME="530"></A>        ip = is.getPictureAtPos(off + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="531"></A>        <FONT ID="If">if</FONT> (ip != <FONT ID="Null">null</FONT>) {
+<A NAME="532"></A>
+<A NAME="533"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Kommentare
+<A NAME="534"></A></FONT>          commentsNW = ip.getTextNW();
+<A NAME="535"></A>
+<A NAME="536"></A>          <FONT ID="SingleLineComment">// Einzeichnen der Bildnummer
+<A NAME="537"></A></FONT>          g.drawString(frameRsrc.getString(<FONT ID="StringLiteral">"mrtpanel.text.nw.image"</FONT>) + <FONT ID="StringLiteral">" "</FONT> + (off + <FONT ID="IntegerLiteral">1</FONT>), margin, lHeight + lSpacing);
+<A NAME="538"></A>          <FONT ID="If">if</FONT> (commentsNW != <FONT ID="Null">null</FONT>) {
+<A NAME="539"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsNW.length; j++) {
+<A NAME="540"></A>
+<A NAME="541"></A>              <FONT ID="SingleLineComment">// Erste Zeile ist die Bildnummer
+<A NAME="542"></A></FONT>              g.drawString(commentsNW[j], margin, (lHeight + lSpacing) * (j + <FONT ID="IntegerLiteral">2</FONT>));
+<A NAME="543"></A>            } 
+<A NAME="544"></A>          } 
+<A NAME="545"></A>
+<A NAME="546"></A>          commentsSW = ip.getTextSW();
+<A NAME="547"></A>          <FONT ID="If">if</FONT> (commentsSW != <FONT ID="Null">null</FONT>) {
+<A NAME="548"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = commentsSW.length - <FONT ID="IntegerLiteral">1</FONT>; j &gt;= <FONT ID="IntegerLiteral">0</FONT>; j--) {
+<A NAME="549"></A>              g.drawString(commentsSW[j], margin, <FONT ID="IntegerLiteral">512</FONT> - margin - (lHeight + lSpacing) * j);
+<A NAME="550"></A>            } 
+<A NAME="551"></A>          } 
+<A NAME="552"></A>
+<A NAME="553"></A>          commentsNE = ip.getTextNE();
+<A NAME="554"></A>          <FONT ID="If">if</FONT> (commentsNE != <FONT ID="Null">null</FONT>) {
+<A NAME="555"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; commentsNE.length; j++) {
+<A NAME="556"></A>              stringWidth = (<FONT ID="Int">int</FONT>) myFontMetrics.getStringBounds(commentsNE[j], g).getWidth();
+<A NAME="557"></A>              g.drawString(commentsNE[j], <FONT ID="IntegerLiteral">512</FONT> - margin - stringWidth, (lHeight + lSpacing) * (j + <FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="558"></A>            } 
+<A NAME="559"></A>          } 
+<A NAME="560"></A>
+<A NAME="561"></A>          commentsSE = ip.getTextSE();
+<A NAME="562"></A>          <FONT ID="If">if</FONT> (commentsSE != <FONT ID="Null">null</FONT>) {
+<A NAME="563"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = commentsSE.length - <FONT ID="IntegerLiteral">1</FONT>; j &gt;= <FONT ID="IntegerLiteral">0</FONT>; j--) {
+<A NAME="564"></A>              stringWidth = (<FONT ID="Int">int</FONT>) myFontMetrics.getStringBounds(commentsSE[j], g).getWidth();
+<A NAME="565"></A>              g.drawString(commentsSE[j], <FONT ID="IntegerLiteral">512</FONT> - margin - stringWidth, <FONT ID="IntegerLiteral">512</FONT> - margin - (lHeight + lSpacing) * j);
+<A NAME="566"></A>            } 
+<A NAME="567"></A>          } 
+<A NAME="568"></A>
+<A NAME="569"></A>        }   <FONT ID="SingleLineComment">// Ende if (ip != null)
+<A NAME="570"></A></FONT>       }    <FONT ID="SingleLineComment">// Ende if (numImages)
+<A NAME="571"></A></FONT>     }      <FONT ID="SingleLineComment">// Ende if tb_ImageText gedrueckt
+<A NAME="572"></A></FONT> 
+<A NAME="573"></A>  }         <FONT ID="SingleLineComment">// Methode paint
+<A NAME="574"></A></FONT> 
+<A NAME="575"></A>}
+<A NAME="576"></A>
+<A NAME="577"></A>
+<A NAME="578"></A>
+<A NAME="579"></A>
+<A NAME="580"></A>
+<A NAME="581"></A>
+<A NAME="582"></A><FONT ID="MultiLineComment">/*--- formatting done in "My Own Convention" style on 11-12-2005 ---*/</FONT>
+<A NAME="583"></A>
+<A NAME="584"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MRTPanel</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>
