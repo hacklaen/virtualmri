@@ -16,3 +16,15 @@ The current version of the simulation was presented at the RSNA 2002, 88th Scien
 * Decompress the file locally.
 	* For Windows: Run one of the batchfiles `vmrt_xx.bat`. Use your preferred language, e.g. `vmrt_en.bat` for English.
 	* For MacOS: Doubleclick the application `vmrt_mac.app`.
+
+## References
+
+Schalla C, Trümper A: Entwicklung eines virtuellen klinischen Kernspintomographen. Diplomarbeit 1999. Interner Bericht der Universität Dortmund, Fachbereich Informatik.
+
+Hackländer T, Schalla C, Trümper A, Mertens H, Hiltner J: Virtueller Kernspintomograph. 81. Deutscher Röntgenkongreß, Wiesbaden. RoFo Fortschr Geb Röntgenstr Neuen Bildgeb Verfahr 172 (2000) S135.
+
+Hacklaender T, Schalla C, Truemper A, Mertens H, Hiltner J, Cramer BM: A Virtual MR Scanner for Education. RSNA 2002, 88th Scientific Assembly and Annual Meeting, Chicago, USA. Radiology 225 (P) (2002) 757.
+
+Hackländer T, Mertens H, Cramer BM: Computersimulation eines klinischen Magnetresonanztomographen für Ausbildungszwecke. RoFo Fortschr Geb Röntgenstr Neuen Bildgeb Verfahr 176 (2004) 1151-1156
+
+Hackländer T, Mertens H: Virtual MRI: A PC based simulation of a clinical MR scanner. Acad Radiol 12,1 (2005) 85-96
