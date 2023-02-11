@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>To_Square_Image (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">To_Square_Image</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (C) 2002 Thomas Hacklaender, mailto:hacklaender@iftm.de
+<A NAME="3"></A> *
+<A NAME="4"></A> * IFTM Institut fuer Telematik in der Medizin GmbH, www.iftm.de
+<A NAME="5"></A> *
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or modify it
+<A NAME="7"></A> * under the terms of the GNU  General Public License as published by the 
+<A NAME="8"></A> * Free Software Foundation; either version 2 of the License, or (at your
+<A NAME="9"></A> * option) any later version.
+<A NAME="10"></A> *
+<A NAME="11"></A> * This library is distributed in the hope that it will be useful, but
+<A NAME="12"></A> * WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="14"></A> * Lesser General Public License for more details.
+<A NAME="15"></A> *
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software Foundation,
+<A NAME="18"></A> * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+<A NAME="19"></A> *
+<A NAME="20"></A> * http://www.gnu.org/copyleft/copyleft.html
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> ij.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> ij.plugin.*;
+<A NAME="27"></A><FONT ID="Import">import</FONT> ij.plugin.filter.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> ij.process.*;
+<A NAME="29"></A><FONT ID="Import">import</FONT> ij.gui.*;
+<A NAME="30"></A><FONT ID="Import">import</FONT> ij.measure.*;
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A><FONT ID="FormalComment">/**
+<A NAME="34"></A> * The plugin creates a new image of square size and copies the selected image 
+<A NAME="35"></A> * onto the centre of newly created image. The size of the created image 
+<A NAME="36"></A> * corresponds to the width or height of the selected image whichever is bigger.
+<A NAME="37"></A> * The plugin requires the selection of a 16 bit grayscale image.
+<A NAME="38"></A> *
+<A NAME="39"></A> * @author Thomas Hacklaender
+<A NAME="40"></A> * @version 2006-04-13
+<A NAME="41"></A> */</FONT>
+<A NAME="42"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> To_Square_Image <FONT ID="Implements">implements</FONT> PlugInFilter {
+<A NAME="43"></A>    
+<A NAME="44"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String    VERSION = <FONT ID="StringLiteral">"2.0"</FONT>;
+<A NAME="45"></A>    
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> String          title;
+<A NAME="47"></A>
+<A NAME="48"></A>    
+<A NAME="49"></A>    <FONT ID="FormalComment">/** 
+<A NAME="50"></A>     * This method is called once when the filter is loaded.
+<A NAME="51"></A>     * @param the argument specified for this plugin in IJ_Props.txt. May be blank. 
+<A NAME="52"></A>     * @param imp is the currently active image.
+<A NAME="53"></A>     * @return a flag word that specifies the filters capabilities.
+<A NAME="54"></A>     */</FONT>
+<A NAME="55"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> setup(String arg, ImagePlus imp) {
+<A NAME="56"></A>        <FONT ID="If">if</FONT> (arg.equals(<FONT ID="StringLiteral">"about"</FONT>)) {
+<A NAME="57"></A>            <FONT ID="SingleLineComment">// Nothing to do
+<A NAME="58"></A></FONT>            <FONT ID="Return">return</FONT> DONE;
+<A NAME="59"></A>        }
+<A NAME="60"></A>        
+<A NAME="61"></A>        <FONT ID="If">if</FONT> (imp != <FONT ID="Null">null</FONT>) {
+<A NAME="62"></A>            title = imp.getTitle();
+<A NAME="63"></A>        }
+<A NAME="64"></A>        
+<A NAME="65"></A>        <FONT ID="Return">return</FONT> DOES_16;
+<A NAME="66"></A>    }
+<A NAME="67"></A>    
+<A NAME="68"></A>    
+<A NAME="69"></A>    <FONT ID="FormalComment">/**
+<A NAME="70"></A>     * Filters use this method to process the image. If the SUPPORTS_STACKS flag 
+<A NAME="71"></A>     * was set, it is called for each slice in a stack. ImageJ will lock the 
+<A NAME="72"></A>     * image before calling this method and unlock it when the filter is finished.
+<A NAME="73"></A>     * @param ip the ImageProcessor of the image to process.
+<A NAME="74"></A>     */</FONT>
+<A NAME="75"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run(ImageProcessor ip) {
+<A NAME="76"></A>        <FONT ID="Int">int</FONT> size;
+<A NAME="77"></A>        ShortProcessor destination = <FONT ID="Null">null</FONT>;
+<A NAME="78"></A>        ImagePlus destination_img;
+<A NAME="79"></A>        <FONT ID="Int">int</FONT> xOffset;
+<A NAME="80"></A>        <FONT ID="Int">int</FONT> yOffset;
+<A NAME="81"></A>        
+<A NAME="82"></A>        <FONT ID="Int">int</FONT> width = ip.getWidth();
+<A NAME="83"></A>        <FONT ID="Int">int</FONT> height = ip.getHeight();
+<A NAME="84"></A>        
+<A NAME="85"></A>        <FONT ID="If">if</FONT> (width &gt; height) {
+<A NAME="86"></A>            size = width;
+<A NAME="87"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="88"></A>            size = height;
+<A NAME="89"></A>        }
+<A NAME="90"></A>        
+<A NAME="91"></A>        xOffset = (size - width) / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="92"></A>        yOffset = (size -height) / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="93"></A>        destination = <FONT ID="New">new</FONT> ShortProcessor(size, size);
+<A NAME="94"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; height; y++) {
+<A NAME="95"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x&lt; width; x++) {
+<A NAME="96"></A>                destination.putPixel(x + xOffset, y + yOffset, ip.getPixel(x, y));
+<A NAME="97"></A>            }
+<A NAME="98"></A>        }
+<A NAME="99"></A>        
+<A NAME="100"></A>        destination_img = <FONT ID="New">new</FONT> ImagePlus(title, destination);
+<A NAME="101"></A>        destination_img.show();
+<A NAME="102"></A>    }
+<A NAME="103"></A>    
+<A NAME="104"></A>}
+<A NAME="105"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">To_Square_Image</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>Full_Window (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Full_Window</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (C) 2002 Thomas Hacklaender, mailto:hacklaender@iftm.de
+<A NAME="3"></A> *
+<A NAME="4"></A> * IFTM Institut fuer Telematik in der Medizin GmbH, www.iftm.de
+<A NAME="5"></A> *
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or modify it
+<A NAME="7"></A> * under the terms of the GNU  General Public License as published by the
+<A NAME="8"></A> * Free Software Foundation; either version 2 of the License, or (at your
+<A NAME="9"></A> * option) any later version.
+<A NAME="10"></A> *
+<A NAME="11"></A> * This library is distributed in the hope that it will be useful, but
+<A NAME="12"></A> * WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="14"></A> * Lesser General Public License for more details.
+<A NAME="15"></A> *
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software Foundation,
+<A NAME="18"></A> * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+<A NAME="19"></A> *
+<A NAME="20"></A> * http://www.gnu.org/copyleft/copyleft.html
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> ij.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> ij.plugin.*;
+<A NAME="27"></A><FONT ID="Import">import</FONT> ij.plugin.filter.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> ij.process.*;
+<A NAME="29"></A><FONT ID="Import">import</FONT> ij.gui.*;
+<A NAME="30"></A><FONT ID="Import">import</FONT> ij.measure.*;
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A><FONT ID="FormalComment">/**
+<A NAME="34"></A> * The plugin sets the window of the selected image to the interval of 0 up to
+<A NAME="35"></A> * a given upper limit.
+<A NAME="36"></A> * The plugin requires the selection of a 16 bit grayscale image.
+<A NAME="37"></A> *
+<A NAME="38"></A> * @author Thomas Hacklaender
+<A NAME="39"></A> * @version 2006-04-13
+<A NAME="40"></A> */</FONT>
+<A NAME="41"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Full_Window <FONT ID="Implements">implements</FONT> PlugInFilter {
+<A NAME="42"></A>    
+<A NAME="43"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String    VERSION = <FONT ID="StringLiteral">"2.0"</FONT>;
+<A NAME="44"></A>    
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>          upperLimit = <FONT ID="FloatPointLiteral">1000.0</FONT>;
+<A NAME="46"></A>    
+<A NAME="47"></A>    
+<A NAME="48"></A>    <FONT ID="FormalComment">/**
+<A NAME="49"></A>     * This method is called once when the filter is loaded.
+<A NAME="50"></A>     * @param the argument specified for this plugin in IJ_Props.txt. May be blank.
+<A NAME="51"></A>     * @param imp is the currently active image.
+<A NAME="52"></A>     * @return a flag word that specifies the filters capabilities.
+<A NAME="53"></A>     */</FONT>
+<A NAME="54"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> setup(String arg, ImagePlus imp) {
+<A NAME="55"></A>        <FONT ID="If">if</FONT> (arg.equals(<FONT ID="StringLiteral">"about"</FONT>)) {
+<A NAME="56"></A>            <FONT ID="SingleLineComment">// Nothing to do
+<A NAME="57"></A></FONT>            <FONT ID="Return">return</FONT> DONE;
+<A NAME="58"></A>        }
+<A NAME="59"></A>        
+<A NAME="60"></A>        <FONT ID="Return">return</FONT> DOES_16;
+<A NAME="61"></A>    }
+<A NAME="62"></A>    
+<A NAME="63"></A>    
+<A NAME="64"></A>    <FONT ID="FormalComment">/**
+<A NAME="65"></A>     * Filters use this method to process the image. If the SUPPORTS_STACKS flag
+<A NAME="66"></A>     * was set, it is called for each slice in a stack. ImageJ will lock the
+<A NAME="67"></A>     * image before calling this method and unlock it when the filter is finished.
+<A NAME="68"></A>     * @param ip the ImageProcessor of the image to process.
+<A NAME="69"></A>     */</FONT>
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run(ImageProcessor theIP) {
+<A NAME="71"></A>        
+<A NAME="72"></A>        <FONT ID="If">if</FONT> (! getParameter()) <FONT ID="Return">return</FONT>;
+<A NAME="73"></A>        
+<A NAME="74"></A>        theIP.setMinAndMax(<FONT ID="FloatPointLiteral">0.0</FONT>, upperLimit);
+<A NAME="75"></A>    }
+<A NAME="76"></A>    
+<A NAME="77"></A>    
+<A NAME="78"></A>    <FONT ID="FormalComment">/**
+<A NAME="79"></A>     * Displays a dialog box for input of user data.
+<A NAME="80"></A>     * @return true, if data were entered; false if the dialog box was canceled.
+<A NAME="81"></A>     */</FONT>
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> getParameter() {
+<A NAME="83"></A>        GenericDialog gd = <FONT ID="New">new</FONT> GenericDialog(<FONT ID="StringLiteral">"Full Window: Ver. "</FONT> + VERSION);
+<A NAME="84"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Upper Limit:"</FONT>, upperLimit, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="85"></A>        gd.showDialog();
+<A NAME="86"></A>        <FONT ID="If">if</FONT> (gd.wasCanceled())
+<A NAME="87"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="88"></A>        upperLimit = gd.getNextNumber();
+<A NAME="89"></A>        
+<A NAME="90"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="91"></A>    }
+<A NAME="92"></A>    
+<A NAME="93"></A>}
+<A NAME="94"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Full_Window</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

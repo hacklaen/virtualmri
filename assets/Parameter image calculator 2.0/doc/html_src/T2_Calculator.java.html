@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>T2_Calculator (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">T2_Calculator</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (C) 2002 Thomas Hacklaender, mailto:hacklaender@iftm.de
+<A NAME="3"></A> *
+<A NAME="4"></A> * IFTM Institut fuer Telematik in der Medizin GmbH, www.iftm.de
+<A NAME="5"></A> *
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or modify it
+<A NAME="7"></A> * under the terms of the GNU  General Public License as published by the 
+<A NAME="8"></A> * Free Software Foundation; either version 2 of the License, or (at your
+<A NAME="9"></A> * option) any later version.
+<A NAME="10"></A> *
+<A NAME="11"></A> * This library is distributed in the hope that it will be useful, but
+<A NAME="12"></A> * WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="14"></A> * Lesser General Public License for more details.
+<A NAME="15"></A> *
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software Foundation,
+<A NAME="18"></A> * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+<A NAME="19"></A> *
+<A NAME="20"></A> * http://www.gnu.org/copyleft/copyleft.html
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> ij.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> ij.plugin.*;
+<A NAME="27"></A><FONT ID="Import">import</FONT> ij.plugin.filter.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> ij.process.*;
+<A NAME="29"></A><FONT ID="Import">import</FONT> ij.gui.*;
+<A NAME="30"></A><FONT ID="Import">import</FONT> ij.measure.*;
+<A NAME="31"></A>
+<A NAME="32"></A><FONT ID="FormalComment">/**
+<A NAME="33"></A> * The plugin calculates a T2 and proton density parameter images from images of 
+<A NAME="34"></A> * real world MR examinations.
+<A NAME="35"></A> * It is assumed, that a multi-echo Spin-Echo sequence was used for examination.
+<A NAME="36"></A> * The T2 parameter image contains the T2 relaxation time of each pixel measured 
+<A NAME="37"></A> * in milliseconds. The pixel values are limited to the interval from 0 to 8000.
+<A NAME="38"></A> * The PD parameter image contains the proton density of each pixel measured in 
+<A NAME="39"></A> * (percent * 10). The pixel values are limited to the interval from 0 to 1000.
+<A NAME="40"></A> * The plugin requires the selection of a stack of at least three 16 bit grayscale images.
+<A NAME="41"></A> *
+<A NAME="42"></A> * @author Thomas Hacklaender
+<A NAME="43"></A> * @version 2006-04-13
+<A NAME="44"></A> */</FONT>
+<A NAME="45"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> T2_Calculator <FONT ID="Implements">implements</FONT> PlugInFilter {
+<A NAME="46"></A>    
+<A NAME="47"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String    VERSION = <FONT ID="StringLiteral">"2.0"</FONT>;
+<A NAME="48"></A>    
+<A NAME="49"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>          tr = <FONT ID="FloatPointLiteral">5000.0</FONT>;
+<A NAME="50"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>          teFirst = <FONT ID="FloatPointLiteral">20.0</FONT>;
+<A NAME="51"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>          teStep = <FONT ID="FloatPointLiteral">20.0</FONT>;
+<A NAME="52"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>          alpha = <FONT ID="FloatPointLiteral">90.0</FONT>;
+<A NAME="53"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             backgroundSignal = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="54"></A>    <FONT ID="Private">private</FONT> ImageStack      stack = <FONT ID="Null">null</FONT>;
+<A NAME="55"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             width = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="56"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             height = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="57"></A>    <FONT ID="Private">private</FONT> ShortProcessor  t2Result;
+<A NAME="58"></A>    <FONT ID="Private">private</FONT> ShortProcessor  pdResult;
+<A NAME="59"></A>    
+<A NAME="60"></A>    
+<A NAME="61"></A>    <FONT ID="FormalComment">/** 
+<A NAME="62"></A>     * This method is called once when the filter is loaded.
+<A NAME="63"></A>     * @param the argument specified for this plugin in IJ_Props.txt. May be blank. 
+<A NAME="64"></A>     * @param imp is the currently active image.
+<A NAME="65"></A>     * @return a flag word that specifies the filters capabilities.
+<A NAME="66"></A>     */</FONT>
+<A NAME="67"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> setup(String arg, ImagePlus imp) {
+<A NAME="68"></A>        <FONT ID="If">if</FONT> (arg.equals(<FONT ID="StringLiteral">"about"</FONT>)) {
+<A NAME="69"></A>            <FONT ID="SingleLineComment">// Nothing to do
+<A NAME="70"></A></FONT>            <FONT ID="Return">return</FONT> DONE;
+<A NAME="71"></A>        }
+<A NAME="72"></A>        
+<A NAME="73"></A>        <FONT ID="If">if</FONT> (imp != <FONT ID="Null">null</FONT>) {
+<A NAME="74"></A>            stack = imp.getStack();
+<A NAME="75"></A>        }
+<A NAME="76"></A>        
+<A NAME="77"></A>        <FONT ID="Return">return</FONT> DOES_16 + STACK_REQUIRED;
+<A NAME="78"></A>    }
+<A NAME="79"></A>    
+<A NAME="80"></A>    
+<A NAME="81"></A>    <FONT ID="FormalComment">/**
+<A NAME="82"></A>     * Filters use this method to process the image. If the SUPPORTS_STACKS flag 
+<A NAME="83"></A>     * was set, it is called for each slice in a stack. ImageJ will lock the 
+<A NAME="84"></A>     * image before calling this method and unlock it when the filter is finished.
+<A NAME="85"></A>     * @param ip the ImageProcessor of the image to process.
+<A NAME="86"></A>     */</FONT>
+<A NAME="87"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run(ImageProcessor ip) {
+<A NAME="88"></A>        ImagePlus t2_img;
+<A NAME="89"></A>        ImagePlus pd_img;
+<A NAME="90"></A>        
+<A NAME="91"></A>        <FONT ID="If">if</FONT> (stack.getSize() &lt; <FONT ID="IntegerLiteral">3</FONT>) {
+<A NAME="92"></A>            IJ.showMessage(<FONT ID="StringLiteral">"At least 3 slices required."</FONT>);
+<A NAME="93"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="94"></A>        }
+<A NAME="95"></A>        
+<A NAME="96"></A>        <FONT ID="If">if</FONT> (! getParameter()) <FONT ID="Return">return</FONT>;
+<A NAME="97"></A>        
+<A NAME="98"></A>        <FONT ID="If">if</FONT> (stack == <FONT ID="Null">null</FONT>) <FONT ID="Return">return</FONT>;
+<A NAME="99"></A>        
+<A NAME="100"></A>        width = stack.getWidth();
+<A NAME="101"></A>        height = stack.getHeight();
+<A NAME="102"></A>        t2Result = <FONT ID="New">new</FONT> ShortProcessor(width, height);
+<A NAME="103"></A>        pdResult = <FONT ID="New">new</FONT> ShortProcessor(width, height);
+<A NAME="104"></A>        
+<A NAME="105"></A>        calculate();
+<A NAME="106"></A>        
+<A NAME="107"></A>        t2Result.setMinAndMax(<FONT ID="FloatPointLiteral">0.0</FONT>, <FONT ID="FloatPointLiteral">500.0</FONT>);
+<A NAME="108"></A>        pdResult.setMinAndMax(<FONT ID="FloatPointLiteral">0.0</FONT>, <FONT ID="FloatPointLiteral">1000.0</FONT>);
+<A NAME="109"></A>        
+<A NAME="110"></A>        pd_img = <FONT ID="New">new</FONT> ImagePlus(<FONT ID="StringLiteral">"pd"</FONT>, pdResult);
+<A NAME="111"></A>        pd_img.show();
+<A NAME="112"></A>        t2_img = <FONT ID="New">new</FONT> ImagePlus(<FONT ID="StringLiteral">"t2"</FONT>, t2Result);
+<A NAME="113"></A>        t2_img.show();
+<A NAME="114"></A>    }
+<A NAME="115"></A>    
+<A NAME="116"></A>    
+<A NAME="117"></A>    <FONT ID="FormalComment">/**
+<A NAME="118"></A>     * This methodes does the calculation of the parameter image.
+<A NAME="119"></A>     */</FONT>
+<A NAME="120"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> calculate() {
+<A NAME="121"></A>        <FONT ID="Int">int</FONT>         numSlices = stack.getSize();
+<A NAME="122"></A>        <FONT ID="Double">double</FONT>[][]  samples = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[numSlices][<FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="123"></A>        <FONT ID="Double">double</FONT>[]    weights = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[numSlices];
+<A NAME="124"></A>        <FONT ID="Double">double</FONT>[]    solution = <FONT ID="Null">null</FONT>;
+<A NAME="125"></A>        <FONT ID="Int">int</FONT>         signal;
+<A NAME="126"></A>        <FONT ID="Double">double</FONT>      meanSignal;
+<A NAME="127"></A>        <FONT ID="Double">double</FONT>      t2;
+<A NAME="128"></A>        <FONT ID="Double">double</FONT>      pd;
+<A NAME="129"></A>        <A HREF="LeastSquare.java.html">LeastSquare</A> ls = <FONT ID="New">new</FONT> <A HREF="LeastSquare.java.html">LeastSquare</A>();
+<A NAME="130"></A>        <FONT ID="Double">double</FONT>[][]  pdRaw = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[width][height];
+<A NAME="131"></A>               
+<A NAME="132"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; height; y++) {
+<A NAME="133"></A>            
+<A NAME="134"></A>            IJ.showProgress(y, height);
+<A NAME="135"></A>            
+<A NAME="136"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x&lt; width; x++) {
+<A NAME="137"></A>                meanSignal = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="138"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> slice = <FONT ID="IntegerLiteral">1</FONT>; slice &lt; numSlices; slice++) {
+<A NAME="139"></A>                    <FONT ID="SingleLineComment">// TE
+<A NAME="140"></A></FONT>                    samples[slice][<FONT ID="IntegerLiteral">0</FONT>] = teFirst + (slice - <FONT ID="IntegerLiteral">1</FONT>)* teStep;
+<A NAME="141"></A>                    <FONT ID="SingleLineComment">// Signal intensity
+<A NAME="142"></A></FONT>                    signal = stack.getProcessor(slice).getPixel(x, y);
+<A NAME="143"></A>                    meanSignal += signal;
+<A NAME="144"></A>                    samples[slice][<FONT ID="IntegerLiteral">1</FONT>] = Math.log((<FONT ID="Double">double</FONT>) signal);
+<A NAME="145"></A>                    <FONT ID="SingleLineComment">// No weighting of samples
+<A NAME="146"></A></FONT>                    weights[slice] = <FONT ID="FloatPointLiteral">1.0</FONT>;
+<A NAME="147"></A>                }
+<A NAME="148"></A>                meanSignal /= numSlices;
+<A NAME="149"></A>                <FONT ID="If">if</FONT> (meanSignal &lt; backgroundSignal) <FONT ID="Continue">continue</FONT>;
+<A NAME="150"></A>                
+<A NAME="151"></A>                ls.setSample(samples);
+<A NAME="152"></A>                ls.setWeights(weights);
+<A NAME="153"></A>                ls.normalizeWeights();
+<A NAME="154"></A>                ls.calculate();
+<A NAME="155"></A>                solution = ls.getSolution();
+<A NAME="156"></A>                
+<A NAME="157"></A>                <FONT ID="SingleLineComment">// b
+<A NAME="158"></A></FONT>                pdRaw[x][y] = Math.exp(solution[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="159"></A>                
+<A NAME="160"></A>                <FONT ID="SingleLineComment">// m
+<A NAME="161"></A></FONT>                t2 = -<FONT ID="FloatPointLiteral">1.0</FONT> / solution[<FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="162"></A>                
+<A NAME="163"></A>                <FONT ID="SingleLineComment">// T2 must be positive
+<A NAME="164"></A></FONT>                <FONT ID="If">if</FONT> (t2 &lt; <FONT ID="FloatPointLiteral">0.0</FONT>) {
+<A NAME="165"></A>                    t2 = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="166"></A>                }
+<A NAME="167"></A>                <FONT ID="SingleLineComment">// T2 must be smaller than 8000 ms. Physiological the limit is 3600 ms.
+<A NAME="168"></A></FONT>                <FONT ID="If">if</FONT> (t2 &gt; <FONT ID="FloatPointLiteral">8000.0</FONT>) {
+<A NAME="169"></A>                    t2 = <FONT ID="FloatPointLiteral">8000.0</FONT>;
+<A NAME="170"></A>                }
+<A NAME="171"></A>                t2Result.putPixel(x, y, (<FONT ID="Int">int</FONT>) t2);
+<A NAME="172"></A>            }
+<A NAME="173"></A>            
+<A NAME="174"></A>            <FONT ID="SingleLineComment">// Guess PD
+<A NAME="175"></A></FONT>            <FONT ID="Double">double</FONT> max = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="176"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x&lt; width; x++) {
+<A NAME="177"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> slice = <FONT ID="IntegerLiteral">1</FONT>; slice &lt; numSlices; slice++) {
+<A NAME="178"></A>                    <FONT ID="If">if</FONT> (pdRaw[x][y] &gt; max) max = pdRaw[x][y];
+<A NAME="179"></A>                }
+<A NAME="180"></A>            }
+<A NAME="181"></A>            <FONT ID="Double">double</FONT> factor = <FONT ID="FloatPointLiteral">1000.0</FONT> / max;
+<A NAME="182"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x&lt; width; x++) {
+<A NAME="183"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> slice = <FONT ID="IntegerLiteral">1</FONT>; slice &lt; numSlices; slice++) {
+<A NAME="184"></A>                    pd = pdRaw[x][y] * factor;
+<A NAME="185"></A>                    <FONT ID="SingleLineComment">// pd must be positive
+<A NAME="186"></A></FONT>                    <FONT ID="If">if</FONT> (pd &lt; <FONT ID="FloatPointLiteral">0.0</FONT>) {
+<A NAME="187"></A>                        pd = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="188"></A>                    }
+<A NAME="189"></A>                    <FONT ID="SingleLineComment">// pd must be smaller than 100
+<A NAME="190"></A></FONT>                    <FONT ID="If">if</FONT> (pd &gt; <FONT ID="FloatPointLiteral">1000.0</FONT>) {
+<A NAME="191"></A>                        pd = <FONT ID="FloatPointLiteral">1000.0</FONT>;
+<A NAME="192"></A>                    }
+<A NAME="193"></A>                    pdResult.putPixel(x, y, (<FONT ID="Int">int</FONT>) pd);
+<A NAME="194"></A>                }
+<A NAME="195"></A>            }
+<A NAME="196"></A>        }
+<A NAME="197"></A>    }
+<A NAME="198"></A>    
+<A NAME="199"></A>    
+<A NAME="200"></A>    <FONT ID="FormalComment">/**
+<A NAME="201"></A>     * Calculates the background signal intensity of the image.
+<A NAME="202"></A>     * @return the background signal intensity.
+<A NAME="203"></A>     */</FONT>
+<A NAME="204"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT> calculateBackground() {
+<A NAME="205"></A>        <FONT ID="Int">int</FONT>     n = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="206"></A>        <FONT ID="Double">double</FONT>  mean = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="207"></A>        
+<A NAME="208"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> slice = <FONT ID="IntegerLiteral">1</FONT>; slice &lt; stack.getSize(); slice++) {
+<A NAME="209"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; <FONT ID="IntegerLiteral">20</FONT>; y++) {
+<A NAME="210"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x&lt; <FONT ID="IntegerLiteral">20</FONT>; x++) {
+<A NAME="211"></A>                    mean += stack.getProcessor(slice).getPixel(x, y);
+<A NAME="212"></A>                    n++;
+<A NAME="213"></A>                }
+<A NAME="214"></A>            }
+<A NAME="215"></A>        }
+<A NAME="216"></A>        mean /= n;
+<A NAME="217"></A>        
+<A NAME="218"></A>        <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">2</FONT> * mean;
+<A NAME="219"></A>    }
+<A NAME="220"></A>    
+<A NAME="221"></A>    
+<A NAME="222"></A>    <FONT ID="FormalComment">/**
+<A NAME="223"></A>     * Displays a dialog box for input of user data.
+<A NAME="224"></A>     * @return true, if data were entered; false if the dialog box was canceled.
+<A NAME="225"></A>     */</FONT>
+<A NAME="226"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> getParameter() {
+<A NAME="227"></A>        GenericDialog gd = <FONT ID="New">new</FONT> GenericDialog(<FONT ID="StringLiteral">"T2 Calculator: Ver. "</FONT> + VERSION);
+<A NAME="228"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Repetion Time TR:"</FONT>, tr, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="229"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Echo Time First Echo TEfirst:"</FONT>, teFirst, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="230"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Increment of Echo Time"</FONT>, teStep, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="231"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Flip Angle:"</FONT>, alpha, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="232"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Background Signal Intensity:"</FONT>, calculateBackground(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="233"></A>        gd.showDialog();
+<A NAME="234"></A>        <FONT ID="If">if</FONT> (gd.wasCanceled())
+<A NAME="235"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="236"></A>        tr = gd.getNextNumber();
+<A NAME="237"></A>        teFirst = gd.getNextNumber();
+<A NAME="238"></A>        teStep = gd.getNextNumber();
+<A NAME="239"></A>        alpha = gd.getNextNumber();
+<A NAME="240"></A>        backgroundSignal = (<FONT ID="Int">int</FONT>) gd.getNextNumber();
+<A NAME="241"></A>        
+<A NAME="242"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="243"></A>    }
+<A NAME="244"></A>    
+<A NAME="245"></A>    
+<A NAME="246"></A>}</pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">T2_Calculator</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

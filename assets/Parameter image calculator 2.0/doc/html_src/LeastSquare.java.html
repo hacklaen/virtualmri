@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>LeastSquare (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">LeastSquare</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (C) 1999 Christian Schalla, Andreas Truemper
+<A NAME="3"></A> *
+<A NAME="4"></A> * This library is free software; you can redistribute it and/or modify it
+<A NAME="5"></A> * under the terms of the GNU  General Public License as published by the
+<A NAME="6"></A> * Free Software Foundation; either version 2 of the License, or (at your
+<A NAME="7"></A> * option) any later version.
+<A NAME="8"></A> *
+<A NAME="9"></A> * This library is distributed in the hope that it will be useful, but
+<A NAME="10"></A> * WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="11"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="12"></A> * Lesser General Public License for more details.
+<A NAME="13"></A> *
+<A NAME="14"></A> * You should have received a copy of the GNU General Public License
+<A NAME="15"></A> * along with this program; if not, write to the Free Software Foundation,
+<A NAME="16"></A> * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+<A NAME="17"></A> *
+<A NAME="18"></A> * http://www.gnu.org/copyleft/copyleft.html
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="Import">import</FONT> ij.*;
+<A NAME="22"></A>
+<A NAME="23"></A>
+<A NAME="24"></A><FONT ID="FormalComment">/**
+<A NAME="25"></A> * This class calculates a linear least square fit to a given matrix of value.&lt;br&gt;
+<A NAME="26"></A> * References:&lt;br&gt;
+<A NAME="27"></A> * R. Sedgewick           : "Algorithmen in C"&lt;br&gt;
+<A NAME="28"></A> * Conte, de Boor       : "Elementary Numerical Analysis"&lt;br&gt;
+<A NAME="29"></A> * Rivest, Corhen Leiserson   : "Introduction to Algorithms"&lt;br&gt;
+<A NAME="30"></A> * Gene H. Holub, C. Van Loan : "Matrix Computations"&lt;br&gt;
+<A NAME="31"></A> * Forsythe           : "Computer-Verfahren"&lt;br&gt;
+<A NAME="32"></A> * &lt;br&gt;
+<A NAME="33"></A> * Modifications:&lt;br&gt;
+<A NAME="34"></A> * Thomas Hacklaender 2002-11-2:
+<A NAME="35"></A> * Umstellung auf die Package-Hirarchie de.iftm.ij.plugins.vmrt.* &lt;br&gt;
+<A NAME="36"></A> * Thomas Hacklaender 2000-05-10:
+<A NAME="37"></A> * Textausgabe in ImageJ statt Debug-Window. &lt;br&gt;
+<A NAME="38"></A> *
+<A NAME="39"></A> * @author   Christian Schalla
+<A NAME="40"></A> * @author   Andreas Truemper
+<A NAME="41"></A> * @version  2002-11-02, 1.2
+<A NAME="42"></A> */</FONT>
+<A NAME="43"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> LeastSquare {
+<A NAME="44"></A>    
+<A NAME="45"></A>    <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT>  DEBUG_MODE = <FONT ID="False">false</FONT>;
+<A NAME="46"></A>    
+<A NAME="47"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[][]    samples;
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[]    weights;
+<A NAME="49"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[][]    leastsquarematrix;
+<A NAME="50"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[][]    vectors;
+<A NAME="51"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>[]    solution;
+<A NAME="52"></A>    
+<A NAME="53"></A>    
+<A NAME="54"></A>    <FONT ID="FormalComment">/**
+<A NAME="55"></A>     * Constructor declaration.
+<A NAME="56"></A>     */</FONT>
+<A NAME="57"></A>    <FONT ID="Public">public</FONT> LeastSquare() {}
+<A NAME="58"></A>    
+<A NAME="59"></A>    
+<A NAME="60"></A>    <FONT ID="FormalComment">/**
+<A NAME="61"></A>     * Sets the matrix of input pairs x, y.
+<A NAME="62"></A>     *
+<A NAME="63"></A>     * @param sam the matrix of input pairs [x][y]
+<A NAME="64"></A>     */</FONT>
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setSample(<FONT ID="Double">double</FONT>[][] sam) {
+<A NAME="66"></A>        samples = sam;
+<A NAME="67"></A>    }
+<A NAME="68"></A>    
+<A NAME="69"></A>    
+<A NAME="70"></A>    <FONT ID="FormalComment">/**
+<A NAME="71"></A>     * Sets the vector of weights for the input pairs.
+<A NAME="72"></A>     *
+<A NAME="73"></A>     * @param w the vector of weights for the input pairs.
+<A NAME="74"></A>     */</FONT>
+<A NAME="75"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setWeights(<FONT ID="Double">double</FONT> w[]) {
+<A NAME="76"></A>        weights = w;
+<A NAME="77"></A>    }
+<A NAME="78"></A>    
+<A NAME="79"></A>    
+<A NAME="80"></A>    <FONT ID="FormalComment">/**
+<A NAME="81"></A>     * Performes the linear least square fit to the given input pairs. The fit
+<A NAME="82"></A>     * is of the form y(x) = m * x + b
+<A NAME="83"></A>     *
+<A NAME="84"></A>     */</FONT>
+<A NAME="85"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> calculate() {
+<A NAME="86"></A>        createLeastSquareMatrix();
+<A NAME="87"></A>        eliminate();
+<A NAME="88"></A>        substitute();
+<A NAME="89"></A>    }
+<A NAME="90"></A>    
+<A NAME="91"></A>    
+<A NAME="92"></A>    <FONT ID="FormalComment">/**
+<A NAME="93"></A>     * Returns the result of the linear least square fit to y(x) = m * x + b.
+<A NAME="94"></A>     *
+<A NAME="95"></A>     * @return [0] parameter b, [1] parameter m.
+<A NAME="96"></A>     */</FONT>
+<A NAME="97"></A>    <FONT ID="Public">public</FONT> <FONT ID="Double">double</FONT>[] getSolution() {
+<A NAME="98"></A>        <FONT ID="Return">return</FONT> solution;
+<A NAME="99"></A>    }
+<A NAME="100"></A>    
+<A NAME="101"></A>    
+<A NAME="102"></A>    <FONT ID="FormalComment">/**
+<A NAME="103"></A>     * Method declaration
+<A NAME="104"></A>     *
+<A NAME="105"></A>     */</FONT>
+<A NAME="106"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> normalizeWeights() {
+<A NAME="107"></A>        <FONT ID="Double">double</FONT>  sum = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="108"></A>        
+<A NAME="109"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; weights.length; i++) {
+<A NAME="110"></A>            sum += weights[i];
+<A NAME="111"></A>        }
+<A NAME="112"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; weights.length; i++) {
+<A NAME="113"></A>            weights[i] = weights[i] / sum;
+<A NAME="114"></A>        }
+<A NAME="115"></A>    }
+<A NAME="116"></A>    
+<A NAME="117"></A>    
+<A NAME="118"></A>    <FONT ID="FormalComment">/**
+<A NAME="119"></A>     * Method declaration
+<A NAME="120"></A>     *
+<A NAME="121"></A>     */</FONT>
+<A NAME="122"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createLeastSquareMatrix() {
+<A NAME="123"></A>        leastsquarematrix = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[<FONT ID="IntegerLiteral">2</FONT>][<FONT ID="IntegerLiteral">3</FONT>];
+<A NAME="124"></A>        <FONT ID="Int">int</FONT> M = <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="125"></A>        <FONT ID="Int">int</FONT> N = samples.length;
+<A NAME="126"></A>        
+<A NAME="127"></A>        fillvectors();
+<A NAME="128"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; M; i++) {
+<A NAME="129"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; M + <FONT ID="IntegerLiteral">1</FONT>; j++) {
+<A NAME="130"></A>                <FONT ID="Double">double</FONT>  t = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="131"></A>                
+<A NAME="132"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> k = <FONT ID="IntegerLiteral">0</FONT>; k &lt; N; k++) {
+<A NAME="133"></A>                    t += vectors[i][k] * vectors[j][k] * weights[k];
+<A NAME="134"></A>                }
+<A NAME="135"></A>                leastsquarematrix[i][j] = t;
+<A NAME="136"></A>            }
+<A NAME="137"></A>        }
+<A NAME="138"></A>        <FONT ID="If">if</FONT> (DEBUG_MODE) {
+<A NAME="139"></A>            printMatrix(leastsquarematrix);
+<A NAME="140"></A>        }
+<A NAME="141"></A>    }
+<A NAME="142"></A>    
+<A NAME="143"></A>    
+<A NAME="144"></A>    <FONT ID="FormalComment">/**
+<A NAME="145"></A>     * Method declaration
+<A NAME="146"></A>     *
+<A NAME="147"></A>     */</FONT>
+<A NAME="148"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> fillvectors() {
+<A NAME="149"></A>        
+<A NAME="150"></A>        <FONT ID="SingleLineComment">// Hilfsmethode:
+<A NAME="151"></A></FONT>        <FONT ID="SingleLineComment">// Erstelle die Vektoren zum Füllen der Matrix
+<A NAME="152"></A></FONT>        vectors = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[<FONT ID="IntegerLiteral">3</FONT>][samples.length];
+<A NAME="153"></A>        <FONT ID="Int">int</FONT> i, j;
+<A NAME="154"></A>        
+<A NAME="155"></A>        <FONT ID="SingleLineComment">// Werte für die 0-te Potenz (alle auf 1)
+<A NAME="156"></A></FONT>        <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; vectors[<FONT ID="IntegerLiteral">0</FONT>].length; i++) {
+<A NAME="157"></A>            vectors[<FONT ID="IntegerLiteral">0</FONT>][i] = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="158"></A>        }
+<A NAME="159"></A>        
+<A NAME="160"></A>        <FONT ID="SingleLineComment">// Werte für x^1, x-Werte der vorgegebenen Punkte
+<A NAME="161"></A></FONT>        <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; samples.length; i++) {
+<A NAME="162"></A>            vectors[<FONT ID="IntegerLiteral">1</FONT>][i] = samples[i][<FONT ID="IntegerLiteral">0</FONT>];
+<A NAME="163"></A>        }
+<A NAME="164"></A>        
+<A NAME="165"></A>        <FONT ID="SingleLineComment">// y-Werte der Punkte
+<A NAME="166"></A></FONT>        <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; samples.length; i++) {
+<A NAME="167"></A>            vectors[<FONT ID="IntegerLiteral">2</FONT>][i] = samples[i][<FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="168"></A>        }
+<A NAME="169"></A>    }
+<A NAME="170"></A>    
+<A NAME="171"></A>    
+<A NAME="172"></A>    <FONT ID="FormalComment">/**
+<A NAME="173"></A>     * Method declaration
+<A NAME="174"></A>     *
+<A NAME="175"></A>     */</FONT>
+<A NAME="176"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> eliminate() {
+<A NAME="177"></A>        
+<A NAME="178"></A>        <FONT ID="SingleLineComment">// Elimination der Matrix nach dem Gauß-Verfahren.
+<A NAME="179"></A></FONT>        <FONT ID="Int">int</FONT>   i = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="180"></A>        <FONT ID="Int">int</FONT>   j = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="181"></A>        <FONT ID="Int">int</FONT>   k = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="182"></A>        <FONT ID="Int">int</FONT>   max = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="183"></A>        <FONT ID="Double">double</FONT>  t;
+<A NAME="184"></A>        <FONT ID="Int">int</FONT>   N = leastsquarematrix[<FONT ID="IntegerLiteral">0</FONT>].length - <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="185"></A>        
+<A NAME="186"></A>        <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; N; i++) {
+<A NAME="187"></A>            max = i;
+<A NAME="188"></A>            
+<A NAME="189"></A>            <FONT ID="SingleLineComment">// Pivot-Element suchen
+<A NAME="190"></A></FONT>            <FONT ID="For">for</FONT> (j = i + <FONT ID="IntegerLiteral">1</FONT>; j &lt; N; j++) {
+<A NAME="191"></A>                <FONT ID="If">if</FONT> (Math.abs(leastsquarematrix[j][i]) &gt; Math.abs(leastsquarematrix[max][i])) {
+<A NAME="192"></A>                    max = j;
+<A NAME="193"></A>                }
+<A NAME="194"></A>            }
+<A NAME="195"></A>            
+<A NAME="196"></A>            <FONT ID="SingleLineComment">// Zeilen vertauschen, so daß die Zeile mit dem größten Element in der
+<A NAME="197"></A></FONT>            <FONT ID="SingleLineComment">// aktuell betrachteten Spalte die erste Zeile ist.
+<A NAME="198"></A></FONT>            <FONT ID="For">for</FONT> (k = i; k &lt; N + <FONT ID="IntegerLiteral">1</FONT>; k++) {
+<A NAME="199"></A>                t = leastsquarematrix[i][k];
+<A NAME="200"></A>                leastsquarematrix[i][k] = leastsquarematrix[max][k];
+<A NAME="201"></A>                leastsquarematrix[max][k] = t;
+<A NAME="202"></A>            }
+<A NAME="203"></A>            <FONT ID="If">if</FONT> (DEBUG_MODE) {
+<A NAME="204"></A>                printMatrix(leastsquarematrix);
+<A NAME="205"></A>            }
+<A NAME="206"></A>            
+<A NAME="207"></A>            <FONT ID="SingleLineComment">// Die eigentliche Elimination:
+<A NAME="208"></A></FONT>            <FONT ID="SingleLineComment">// Erzeuge Einheitsmatrix
+<A NAME="209"></A></FONT>            <FONT ID="For">for</FONT> (j = i + <FONT ID="IntegerLiteral">1</FONT>; j &lt; N; j++) {
+<A NAME="210"></A>                <FONT ID="For">for</FONT> (k = N; k &gt;= i; k--) {
+<A NAME="211"></A>                    leastsquarematrix[j][k] -= leastsquarematrix[i][k] * leastsquarematrix[j][i] / leastsquarematrix[i][i];
+<A NAME="212"></A>                }
+<A NAME="213"></A>            }
+<A NAME="214"></A>            <FONT ID="If">if</FONT> (DEBUG_MODE) {
+<A NAME="215"></A>                printMatrix(leastsquarematrix);
+<A NAME="216"></A>            }
+<A NAME="217"></A>        }
+<A NAME="218"></A>    }
+<A NAME="219"></A>    
+<A NAME="220"></A>    
+<A NAME="221"></A>    <FONT ID="FormalComment">/**
+<A NAME="222"></A>     * Method declaration
+<A NAME="223"></A>     *
+<A NAME="224"></A>     */</FONT>
+<A NAME="225"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> substitute() {
+<A NAME="226"></A>        <FONT ID="Int">int</FONT>     j, k;
+<A NAME="227"></A>        <FONT ID="Double">double</FONT>  t;
+<A NAME="228"></A>        <FONT ID="Int">int</FONT> N = leastsquarematrix.length;
+<A NAME="229"></A>        
+<A NAME="230"></A>        solution = <FONT ID="New">new</FONT> <FONT ID="Double">double</FONT>[<FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="231"></A>        
+<A NAME="232"></A>        <FONT ID="For">for</FONT> (j = N - <FONT ID="IntegerLiteral">1</FONT>; j &gt;= <FONT ID="IntegerLiteral">0</FONT>; j--) {
+<A NAME="233"></A>            t = <FONT ID="FloatPointLiteral">0.0</FONT>;
+<A NAME="234"></A>            <FONT ID="For">for</FONT> (k = j + <FONT ID="IntegerLiteral">1</FONT>; k &lt; N; k++) {
+<A NAME="235"></A>                t += leastsquarematrix[j][k] * solution[k];
+<A NAME="236"></A>            }
+<A NAME="237"></A>            solution[j] = (leastsquarematrix[j][N] - t) / leastsquarematrix[j][j];
+<A NAME="238"></A>        }
+<A NAME="239"></A>    }
+<A NAME="240"></A>    
+<A NAME="241"></A>    
+<A NAME="242"></A>    <FONT ID="FormalComment">/**
+<A NAME="243"></A>     * Only for debugging. Prints a matrix to stdout.
+<A NAME="244"></A>     *
+<A NAME="245"></A>     * @param a the matrix to print.
+<A NAME="246"></A>     */</FONT>
+<A NAME="247"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> printMatrix(<FONT ID="Double">double</FONT> a[][]) {
+<A NAME="248"></A>        <FONT ID="Int">int</FONT> i, j;
+<A NAME="249"></A>        
+<A NAME="250"></A>        i = a.length;
+<A NAME="251"></A>        j = a[<FONT ID="IntegerLiteral">0</FONT>].length;
+<A NAME="252"></A>        
+<A NAME="253"></A>        IJ.write(i + <FONT ID="StringLiteral">"x"</FONT> + j + <FONT ID="StringLiteral">"-Matrix"</FONT>);
+<A NAME="254"></A>        <FONT ID="For">for</FONT> (i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; a.length; i++) {
+<A NAME="255"></A>            IJ.write(<FONT ID="StringLiteral">"("</FONT>);
+<A NAME="256"></A>            <FONT ID="For">for</FONT> (j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; a[<FONT ID="IntegerLiteral">0</FONT>].length; j++) {
+<A NAME="257"></A>                IJ.write(<FONT ID="StringLiteral">" "</FONT> + a[i][j]);
+<A NAME="258"></A>            }
+<A NAME="259"></A>            IJ.write(<FONT ID="StringLiteral">" )"</FONT> + <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="260"></A>        }
+<A NAME="261"></A>        
+<A NAME="262"></A>    }
+<A NAME="263"></A>    
+<A NAME="264"></A>    
+<A NAME="265"></A>    <FONT ID="FormalComment">/**
+<A NAME="266"></A>     * Only for debugging. Prints to matrix of input pairs to stdout.
+<A NAME="267"></A>     *
+<A NAME="268"></A>     */</FONT>
+<A NAME="269"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> printSample() {
+<A NAME="270"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; samples.length; i++) {
+<A NAME="271"></A>            IJ.write(i + <FONT ID="StringLiteral">"(x = "</FONT> + samples[i][<FONT ID="IntegerLiteral">0</FONT>] + <FONT ID="StringLiteral">", y = "</FONT> + samples[i][<FONT ID="IntegerLiteral">1</FONT>] + <FONT ID="StringLiteral">")"</FONT> + <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="272"></A>        }
+<A NAME="273"></A>    }
+<A NAME="274"></A>    
+<A NAME="275"></A>}
+<A NAME="276"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">LeastSquare</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

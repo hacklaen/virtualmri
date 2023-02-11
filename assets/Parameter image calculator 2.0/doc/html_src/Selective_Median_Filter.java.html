@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>Selective_Median_Filter (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Selective_Median_Filter</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (C) 2002 Thomas Hacklaender, mailto:hacklaender@iftm.de
+<A NAME="3"></A> *
+<A NAME="4"></A> * IFTM Institut fuer Telematik in der Medizin GmbH, www.iftm.de
+<A NAME="5"></A> *
+<A NAME="6"></A> * This library is free software; you can redistribute it and/or modify it
+<A NAME="7"></A> * under the terms of the GNU  General Public License as published by the
+<A NAME="8"></A> * Free Software Foundation; either version 2 of the License, or (at your
+<A NAME="9"></A> * option) any later version.
+<A NAME="10"></A> *
+<A NAME="11"></A> * This library is distributed in the hope that it will be useful, but
+<A NAME="12"></A> * WITHOUT ANY WARRANTY; without even the implied warranty of
+<A NAME="13"></A> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+<A NAME="14"></A> * Lesser General Public License for more details.
+<A NAME="15"></A> *
+<A NAME="16"></A> * You should have received a copy of the GNU General Public License
+<A NAME="17"></A> * along with this program; if not, write to the Free Software Foundation,
+<A NAME="18"></A> * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+<A NAME="19"></A> *
+<A NAME="20"></A> * http://www.gnu.org/copyleft/copyleft.html
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> ij.*;
+<A NAME="26"></A><FONT ID="Import">import</FONT> ij.plugin.*;
+<A NAME="27"></A><FONT ID="Import">import</FONT> ij.plugin.filter.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> ij.process.*;
+<A NAME="29"></A><FONT ID="Import">import</FONT> ij.gui.*;
+<A NAME="30"></A><FONT ID="Import">import</FONT> ij.measure.*;
+<A NAME="31"></A>
+<A NAME="32"></A><FONT ID="FormalComment">/**
+<A NAME="33"></A> * The plugin replaces a subset of pixels with the median of the pixel
+<A NAME="34"></A> * values of the 8 surrounding nearest neighbors. Only those pixels whose
+<A NAME="35"></A> * values are higher than the median of the nearest neighbors multi-plied
+<A NAME="36"></A> * by a given factor are processed.
+<A NAME="37"></A> * The plugin could be used to smooth pixels with numerical errors in the
+<A NAME="38"></A> * calculation of the parameter images. Often these errors result in non
+<A NAME="39"></A> * physiological high pixel values.
+<A NAME="40"></A> * The plugin requires the selection of a 16 bit grayscale image.
+<A NAME="41"></A> *
+<A NAME="42"></A> * @author Thomas Hacklaender
+<A NAME="43"></A> * @version 2006-04-13
+<A NAME="44"></A> */</FONT>
+<A NAME="45"></A>
+<A NAME="46"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Selective_Median_Filter <FONT ID="Implements">implements</FONT> PlugInFilter {
+<A NAME="47"></A>    
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String    VERSION = <FONT ID="StringLiteral">"2.0"</FONT>;
+<A NAME="49"></A>    
+<A NAME="50"></A>    <FONT ID="Private">private</FONT> <FONT ID="Double">double</FONT>          limitFactor = <FONT ID="FloatPointLiteral">3.0</FONT>;
+<A NAME="51"></A>    <FONT ID="Private">private</FONT> ImageProcessor  ip = <FONT ID="Null">null</FONT>;
+<A NAME="52"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             width;
+<A NAME="53"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT>             height;
+<A NAME="54"></A>    
+<A NAME="55"></A>    
+<A NAME="56"></A>    <FONT ID="FormalComment">/** 
+<A NAME="57"></A>     * This method is called once when the filter is loaded.
+<A NAME="58"></A>     * @param the argument specified for this plugin in IJ_Props.txt. May be blank. 
+<A NAME="59"></A>     * @param imp is the currently active image.
+<A NAME="60"></A>     * @return a flag word that specifies the filters capabilities.
+<A NAME="61"></A>     */</FONT>
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> setup(String arg, ImagePlus imp) {
+<A NAME="63"></A>        <FONT ID="If">if</FONT> (arg.equals(<FONT ID="StringLiteral">"about"</FONT>)) {
+<A NAME="64"></A>            <FONT ID="SingleLineComment">// Nothing to do
+<A NAME="65"></A></FONT>            <FONT ID="Return">return</FONT> DONE;
+<A NAME="66"></A>        }
+<A NAME="67"></A>        <FONT ID="Return">return</FONT> DOES_16;
+<A NAME="68"></A>    }
+<A NAME="69"></A>    
+<A NAME="70"></A>    
+<A NAME="71"></A>    <FONT ID="FormalComment">/**
+<A NAME="72"></A>     * Filters use this method to process the image. If the SUPPORTS_STACKS flag 
+<A NAME="73"></A>     * was set, it is called for each slice in a stack. ImageJ will lock the 
+<A NAME="74"></A>     * image before calling this method and unlock it when the filter is finished.
+<A NAME="75"></A>     * @param ip the ImageProcessor of the image to process.
+<A NAME="76"></A>     */</FONT>
+<A NAME="77"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run(ImageProcessor theIP) {
+<A NAME="78"></A>        <FONT ID="Int">int</FONT> s;
+<A NAME="79"></A>        <FONT ID="Int">int</FONT> neighborhood;
+<A NAME="80"></A>        <FONT ID="Int">int</FONT> limit;
+<A NAME="81"></A>        
+<A NAME="82"></A>        <FONT ID="This">this</FONT>.ip = theIP;
+<A NAME="83"></A>        
+<A NAME="84"></A>        width = ip.getWidth();
+<A NAME="85"></A>        height = ip.getHeight();
+<A NAME="86"></A>        
+<A NAME="87"></A>        <FONT ID="If">if</FONT> (! getParameter()) <FONT ID="Return">return</FONT>;
+<A NAME="88"></A>        
+<A NAME="89"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> y = <FONT ID="IntegerLiteral">0</FONT>; y &lt; height; y++) {
+<A NAME="90"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> x = <FONT ID="IntegerLiteral">0</FONT>; x&lt; width; x++) {
+<A NAME="91"></A>                s = ip.getPixel(x, y);
+<A NAME="92"></A>                
+<A NAME="93"></A>                neighborhood = calcNeighborhood(x, y);
+<A NAME="94"></A>                limit = ((<FONT ID="Int">int</FONT>)(limitFactor * neighborhood));
+<A NAME="95"></A>                <FONT ID="If">if</FONT> (s &gt; limit) {
+<A NAME="96"></A>                    ip.putPixel(x, y, neighborhood);
+<A NAME="97"></A>                }
+<A NAME="98"></A>            }
+<A NAME="99"></A>        }
+<A NAME="100"></A>        
+<A NAME="101"></A>    }
+<A NAME="102"></A>    
+<A NAME="103"></A>    
+<A NAME="104"></A>    <FONT ID="FormalComment">/**
+<A NAME="105"></A>     * Calculates the median of the signal intensity of the 8 neares neighbors 
+<A NAME="106"></A>     * of a given pixel.
+<A NAME="107"></A>     * @param x x coordinate of the central pixel.
+<A NAME="108"></A>     * @param y y coordinate of the central pixel.
+<A NAME="109"></A>     * @return the median of the signal intensity of the 8 neares neighbors.
+<A NAME="110"></A>     */</FONT>
+<A NAME="111"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> calcNeighborhood(<FONT ID="Int">int</FONT> x, <FONT ID="Int">int</FONT> y) {
+<A NAME="112"></A>        <FONT ID="Int">int</FONT> sMedian;
+<A NAME="113"></A>        <FONT ID="Int">int</FONT>[] sArray = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[<FONT ID="IntegerLiteral">8</FONT>];
+<A NAME="114"></A>        <FONT ID="Int">int</FONT> n = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="115"></A>        
+<A NAME="116"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> nx = x - <FONT ID="IntegerLiteral">1</FONT>; nx &lt;= x + <FONT ID="IntegerLiteral">1</FONT>; nx++) {
+<A NAME="117"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> ny = y - <FONT ID="IntegerLiteral">1</FONT>; ny &lt;= y + <FONT ID="IntegerLiteral">1</FONT>; ny++) {
+<A NAME="118"></A>                <FONT ID="If">if</FONT> ((nx == x) &amp;&amp; (ny == y)) <FONT ID="Continue">continue</FONT>;
+<A NAME="119"></A>                <FONT ID="If">if</FONT> ((nx &lt; <FONT ID="IntegerLiteral">0</FONT>) || (nx &gt;= width)) <FONT ID="Continue">continue</FONT>;
+<A NAME="120"></A>                <FONT ID="If">if</FONT> ((ny &lt; <FONT ID="IntegerLiteral">0</FONT>) || (ny &gt;= height)) <FONT ID="Continue">continue</FONT>;
+<A NAME="121"></A>                sArray[n] = ip.getPixel(nx, ny);
+<A NAME="122"></A>                n++;
+<A NAME="123"></A>            }
+<A NAME="124"></A>        }
+<A NAME="125"></A>        
+<A NAME="126"></A>        <FONT ID="If">if</FONT> (n == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="127"></A>            <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="128"></A>        }
+<A NAME="129"></A>        
+<A NAME="130"></A>        Arrays.sort(sArray, <FONT ID="IntegerLiteral">0</FONT>, n-<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="131"></A>        
+<A NAME="132"></A>        <FONT ID="If">if</FONT> ((n % <FONT ID="IntegerLiteral">2</FONT>) == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="133"></A>            <FONT ID="SingleLineComment">// even
+<A NAME="134"></A></FONT>            sMedian = (sArray[n / <FONT ID="IntegerLiteral">2</FONT>] + sArray[(n / <FONT ID="IntegerLiteral">2</FONT>) - <FONT ID="IntegerLiteral">1</FONT>]) / <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="135"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="136"></A>            <FONT ID="SingleLineComment">// odd
+<A NAME="137"></A></FONT>            sMedian = sArray[n / <FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="138"></A>        }
+<A NAME="139"></A>        
+<A NAME="140"></A>        <FONT ID="Return">return</FONT> sMedian;
+<A NAME="141"></A>    }
+<A NAME="142"></A>    
+<A NAME="143"></A>    
+<A NAME="144"></A>    <FONT ID="FormalComment">/**
+<A NAME="145"></A>     * Displays a dialog box for input of user data.
+<A NAME="146"></A>     * @return true, if data were entered; false if the dialog box was canceled.
+<A NAME="147"></A>     */</FONT>
+<A NAME="148"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> getParameter() {
+<A NAME="149"></A>        GenericDialog gd = <FONT ID="New">new</FONT> GenericDialog(<FONT ID="StringLiteral">"Selective Median Filter: Ver. "</FONT> + VERSION);
+<A NAME="150"></A>        gd.addNumericField(<FONT ID="StringLiteral">"Factor for lower limit of inclusion of pixels:"</FONT>, limitFactor, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="151"></A>        gd.showDialog();
+<A NAME="152"></A>        <FONT ID="If">if</FONT> (gd.wasCanceled())
+<A NAME="153"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="154"></A>        limitFactor = gd.getNextNumber();
+<A NAME="155"></A>        
+<A NAME="156"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="157"></A>    }
+<A NAME="158"></A>    
+<A NAME="159"></A>    
+<A NAME="160"></A>}
+<A NAME="161"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Selective_Median_Filter</font>
+</td>
+<td align="right" colspan="2" width="33%"></td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>
