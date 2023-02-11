@@ -9,3 +9,10 @@ An interactive simulation of a real world examination is possible on a standard 
 
 ## RSNA 2002
 The current version of the simulation was presented at the RSNA 2002, 88th Scientific Assembly and Annual Meeting, Chicago, IL, USA. During the meeting a lecture was given. The presentation was given the RSNA infoRAD award cum laude.
+
+## Usage
+
+* Download the complate package as a ZIP file.
+* Decompress the file locally.
+	* For Windows: Run one of the batchfiles `vmrt_xx.bat`. Use your preferred language, e.g. `vmrt_en.bat` for English.
+	* For MacOS: Doubleclick the application `vmrt_mac.app`.
