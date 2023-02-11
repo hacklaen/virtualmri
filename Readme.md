@@ -7,5 +7,5 @@ On a 500 MHz PC the software calculates an image in 5 to 20 seconds, depending o
 
 An interactive simulation of a real world examination is possible on a standard PC. The users can study the operation of a costly and not everywhere available equipment on their desktop.
 
-##RSNA 2002
+## RSNA 2002
 The current version of the simulation was presented at the RSNA 2002, 88th Scientific Assembly and Annual Meeting, Chicago, IL, USA. During the meeting a lecture was given. The presentation was given the RSNA infoRAD award cum laude.
