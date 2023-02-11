@@ -1,4 +1,4 @@
-**Bekannte Fehler**
+#Bekannte Fehler
 
 *   Die Applets laufen nicht über das Web. Befinden sie sich lokal auf dem Rechner starten sie unter Internet Explorer. Unter Netscape ist dies nicht nicht möglich.
     
@@ -9,7 +9,7 @@
     *   In der Info-Dialgbox für den ausgewählten Fall erscheinen einige Rechtecke mit der Bezeichnung "Header", "Titel" oder "Meta".
         
 
-**To Do Liste: MRT/Viewer**
+#To Do Liste: MRT/Viewer
   
 **sortiert nach Prioritäten (2000.8.20)
 
@@ -42,7 +42,7 @@
 14.  **_In Arbeit CSC:_** Der Viewer sollte mit DICOM-Bildern beliebiger Matrixgröße zurechtkommen.
     
 
-**To Do Liste: Raw Editor**
+#To Do Liste: Raw Editor
 
 **sortiert nach Prioritäten (2000.8.9)
 
