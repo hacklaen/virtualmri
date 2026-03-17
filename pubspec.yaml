@@ -1,0 +1,21 @@
+name: virtual_mri
+description: "Virtual MRI Scanner - MRI pulse sequence simulator"
+publish_to: 'none'
+version: 3.2.14+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - web_assets/
