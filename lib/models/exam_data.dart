@@ -37,9 +37,9 @@ class ExamData {
       descriptionHtml: map['description_html'] as String,
       width: width,
       height: height,
-      t1Matrix: _decodeMatrix(map['t1_base64'] as String, width, height),
-      t2Matrix: _decodeMatrix(map['t2_base64'] as String, width, height),
-      pdMatrix: _decodeMatrix(map['pd_base64'] as String, width, height),
+      t1Matrix: _decodeMatrix(map['t1'] as String, width, height),
+      t2Matrix: _decodeMatrix(map['t2'] as String, width, height),
+      pdMatrix: _decodeMatrix(map['pd'] as String, width, height),
     );
   }
 

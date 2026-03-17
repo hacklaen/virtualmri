@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/exam_data.dart';
 import '../simulation/mri_simulator.dart';
+import '../widgets/kspace_manipulator.dart';
 import '../widgets/mri_image_display.dart';
 import '../widgets/param_slider.dart';
 
@@ -18,7 +19,10 @@ class MriScreen extends StatefulWidget {
 
 class _MriScreenState extends State<MriScreen> {
   ExamData? _examData;
-  List<List<int>>? _resultImage;
+  final List<List<List<int>>> _imageStack = [];
+  int _selectedImage = 0;
+  bool _show4Images = false;
+  final int _scrollOffset = 0;
   bool _isCalculating = false;
   double _progress = 0;
 
@@ -93,14 +97,13 @@ class _MriScreenState extends State<MriScreen> {
       motionParams: _motionParams,
       periodicMotionParams: _periodicMotionParams,
       onProgress: (p) {
-        // We can't setState during calculation (synchronous),
-        // but we store progress for display
         _progress = p;
       },
     );
 
     setState(() {
-      _resultImage = result;
+      _imageStack.add(result);
+      _selectedImage = _imageStack.length - 1;
       _isCalculating = false;
       _progress = 1.0;
     });
@@ -109,7 +112,8 @@ class _MriScreenState extends State<MriScreen> {
   void _loadSampleData() {
     setState(() {
       _examData = ExamData.createReferenceData();
-      _resultImage = null;
+      _imageStack.clear();
+      _selectedImage = 0;
     });
   }
 
@@ -119,7 +123,8 @@ class _MriScreenState extends State<MriScreen> {
           'web_assets/brain_no_pathology.json');
       setState(() {
         _examData = data;
-        _resultImage = null;
+        _imageStack.clear();
+        _selectedImage = 0;
       });
     } catch (_) {}
   }
@@ -131,6 +136,20 @@ class _MriScreenState extends State<MriScreen> {
         title: const Text('Virtual MRI Scanner'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          // 1-image / 4-image toggle
+          IconButton(
+            icon: Icon(_show4Images ? Icons.grid_view : Icons.crop_square),
+            tooltip: _show4Images ? 'Show 1 image' : 'Show 4 images',
+            onPressed: () => setState(() => _show4Images = !_show4Images),
+          ),
+          // K-Space Manipulator
+          IconButton(
+            icon: const Icon(Icons.auto_graph),
+            tooltip: 'K-Space Manipulator',
+            onPressed: _imageStack.isNotEmpty
+                ? () => _openKSpaceManipulator()
+                : null,
+          ),
           PopupMenuButton<String>(
             onSelected: (v) {
               if (v == 'brain') _loadBrainData();
@@ -198,43 +217,137 @@ class _MriScreenState extends State<MriScreen> {
     );
   }
 
+  void _openKSpaceManipulator() {
+    if (_imageStack.isEmpty) return;
+    showDialog(
+      context: context,
+      builder: (_) => KSpaceManipulator(
+        sourceImage: _imageStack[_selectedImage],
+        windowCenter: _windowCenter,
+        windowWidth: _windowWidth,
+        onTransferToViewer: (image) {
+          setState(() {
+            _imageStack.add(image);
+            _selectedImage = _imageStack.length - 1;
+          });
+        },
+      ),
+    );
+  }
+
   Widget _buildImageArea() {
     return Container(
       color: Colors.black,
       child: Column(
         children: [
           Expanded(
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: MriImageDisplay(
-                  imageData: _resultImage,
-                  windowCenter: _windowCenter,
-                  windowWidth: _windowWidth,
-                ),
-              ),
-            ),
+            child: _show4Images ? _build4ImageGrid() : _build1ImageView(),
           ),
           if (_isCalculating)
             LinearProgressIndicator(value: _progress)
-          else if (_examData != null)
-            Container(
-              color: Colors.grey[900],
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          else
+            _buildImageStatusBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _build1ImageView() {
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: MriImageDisplay(
+          imageData: _imageStack.isNotEmpty ? _imageStack[_selectedImage] : null,
+          windowCenter: _windowCenter,
+          windowWidth: _windowWidth,
+        ),
+      ),
+    );
+  }
+
+  Widget _build4ImageGrid() {
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Column(
+          children: [
+            Expanded(
               child: Row(
                 children: [
-                  Text(
-                    _examData!.title,
-                    style: const TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
-                  const Spacer(),
-                  Text(
-                    'C: $_windowCenter  W: $_windowWidth',
-                    style: const TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
+                  Expanded(child: _buildGridCell(0)),
+                  const VerticalDivider(width: 1, color: Colors.white),
+                  Expanded(child: _buildGridCell(1)),
                 ],
               ),
             ),
+            const Divider(height: 1, color: Colors.white),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(child: _buildGridCell(2)),
+                  const VerticalDivider(width: 1, color: Colors.white),
+                  Expanded(child: _buildGridCell(3)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridCell(int slot) {
+    final idx = _scrollOffset * 4 + slot;
+    final hasImage = idx < _imageStack.length;
+    final isSelected = hasImage && idx == _selectedImage;
+    return GestureDetector(
+      onTap: hasImage ? () => setState(() => _selectedImage = idx) : null,
+      child: Container(
+        decoration: isSelected
+            ? BoxDecoration(border: Border.all(color: Colors.red, width: 2))
+            : null,
+        child: MriImageDisplay(
+          imageData: hasImage ? _imageStack[idx] : null,
+          windowCenter: _windowCenter,
+          windowWidth: _windowWidth,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageStatusBar() {
+    return Container(
+      color: Colors.grey[900],
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: Row(
+        children: [
+          if (_examData != null)
+            Text(_examData!.title,
+                style: const TextStyle(color: Colors.white70, fontSize: 11)),
+          const Spacer(),
+          if (_imageStack.isNotEmpty) ...[
+            IconButton(
+              icon: const Icon(Icons.chevron_left, color: Colors.white70, size: 16),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+              onPressed: _selectedImage > 0
+                  ? () => setState(() => _selectedImage--)
+                  : null,
+            ),
+            Text('${_selectedImage + 1}/${_imageStack.length}',
+                style: const TextStyle(color: Colors.white70, fontSize: 11)),
+            IconButton(
+              icon: const Icon(Icons.chevron_right, color: Colors.white70, size: 16),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+              onPressed: _selectedImage < _imageStack.length - 1
+                  ? () => setState(() => _selectedImage++)
+                  : null,
+            ),
+            const SizedBox(width: 8),
+          ],
+          Text('C: $_windowCenter  W: $_windowWidth',
+              style: const TextStyle(color: Colors.white70, fontSize: 11)),
         ],
       ),
     );
@@ -527,13 +640,13 @@ class _MriScreenState extends State<MriScreen> {
   }
 
   void _optimizeWindowing() {
-    if (_resultImage == null) return;
-    // Find actual min/max in result image and set window accordingly
+    if (_imageStack.isEmpty) return;
+    final img = _imageStack[_selectedImage];
     int minVal = 4095;
     int maxVal = 0;
     for (int x = 0; x < 256; x++) {
       for (int y = 0; y < 256; y++) {
-        final v = _resultImage![x][y];
+        final v = img[x][y];
         if (v < minVal) minVal = v;
         if (v > maxVal) maxVal = v;
       }
