@@ -652,7 +652,7 @@ class _MriScreenState extends State<MriScreen> {
 
   Widget _buildCalculateButton() {
     /// Calculate total scan time matching Java logic
-    String _totalTime() {
+    String totalTime() {
       int totalMs;
       if (_sequenceType == SequenceType.turboSpinEcho) {
         totalMs = 256 * _params.tr * (_params.rect ~/ 8) ~/ _params.etl;
@@ -666,7 +666,7 @@ class _MriScreenState extends State<MriScreen> {
     }
 
     /// Calculate pixel size
-    String _pixelSize() {
+    String pixelSize() {
       final ps = _params.fov / _params.matrix;
       return '${ps.toStringAsFixed(1)} mm';
     }
@@ -676,10 +676,10 @@ class _MriScreenState extends State<MriScreen> {
       children: [
         Row(
           children: [
-            Text('Scan time: ${_totalTime()}',
+            Text('Scan time: ${totalTime()}',
                 style: const TextStyle(fontSize: 11)),
             const Spacer(),
-            Text('Pixel: ${_pixelSize()}',
+            Text('Pixel: ${pixelSize()}',
                 style: const TextStyle(fontSize: 11)),
           ],
         ),
