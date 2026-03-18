@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-import 'widgets/mri_screen.dart';
+import 'navigation/app_pages.dart';
+import 'navigation/app_routes.dart';
 
 void main() {
   runApp(const VirtualMriApp());
@@ -11,14 +13,15 @@ class VirtualMriApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Virtual MRI Scanner',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         useMaterial3: true,
       ),
-      home: const MriScreen(),
+      initialRoute: AppRoutes.mriScreen,
+      getPages: AppPages.pages,
     );
   }
 }

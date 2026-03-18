@@ -1,7 +1,7 @@
 name: virtual_mri
-description: "Virtual MRI Scanner - MRI pulse sequence simulator"
+description: "Virtual MRI Scanner & Parameter Image Calculator"
 publish_to: 'none'
-version: 3.2.14+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.11.1
@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  get: ^4.6.6
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

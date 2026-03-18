@@ -3,53 +3,44 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../simulation/fft.dart';
 
-/// K-Space Manipulator dialog.
-/// Shows 4 panels: original image, original k-space,
-/// manipulated k-space, and inverse-transformed result.
-class KSpaceManipulator extends StatefulWidget {
+/// Controller for the K-Space Manipulator dialog.
+class _KSpaceController extends GetxController {
   final List<List<int>> sourceImage;
   final int windowCenter;
   final int windowWidth;
-  final void Function(List<List<int>> image)? onTransferToViewer;
 
-  const KSpaceManipulator({
-    super.key,
+  // K-space data (original)
+  late ComplexImage kSpace;
+  late List<List<double>> kSpaceMag; // magnitude for display
+
+  // Manipulation parameters
+  bool deleteMargins = false;
+  int marginLeft = 0, marginRight = 0, marginTop = 0, marginBottom = 0;
+
+  bool deleteRect = false;
+  int rectWidth = 0, rectHeight = 0;
+
+  bool deleteLines = false;
+  int everyNRow = 2, everyNCol = 2;
+
+  // Result
+  List<List<int>>? resultImage;
+  int resultCenter = 2048;
+  int resultWidth = 4096;
+
+  _KSpaceController({
     required this.sourceImage,
-    this.windowCenter = 2048,
-    this.windowWidth = 4096,
-    this.onTransferToViewer,
+    required this.windowCenter,
+    required this.windowWidth,
   });
 
   @override
-  State<KSpaceManipulator> createState() => _KSpaceManipulatorState();
-}
-
-class _KSpaceManipulatorState extends State<KSpaceManipulator> {
-  // K-space data (original)
-  late ComplexImage _kSpace;
-  late List<List<double>> _kSpaceMag; // magnitude for display
-
-  // Manipulation parameters
-  bool _deleteMargins = false;
-  int _marginLeft = 0, _marginRight = 0, _marginTop = 0, _marginBottom = 0;
-
-  bool _deleteRect = false;
-  int _rectWidth = 0, _rectHeight = 0;
-
-  bool _deleteLines = false;
-  int _everyNRow = 2, _everyNCol = 2;
-
-  // Result
-  List<List<int>>? _resultImage;
-  int _resultCenter = 2048;
-  int _resultWidth = 4096;
-
-  @override
-  void initState() {
-    super.initState();
+  void onInit() {
+    super.onInit();
     _computeKSpace();
   }
 
@@ -57,15 +48,15 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
     const size = 256;
     // Convert source image (int) to double for FFT
     final input = List.generate(
-        size, (x) => List.generate(size, (y) => widget.sourceImage[x][y].toDouble()));
+        size, (x) => List.generate(size, (y) => sourceImage[x][y].toDouble()));
 
-    _kSpace = forwardFFT2D(input, size);
+    kSpace = forwardFFT2D(input, size);
 
     // Compute magnitude image (log-scaled) for display
-    _kSpaceMag = _computeMagnitude(_kSpace);
+    kSpaceMag = computeMagnitude(kSpace);
   }
 
-  List<List<double>> _computeMagnitude(ComplexImage kSpace) {
+  List<List<double>> computeMagnitude(ComplexImage kSpaceData) {
     const size = 256;
     final mag = List.generate(size, (_) => List.filled(size, 0.0));
     for (int x = 0; x < size; x++) {
@@ -73,32 +64,32 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
         // Shift: swap quadrants for centered display
         final sx = (x + size ~/ 2) % size;
         final sy = (y + size ~/ 2) % size;
-        final r = kSpace.real[sx][sy];
-        final i = kSpace.imag[sx][sy];
+        final r = kSpaceData.real[sx][sy];
+        final i = kSpaceData.imag[sx][sy];
         mag[x][y] = log(1 + sqrt(r * r + i * i));
       }
     }
     return mag;
   }
 
-  ComplexImage _getManipulatedKSpace() {
+  ComplexImage getManipulatedKSpace() {
     const size = 256;
     final manip = ComplexImage(size, size);
 
     // Copy original
     for (int x = 0; x < size; x++) {
       for (int y = 0; y < size; y++) {
-        manip.real[x][y] = _kSpace.real[x][y];
-        manip.imag[x][y] = _kSpace.imag[x][y];
+        manip.real[x][y] = kSpace.real[x][y];
+        manip.imag[x][y] = kSpace.imag[x][y];
       }
     }
 
     // Delete margins
-    if (_deleteMargins) {
+    if (deleteMargins) {
       for (int x = 0; x < size; x++) {
         for (int y = 0; y < size; y++) {
-          if (x < _marginLeft || x >= size - _marginRight ||
-              y < _marginTop || y >= size - _marginBottom) {
+          if (x < marginLeft || x >= size - marginRight ||
+              y < marginTop || y >= size - marginBottom) {
             manip.real[x][y] = 0;
             manip.imag[x][y] = 0;
           }
@@ -107,10 +98,10 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
     }
 
     // Delete lines (every N-th row/column)
-    if (_deleteLines) {
+    if (deleteLines) {
       for (int x = 0; x < size; x++) {
         for (int y = 0; y < size; y++) {
-          if (y % _everyNRow == 0 || x % _everyNCol == 0) {
+          if (y % everyNRow == 0 || x % everyNCol == 0) {
             manip.real[x][y] = 0;
             manip.imag[x][y] = 0;
           }
@@ -119,11 +110,11 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
     }
 
     // Delete center rectangle
-    if (_deleteRect) {
+    if (deleteRect) {
       final cx = size ~/ 2;
       final cy = size ~/ 2;
-      final hw = _rectWidth ~/ 2;
-      final hh = _rectHeight ~/ 2;
+      final hw = rectWidth ~/ 2;
+      final hh = rectHeight ~/ 2;
       for (int x = cx - hw; x <= cx + hw && x < size; x++) {
         for (int y = cy - hh; y <= cy + hh && y < size; y++) {
           if (x >= 0 && y >= 0) {
@@ -137,9 +128,9 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
     return manip;
   }
 
-  void _reverseTransform() {
+  void reverseTransform() {
     const size = 256;
-    final manip = _getManipulatedKSpace();
+    final manip = getManipulatedKSpace();
     final inv = inverseFFT2D(manip);
 
     // Convert to magnitude image (12-bit)
@@ -174,65 +165,118 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
       }
     }
 
-    setState(() {
-      _resultImage = result;
-      _resultWidth = max(1, maxV - minV);
-      _resultCenter = (minV + maxV) ~/ 2;
-    });
+    resultImage = result;
+    resultWidth = max(1, maxV - minV);
+    resultCenter = (minV + maxV) ~/ 2;
+    update();
   }
+}
+
+/// K-Space Manipulator dialog.
+/// Shows 4 panels: original image, original k-space,
+/// manipulated k-space, and inverse-transformed result.
+class KSpaceManipulator extends StatelessWidget {
+  final List<List<int>> sourceImage;
+  final int windowCenter;
+  final int windowWidth;
+  final void Function(List<List<int>> image)? onTransferToViewer;
+
+  const KSpaceManipulator({
+    super.key,
+    required this.sourceImage,
+    this.windowCenter = 2048,
+    this.windowWidth = 4096,
+    this.onTransferToViewer,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      insetPadding: const EdgeInsets.all(16),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 900, maxHeight: 700),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Title bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: Theme.of(context).colorScheme.inversePrimary,
-              child: Row(
-                children: [
-                  const Text('K-Space Manipulator',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
+    // Register a scoped controller for this dialog
+    final tag = 'kspace_${identityHashCode(this)}';
+    Get.put(
+      _KSpaceController(
+        sourceImage: sourceImage,
+        windowCenter: windowCenter,
+        windowWidth: windowWidth,
+      ),
+      tag: tag,
+    );
+
+    return _KSpaceManipulatorBody(
+      tag: tag,
+      onTransferToViewer: onTransferToViewer,
+    );
+  }
+}
+
+/// Inner body of the K-Space dialog, uses GetBuilder to rebuild on state changes.
+class _KSpaceManipulatorBody extends StatelessWidget {
+  final String tag;
+  final void Function(List<List<int>> image)? onTransferToViewer;
+
+  const _KSpaceManipulatorBody({
+    required this.tag,
+    this.onTransferToViewer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<_KSpaceController>(
+      tag: tag,
+      builder: (c) => Dialog(
+        insetPadding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900, maxHeight: 700),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Title bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: Theme.of(context).colorScheme.inversePrimary,
+                child: Row(
+                  children: [
+                    const Text('K-Space Manipulator',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        Get.delete<_KSpaceController>(tag: tag);
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // Content
-            Flexible(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 4 image panels
-                  Expanded(
-                    flex: 3,
-                    child: _buildImageGrid(),
-                  ),
-                  // Controls
-                  SizedBox(
-                    width: 280,
-                    child: _buildControls(),
-                  ),
-                ],
+              // Content
+              Flexible(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 4 image panels
+                    Expanded(
+                      flex: 3,
+                      child: _buildImageGrid(c),
+                    ),
+                    // Controls
+                    SizedBox(
+                      width: 280,
+                      child: _buildControls(context, c),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildImageGrid() {
-    final manipKSpace = _getManipulatedKSpace();
-    final manipMag = _computeMagnitude(manipKSpace);
+  Widget _buildImageGrid(_KSpaceController c) {
+    final manipKSpace = c.getManipulatedKSpace();
+    final manipMag = c.computeMagnitude(manipKSpace);
 
     return Container(
       color: Colors.black,
@@ -245,12 +289,12 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
                 children: [
                   Expanded(child: _buildPanel(
                     'Original image',
-                    _buildIntImage(widget.sourceImage, widget.windowCenter, widget.windowWidth),
+                    _buildIntImage(c.sourceImage, c.windowCenter, c.windowWidth),
                   )),
                   const VerticalDivider(width: 2, color: Colors.white),
                   Expanded(child: _buildPanel(
                     'Original k-space',
-                    _buildFloatImage(_kSpaceMag),
+                    _buildFloatImage(c.kSpaceMag),
                   )),
                 ],
               ),
@@ -265,9 +309,9 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
                   )),
                   const VerticalDivider(width: 2, color: Colors.white),
                   Expanded(child: _buildPanel(
-                    _resultImage != null ? 'Reverse transformed' : 'Press "Reverse transform"',
-                    _resultImage != null
-                        ? _buildIntImage(_resultImage!, _resultCenter, _resultWidth)
+                    c.resultImage != null ? 'Reverse transformed' : 'Press "Reverse transform"',
+                    c.resultImage != null
+                        ? _buildIntImage(c.resultImage!, c.resultCenter, c.resultWidth)
                         : null,
                   )),
                 ],
@@ -304,7 +348,7 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
     );
   }
 
-  Widget _buildControls() {
+  Widget _buildControls(BuildContext context, _KSpaceController c) {
     return Container(
       color: Colors.grey[100],
       child: SingleChildScrollView(
@@ -316,53 +360,63 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
             CheckboxListTile(
               dense: true,
               title: const Text('Delete margins', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-              value: _deleteMargins,
-              onChanged: (v) => setState(() => _deleteMargins = v!),
+              value: c.deleteMargins,
+              onChanged: (v) {
+                c.deleteMargins = v!;
+                c.update();
+              },
             ),
-            if (_deleteMargins) ...[
-              _slider('Left', _marginLeft, 0, 127, (v) => _marginLeft = v),
-              _slider('Right', _marginRight, 0, 127, (v) => _marginRight = v),
-              _slider('Top', _marginTop, 0, 127, (v) => _marginTop = v),
-              _slider('Bottom', _marginBottom, 0, 127, (v) => _marginBottom = v),
+            if (c.deleteMargins) ...[
+              _slider('Left', c.marginLeft, 0, 127, (v) { c.marginLeft = v; c.update(); }),
+              _slider('Right', c.marginRight, 0, 127, (v) { c.marginRight = v; c.update(); }),
+              _slider('Top', c.marginTop, 0, 127, (v) { c.marginTop = v; c.update(); }),
+              _slider('Bottom', c.marginBottom, 0, 127, (v) { c.marginBottom = v; c.update(); }),
             ],
             const Divider(),
             // Delete center rectangle
             CheckboxListTile(
               dense: true,
               title: const Text('Delete center rect', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-              value: _deleteRect,
-              onChanged: (v) => setState(() => _deleteRect = v!),
+              value: c.deleteRect,
+              onChanged: (v) {
+                c.deleteRect = v!;
+                c.update();
+              },
             ),
-            if (_deleteRect) ...[
-              _slider('Width', _rectWidth, 0, 255, (v) => _rectWidth = v),
-              _slider('Height', _rectHeight, 0, 255, (v) => _rectHeight = v),
+            if (c.deleteRect) ...[
+              _slider('Width', c.rectWidth, 0, 255, (v) { c.rectWidth = v; c.update(); }),
+              _slider('Height', c.rectHeight, 0, 255, (v) { c.rectHeight = v; c.update(); }),
             ],
             const Divider(),
             // Delete lines
             CheckboxListTile(
               dense: true,
               title: const Text('Delete every N lines', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-              value: _deleteLines,
-              onChanged: (v) => setState(() => _deleteLines = v!),
+              value: c.deleteLines,
+              onChanged: (v) {
+                c.deleteLines = v!;
+                c.update();
+              },
             ),
-            if (_deleteLines) ...[
-              _slider('Every N row', _everyNRow, 2, 256, (v) => _everyNRow = v),
-              _slider('Every N col', _everyNCol, 2, 256, (v) => _everyNCol = v),
+            if (c.deleteLines) ...[
+              _slider('Every N row', c.everyNRow, 2, 256, (v) { c.everyNRow = v; c.update(); }),
+              _slider('Every N col', c.everyNCol, 2, 256, (v) { c.everyNCol = v; c.update(); }),
             ],
             const Divider(),
             const SizedBox(height: 8),
             ElevatedButton.icon(
               icon: const Icon(Icons.transform),
               label: const Text('Reverse transform'),
-              onPressed: _reverseTransform,
+              onPressed: () => c.reverseTransform(),
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
               icon: const Icon(Icons.send),
               label: const Text('Transfer to viewer'),
-              onPressed: _resultImage != null && widget.onTransferToViewer != null
+              onPressed: c.resultImage != null && onTransferToViewer != null
                   ? () {
-                      widget.onTransferToViewer!(_resultImage!);
+                      onTransferToViewer!(c.resultImage!);
+                      Get.delete<_KSpaceController>(tag: tag);
                       Navigator.of(context).pop();
                     }
                   : null,
@@ -373,7 +427,7 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
     );
   }
 
-  Widget _slider(String label, int value, int min, int max, void Function(int) setter) {
+  Widget _slider(String label, int value, int min, int max, void Function(int) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
@@ -385,7 +439,7 @@ class _KSpaceManipulatorState extends State<KSpaceManipulator> {
               min: min.toDouble(),
               max: max.toDouble(),
               divisions: max - min,
-              onChanged: (v) => setState(() => setter(v.round())),
+              onChanged: (v) => onChanged(v.round()),
             ),
           ),
           SizedBox(width: 32, child: Text('$value', style: const TextStyle(fontSize: 11))),

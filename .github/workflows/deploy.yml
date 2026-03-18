@@ -23,8 +23,25 @@ jobs:
         with:
           channel: stable
 
-      - run: flutter pub get
-      - run: flutter build web --release --base-href "/virtualmri/"
+      # Build Virtual MRI Scanner
+      - name: Build Virtual MRI Scanner
+        run: |
+          flutter pub get
+          flutter build web --release --base-href "/virtualmri/" --target lib/vmri/main.dart
+
+      # Build Parameter Image Calculator
+      - name: Build Parameter Image Calculator
+        run: |
+          # Save the VMRI build output
+          mv build/web build/vmri_web
+          flutter build web --release --base-href "/virtualmri/pic/" --target lib/paracalc/main.dart
+
+      # Combine both builds into a single deployment artifact
+      - name: Prepare deployment
+        run: |
+          mkdir -p build/vmri_web/pic
+          cp -r build/web/* build/vmri_web/pic/
+          mv build/vmri_web build/web
 
       - uses: actions/upload-pages-artifact@v3
         with:
