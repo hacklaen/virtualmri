@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Virtual MRI</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header>
+    <h1>Virtual MRI</h1>
+    <p>Browser-Version des virtuellen MR-Tomographen. Lokal, ohne Server.</p>
+  </header>
+
+  <main>
+    <div class="stack">
+      <section>
+        <h2>Untersuchungsobjekt</h2>
+        <label class="field">
+          <span>Datensatz</span>
+          <select id="phantom">
+            <option value="brain">Beispielgehirn</option>
+            <option value="reference">Referenzphantom</option>
+          </select>
+        </label>
+        <p class="note" id="phantom-note"></p>
+      </section>
+
+      <section class="tabs-panel">
+        <div class="tabs">
+          <button type="button" class="tab" id="tab-sequence" aria-selected="true">Sequenz</button>
+          <button type="button" class="tab" id="tab-geometry" aria-selected="false">Geometrie</button>
+          <button type="button" class="tab" id="tab-artefact" aria-selected="false">Artefakt</button>
+        </div>
+
+        <div class="tab-panels">
+          <div id="panel-sequence">
+            <label class="field">
+              <span>Pulssequenz</span>
+              <select id="sequence">
+                <option value="se" selected>Spin-Echo</option>
+                <option value="tse">Turbo-Spin-Echo</option>
+                <option value="gre">Gradienten-Echo</option>
+                <option value="spoiled">Gradienten-Echo gespoilt</option>
+                <option value="refocused">Gradienten-Echo refokussiert</option>
+                <option value="ir">Inversion-Recovery</option>
+                <option value="sr">Saturation-Recovery</option>
+              </select>
+            </label>
+            <label class="field"><span>TR (ms)</span><input id="tr" type="number" min="5" max="20000" value="500"></label>
+            <label class="field" data-seq="se tse gre spoiled refocused"><span id="te-label">TE (ms)</span><input id="te" type="number" min="1" max="1000" value="15"></label>
+            <label class="field" data-seq="ir"><span>TI (ms)</span><input id="ti" type="number" min="1" max="10000" value="1700"></label>
+            <label class="field" data-seq="gre spoiled refocused"><span>Flipwinkel (°)</span><input id="fa" type="number" min="1" max="90" value="40"></label>
+            <label class="field" data-seq="tse"><span>Echoabstand (ms)</span><input id="esp" type="number" min="1" max="100" value="12"></label>
+            <label class="field" data-seq="tse"><span>ETL</span><input id="etl" type="number" min="1" max="16" value="8"></label>
+            <p class="formula" id="formula"></p>
+          </div>
+
+          <div id="panel-geometry" hidden>
+            <label class="field"><span>FoV (mm)</span><input id="fov" type="number" min="32" max="256" value="256"></label>
+            <label class="field"><span>Rechteck-FoV / 8</span><input id="rect" type="number" min="4" max="8" value="8"></label>
+            <label class="field"><span>Schichtdicke (mm)</span><input id="thickness" type="number" min="1" max="20" value="6"></label>
+            <label class="field"><span>Mittelungen</span><input id="nex" type="number" min="1" max="16" value="1"></label>
+            <label class="field">
+              <span>Spule</span>
+              <select id="coil">
+                <option value="organ">Oberflächenspule</option>
+                <option value="body">Körperspule</option>
+              </select>
+            </label>
+            <label class="check"><span>Frequenz-Oversampling</span><input id="freqOS" type="checkbox"></label>
+            <label class="check"><span>Phasen-Oversampling</span><input id="phaseOS" type="checkbox"></label>
+            <dl class="metrics">
+              <div><dt>Pixelgröße</dt><dd id="pixelsize">1.00 mm</dd></div>
+              <div><dt>SNR (relativ)</dt><dd id="snr">1.000</dd></div>
+              <div><dt>Messzeit</dt><dd id="scantime">–</dd></div>
+              <div><dt>Kontrast</dt><dd id="weighting">–</dd></div>
+            </dl>
+          </div>
+
+          <div id="panel-artefact" hidden>
+            <label class="field">
+              <span>Art</span>
+              <select id="artefact">
+                <option value="none">Keins</option>
+                <option value="motion">Translation</option>
+                <option value="periodic">Periodische Bewegung</option>
+              </select>
+            </label>
+            <div id="motion-fields">
+              <label class="field"><span>Geschw. x (Px/min)</span><input id="mx" type="number" value="1"></label>
+              <label class="field"><span>Geschw. y (Px/min)</span><input id="my" type="number" value="0"></label>
+              <label class="field"><span>Start (s)</span><input id="mstart" type="number" value="0"></label>
+              <label class="field"><span>Stopp (s)</span><input id="mstop" type="number" value="99999"></label>
+            </div>
+            <div id="periodic-fields" hidden>
+              <label class="field"><span>Amplitude x (Px)</span><input id="px" type="number" value="1"></label>
+              <label class="field"><span>Amplitude y (Px)</span><input id="py" type="number" value="0"></label>
+              <label class="field"><span>Frequenz (1/min)</span><input id="pfreq" type="number" min="1" value="5"></label>
+              <label class="field"><span>Start (s)</span><input id="pstart" type="number" value="0"></label>
+              <label class="field"><span>Stopp (s)</span><input id="pstop" type="number" value="99999"></label>
+            </div>
+            <p class="note">Bewegung wird entlang der Phasenkodierung in den k-Raum geschrieben. Die Phasenrichtung ist vertikal.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <button class="primary" id="run" type="button">Bild berechnen</button>
+        <p class="note" id="status">Bereit.</p>
+      </section>
+
+      <section>
+        <h2>Beispiele</h2>
+        <div class="row presets">
+          <button type="button" data-preset="t1">T1</button>
+          <button type="button" data-preset="t2">T2</button>
+          <button type="button" data-preset="pd">PD</button>
+          <button type="button" data-preset="tse">TSE</button>
+          <button type="button" data-preset="flair">FLAIR</button>
+          <button type="button" data-preset="stir">STIR</button>
+          <button type="button" data-preset="gre">GRE</button>
+          <button type="button" data-preset="alias">Einfaltung</button>
+          <button type="button" data-preset="motion">Bewegung</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section>
+        <div class="view">
+          <figure>
+            <figcaption>
+              <span>Rekonstruiertes Bild</span>
+              <span>Fenster <span id="window-center">–</span> / <span id="window-width">–</span></span>
+            </figcaption>
+            <canvas id="result" width="256" height="256"></canvas>
+            <p id="readout">Zeiger über das Bild: Signal, T1, T2, PD. Ziehen ändert Fensterung, Doppelklick setzt sie zurück.</p>
+            <div class="row" style="margin-top: 8px">
+              <label class="field"><span>Zentrum</span><input id="center" type="number" value="1"></label>
+              <label class="field"><span>Breite</span><input id="width" type="number" min="1" value="1"></label>
+              <button type="button" id="save">PNG speichern</button>
+            </div>
+          </figure>
+          <figure>
+            <figcaption><span>k-Raum (log, zentriert)</span><span>Mitte = tiefe Frequenzen</span></figcaption>
+            <canvas id="kspace" width="256" height="256"></canvas>
+            <button type="button" id="open-kspace" disabled>k-Raum bearbeiten</button>
+            <p class="note">Phasenkodierung läuft von oben nach unten. Geisterbilder stehen in dieser Richtung.</p>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Parameterkarten</h2>
+        <div class="maps">
+          <figure>
+            <figcaption>T1</figcaption>
+            <canvas id="map-t1" width="256" height="256"></canvas>
+          </figure>
+          <figure>
+            <figcaption>T2</figcaption>
+            <canvas id="map-t2" width="256" height="256"></canvas>
+          </figure>
+          <figure>
+            <figcaption>Protonendichte</figcaption>
+            <canvas id="map-pd" width="256" height="256"></canvas>
+          </figure>
+        </div>
+        <table id="tissue-table" hidden>
+          <thead>
+            <tr><th>Gewebe</th><th>T1 (ms)</th><th>T2 (ms)</th><th>PD (%)</th></tr>
+          </thead>
+          <tbody id="tissues"></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    Port von <a href="https://github.com/hacklaen/virtualmri">virtualmri</a>,
+    Thomas Hackländer, Christian Schalla, Andreas Trümper. GPL-2. Ausbildungs-Simulation, keine Diagnose.
+  </footer>
+
+  <dialog id="kspace-dialog" aria-labelledby="ks-title">
+    <div class="kdialog">
+      <div class="kdialog-views">
+        <figure>
+          <figcaption>Originalbild</figcaption>
+          <canvas id="ks-original" width="256" height="256"></canvas>
+        </figure>
+        <figure>
+          <figcaption>Original k-Raum</figcaption>
+          <canvas id="ks-original-k" width="256" height="256"></canvas>
+        </figure>
+        <figure>
+          <figcaption>Manipulierter k-Raum</figcaption>
+          <canvas id="ks-edited-k" width="256" height="256"></canvas>
+        </figure>
+        <figure>
+          <figcaption>Rücktransformation</figcaption>
+          <canvas id="ks-inverse" width="256" height="256"></canvas>
+          <p class="note" id="ks-inverse-note">Noch keine Rücktransformation.</p>
+        </figure>
+      </div>
+      <div class="kdialog-controls">
+        <h2 id="ks-title">k-Raum-Manipulator</h2>
+        <p class="note">Ränder sind hohe Frequenzen, das Rechteck in der Mitte die tiefen. Jede n-te Zeile erzeugt Geisterbilder in Phasenrichtung.</p>
+        <fieldset class="kgroup">
+          <label class="kcheck"><input id="ks-margins" type="checkbox"> Ränder löschen</label>
+          <div id="ks-margin-fields">
+            <label class="field"><span>Links, Spalten</span><input id="ks-left" type="number" min="0" max="255" value="0"></label>
+            <label class="field"><span>Rechts, Spalten</span><input id="ks-right" type="number" min="0" max="255" value="0"></label>
+            <label class="field"><span>Oben, Zeilen</span><input id="ks-top" type="number" min="0" max="255" value="0"></label>
+            <label class="field"><span>Unten, Zeilen</span><input id="ks-bottom" type="number" min="0" max="255" value="0"></label>
+          </div>
+        </fieldset>
+        <fieldset class="kgroup">
+          <label class="kcheck"><input id="ks-rect" type="checkbox"> Inneres Rechteck löschen</label>
+          <div id="ks-rect-fields">
+            <label class="field"><span>Breite, Spalten</span><input id="ks-rect-w" type="number" min="0" max="255" value="0"></label>
+            <label class="field"><span>Höhe, Zeilen</span><input id="ks-rect-h" type="number" min="0" max="255" value="0"></label>
+          </div>
+        </fieldset>
+        <fieldset class="kgroup">
+          <label class="kcheck"><input id="ks-lines" type="checkbox"> Zeilen/Spalten löschen</label>
+          <div id="ks-line-fields">
+            <label class="field"><span>Jede … Zeile</span><input id="ks-rows" type="number" min="0" max="256" value="0" title="0 lässt alles stehen, ab 2 wird jede n-te Zeile gelöscht"></label>
+            <label class="field"><span>Jede … Spalte</span><input id="ks-cols" type="number" min="0" max="256" value="0" title="0 lässt alles stehen, ab 2 wird jede n-te Spalte gelöscht"></label>
+          </div>
+        </fieldset>
+        <div class="kactions">
+          <button type="button" class="primary" id="ks-inverse-btn">Rücktransformation</button>
+          <button type="button" id="ks-apply" disabled>In die Ansicht übernehmen</button>
+          <button type="button" id="ks-close">Schließen</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="js/fft.js"></script>
+  <script src="js/sample-brain.js"></script>
+  <script src="js/phantom.js"></script>
+  <script src="js/simulate.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
